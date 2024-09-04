@@ -1,36 +1,68 @@
 package;
 
+import openfl.events.Event;
 #if (haxe4 && (sys || air))
 import openfl.filesystem.File;
 import openfl.filesystem.FileStream;
 #end
 import utest.Assert;
+import utest.Async;
 import utest.Test;
 
 class FileStreamTest extends Test
 {
 	#if (haxe4 && (sys || air))
-	private var fileToDelete:File;
+	private var assetsDirectory:File;
+	private var writableDirectory:File;
+
+	public function setup():Void
+	{
+		#if (tools || air)
+		assetsDirectory = File.applicationDirectory.resolvePath("assets");
+		writableDirectory = File.applicationStorageDirectory.resolvePath("writable");
+		#else
+		assetsDirectory = File.workingDirectory.resolvePath("assets");
+		writableDirectory = File.workingDirectory.resolvePath("writable");
+		#end
+		if (!writableDirectory.exists)
+		{
+			writableDirectory.createDirectory();
+		}
+		Assert.isTrue(assetsDirectory.exists);
+		Assert.isTrue(assetsDirectory.isDirectory);
+		Assert.isTrue(writableDirectory.exists);
+		Assert.isTrue(writableDirectory.isDirectory);
+
+		for (file in writableDirectory.getDirectoryListing())
+		{
+			if (file.exists)
+			{
+				try
+				{
+					if (file.isDirectory)
+					{
+						file.deleteDirectory(true);
+					}
+					else
+					{
+						file.deleteFile();
+					}
+				}
+				catch (e:Dynamic) {}
+			}
+		}
+	}
 
 	public function teardown()
 	{
-		if (fileToDelete != null && fileToDelete.exists)
-		{
-			try
-			{
-				fileToDelete.deleteFile();
-			}
-			catch (e:Dynamic) {}
-		}
+		assetsDirectory = null;
+		writableDirectory.deleteDirectory(true);
+		writableDirectory = null;
 	}
 
 	public function test_readText()
 	{
-		#if (tools || air)
-		var file = File.applicationDirectory.resolvePath("assets/asset.txt");
-		#else
-		var file = File.workingDirectory.resolvePath("assets/asset.txt");
-		#end
+		var file = assetsDirectory.resolvePath("asset.txt");
 		Assert.isTrue(file.exists);
 
 		var readStream = new FileStream();
@@ -41,14 +73,31 @@ class FileStreamTest extends Test
 		Assert.equals("this is a text file", contentsRead);
 	}
 
+	@:timeout(1000)
+	public function test_readText_async(async:Async)
+	{
+		var file = assetsDirectory.resolvePath("asset.txt");
+		Assert.isTrue(file.exists);
+
+		var readStream = new FileStream();
+		readStream.addEventListener(Event.COMPLETE, function(event:Event):Void
+		{
+			if (async.timedOut)
+			{
+				readStream.close();
+				return;
+			}
+			var contentsRead = readStream.readUTFBytes(readStream.bytesAvailable);
+			Assert.equals("this is a text file", contentsRead);
+			readStream.close();
+			async.done();
+		});
+		readStream.openAsync(file, READ);
+	}
+
 	public function test_writeText()
 	{
-		#if (tools || air)
-		var file = File.applicationStorageDirectory.resolvePath("write-test.txt");
-		#else
-		var file = File.workingDirectory.resolvePath("write-test.txt");
-		#end
-		fileToDelete = file;
+		var file = writableDirectory.resolvePath("write-test.txt");
 
 		var contentsToWrite = "hello world";
 
