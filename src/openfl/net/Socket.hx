@@ -213,7 +213,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	public var timeout:Int;
 
 	@:noCompletion private var __buffer:Bytes;
-	@:noCompletion private var __connected:Bool;
+	@:noCompletion private var __connected:Bool = false;
 	@:noCompletion private var __endian:Endian;
 	@:noCompletion private var __host:String;
 	@:noCompletion private var __input:ByteArray;
