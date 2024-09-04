@@ -52,6 +52,7 @@ Changelog
 * Fixed null exception sometimes thrown from calling `close()` on `openfl.media.Sound` class
 * Fixed certain `ByteArray` values that weren't defaulting to `BIG_ENDIAN` when reading or writing AMF data
 * Fixed `deleteDirectory()` on `openfl.filesystem.File` class failing to delete sub-directories when `deleteDirectoryContents` parameter is `true`
+* Fixed crash on calling `listen()` on `openfl.net.Socket` when `backlog` parameter is `0` and targeting Neko
 
 9.3.4 (07/22/2024)
 ------------------
