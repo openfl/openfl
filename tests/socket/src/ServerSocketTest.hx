@@ -65,7 +65,11 @@ class ServerSocketTest extends Test
 		var clientConnected = false;
 		serverSocket = new ServerSocket();
 		Assert.isFalse(serverSocket.bound);
+		#if air
+		serverSocket.bind(0, "127.0.0.1");
+		#else
 		serverSocket.bind();
+		#end
 		Assert.isTrue(serverSocket.bound);
 		serverSocket.addEventListener(ServerSocketConnectEvent.CONNECT, function(event:ServerSocketConnectEvent):Void
 		{
@@ -111,7 +115,11 @@ class ServerSocketTest extends Test
 	{
 		serverSocket = new ServerSocket();
 		Assert.isFalse(serverSocket.bound);
+		#if air
+		serverSocket.bind(0, "127.0.0.1");
+		#else
 		serverSocket.bind();
+		#end
 		Assert.isTrue(serverSocket.bound);
 		serverSocket.addEventListener(ServerSocketConnectEvent.CONNECT, function(event:ServerSocketConnectEvent):Void
 		{
@@ -152,7 +160,11 @@ class ServerSocketTest extends Test
 	{
 		serverSocket = new ServerSocket();
 		Assert.isFalse(serverSocket.bound);
+		#if air
+		serverSocket.bind(0, "127.0.0.1");
+		#else
 		serverSocket.bind();
+		#end
 		Assert.isTrue(serverSocket.bound);
 		serverSocket.addEventListener(ServerSocketConnectEvent.CONNECT, function(event:ServerSocketConnectEvent):Void
 		{
