@@ -6,4 +6,5 @@
 	<haxelib name="openfl" path="../.."/>
 	<assets path="assets" rename="." embed="false"/>
 	<define name="integration"/>
+	<define name="openfl_unit_testing"/>
 </project>

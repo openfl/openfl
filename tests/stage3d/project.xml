@@ -6,4 +6,5 @@
 	<haxelib name="openfl" path="../.."/>
 	<!-- TODO: uncomment when tests are stable -->
 	<!-- <define name="integration"/> -->
+	<define name="openfl_unit_testing"/>
 </project>
