@@ -311,9 +311,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			return;
 		}
 		__fileStreamWorker.cancel();
-		#if (lime < "8.2.0")
 		__fileStreamWorker.doWork.cancel();
-		#end
 		__fileStreamWorker.onProgress.cancel();
 		__fileStreamWorker.onComplete.cancel();
 		__fileStreamWorker = null;
@@ -386,14 +384,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		if (fileMode == READ)
 		{
 			__buffer = new ByteArray(Std.int(file.size));
-
-			#if (lime >= "8.2.0")
-			// This is a silly break in an API
-			__fileStreamWorker.run(
-			#else
-			__fileStreamWorker.doWork.add(
-			#end
-			function(m:Dynamic)
+			__fileStreamWorker.doWork.add(function(m:Dynamic)
 			{
 				var inputBytesAvailable:Int = 0;
 				var tempPos:Int = 0;
@@ -446,13 +437,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		{
 			__buffer = new ByteArray();
 
-			#if (lime >= "8.2.0")
-			// This is a silly break in an API
-			__fileStreamWorker.run(
-			#else
-			__fileStreamWorker.doWork.add(
-			#end
-			function(m:Dynamic)
+			__fileStreamWorker.doWork.add(function(m:Dynamic)
 			{
 				var bytesLoaded:Int = 0;
 
@@ -498,9 +483,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			});
 		}
 
-		#if (lime < "8.2.0")
 		__fileStreamWorker.run();
-		#end
 	}
 
 	/**
