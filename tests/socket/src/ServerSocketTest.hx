@@ -1,7 +1,7 @@
 package;
 
 import openfl.events.Event;
-#if (haxe4 && (sys || air))
+#if (sys || air)
 import openfl.events.ProgressEvent;
 import openfl.events.ServerSocketConnectEvent;
 import openfl.net.ServerSocket;
@@ -13,7 +13,7 @@ import utest.Test;
 
 class ServerSocketTest extends Test
 {
-	#if (haxe4 && (sys || air))
+	#if (sys || air)
 	private var serverSocket:ServerSocket;
 	private var clientSocket:Socket;
 
