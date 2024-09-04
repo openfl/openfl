@@ -1,6 +1,57 @@
 Changelog
 =========
 
+9.4.0 (??/??/2024)
+------------------
+
+* Added `openfl_enable_experimental_update_queue` define, which enables an optimized update queue to improve rendering performance
+* Added `url` property to `openfl.filesystem.File` class
+* Added `workingDirectory` static property to `openfl.filesystem.File` class
+* Added dispatch of `Event.CUT`, `Event.COPY`, `Event.PASTE`, and `Event.SELECT_ALL` events to focused display object when keyboard shortcuts are used
+* Added `upload()` implementation to `FileReference` for HTML5 (it already existed for native)
+* Added `app:` URI scheme for files that translates to `File.applicationDirectory`
+* Added `app-storage:` URI scheme for files that translates to `File.applicationStorageDirectory`
+* Added support for `dataFormat = VARIABLES`, which sets `data` property to a new `URLVariables` object
+* Added `encodeURIComponent()` and `decodeURIComponent()` to `openfl.Lib`
+* Added `describeType()` to `openfl.Lib`
+* Added word selection to `TextField` by double-clicking and dragging
+* Added dispatch of `Event.OPEN` and `ProgressEvent.PROGRESS` events to `openfl.media.Sound`
+* Added support for `SpreadMethod.REPEAT` and `SpreadMethod.REFLECT` for gradients in `openfl.display.Graphics` when targeting HTML5
+* Added uncaught error events for exceptions thrown in functions called by `dispatchEvent()`, `Lib.setInterval()` and `Lib.setTimeout()`
+* Added `openfl.display.ScreenMode` implementation
+* Added `mode`, `modes`, and `visibleBounds` properties to `openfl.display.Screen`
+* Added `withCredentials` property to `URLRequest` to be used on HTML5 target for cross-origin requests
+* Added dispatch of `Event.CLOSE` to `openfl.net.DatagramSocket` class if bind fails
+* Added `readInt64()` and `writeInt64()` to `ByteArray`
+* Added `addToOutput()`, `interpolateToOutput()`, `polarToOutput()` and `subtractToOutput()` to `openfl.geom.Point`
+* Added `intersectionToOutput()` and `unionToOutput()` to `openfl.geom.Rectangle`
+* Added `deltaTransformPointToOutput()` and `transformPointToOutput()` to `openfl.geom.Matrix`
+* Added `getRelativeMatrix3DToOutput()` to `openfl.geom.Transform`
+* Added `decomposeToOutput()`, `deltaTransformVectorToOutput()`, `interpolateToOutput()`, and `transformVectorToOutput()` to `openfl.geom.Matrix3D`
+* Added `addToOutput()`, `crossProductToOutput()`, and `subtractToOutput()` to `openfl.geom.Vector3D`
+* Added `toMatrix3DToOutput()` to `openfl.geom.PerspectiveProjection`
+* Added `projectVectorToOutput()` to `openfl.geom.Utils3D`
+* Fixed support for reading and writing classes that implement `IExternalizable` interface to `ByteArray`
+* Fixed support for reading and writing `openfl.Vector` to `ByteArray`
+* Fixed `rotation` property on display objects not being clamped to the range between `-180.0` and `180.0`
+* Fixed `Capabilities.playerType` value on `sys` targets, which should return "Desktop" instead of "StandAlone"
+* Fixed utest library breaking the default HTML5 template, and added `openfl_enable_utest_legacy_mode` define to restore old behavior, if desired
+* Fixed `AsyncErrorEvent` not being able to accept other types besides `haxe.io.Error`
+* Fixed bad calculation of `TextField` bounds that sometimes accounted for the "gutter" twice
+* Fixed incorrect letter spacing after changing the font size on `TextField` on native targets
+* Fixed missing `TypeError` when setting `text` or `htmlText` to `null`
+* Fixed using hardware-only `BitmapData` with `beginBitmapFill()` and `drawTriangles()` on `Graphics`
+* Fixed types of many local variables that defaulted to `Dynamic` because they didn't define a type and weren't initialized for type inference
+* Fixed `Lib.getDefinitionByName()` support for `::` between package and base name
+* Fixed missing error handling in `FileReference.load()` for HTML5 target
+* Fixed passing another `ByteArray` to `ByteArray.writeObject()`
+* Fixed behavior of `openfl_enable_handle_error` and `openfl_disable_handle_error` defines
+* Fixed `openfl.net.Socket` incorrectly attempting to connect if `host` is `null`
+* Fixed null exception in `openfl.net.Socket` when trying to get addresses or ports and the socket is not connected
+* Fixed value of `localPort` on `openfl.net.Socket` class when the system selects the next available port
+* Fixed null exception sometimes thrown from calling `close()` on `openfl.media.Sound` class
+* Fixed certain `ByteArray` values that weren't defaulting to `BIG_ENDIAN` when reading or writing AMF data
+
 9.3.4 (07/22/2024)
 ------------------
 
