@@ -1076,7 +1076,14 @@ class File extends FileReference
 
 			for (file in files)
 			{
-				file.deleteFile();
+				if (file.isDirectory)
+				{
+					file.deleteDirectory(deleteDirectoryContents);
+				}
+				else
+				{
+					file.deleteFile();
+				}
 			}
 		}
 
