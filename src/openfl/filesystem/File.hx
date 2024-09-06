@@ -1229,8 +1229,6 @@ class File extends FileReference
 		Returns an array of File objects corresponding to files and directories in the directory
 		represented by this File object. This method does not explore the contents of subdirectories.
 
-		@returns Array An array of File objects.
-
 		The following code shows how to use the getDirectoryListing() method to enumerate the contents of the
 		user directory.
 
@@ -1243,6 +1241,8 @@ class File extends FileReference
 			trace(list[i].nativePath);
 		}
 		```
+
+		@returns Array An array of File objects.
 
 		@see [Working with directories](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-directories.html)
 	**/
@@ -1669,8 +1669,6 @@ class File extends FileReference
 		You may want to delete the temporary directory before closing the application, since on some
 		devices it is not deleted automatically.
 
-		@returns File A File object referencing the new temporary directory.
-
 		The following code uses the createTempFile() method to obtain a reference to a new temporary
 		directory.
 
@@ -1682,6 +1680,8 @@ class File extends FileReference
 		```
 
 		Each time you run this code, a new (unique) file is created.
+
+		@returns File A File object referencing the new temporary directory.
 
 		@see [Working with directories](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-directories.html)
 	**/
@@ -1700,8 +1700,6 @@ class File extends FileReference
 		You may want to delete the temporary file before closing the application, since it is not deleted
 		automatically.
 
-		@returns File A File object referencing the new temporary file;
-
 		The following code uses the createTempFile() method to obtain a reference to a new temporary file.
 
 		```haxe
@@ -1711,6 +1709,8 @@ class File extends FileReference
 		trace(temp.nativePath);
 		```
 
+		@returns File A File object referencing the new temporary file;		
+
 		@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
 	**/
 	public static function createTempFile():File
@@ -1719,17 +1719,15 @@ class File extends FileReference
 	}
 
 	/**
-		 Returns an array of File objects, listing the file system root directories.
+		Returns an array of File objects, listing the file system root directories.
 
-		 For example, on Windows this is a list of volumes such as the C: drive and the D: drive. An empty
-		 drive, such as a CD or DVD drive in which no disc is inserted, is not included in this array. On Mac
-		 OS and Linux, this method always returns the unique root directory for the machine (the "/" directory)
+		For example, on Windows this is a list of volumes such as the C: drive and the D: drive. An empty
+		drive, such as a CD or DVD drive in which no disc is inserted, is not included in this array. On Mac
+		OS and Linux, this method always returns the unique root directory for the machine (the "/" directory)
 
 		On file systems for which the root is not readable, such as the Android file system, the properties of
 		the returned File object do not always reflect the true value. For example, on Android, the
 		spaceAvailable property reports 0.
-
-		@returns Array An array of File objects, listing the root directories.
 
 		The following code outputs a list of root directories:
 
@@ -1741,6 +1739,8 @@ class File extends FileReference
 			trace(rootDirs[i].nativePath);
 		}
 		```
+
+		@returns Array An array of File objects, listing the root directories.		
 	**/
 	public static function getRootDirectories():Array<File>
 	{
