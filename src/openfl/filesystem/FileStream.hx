@@ -271,8 +271,8 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	}
 
 	/**
-		 Opens the FileStream object synchronously, pointing to the file specified by the
-		 file parameter.
+		Opens the FileStream object synchronously, pointing to the file specified by the
+		file parameter.
 
 		If the FileStream object is already open, calling the method closes the file before
 		opening and no further events (including close) are delivered for the previously opened
@@ -283,6 +283,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		Once you are done performing operations on the file, call the close() method of the
 		FileStream object. Some operating systems limit the number of concurrently open files.
+
 		@param 		file The File object specifying the file to open.
 		@param 		 A string from the FileMode class that defines the capabilities of the
 		FileStream, such as the ability to read from or write to the file.
@@ -878,10 +879,11 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	}
 
 	/**
-		*  Reads a UTF-8 string from the file stream, byte stream, or byte array. The string is assumed to be
+		* Reads a UTF-8 string from the file stream, byte stream, or byte array. The string is assumed to be
 		* prefixed with an unsigned short indicating the length in bytes.
 
-				This method is similar to the readUTF() method in the Java® IDataInput interface.
+		This method is similar to the readUTF() method in the Java® IDataInput interface.
+
 		* @return A UTF-8 string produced by the byte representation of characters.
 		* @event 		ioError The file cannot be read or the file is not open. This event is dispatched only
 		* for files opened for asynchronous operations (by using the openAsync() method).
