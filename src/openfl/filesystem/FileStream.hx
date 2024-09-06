@@ -285,19 +285,18 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		FileStream object. Some operating systems limit the number of concurrently open files.
 
 		@param 		file The File object specifying the file to open.
-		@param 		 A string from the FileMode class that defines the capabilities of the
-		FileStream, such as the ability to read from or write to the file.
+		@param 		fileMode A string from the FileMode class that defines the capabilities of the
+					FileStream, such as the ability to read from or write to the file.
 		@throws 	IOError The file does not exist; you do not have adequate permissions to
-		open the file; you are opening a file for read access, and you do not have read
-		permissions; or you are opening a file for write access, and you do not have write
-		permissions.
+					open the file; you are opening a file for read access, and you do not have read
+					permissions; or you are opening a file for write access, and you do not have write
+					permissions.
 		@throws 	SecurityError The file location is in the application directory, and the
-		fileMode parameter is set to "append", "update", or "write" mode.
+					fileMode parameter is set to "append", "update", or "write" mode.
 
-		@see [Initializing a FileStream object, and opening and closing files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/initializing-a-filestream-object-and-opening-and-closing-files.html)
-		@see [FileStream open modes](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/filestream-open-modes.html)
-	 */
-	public function open(file:File, fileMode:FileMode):Void
+		@see https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/initializing-a-filestream-object-and-opening-and-closing-files.html
+		@see https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/filestream-open-modes.html
+ 	*/
 	{
 		__file = file;
 		__fileMode = fileMode;
@@ -337,16 +336,16 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		@param 		file The File object specifying the file to open.
 		@param 		 A string from the FileMode class that defines the capabilities of the
-		FileStream, such as the ability to read from or write to the file.
+					FileStream, such as the ability to read from or write to the file.
 		@event 		ioError The file does not exist; you do not have adequate permissions to open the
-		file; you are opening a file for read access, and you do not have read permissions; or you are
-		opening a file for write access, and you do not have write permissions.
+					file; you are opening a file for read access, and you do not have read permissions; or you are
+					opening a file for write access, and you do not have write permissions.
 		@event 		progress Dispatched as data is read to the input buffer. (The file must be opened
-		with the fileMode parameter set to FileMode.READ or FileMode.UPDATE.)
+					with the fileMode parameter set to FileMode.READ or FileMode.UPDATE.)
 		@event		complete The file data has been read to the input buffer. (The file must be opened
-		with the fileMode parameter set to FileMode.READ or FileMode.UPDATE.)
+					with the fileMode parameter set to FileMode.READ or FileMode.UPDATE.)
 		@throws 	SecurityError The file location is in the application directory, and the
-		fileMode parameter is set to "append", "update", or "write" mode.
+					fileMode parameter is set to "append", "update", or "write" mode.
 
 		@see [Initializing a FileStream object, and opening and closing files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/initializing-a-filestream-object-and-opening-and-closing-files.html)
 		@see [FileStream open modes](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/filestream-open-modes.html)
