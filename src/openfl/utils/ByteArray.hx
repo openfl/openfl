@@ -1162,7 +1162,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		setting `__length` does not.
 	**/
 	#if openfljs
-	@:noCompletion private var __length:Int = 0;
+	@:noCompletion private var __length:Int;
 	#else
 	@:noCompletion private var __length(get, set):Int;
 	#end
@@ -1219,6 +1219,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		super(length, bytes.getData());
 		#end
 
+		#if openfljs
+		__length = length;
+		#end
 		__allocated = length;
 
 		endian = defaultEndian;
