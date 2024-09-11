@@ -2252,7 +2252,7 @@ class BitmapData implements IBitmapDrawable
 			var textureImage = image;
 
 			#if (js && html5)
-			if (#if openfl_power_of_two true || #end (!TextureBase.__supportsBGRA && textureImage.format != RGBA32))
+			if (#if openfl_power_of_two !textureImage.powerOfTwo || #end (!TextureBase.__supportsBGRA && textureImage.format != RGBA32))
 			{
 				textureImage = textureImage.clone();
 				textureImage.format = RGBA32;
