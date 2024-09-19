@@ -10,26 +10,31 @@ import haxe.Constraints.IMap;
 
 /**
 	The Dictionary class lets you create a dynamic collection of properties,
-	which uses strict equality (`===`) for key comparison. When an object is
-	used as a key, the object's identity is used to look up the object, and
-	not the value returned from calling `toString()` on it.
+	which uses strict equality for key comparison. When an object is used as a
+	key, the object's identity is used to look up the object, and not the value
+	returned from calling `toString()` on it.
+
 	The following statements show the relationship between a Dictionary object
 	and a key object:
 
-	```as3
-	var dict = new Dictionary();
-	var obj = new Object();
-	var key:Object = new Object();
-	key.toString = function() { return "key" }
+	```haxe
+	var dict = new Dictionary<Any, Any>();
+	var obj:Any = {};
+	var key:Any = {
+		toString: function() {
+			return "key";
+		}
+	};
 
 	dict[key] = "Letters";
-	obj["key"] = "Letters";
+	Reflect.setField(obj, "key", "Letters");
 
-	dict[key] == "Letters"; // true
-	obj["key"] == "Letters"; // true
-	obj[key] == "Letters"; // true because key == "key" is true b/c key.toString == "key"
-	dict["key"] == "Letters"; // false because "key" === key is false
-	delete dict[key]; //removes the key
+	trace(dict[key] == "Letters"); // true
+	trace(Reflect.field(obj, "key") == "Letters"); // true
+	trace(Reflect.field(obj, Std.string(key)) == "Letters"); // true because key == "key" is true b/c key.toString == "key"
+	trace(dict["key"] == "Letters"); // false because "key" === key is false
+	dict.remove(key); // removes the key
+	trace(dict[key] == null); // true
 	```
 **/
 @:multiType(K)
