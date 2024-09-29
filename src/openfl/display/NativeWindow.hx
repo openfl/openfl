@@ -215,8 +215,8 @@ class NativeWindow extends EventDispatcher
 		__previousDisplayState = NORMAL;
 		__window.stage.nativeWindow = this;
 		NativeApplication.nativeApplication.__openedWindows.push(this);
-		__window.onActivate(window_onActivate);
-		__window.onDeactivate(window_onDeactivate);
+		__window.onActivate.add(window_onActivate);
+		__window.onDeactivate.add(window_onDeactivate);
 		__window.onFocusIn.add(window_onFocusIn);
 		__window.onFocusOut.add(window_onFocusOut);
 		__window.onMove.add(window_onMove);
