@@ -285,7 +285,7 @@ jobs:
           haxelib install format --quiet
           haxelib install hxp --quiet
           haxelib install lime --quiet
-          haxelib install dox --quiet
+          haxelib git dox https://github.com/HaxeFoundation/dox --quiet --never
           haxelib dev openfl ${{ github.workspace }}
 
       - name: Build docs
