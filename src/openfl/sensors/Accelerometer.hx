@@ -60,6 +60,9 @@ import lime.system.SensorType;
 				   * Whenever the application misses a change in the
 				  accelerometer(for example, the runtime is resuming after
 				  being idle).
+
+
+	@see [Accelerometer input](https://books.openfl.org/openfl-developers-guide/accelerometer-input/)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

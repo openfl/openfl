@@ -39,6 +39,7 @@ import haxe.macro.Compiler;
 	Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 
 	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see [Web service requests](https://books.openfl.org/openfl-developers-guide/http-communications/web-service-requests.html)
 	@see `openfl.net.URLLoader`
 	@see `openfl.net.URLStream`
 	@see `openfl.net.FileReference`

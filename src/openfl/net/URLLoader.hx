@@ -86,6 +86,7 @@ import lime.net.HTTPRequestHeader;
 							  digest string does not match the component.
 
 	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see [Web service requests](https://books.openfl.org/openfl-developers-guide/http-communications/web-service-requests.html)
 	@see `openfl.net.URLRequest`
 	@see `openfl.net.URLStream`
 **/

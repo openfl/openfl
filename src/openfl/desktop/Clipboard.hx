@@ -65,6 +65,8 @@ import lime.system.Clipboard as LimeClipboard;
 	for content outside the application sandbox.
 
 	On Linux, clipboard data does not persist when an AIR application closes.
+
+	@see [Copy and paste](https://books.openfl.org/openfl-developers-guide/copy-and-paste/)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

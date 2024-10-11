@@ -61,6 +61,7 @@ import openfl.utils.Endian;
 							  security sandbox.
 
 	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see [Web service requests](https://books.openfl.org/openfl-developers-guide/http-communications/web-service-requests.html)
 	@see `openfl.net.URLRequest`
 	@see `openfl.net.URLStream`
 **/
