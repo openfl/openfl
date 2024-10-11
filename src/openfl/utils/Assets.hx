@@ -88,7 +88,11 @@ class Assets
 
 	/**
 		Gets an instance of an embedded bitmap
-		@usage		var bitmap = new Bitmap (Assets.getBitmapData ("image.png"));
+
+		```haxe
+		var bitmap = new Bitmap (Assets.getBitmapData ("image.png"));
+		```
+
 		@param	id		The ID or asset path for the bitmap
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		A new BitmapData object
@@ -132,7 +136,11 @@ class Assets
 
 	/**
 		Gets an instance of an embedded binary asset
-		@usage		var bytes = Assets.getBytes ("file.zip");
+
+		```haxe
+		var bytes = Assets.getBytes ("file.zip");
+		```
+
 		@param	id		The ID or asset path for the asset
 		@return		A new ByteArray object
 
@@ -149,7 +157,11 @@ class Assets
 
 	/**
 		Gets an instance of an embedded font
-		@usage		var fontName = Assets.getFont ("font.ttf").fontName;
+
+		```haxe
+		var fontName = Assets.getFont ("font.ttf").fontName;
+		```
+
 		@param	id		The ID or asset path for the font
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		A new Font object
@@ -198,7 +210,11 @@ class Assets
 
 	/**
 		Gets an instance of an included MovieClip
-		@usage		var movieClip = Assets.getMovieClip ("library:BouncingBall");
+
+		```haxe
+		var movieClip = Assets.getMovieClip ("library:BouncingBall");
+		```
+
 		@param	id		The ID for the MovieClip
 		@return		A new MovieClip object
 	**/
@@ -256,7 +272,11 @@ class Assets
 
 	/**
 		Gets the file path (if available) for an asset
-		@usage		var path = Assets.getPath ("file.txt");
+
+		```haxe
+		var path = Assets.getPath ("file.txt");
+		```
+
 		@param	id		The ID or asset path for the asset
 		@return		The path to the asset, or null if it does not exist
 	**/
@@ -271,7 +291,11 @@ class Assets
 
 	/**
 		Gets an instance of an embedded sound
-		@usage		var sound = Assets.getSound ("sound.wav");
+
+		```haxe
+		var sound = Assets.getSound ("sound.wav");
+		```
+
 		@param	id		The ID or asset path for the sound
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		A new Sound object
@@ -315,7 +339,11 @@ class Assets
 
 	/**
 		Gets an instance of an embedded text asset
-		@usage		var text = Assets.getText ("text.txt");
+
+		```haxe
+		var text = Assets.getText ("text.txt");
+		```
+
 		@param	id		The ID or asset path for the asset
 		@return		A new String object
 	**/
@@ -469,7 +497,11 @@ class Assets
 
 	/**
 		Loads an included bitmap asset asynchronously
-		@usage	Assets.loadBitmapData ("image.png").onComplete (handleImage);
+
+		```haxe
+		Assets.loadBitmapData ("image.png").onComplete (handleImage);
+		```
+
 		@param	id 		The ID or asset path for the asset
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		Returns a Future<BitmapData>
@@ -525,7 +557,11 @@ class Assets
 
 	/**
 		Loads an included byte asset asynchronously
-		@usage	Assets.loadBytes ("file.zip").onComplete (handleBytes);
+
+		```haxe
+		Assets.loadBytes ("file.zip").onComplete (handleBytes);
+		```
+
 		@param	id 		The ID or asset path for the asset
 		@return		Returns a Future<ByteArray>
 
@@ -549,7 +585,11 @@ class Assets
 
 	/**
 		Loads an included font asset asynchronously
-		@usage	Assets.loadFont ("font.ttf").onComplete (handleFont);
+
+		```haxe
+		Assets.loadFont ("font.ttf").onComplete (handleFont);
+		```
+
 		@param	id 		The ID or asset path for the asset
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		Returns a Future<Font>
@@ -634,7 +674,11 @@ class Assets
 
 	/**
 		Loads an included music asset asynchronously
-		@usage	Assets.loadMusic ("music.ogg").onComplete (handleMusic);
+
+		```haxe
+		Assets.loadMusic ("music.ogg").onComplete (handleMusic);
+		```
+
 		@param	id 		The ID or asset path for the asset
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		Returns a Future<Sound>
@@ -684,7 +728,11 @@ class Assets
 
 	/**
 		Loads an included MovieClip asset asynchronously
-		@usage	Assets.loadMovieClip ("library:BouncingBall").onComplete (handleMovieClip);
+
+		```haxe
+		Assets.loadMovieClip ("library:BouncingBall").onComplete (handleMovieClip);
+		```
+
 		@param	id 		The ID for the asset
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		Returns a Future<MovieClip>
@@ -726,7 +774,11 @@ class Assets
 
 	/**
 		Loads an included sound asset asynchronously
-		@usage	Assets.loadSound ("sound.wav").onComplete (handleSound);
+
+		```haxe
+		Assets.loadSound ("sound.wav").onComplete (handleSound);
+		```
+
 		@param	id 		The ID or asset path for the asset
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		Returns a Future<Sound>
@@ -773,7 +825,11 @@ class Assets
 
 	/**
 		Loads an included text asset asynchronously
-		@usage	Assets.loadText ("text.txt").onComplete (handleString);
+
+		```haxe
+		Assets.loadText ("text.txt").onComplete (handleString);
+		```
+
 		@param	id 		The ID or asset path for the asset
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		Returns a Future<String>
