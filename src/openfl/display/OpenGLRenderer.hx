@@ -593,7 +593,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		return __defaultGraphicsShader;
 	}
 
-	@:noCompletion private override function __popMask():Void
+	@:noCompletion private override function __popMask(maskee:DisplayObject = null):Void
 	{
 		if (__stencilReference == 0) return;
 
@@ -606,7 +606,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			__context3D.setColorMask(false, false, false, false);
 
 			__renderDrawableMask(mask);
-			__stencilReference--;
+			if (maskee == null || !maskee.maskInverted)
+			{
+				__stencilReference--;
+			}
 
 			__context3D.setStencilActions(FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
 			__context3D.setStencilReferenceValue(__stencilReference, 0xFF, 0);
@@ -624,7 +627,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	{
 		if (object.__mask != null)
 		{
-			__popMask();
+			__popMask(object);
 		}
 
 		if (handleScrollRect && object.__scrollRect != null)
@@ -658,7 +661,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 	}
 
-	@:noCompletion private override function __pushMask(mask:DisplayObject):Void
+	@:noCompletion private override function __pushMask(mask:DisplayObject, maskee:DisplayObject = null):Void
 	{
 		if (__stencilReference == 0)
 		{
@@ -672,7 +675,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 		__renderDrawableMask(mask);
 		__maskObjects.push(mask);
-		__stencilReference++;
+		if (maskee == null || !maskee.maskInverted)
+		{
+			__stencilReference++;
+		}
 
 		__context3D.setStencilActions(FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
 		__context3D.setStencilReferenceValue(__stencilReference, 0xFF, 0);
@@ -700,7 +706,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 		if (object.__mask != null)
 		{
-			__pushMask(object.__mask);
+			__pushMask(object.__mask, object);
 		}
 	}
 
@@ -1039,6 +1045,9 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			case SUBTRACT:
 				__context3D.setBlendFactors(ONE, ONE);
 				__context3D.__setGLBlendEquation(__gl.FUNC_REVERSE_SUBTRACT);
+
+			case ERASE:
+				__context3D.setBlendFactors(ZERO, ONE_MINUS_SOURCE_ALPHA);
 
 			#if desktop
 			case DARKEN:
