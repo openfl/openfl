@@ -533,10 +533,16 @@ class CairoGraphics
 						c.anchorY
 						- offsetY);
 
+					positionX = c.anchorX;
+					positionY = c.anchorY;
+
 				case CURVE_TO:
 					var c = data.readCurveTo();
 					hasPath = true;
 					quadraticCurveTo(c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+
+					positionX = c.anchorX;
+					positionY = c.anchorY;
 
 				case DRAW_CIRCLE:
 					var c = data.readDrawCircle();
