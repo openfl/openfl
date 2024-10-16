@@ -2162,7 +2162,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Telemetry.__endTiming(TelemetryCommandName.RENDER);
 		Telemetry.__rewindStack(stack);
 		#end
-
+		
+		#if HXCPP_TRACY
+		cpp.vm.tracy.TracyProfiler.frameMark();
+		#end
+		
 		return cancelled;
 	}
 
