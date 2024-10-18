@@ -192,6 +192,36 @@ typedef Element = Dynamic;
 class Stage extends DisplayObjectContainer #if lime implements IModule #end
 {
 	/**
+		Whether the application supports changes in the stage orientation (and
+		device rotation). Currently, this property is only `true` in Adobe AIR
+		applications running on mobile devices. On all other OpenFL targets,
+		it returns `false`.
+	**/
+	public static var supportsOrientationChange(get, never):Bool;
+
+	/**
+		Specifies whether the stage automatically changes orientation when the
+		device orientation changes.
+
+		The initial value of this property is derived from the `autoOrients`
+		element of the application descriptor and defaults to `false`. When
+		changing the property to `false`, the behavior is not guaranteed. On
+		some devices, the stage remains in the current orientation. On others,
+		the stage orientation changes to a device-defined "standard"
+		orientation, after which, no further stage orientation changes occur.
+
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
+
+		_Adobe AIR profile support:_ This feature is supported on mobile
+		devices, but it is not supported on desktop operating systems or AIR for
+		TV devices. You can test for support at run time using the
+		`Stage.supportsOrientantionChange` property. See
+		[AIR Profile Support](http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
+		for more information regarding API support across multiple profiles.
+	**/
+	public var autoOrients(get, set):Bool;
+
+	/**
 		A value from the StageAlign class that specifies the alignment of the
 		stage in Flash Player or the browser. The following are valid values:
 
@@ -305,6 +335,30 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		This property is supported only when using hardware rendering.
 	**/
 	public var context3D(default, null):Context3D;
+
+	/**
+		The physical orientation of the device.
+
+		On devices with slide-out keyboards, the state of the keyboard has a
+		higher priority in determining the device orientation than the rotation
+		detected by the accelerometer. Thus on a portrait-aspect device with a
+		side-mounted keyboard, the `deviceOrientation` property will report
+		`ROTATED_LEFT` when the keyboard is open no matter how the user is
+		holding the device.
+
+		Use the constants defined in the StageOrientation class when setting or
+		comparing values for this property.
+
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
+
+		_AIR profile support:_ This feature is supported on mobile devices, but
+		it is not supported on desktop operating systems or AIR for TV devices.
+		You can test for support at run time using the
+		`Stage.supportsOrientationChange` property. See
+		[AIR Profile Support](http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
+		for more information regarding API support across multiple profiles.
+	**/
+	public var deviceOrientation(get, never):StageOrientation;
 
 	// @:noCompletion @:dox(hide) @:require(flash11) public var displayContextInfo (default, null):String;
 
@@ -515,6 +569,22 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	public var fullScreenWidth(get, never):UInt;
 
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
+
+	/**
+		The current orientation of the stage. This property is set to one of
+		four values, defined as constants in the StageOrientation class:
+
+		| StageOrientation constant        | Stage orientation                                         |
+		| -------------------------------- | --------------------------------------------------------- |
+		| `StageOrientation.DEFAULT`       | The screen is in the default orientation (right-side up). |
+		| `StageOrientation.ROTATED_RIGHT` | The screen is rotated right.                              |
+		| `StageOrientation.ROTATED_LEFT`  | The screen is rotated left.                               |
+		| `StageOrientation.UPSIDE_DOWN`   | The screen is rotated upside down.                        |
+		| `StageOrientation.UNKNOWN`       | The application has not yet determined the initial orientation of the screen. You can add an event listener for the `orientationChange` event |
+
+		To set the stage orientation, use the `setOrientation()` method.
+	**/
+	public var orientation(get, never):StageOrientation;
 
 	/**
 		A value from the StageQuality class that specifies which rendering quality
@@ -789,6 +859,24 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  the _OpenFL Developer's Guide_.
 	**/
 	public var stageWidth(default, null):Int;
+
+	/**
+		The orientations supported by the current device.
+
+		You can use the orientation strings included in this list as parameters
+		for the `setOrientation()` method. Setting an unsupported orientation
+		fails without error.
+
+		The possible orientations include:
+
+		| StageOrientation constant        | Stage orientation                                         |
+		| -------------------------------- | --------------------------------------------------------- |
+		| `StageOrientation.DEFAULT`       | The screen is in the default orientation (right-side up). |
+		| `StageOrientation.ROTATED_RIGHT` | The screen is rotated right.                              |
+		| `StageOrientation.ROTATED_LEFT`  | The screen is rotated left.                               |
+		| `StageOrientation.UPSIDE_DOWN`   | The screen is rotated upside down.                        |a
+	**/
+	public var supportedOrientations(get, never):Vector<StageOrientation>;
 
 	/**
 		The associated Lime Window instance for this Stage.
@@ -1157,6 +1245,38 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	{
 		return pos.clone();
 	}
+
+	/**
+		Sets the stage to the specified orientation.
+
+		Set the `newOrientation` parameter to one of the following four values
+		defined as constants in the StageOrientation class:
+
+		| StageOrientation constant        | Stage orientation                                         |
+		| -------------------------------- | --------------------------------------------------------- |
+		| `StageOrientation.DEFAULT`       | The screen is in the default orientation (right-side up). |
+		| `StageOrientation.ROTATED_RIGHT` | The screen is rotated right.                              |
+		| `StageOrientation.ROTATED_LEFT`  | The screen is rotated left.                               |
+		| `StageOrientation.UPSIDE_DOWN`   | The screen is rotated upside down.                        |
+
+		Do not set the parameter to `StageOrientation.UNKNOWN` or any string
+		value other than those listed in the table.
+
+		To check whether changing device orientation is supported, check the
+		value of the `Stage.supportsOrientantionChange` property. Check the list
+		provided by the `supportedOrientations` property to determine which
+		orientations are supported by the current device.
+
+		Setting the orientation is an asynchronous operation. It is not
+		guaranteed to be complete immediately after you call the
+		`setOrientation()` method. Add an event listener for the
+		`orientationChange` event to determine when the orientation change is
+		complete.
+
+		**Note:** The `setOrientation()` method does not cause an
+		`orientationChanging` event to be dispatched.
+	**/
+	public function setOrientation(newOrientation:StageOrientation):Void {}
 
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __broadcastEvent(event:Event):Void
@@ -3553,6 +3673,21 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#end
 
 	// Get & Set Methods
+	@:noCompletion private static function get_supportsOrientationChange():Bool
+	{
+		return false;
+	}
+
+	@:noCompletion private function get_autoOrients():Bool
+	{
+		return false;
+	}
+
+	@:noCompletion private function set_autoOrients(value:Bool):Bool
+	{
+		return false;
+	}
+
 	@:noCompletion private function get_color():Null<Int>
 	{
 		return __color;
@@ -3590,6 +3725,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private function get_contentsScaleFactor():Float
 	{
 		return __contentsScaleFactor;
+	}
+
+	@:noCompletion private function get_deviceOrientation():StageOrientation
+	{
+		return StageOrientation.UNKNOWN;
 	}
 
 	@:noCompletion private function get_displayState():StageDisplayState
@@ -3726,6 +3866,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		return __mouseY;
 	}
 
+	@:noCompletion private function get_orientation():StageOrientation
+	{
+		return StageOrientation.UNKNOWN;
+	}
+
 	@:noCompletion private function get_quality():StageQuality
 	{
 		return __quality;
@@ -3772,6 +3917,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private override function set_scaleY(value:Float):Float
 	{
 		return 0;
+	}
+
+	@:noCompletion private function get_supportedOrientations():Vector<StageOrientation>
+	{
+		return new Vector<StageOrientation>();
 	}
 
 	@:noCompletion private override function get_tabEnabled():Bool
