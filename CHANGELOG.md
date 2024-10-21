@@ -31,6 +31,7 @@ Changelog
 * Added `addToOutput()`, `crossProductToOutput()`, and `subtractToOutput()` to `openfl.geom.Vector3D`
 * Added `toMatrix3DToOutput()` to `openfl.geom.PerspectiveProjection`
 * Added `projectVectorToOutput()` to `openfl.geom.Utils3D`
+* Added `totalMemoryNumber` to `openfl.system.System`
 * Fixed support for reading and writing classes that implement `IExternalizable` interface to `ByteArray`
 * Fixed support for reading and writing `openfl.Vector` to `ByteArray`
 * Fixed `rotation` property on display objects not being clamped to the range between `-180.0` and `180.0`
@@ -53,6 +54,8 @@ Changelog
 * Fixed certain `ByteArray` values that weren't defaulting to `BIG_ENDIAN` when reading or writing AMF data
 * Fixed `deleteDirectory()` on `openfl.filesystem.File` class failing to delete sub-directories when `deleteDirectoryContents` parameter is `true`
 * Fixed crash on calling `listen()` on `openfl.net.Socket` when `backlog` parameter is `0` and targeting Neko
+* Fixed `NativeWindow` dispatch of `Event.ACTIVATE` and `Event.DEACTIVATE` on mobile
+* Fixed `connected` property on `Socket` returning `null` instead of `false` by default
 
 9.3.4 (07/22/2024)
 ------------------
