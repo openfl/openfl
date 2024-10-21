@@ -5,7 +5,7 @@
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
 	"version": "9.4.0",
-	"releasenote": "Various bug fixes",
+	"releasenote": "TextField double-click word selection, app: and app-storage: file schemes, experimental update queue",
 	"contributors": [
 		"singmajesty",
 		"bowlerhat",

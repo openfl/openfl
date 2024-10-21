@@ -1,7 +1,7 @@
 Changelog
 =========
 
-9.4.0 (??/??/2024)
+9.4.0 (10/21/2024)
 ------------------
 
 * Added `openfl_enable_experimental_update_queue` define, which enables an optimized update queue to improve rendering performance
