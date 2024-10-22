@@ -24,7 +24,7 @@
 - Create new release for tag on GitHub
 	- Upload _openfl-haxelib.zip_ and _openfl-docs.zip_
 	- Link to _CHANGELOG.md_ from tag and to _https://community.openfl.org_ announcement thread
-		`https://github.com/openfl/openfl/blob/x.y.z/CHANGELOG.md`
+		- _CHANGELOG.md_ tag URL: `https://github.com/openfl/openfl/blob/x.y.z/CHANGELOG.md`
 		- It's okay to skip link to announcement at first, and edit the release to add it later
 - Deploy API reference by updating Git refs in _.github/workflows/deploy.yml_ in _openfl/api.openfl.org_ repo
 	```yaml
@@ -59,6 +59,7 @@
 - Delete _node\_modules_ and _package-lock.json_.
 - Run **`npm install`**.
 	- On macOS, **`arch -x86_64 npm install`** may be required
+- Commit new _package.json_ and _package-lock.json_
 - Tag release and push
 	```sh
 	git tag -s x.y.z -m "version x.y.z"
