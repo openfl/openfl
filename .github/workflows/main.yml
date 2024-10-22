@@ -40,7 +40,7 @@ jobs:
 
       - name: Run tests on Neko
         run: |
-          haxelib run hxp test -Dtarget=neko -Duse-lime-tools --install-hxp-alias
+          haxelib run hxp test -Dtarget=neko -Duse-lime-tools -verbose --install-hxp-alias
 
   unit-test-hashlink:
     strategy:
@@ -82,7 +82,7 @@ jobs:
 
       - name: Run tests on HashLink
         run: |
-          haxelib run hxp test -Dtarget=hl -Duse-lime-tools --install-hxp-alias
+          haxelib run hxp test -Dtarget=hl -Duse-lime-tools -verbose --install-hxp-alias
 
   unit-test-lime-develop:
     runs-on: macos-12
@@ -141,15 +141,15 @@ jobs:
 
       - name: Run tests on Neko
         run: |
-          haxelib run hxp test -Dtarget=neko -Duse-lime-tools --install-hxp-alias
+          haxelib run hxp test -Dtarget=neko -Duse-lime-tools -verbose --install-hxp-alias
 
       - name: Run tests on Hashlink
         run: |
-          haxelib run hxp test -Dtarget=hl -Duse-lime-tools --install-hxp-alias
+          haxelib run hxp test -Dtarget=hl -Duse-lime-tools -verbose --install-hxp-alias
 
       - name: Run tests on Adobe AIR
         run: |
-          haxelib run hxp test -Dtarget=air -Duse-lime-tools --install-hxp-alias
+          haxelib run hxp test -Dtarget=air -Duse-lime-tools -verbose --install-hxp-alias
 
   unit-test-air:
     strategy:
@@ -194,7 +194,7 @@ jobs:
 
       - name: Run tests on Adobe AIR
         run: |
-          haxelib run hxp test -Dtarget=air -Duse-lime-tools --install-hxp-alias
+          haxelib run hxp test -Dtarget=air -Duse-lime-tools -verbose --install-hxp-alias
 
   package-haxelib:
     runs-on: ubuntu-latest
