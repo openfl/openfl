@@ -68,7 +68,7 @@ jobs:
           haxelib install hxcpp --quiet
           haxelib install format --quiet
           haxelib install hxp --quiet
-          haxelib install lime --quiet
+          haxelib install lime 8.1.3 --quiet
           haxelib install utest --quiet
 
       - name: Setup environment
