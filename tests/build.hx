@@ -37,7 +37,7 @@ class Build extends Script
 			var index = tests.indexOf(testName);
 			if (index > -1)
 			{
-				System.runCommand(tests[index], "hxp", getHxpArgs());
+				System.runCommand(tests[index], "haxelib", ["run", "hxp"].concat(getHxpArgs()));
 			}
 			else
 			{
@@ -50,7 +50,7 @@ class Build extends Script
 			for (test in tests)
 			{
 				Log.println('\nRUNNING TEST GROUP: $test (${++i}/${tests.length})\n');
-				System.runCommand(test, "hxp", getHxpArgs());
+				System.runCommand(test, "haxelib", ["run", "hxp"].concat(getHxpArgs()));
 			}
 		}
 	}
