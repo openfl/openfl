@@ -118,6 +118,7 @@ class Build extends Script
 		{
 			args.push("-verbose");
 		}
+		args.push("-nocolor");
 		return args;
 	}
 }
