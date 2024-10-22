@@ -45,6 +45,7 @@ jobs:
   unit-test-hashlink:
     strategy:
       matrix:
+        # Lime doesn't support Haxe 3 with HashLink
         haxe-version: [4.0.5, 4.1.5, 4.2.5]
     # AL init fails on both windows and ubuntu
     # macos-14 is arm64, which setup-haxe doesn't support yet
