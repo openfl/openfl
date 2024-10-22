@@ -18,13 +18,13 @@
 	```
 - Download _openfl-haxelib_ and _openfl-docs_ artifacts for tag from GitHub Actions
 - Submit _.zip_ file to Haxelib with following command:
-		```sh
-		haxelib submit openfl-haxelib.zip
-		```
+	```sh
+	haxelib submit openfl-haxelib.zip
+	```
 - Create new release for tag on GitHub
 	- Upload _openfl-haxelib.zip_ and _openfl-docs.zip_
 	- Link to _CHANGELOG.md_ from tag and to _https://community.openfl.org_ announcement thread
-		- _CHANGELOG.md_ tag URL: `https://github.com/openfl/openfl/blob/x.y.z/CHANGELOG.md`
+		- _CHANGELOG.md_ tag URL format: `https://github.com/openfl/openfl/blob/x.y.z/CHANGELOG.md`
 		- It's okay to skip link to announcement at first, and edit the release to add it later
 - Deploy API reference by updating Git refs in _.github/workflows/deploy.yml_ in _openfl/api.openfl.org_ repo
 	```yaml
