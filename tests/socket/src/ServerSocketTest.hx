@@ -58,7 +58,7 @@ class ServerSocketTest extends Test
 		Assert.isFalse(serverSocket.bound);
 	}
 
-	@:timeout(5000)
+	@:timeout(2000)
 	public function test_connect(async:Async):Void
 	{
 		var serverConnected = false;
@@ -110,7 +110,7 @@ class ServerSocketTest extends Test
 		clientSocket.connect(serverSocket.localAddress, serverSocket.localPort);
 	}
 
-	@:timeout(5000)
+	@:timeout(2000)
 	public function test_sendDataToClient(async:Async):Void
 	{
 		serverSocket = new ServerSocket();
@@ -155,7 +155,7 @@ class ServerSocketTest extends Test
 		clientSocket.connect(serverSocket.localAddress, serverSocket.localPort);
 	}
 
-	@:timeout(5000)
+	@:timeout(2000)
 	public function test_sendDataToServer(async:Async):Void
 	{
 		serverSocket = new ServerSocket();
