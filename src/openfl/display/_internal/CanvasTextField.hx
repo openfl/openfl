@@ -20,6 +20,7 @@ import js.Browser;
 @:access(openfl.geom.Matrix)
 @:access(openfl.text.TextField)
 @:access(openfl.text.TextFormat)
+@:access(openfl.display.BitmapData)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasTextField
 {
@@ -373,6 +374,15 @@ class CanvasTextField
 						context.stroke();
 						context.closePath();
 					}
+				}
+
+				// Clear old cache immediately.
+				if(graphics.__bitmap != null)
+				{
+					if(graphics.__bitmap._texture != null)
+						graphics.__bitmap._texture.dispose();
+					
+					graphics.__bitmap.dispose();
 				}
 
 				graphics.__bitmap = BitmapData.fromCanvas(textField.__graphics.__canvas);

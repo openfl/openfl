@@ -27,6 +27,7 @@ import lime.graphics.cairo.CairoHintStyle;
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
 @:access(openfl.text.TextField)
+@:access(openfl.display.BitmapData)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CairoTextField
 {
@@ -153,6 +154,15 @@ class CairoTextField
 			graphics.__cairo = new Cairo(surface);
 			graphics.__visible = true;
 			graphics.__managed = true;
+			
+			// Clear old cache immediately.
+			if(graphics.__bitmap != null)
+			{
+				if(graphics.__bitmap._texture != null)
+					graphics.__bitmap._texture.dispose();
+				
+				graphics.__bitmap.dispose();
+			}
 
 			graphics.__bitmap = bitmap;
 			graphics.__bitmapScale = pixelRatio;
