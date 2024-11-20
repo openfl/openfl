@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-
 #if !openfljs
 /**
 	The SpreadMethod class provides values for the `spreadMethod`

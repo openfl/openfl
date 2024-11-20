@@ -33,7 +33,7 @@ import js.Browser;
 	the `loaderInfo` property of a DisplayObject provides
 	information about the root SWF file for that display object.
 
-	When you use a Loader object to load a display object(such as a SWF
+	When you use a Loader object to load a display object (such as a SWF
 	file or a bitmap), the `loaderInfo` property of the display
 	object is the same as the `contentLoaderInfo` property of the
 	Loader object(`DisplayObject.loaderInfo =
@@ -104,6 +104,8 @@ import js.Browser;
 					  method of the Loader object, or when a second load is
 					  performed by the same Loader object and the original
 					  content is removed prior to the load beginning.
+
+	@see `openfl.display.Loader`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -132,7 +134,7 @@ class LoaderInfo extends EventDispatcher
 		override a loaded class definition with a newer definition.
 
 		For usage examples of application domains, see the "Client System
-		Environment" chapter in the _ActionScript 3.0 Developer's Guide_.
+		Environment" chapter in the _OpenFL Developer's Guide_.
 
 		@throws SecurityError This security sandbox of the caller is not allowed
 							  to access this ApplicationDomain.
@@ -174,7 +176,7 @@ class LoaderInfo extends EventDispatcher
 	public var bytesTotal(default, null):Int;
 
 	/**
-		Expresses the trust relationship from content(child) to the Loader
+		Expresses the trust relationship from content (child) to the Loader
 		(parent). If the child has allowed the parent access, `true`;
 		otherwise, `false`. This property is set to `true`
 		if the child object has called the `allowDomain()` method to
@@ -300,7 +302,7 @@ class LoaderInfo extends EventDispatcher
 	public var parameters(default, null):Dynamic<String>;
 
 	/**
-		Expresses the trust relationship from Loader(parent) to the content
+		Expresses the trust relationship from Loader (parent) to the content
 		(child). If the parent has allowed the child access, `true`;
 		otherwise, `false`. This property is set to `true`
 		if the parent object called the `allowDomain()` method to grant

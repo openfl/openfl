@@ -1,5 +1,6 @@
 package openfl.display3D._internal;
 
+#if !flash
 import openfl.display3D._internal.GLBuffer;
 import openfl.display3D._internal.GLFramebuffer;
 import openfl.display3D._internal.GLRenderbuffer;
@@ -104,3 +105,4 @@ class Context3DState
 		#end
 	}
 }
+#end

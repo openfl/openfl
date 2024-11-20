@@ -5,6 +5,10 @@ package openfl.net;
 	The URLRequestMethod class provides values that specify whether the
 	URLRequest object should use the `POST` method or the
 	`GET` method when sending data to a server.
+
+	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see `openfl.net.URLRequest`
+	@see `openfl.net.URLLoader`
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract URLRequestMethod(String) from String to String
 
@@ -34,7 +38,7 @@ package openfl.net;
 
 		_Note:_ For content running in Adobe AIR, when using the
 		`navigateToURL()` function, the runtime treats a URLRequest
-		that uses the POST method(one that has its `method` property
+		that uses the POST method (one that has its `method` property
 		set to `URLRequestMethod.POST`) as using the GET method.
 	**/
 	public var POST = "POST";

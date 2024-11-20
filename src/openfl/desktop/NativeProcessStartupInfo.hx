@@ -1,6 +1,6 @@
 package openfl.desktop;
 
-#if (haxe4 && sys && !flash)
+#if (haxe4 && !flash && sys && (!flash_doc_gen || air_doc_gen))
 import openfl.Vector;
 import openfl.filesystem.File;
 
@@ -9,9 +9,9 @@ import openfl.filesystem.File;
 	host operating system. It is constructed and passed to the `start()` method
 	of a NativeProcess object.
 
-	Native process access is only available to AIR applications installed with
-	native installers (applications in the extended desktop profile) and Haxe
-	"sys" targets.
+	Native process access is only available to Haxe "sys" targets and AIR
+	applications installed with native installers (applications in the
+	"extendedDesktop" profile).
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

@@ -1,7 +1,6 @@
 package openfl.net;
 
-#if (!flash && sys)
-
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 #if !openfljs
 /**
 	The IPVersion class defines constants representing the different families of

@@ -11,7 +11,6 @@ import openfl.geom.Rectangle;
 import lime._internal.graphics.ImageDataUtil; // TODO
 
 #end
-
 /**
 	The GlowFilter class lets you apply a glow effect to display objects. You
 	have several options for the style of the glow, including inner or outer
@@ -81,15 +80,15 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	public var alpha(get, set):Float;
 
 	/**
-		The amount of horizontal blur. Valid values are 0 to 255(floating point).
-		The default value is 6. Values that are a power of 2(such as 2, 4, 8, 16,
+		The amount of horizontal blur. Valid values are 0 to 255 (floating point).
+		The default value is 6. Values that are a power of 2 (such as 2, 4, 8, 16,
 		and 32) are optimized to render more quickly than other values.
 	**/
 	public var blurX(get, set):Float;
 
 	/**
-		The amount of vertical blur. Valid values are 0 to 255(floating point).
-		The default value is 6. Values that are a power of 2(such as 2, 4, 8, 16,
+		The amount of vertical blur. Valid values are 0 to 255 (floating point).
+		The default value is 6. Values that are a power of 2 (such as 2, 4, 8, 16,
 		and 32) are optimized to render more quickly than other values.
 	**/
 	public var blurY(get, set):Float;
@@ -198,11 +197,11 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 						are 0 to 1. For example, .25 sets a transparency value of
 						25%.
 		@param blurX    The amount of horizontal blur. Valid values are 0 to 255
-					   (floating point). Values that are a power of 2(such as 2,
+					   (floating point). Values that are a power of 2 (such as 2,
 						4, 8, 16 and 32) are optimized to render more quickly than
 						other values.
 		@param blurY    The amount of vertical blur. Valid values are 0 to 255
-					   (floating point). Values that are a power of 2(such as 2,
+					   (floating point). Values that are a power of 2 (such as 2,
 						4, 8, 16 and 32) are optimized to render more quickly than
 						other values.
 		@param strength The strength of the imprint or spread. The higher the
@@ -221,7 +220,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 						`quality` property.
 		@param inner    Specifies whether the glow is an inner glow. The value
 						` true` specifies an inner glow. The value
-						`false` specifies an outer glow(a glow around
+						`false` specifies an outer glow (a glow around
 						the outer edges of the object).
 		@param knockout Specifies whether the object has a knockout effect. The
 						value `true` makes the object's fill
@@ -254,8 +253,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		return new GlowFilter(__color, __alpha, __blurX, __blurY, __strength, __quality, __inner, __knockout);
 	}
 
-	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
-			destPoint:Point):BitmapData
+	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
 	{
 		// TODO: Support knockout, inner
 

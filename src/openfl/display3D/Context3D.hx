@@ -2329,7 +2329,8 @@ import lime.math.Vector2;
 	@:noCompletion private function __flushGLTextures():Void
 	{
 		var sampler = 0;
-		var texture, samplerState;
+		var texture:TextureBase;
+		var samplerState:SamplerState;
 
 		for (i in 0...__state.textures.length)
 		{

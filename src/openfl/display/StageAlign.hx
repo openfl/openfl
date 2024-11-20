@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-
 #if !openfljs
 /**
 	The StageAlign class provides constant values to use for the

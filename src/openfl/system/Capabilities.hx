@@ -97,7 +97,7 @@ import sys.io.Process;
 {
 	/**
 		Specifies whether access to the user's camera and microphone has been
-		administratively prohibited(`true`) or allowed
+		administratively prohibited (`true`) or allowed
 		(`false`). The server string is `AVD`.
 
 		For content in Adobe AIR™, this property applies only to content in
@@ -116,8 +116,8 @@ import sys.io.Process;
 	public static var cpuArchitecture(get, never):String;
 
 	/**
-		Specifies whether the system supports(`true`) or does not
-		support(`false`) communication with accessibility aids. The
+		Specifies whether the system supports (`true`) or does not
+		support (`false`) communication with accessibility aids. The
 		server string is `ACC`.
 	**/
 	public static var hasAccessibility(default, null) = false;
@@ -129,42 +129,42 @@ import sys.io.Process;
 	public static var hasAudio(default, null) = true;
 
 	/**
-		Specifies whether the system can(`true`) or cannot
+		Specifies whether the system can (`true`) or cannot
 		(`false`) encode an audio stream, such as that coming from a
 		microphone. The server string is `AE`.
 	**/
 	public static var hasAudioEncoder(default, null) = false;
 
 	/**
-		Specifies whether the system supports(`true`) or does not
-		support(`false`) embedded video. The server string is
+		Specifies whether the system supports (`true`) or does not
+		support (`false`) embedded video. The server string is
 		`EV`.
 	**/
 	public static var hasEmbeddedVideo(default, null) = false;
 
 	/**
-		Specifies whether the system does(`true`) or does not
-		(`false`) have an input method editor(IME) installed. The
+		Specifies whether the system does (`true`) or does not
+		(`false`) have an input method editor (IME) installed. The
 		server string is `IME`.
 	**/
 	public static var hasIME(default, null) = false;
 
 	/**
-		Specifies whether the system does(`true`) or does not
+		Specifies whether the system does (`true`) or does not
 		(`false`) have an MP3 decoder. The server string is
 		`MP3`.
 	**/
 	public static var hasMP3(default, null) = false;
 
 	/**
-		Specifies whether the system does(`true`) or does not
+		Specifies whether the system does (`true`) or does not
 		(`false`) support printing. The server string is
 		`PR`.
 	**/
 	public static var hasPrinting(default, null) = #if html5 true #else false #end;
 
 	/**
-		Specifies whether the system does(`true`) or does not
+		Specifies whether the system does (`true`) or does not
 		(`false`) support the development of screen broadcast
 		applications to be run through Flash Media Server. The server string is
 		`SB`.
@@ -172,7 +172,7 @@ import sys.io.Process;
 	public static var hasScreenBroadcast(default, null) = false;
 
 	/**
-		Specifies whether the system does(`true`) or does not
+		Specifies whether the system does (`true`) or does not
 		(`false`) support the playback of screen broadcast applications
 		that are being run through Flash Media Server. The server string is
 		`SP`.
@@ -180,14 +180,14 @@ import sys.io.Process;
 	public static var hasScreenPlayback(default, null) = false;
 
 	/**
-		Specifies whether the system can(`true`) or cannot
+		Specifies whether the system can (`true`) or cannot
 		(`false`) play streaming audio. The server string is
 		`SA`.
 	**/
 	public static var hasStreamingAudio(default, null) = false;
 
 	/**
-		Specifies whether the system can(`true`) or cannot
+		Specifies whether the system can (`true`) or cannot
 		(`false`) play streaming video. The server string is
 		`SV`.
 	**/
@@ -195,13 +195,13 @@ import sys.io.Process;
 
 	/**
 		Specifies whether the system supports native SSL sockets through
-		NetConnection(`true`) or does not(`false`). The
+		NetConnection (`true`) or does not (`false`). The
 		server string is `TLS`.
 	**/
 	public static var hasTLS(default, null) = true;
 
 	/**
-		Specifies whether the system can(`true`) or cannot
+		Specifies whether the system can (`true`) or cannot
 		(`false`) encode a video stream, such as that coming from a web
 		camera. The server string is `VE`.
 	**/
@@ -218,7 +218,7 @@ import sys.io.Process;
 
 	/**
 		Specifies whether the Flash runtime is embedded in a PDF file that is open
-		in Acrobat 9.0 or higher(`true`) or not(`false`).
+		in Acrobat 9.0 or higher (`true`) or not (`false`).
 	**/
 	public static var isEmbeddedInAcrobat(default, null) = false;
 
@@ -260,8 +260,8 @@ import sys.io.Process;
 		| Turkish | `tr` |
 
 		_Note:_ The value of `Capabilities.language` property is limited to
-		the possible values on this list. Because of this limitation, Adobe
-		AIR applications should use the first element in the
+		the possible values on this list. Because of this limitation, OpenFL
+		applications should use the first element in the
 		`Capabilities.languages` array to determine the primary user interface
 		language for the system.
 
@@ -271,12 +271,12 @@ import sys.io.Process;
 
 	/**
 		Specifies whether read access to the user's hard disk has been
-		administratively prohibited(`true`) or allowed
+		administratively prohibited (`true`) or allowed
 		(`false`). For content in Adobe AIR, this property applies only
 		to content in security sandboxes other than the application security
 		sandbox.(Content in the application security sandbox can always read from
 		the file system.) If this property is `true`, Flash Player
-		cannot read files(including the first file that Flash Player launches
+		cannot read files (including the first file that Flash Player launches
 		with) from the user's hard disk. If this property is `true`,
 		AIR content outside of the application security sandbox cannot read files
 		from the user's hard disk. For example, attempts to read a file on the
@@ -292,12 +292,12 @@ import sys.io.Process;
 	public static var localFileReadDisable(default, null) = #if web true #else false #end;
 
 	/**
-		Specifies the manufacturer of the running version of Flash Player or the
-		AIR runtime, in the format `"Adobe`
-		`_OSName_"`. The value for `_OSName_`
-		could be `"Windows"`, `"Macintosh"`,
-		`"Linux"`, or another operating system name. The server string
-		is `M`.
+		Specifies the manufacturer of the running version of OpenFL, in the
+		format "_ManufacturerName_ _OSName_". The value for `_ManufacturerName_`
+		is typically "OpenFL". When targeting Adobe Flash Player or AIR, the
+		value for `_ManufacturerName_` is "Adobe". The value for `_OSName_`
+		could be `"Windows"`, `"Macintosh"`, `"Linux"`, or another operating
+		system name. The server string is `M`.
 
 		Do _not_ use `Capabilities.manufacturer` to determine a
 		capability based on the operating system if a more specific capability
@@ -374,18 +374,18 @@ import sys.io.Process;
 
 		* `"ActiveX"` for the Flash Player ActiveX control used by
 		Microsoft Internet Explorer
-		* `"Desktop"` for the Adobe AIR runtime(except for SWF
+		* `"Desktop"` for the Adobe AIR runtime (except for SWF
 		content loaded by an HTML page, which has
 		`Capabilities.playerType` set to `"PlugIn"`)
 		* `"External"` for the external Flash Player<ph
 		outputclass="flashonly"> or in test mode
-		* `"PlugIn"` for the Flash Player browser plug-in(and for
+		* `"PlugIn"` for the Flash Player browser plug-in (and for
 		SWF content loaded by an HTML page in an AIR application)
 		* `"StandAlone"` for the stand-alone Flash Player
 
 		The server string is `PT`.
 	**/
-	public static var playerType(default, null) = #if web "PlugIn" #else "StandAlone" #end;
+	public static var playerType(default, null) = #if web "PlugIn" #elseif sys "Desktop" #else "StandAlone" #end;
 
 	/**
 		Specifies the screen color. This property can have the value
@@ -403,26 +403,24 @@ import sys.io.Process;
 
 	/**
 		Specifies the maximum horizontal resolution of the screen. The server
-		string is `R`(which returns both the width and height of the
-		screen). This property does not update with a user's screen resolution and
-		instead only indicates the resolution at the time Flash Player or an Adobe
-		AIR application started. Also, the value only specifies the primary
-		screen.
+		string is `R` (which returns both the width and height of the screen).
+		This property does not update with a user's screen resolution and
+		instead only indicates the resolution at the time the OpenFL application
+		started. Also, the value only specifies the primary screen.
 	**/
 	public static var screenResolutionX(get, never):Float;
 
 	/**
-		Specifies the maximum vertical resolution of the screen. The server string
-		is `R`(which returns both the width and height of the screen).
-		This property does not update with a user's screen resolution and instead
-		only indicates the resolution at the time Flash Player or an Adobe AIR
-		application started. Also, the value only specifies the primary screen.
+		Specifies the maximum vertical resolution of the screen. The server
+		string is `R` (which returns both the width and height of the screen).
+		This property does not update with a user's screen resolution and
+		instead only indicates the resolution at the time the OpenFL application
+		started. Also, the value only specifies the primary screen.
 	**/
 	public static var screenResolutionY(get, never):Float;
 
 	/**
 		A URL-encoded string that specifies values for each Capabilities property.
-
 
 		The following example shows a URL-encoded string:
 		`A=t&SA=t&SV=t&EV=t&MP3=t&AE=t&VE=t&ACC=f&PR=t&SP=t&

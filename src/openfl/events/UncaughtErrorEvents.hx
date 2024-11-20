@@ -39,7 +39,7 @@ import openfl.events.UncaughtErrorEvent;
 #end
 class UncaughtErrorEvents extends EventDispatcher
 {
-	@:noCompletion private var __enabled:Bool;
+	@:noCompletion private var __enabled:Bool = #if (openfl_enable_handle_error || !openfl_disable_handle_error) true #else false #end;
 
 	/**
 		Creates an UncaughtErrorEvents instance. Developer code shouldn't
@@ -60,7 +60,7 @@ class UncaughtErrorEvents extends EventDispatcher
 	{
 		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 
-		#if !openfl_disable_handle_error
+		#if (openfl_enable_handle_error || !openfl_disable_handle_error)
 		if (__eventMap.exists(UncaughtErrorEvent.UNCAUGHT_ERROR))
 		{
 			__enabled = true;

@@ -1,7 +1,6 @@
 package openfl.ui;
 
 #if !flash
-
 #if !openfljs
 /**
 	The MultitouchInputMode class provides values for the
@@ -15,7 +14,7 @@ package openfl.ui;
 	/**
 		Specifies that TransformGestureEvent, PressAndTapGestureEvent, and
 		GestureEvent events are dispatched for the related user interaction
-		supported by the current environment, and other touch events(such as a
+		supported by the current environment, and other touch events (such as a
 		simple tap) are interpreted as mouse events.
 	**/
 	public var GESTURE = 0;

@@ -5,7 +5,7 @@ package openfl.events;
 	The IEventDispatcher interface defines methods for adding or removing event listeners,
 	checks whether specific types of event listeners are registered, and dispatches events.
 
-	Event targets are an important part of the Flash� Player and Adobe AIR event model. The
+	Event targets are an important part of the OpenFL event model. The
 	event target serves as the focal point for how events flow through the display list
 	hierarchy. When an event such as a mouse click or a keypress occurs, an event object is
 	dispatched into the event flow from the root of the display list. The event object
@@ -20,6 +20,12 @@ package openfl.events;
 	is already extending another class), you can instead implement the IEventDispatcher
 	interface, create an EventDispatcher member, and write simple hooks to route calls
 	into the aggregated EventDispatcher.
+
+	@see [Basics of handling events](https://books.openfl.org/openfl-developers-guide/handling-events/basics-of-handling-events.html)
+	@see [The event flow](https://books.openfl.org/openfl-developers-guide/handling-events/the-event-flow.html)
+	@see [Event objects](https://books.openfl.org/openfl-developers-guide/handling-events/event-objects.html)
+	@see [Event listeners](https://books.openfl.org/openfl-developers-guide/handling-events/event-listeners.html)
+	@see [Handling events for display objects](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/handling-events-for-display-objects.html)
 **/
 interface IEventDispatcher
 {

@@ -1,7 +1,6 @@
 package openfl.text;
 
 #if !flash
-
 #if !openfljs
 /**
 	The FontType class contains the enumerated constants

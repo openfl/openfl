@@ -37,8 +37,7 @@ import lime.utils.AssetManifest;
 	child array.
 
 	**Note:** The ActionScript 2.0 MovieClipLoader and LoadVars classes
-	are not used in ActionScript 3.0. The Loader and URLLoader classes replace
-	them.
+	are not used in OpenFL. The Loader and URLLoader classes replace them.
 
 	When you use the Loader class, consider the Flash Player and Adobe AIR
 	security model:
@@ -52,8 +51,8 @@ import lime.utils.AssetManifest;
 	`System.allowDomain()` or the
 	`System.allowInsecureDomain()` method in the loaded content
 	file.
-	* If the loaded content is an AVM1 SWF file(written using ActionScript
-	1.0 or 2.0), it cannot be cross-scripted by an AVM2 SWF file(written using
+	* If the loaded content is an AVM1 SWF file (written using ActionScript
+	1.0 or 2.0), it cannot be cross-scripted by an AVM2 SWF file (written using
 	ActionScript 3.0). However, you can communicate between the two SWF files
 	by using the LocalConnection class.
 	* If the loaded content is an image, its data cannot be accessed by a
@@ -64,7 +63,7 @@ import lime.utils.AssetManifest;
 	clips in the local-with-networking sandbox, and the reverse is also
 	prevented.
 	* You cannot connect to commonly reserved ports. For a complete list of
-	blocked ports, see "Restricting Networking APIs" in the _ActionScript 3.0
+	blocked ports, see "Restricting Networking APIs" in the _OpenFL
 	Developer's Guide_.
 
 	However, in AIR, content in the `application` security
@@ -74,11 +73,13 @@ import lime.utils.AssetManifest;
 	For more information related to security, see the Flash Player Developer
 	Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 
-	When loading a SWF file from an untrusted source(such as a domain other
+	When loading a SWF file from an untrusted source (such as a domain other
 	than that of the Loader object's root SWF file), you may want to define a
-	mask for the Loader object, to prevent the loaded content(which is a child
+	mask for the Loader object, to prevent the loaded content (which is a child
 	of the Loader object) from drawing to portions of the Stage outside of that
 	mask, as shown in the following code:
+
+	@see [Loading display content dynamically](https://books.openfl.org/openfl-developers-guide/display-programming/loading-display-content-dynamically/)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -151,7 +152,7 @@ class Loader extends DisplayObjectContainer
 		Creates a Loader object that you can use to load files, such as SWF, JPEG,
 		GIF, or PNG files. Call the `load()` method to load the asset
 		as a child of the Loader instance. You can then add the Loader object to
-		the display list(for instance, by using the `addChild()`
+		the display list (for instance, by using the `addChild()`
 		method of a DisplayObjectContainer instance). The asset appears on the
 		Stage as it loads.
 
@@ -260,7 +261,7 @@ class Loader extends DisplayObjectContainer
 		which is described in the Loader class description.
 
 		In Flash Player 10 and later, if you use a multipart Content-Type(for
-		example "multipart/form-data") that contains an upload(indicated by a
+		example "multipart/form-data") that contains an upload (indicated by a
 		"filename" parameter in a "content-disposition" header within the POST
 		body), the POST operation is subject to the security rules applied to
 		uploads:
@@ -308,7 +309,7 @@ class Loader extends DisplayObjectContainer
 									  `digest` property of a URLRequest
 									  object when calling the
 									  `URLLoader.load()` method when
-									  loading a SWZ file(an Adobe platform
+									  loading a SWZ file (an Adobe platform
 									  component).
 		@throws IllegalOperationError If the `requestedContentParent`
 									  property of the `context`
@@ -322,7 +323,7 @@ class Loader extends DisplayObjectContainer
 									  `SecurityDomain.currentDomain`.
 									  This reflects the fact that you can only
 									  place the loaded media in its natural
-									  security sandbox or your own(the latter
+									  security sandbox or your own (the latter
 									  requires a policy file).
 		@throws SecurityError         Local SWF files may not set
 									  LoaderContext.securityDomain to anything
@@ -333,7 +334,7 @@ class Loader extends DisplayObjectContainer
 		@throws SecurityError         You cannot connect to commonly reserved
 									  ports. For a complete list of blocked ports,
 									  see "Restricting Networking APIs" in the
-									  _ActionScript 3.0 Developer's Guide_.
+									  _OpenFL Developer's Guide_.
 		@throws SecurityError         If the `applicationDomain` or
 									  `securityDomain` properties of
 									  the `context` parameter are from
@@ -526,7 +527,7 @@ class Loader extends DisplayObjectContainer
 		@throws SecurityError         You cannot connect to commonly reserved
 									  ports. For a complete list of blocked ports,
 									  see "Restricting Networking APIs" in the
-									  _ActionScript 3.0 Developer's Guide_.
+									  _OpenFL Developer's Guide_.
 		@event asyncError    Dispatched by the `contentLoaderInfo`
 							 object if the
 							 `LoaderContext.requestedContentParent`
@@ -669,7 +670,7 @@ class Loader extends DisplayObjectContainer
 		* Movie clips are stopped.
 
 		@param gc Provides a hint to the garbage collector to run on the child SWF
-				  objects(`true`) or not(`false`). If you
+				  objects (`true`) or not (`false`). If you
 				  are unloading many objects asynchronously, setting the
 				  `gc` paramter to `false` might improve
 				  application performance. However, if the parameter is set to

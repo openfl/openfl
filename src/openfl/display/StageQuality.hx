@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-
 #if !openfljs
 /**
 	The StageQuality class provides values for the `Stage.quality`

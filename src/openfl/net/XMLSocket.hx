@@ -9,19 +9,19 @@ import openfl.events.ProgressEvent;
 import openfl.utils.ByteArray;
 
 /**
-	The XMLSocket class implements client sockets that let the Flash Player or
-	AIR application communicate with a server computer identified by an IP
-	address or domain name. The XMLSocket class is useful for client-server
-	applications that require low latency, such as real-time chat systems. A
-	traditional HTTP-based chat solution frequently polls the server and
-	downloads new messages using an HTTP request. In contrast, an XMLSocket
-	chat solution maintains an open connection to the server, which lets the
-	server immediately send incoming messages without a request from the
-	client. To use the XMLSocket class, the server computer must run a daemon
-	that understands the protocol used by the XMLSocket class. The protocol is
-	described in the following list:
-	* XML messages are sent over a full-duplex TCP/IP stream socket
-	connection.
+	The XMLSocket class implements client sockets that let the OpenFL
+	application communicate with a server computer identified by an IP address
+	or domain name. The XMLSocket class is useful for client-server applications
+	that require low latency, such as real-time chat systems. A traditional
+	HTTP-based chat solution frequently polls the server and downloads new
+	messages using an HTTP request. In contrast, an XMLSocket chat solution
+	maintains an open connection to the server, which lets the server
+	immediately send incoming messages without a request from the client. To use
+	the XMLSocket class, the server computer must run a daemon that understands
+	the protocol used by the XMLSocket class. The protocol is described in the
+	following list:
+
+	* XML messages are sent over a full-duplex TCP/IP stream socket connection.
 	* Each XML message is a complete XML document, terminated by a zero (0)
 	byte.
 	* An unlimited number of XML messages can be sent and received over a
@@ -66,8 +66,7 @@ import openfl.utils.ByteArray;
 	security limitations.
 
 	For more information related to security, see the Flash Player Developer
-	Center Topic: <a href="http://www.adobe.com/go/devnet_security_en"
-	scope="external">Security</a>.
+	Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 
 	@event close         Dispatched when the server closes the socket
 						 connection. The `close` event is dispatched only when
@@ -179,9 +178,7 @@ class XMLSocket extends EventDispatcher
 		`allowNetworking` parameter of the the `object` and `embed` tags in
 		the HTML page that contains the SWF content.
 
-		For more information, see the Flash Player Developer Center Topic: <a
-		href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
+		For more information, see the Flash Player Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 
 		@param host A fully qualified DNS domain name or an IP address in the
 					form _111.222.333.444_. You can also specify `null` to
@@ -269,7 +266,8 @@ class XMLSocket extends EventDispatcher
 	{
 		#if !js
 		var bytesAvailable = __socket.bytesAvailable;
-		var byte, data;
+		var byte:Int;
+		var data:String;
 
 		for (i in 0...bytesAvailable)
 		{

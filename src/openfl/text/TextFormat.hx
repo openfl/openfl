@@ -46,6 +46,9 @@ package openfl.text;
 
 	The default formatting for each property is also described in each
 	property description.
+
+	@see [Formatting text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/formatting-text.html)
+	@see `openfl.text.TextField`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -68,7 +71,7 @@ class TextFormat
 		an entire block of text; that is, to all lines of the text. In contrast,
 		normal indentation(`TextFormat.indent`) affects only the first
 		line of each paragraph. If this property is `null`, the
-		TextFormat object does not specify block indentation(block indentation is
+		TextFormat object does not specify block indentation (block indentation is
 		0).
 	**/
 	public var blockIndent:Null<Int>;
@@ -120,7 +123,7 @@ class TextFormat
 
 	/**
 		A Boolean value that indicates whether kerning is enabled
-		(`true`) or disabled(`false`). Kerning adjusts the
+		(`true`) or disabled (`false`). Kerning adjusts the
 		pixels between certain character pairs to improve readability, and should
 		be used only when necessary, such as with headings in large fonts. Kerning
 		is supported for embedded fonts only.
@@ -170,7 +173,7 @@ class TextFormat
 	/**
 		Specifies custom tab stops as an array of non-negative integers. Each tab
 		stop is specified in pixels. If custom tab stops are not specified
-		(`null`), the default tab stop is 4(average character width).
+		(`null`), the default tab stop is 4 (average character width).
 	**/
 	public var tabStops:Array<Int>;
 
@@ -190,7 +193,7 @@ class TextFormat
 
 	/**
 		Indicates whether the text that uses this text format is underlined
-		(`true`) or not(`false`). This underlining is
+		(`true`) or not (`false`). This underlining is
 		similar to that produced by the `<U>` tag, but the latter is
 		not true underlining, because it does not skip descenders correctly. The
 		default value is `null`, which indicates that underlining is

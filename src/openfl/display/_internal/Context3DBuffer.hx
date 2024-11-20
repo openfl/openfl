@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 import openfl.utils._internal.Float32Array;
 import openfl.utils._internal.UInt16Array;
 import openfl.display3D.Context3D;
@@ -137,3 +138,4 @@ enum Context3DElementType
 	TRIANGLES;
 	TRIANGLE_INDICES;
 }
+#end

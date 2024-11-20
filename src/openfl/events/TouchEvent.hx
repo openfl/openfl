@@ -8,13 +8,13 @@ import openfl.utils.ByteArray;
 
 /**
 	The TouchEvent class lets you handle events on devices that detect user
-	contact with the device(such as a finger on a touch screen). When a user
+	contact with the device (such as a finger on a touch screen). When a user
 	interacts with a device such as a mobile phone or tablet with a touch
 	screen, the user typically touches the screen with his or her fingers or a
 	pointing device. You can develop applications that respond to basic touch
 	events(such as a single finger tap) with the TouchEvent class. Create
 	event listeners using the event types defined in this class. For user
-	interaction with multiple points of contact(such as several fingers moving
+	interaction with multiple points of contact (such as several fingers moving
 	across a touch screen at the same time) use the related GestureEvent,
 	PressAndTapGestureEvent, and TransformGestureEvent classes. And, use the
 	properties and methods of these classes to construct event handlers that
@@ -31,6 +31,9 @@ import openfl.utils.ByteArray;
 	notification of a touch event, use
 	`EventDispatcher.addEventListener()` on the ancestor node with
 	the type parameter set to the specific touch event you want to detect.
+
+	@see [Touch, multitouch, and gesture input](https://books.openfl.org/openfl-developers-guide/touch-multitouch-and-gesture-input/)
+	@see [Touch event handling](https://books.openfl.org/openfl-developers-guide/touch-multitouch-and-gesture-input/touch-event-handling.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -287,7 +290,7 @@ class TouchEvent extends Event
 	public static inline var TOUCH_TAP:EventType<TouchEvent> = "touchTap";
 
 	/**
-		Indicates whether the Alt key is active(`true`) or inactive
+		Indicates whether the Alt key is active (`true`) or inactive
 		(`false`). Supported for Windows and Linux operating systems
 		only.
 	**/
@@ -309,7 +312,7 @@ class TouchEvent extends Event
 
 	/**
 		On Windows or Linux, indicates whether the Ctrl key is active
-		(`true`) or inactive(`false`). On Macintosh,
+		(`true`) or inactive (`false`). On Macintosh,
 		indicates whether either the Control key or the Command key is activated.
 	**/
 	public var ctrlKey:Bool;
@@ -371,7 +374,7 @@ class TouchEvent extends Event
 	public var relatedObject:InteractiveObject;
 
 	/**
-		Indicates whether the Shift key is active(`true`) or inactive
+		Indicates whether the Shift key is active (`true`) or inactive
 		(`false`).
 	**/
 	public var shiftKey:Bool;
@@ -403,7 +406,7 @@ class TouchEvent extends Event
 	public var stageY:Float;
 
 	/**
-		A unique identification number(as an int) assigned to the touch point.
+		A unique identification number (as an int) assigned to the touch point.
 	**/
 	public var touchPointID:Int;
 
@@ -430,7 +433,7 @@ class TouchEvent extends Event
 								   flow.
 		@param cancelable          Determines whether the Event object can be
 								   canceled.
-		@param touchPointID        A unique identification number(as an int)
+		@param touchPointID        A unique identification number (as an int)
 								   assigned to the touch point.
 		@param isPrimaryTouchPoint Indicates whether the first point of contact is
 								   mapped to mouse events.

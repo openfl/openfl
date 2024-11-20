@@ -1,7 +1,6 @@
 package openfl.permissions;
 
 #if !flash
-
 #if !openfljs
 /**
 	The PermissionStatus class is an enumeration of constant values that specify
@@ -69,5 +68,7 @@ package openfl.permissions;
 }
 #end
 #else
+#if air
 typedef PermissionStatus = flash.permissions.PermissionStatus;
+#end
 #end

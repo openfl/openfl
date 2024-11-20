@@ -1,6 +1,6 @@
 package openfl.net.dns;
 
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 /**
 	The ResourceRecord class is the base class for Domain Name System (DNS)
 	resource record classes.

@@ -7,7 +7,7 @@ import openfl.display.DisplayObject;
 	The Transform class provides access to color adjustment properties and two-
 	or three-dimensional transformation objects that can be applied to a
 	display object. During the transformation, the color or the orientation and
-	position of a display object is adjusted(offset) from the current values
+	position of a display object is adjusted (offset) from the current values
 	or coordinates to new values or coordinates. The Transform class also
 	collects data about color and two-dimensional matrix transformations that
 	are applied to a display object and all of its parent objects. You can
@@ -70,6 +70,8 @@ class Transform
 		colors in the display object.
 
 		@throws TypeError The colorTransform is null when being set
+
+		@see [Adjusting display object colors](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/adjusting-displayobject-colors.html)
 	**/
 	public var colorTransform(get, set):ColorTransform;
 
@@ -106,6 +108,8 @@ class Transform
 		`null`.
 
 		@throws TypeError The matrix is null when being set
+
+		@see [Using Matrix objects](https://books.openfl.org/openfl-developers-guide/working-with-geometry/using-matrix-objects.html)
 	**/
 	public var matrix(get, set):Matrix;
 
@@ -190,6 +194,7 @@ class Transform
 				space.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public function getRelativeMatrix3D (relativeTo:DisplayObject):Matrix3D;
+	// @:noCompletion @:dox(hide) @:require(flash10) public function getRelativeMatrix3DToOutput (relativeTo:DisplayObject, output:Matrix3D):Matrix3D;
 	#end
 	// Get & Set Methods
 	@:noCompletion private function get_colorTransform():ColorTransform

@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-
 #if !openfljs
 /**
 	The GraphicsPathWinding class provides values for the
@@ -16,6 +15,9 @@ package openfl.display;
 	rules for filling the areas created by the intersection or overlap:
 
 	![a comparison of even-odd and non-zero winding rules](/images/winding_rules_evenodd_nonzero.gif)
+
+	@see [Drawing paths](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/advanced-use-of-the-drawing-api/drawing-paths.html)
+	@see [Defining winding rules](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/advanced-use-of-the-drawing-api/defining-winding-rules.html)
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract GraphicsPathWinding(Null<Int>)
 

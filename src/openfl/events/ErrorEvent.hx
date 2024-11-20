@@ -20,7 +20,7 @@ import openfl.events.TextEvent;
 
 	An uncaught error also causes an error dialog box displaying the error
 	event to appear when content is running in the debugger version of Flash
-	Player or the AIR Debug Launcher(ADL) application.
+	Player or the AIR Debug Launcher (ADL) application.
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

@@ -87,4 +87,14 @@ class LibTest extends Test
 		Assert.isNull(Lib.getQualifiedSuperclassName(Rectangle));
 		Assert.equals(prefix + "events.EventDispatcher", Lib.getQualifiedSuperclassName(DisplayObject));
 	}
+
+	public function test_encodeURIComponent()
+	{
+		Assert.equals("hello%20world", Lib.encodeURIComponent("hello world"));
+	}
+
+	public function test_decodeURIComponent()
+	{
+		Assert.equals("hello world", Lib.decodeURIComponent("hello%20world"));
+	}
 }

@@ -1,7 +1,6 @@
 package openfl.text.engine;
 
-#if (!flash && sys)
-
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 #if !openfljs
 /**
 	The FontWeight class is an enumeration of constant values used with

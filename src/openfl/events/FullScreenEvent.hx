@@ -2,7 +2,6 @@ package openfl.events;
 
 #if !flash
 // import openfl.utils.ObjectPool;
-
 /**
 	The Stage object dispatches a FullScreenEvent object whenever the Stage
 	enters or leaves full-screen display mode. There is only one type of

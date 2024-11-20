@@ -19,18 +19,16 @@ import haxe.macro.Compiler;
 	from sources that are also at www.adobe.com. To load data from a different
 	domain, place a URL policy file on the server hosting the data.
 
-	 However, in Adobe AIR, content in the application security sandbox
+	However, in Adobe AIR, content in the application security sandbox
 	(content installed with the AIR application) is not restricted by these
 	security limitations. For content running in Adobe AIR, files in the
 	application security sandbox can access URLs using any of the following URL
 	schemes:
 
-
 	* `http` and `https`
 	* `file`
 	* `app-storage`
 	* `app`
-
 
 	Content running in Adobe AIR that is not in the application security
 	sandbox observes the same restrictions as content running in the browser
@@ -39,6 +37,12 @@ import haxe.macro.Compiler;
 
 	For more information related to security, see the Flash Player Developer
 	Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
+
+	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see [Web service requests](https://books.openfl.org/openfl-developers-guide/http-communications/web-service-requests.html)
+	@see `openfl.net.URLLoader`
+	@see `openfl.net.URLStream`
+	@see `openfl.net.FileReference`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -68,14 +72,14 @@ import haxe.macro.Compiler;
 		`application/x-www-form-urlencoded`.
 		* If the value of the `data` property is any other type,
 		the value of `contentType` should indicate the type of the POST
-		data that will be sent(which is the binary or string data contained in
+		data that will be sent (which is the binary or string data contained in
 		the value of the `data` property).
 		* For `FileReference.upload()`, the Content-Type of the
 		request is set automatically to `multipart/form-data`, and the
 		value of the `contentType` property is ignored.
 
 		In Flash Player 10 and later, if you use a multipart Content-Type(for
-		example "multipart/form-data") that contains an upload(indicated by a
+		example "multipart/form-data") that contains an upload (indicated by a
 		"filename" parameter in a "content-disposition" header within the POST
 		body), the POST operation is subject to the security rules applied to
 		uploads:
@@ -204,15 +208,24 @@ import haxe.macro.Compiler;
 	public var idleTimeout:Float;
 
 	/**
-		Specifies whether the HTTP protocol stack should manage cookies for this request.
-		When `true`, cookies are added to the request and response cookies are remembered.
-		If `false`, cookies are not added to the request and response cookies are not
-		remembered, but users can manage cookies themselves by direct header manipulation.
-		**Note:** On Windows, you cannot add cookies to a URL request manually when
-		`manageCookies` is set to `true`. On other operating systems, adding cookies to a
-		request is permitted irrespective of whether `manageCookies` is set to `true` or
-		`false`. When permitted, you can add cookies to a request manually by adding a
-		URLRequestHeader object containing the cookie data to the `requestHeaders` array.
+		Specifies whether the HTTP protocol stack should manage cookies for this
+		request. When `true`, cookies are added to the request and response
+		cookies are remembered. If `false`, cookies are not added to the request
+		and response cookies are not remembered, but users can manage cookies
+		themselves by direct header manipulation.
+
+		**Note:** In OpenFL's HTML5 target, the 'Cookie' request header
+		cannot be added programatically, due to web browser security
+		restrictions. See
+		[MDN: Forbidden Request Headers](https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name)
+		for details.
+
+		**Note:** On Windows, you cannot add cookies to a URL request manually
+		when `manageCookies` is set to `true`. On other operating systems,
+		adding cookies to a request is permitted irrespective of whether
+		`manageCookies` is set to `true` or `false`. When permitted, you can add
+		cookies to a request manually by adding a URLRequestHeader object
+		containing the cookie data to the `requestHeaders` array.
 
 		On Mac OS, cookies are shared with Safari. To clear cookies on Mac OS:
 
@@ -231,9 +244,17 @@ import haxe.macro.Compiler;
 	public var manageCookies:Bool;
 
 	/**
+		Specifies whether cross-site `Access-Control` requests should be made
+		using credentials such as cookies, authentication headers or TLS client
+		certificates. Setting `withCredentials` has no effect on same-origin
+		requests, and it has no effect on targets not running in web browsers.
+	**/
+	public var withCredentials:Bool = false;
+
+	/**
 		Controls the HTTP form submission method.
 
-		For SWF content running in Flash Player(in the browser), this property
+		For SWF content running in Flash Player (in the browser), this property
 		is limited to GET or POST operations, and valid values are
 		`URLRequestMethod.GET` or
 		`URLRequestMethod.POST`.
@@ -245,7 +266,7 @@ import haxe.macro.Compiler;
 
 		For content running in Adobe AIR, when using the
 		`navigateToURL()` function, the runtime treats a URLRequest
-		that uses the POST method(one that has its `method` property
+		that uses the POST method (one that has its `method` property
 		set to `URLRequestMethod.POST`) as using the GET method.
 
 		**Note:** If running in Flash Player and the referenced form has no
@@ -290,7 +311,7 @@ import haxe.macro.Compiler;
 		Be sure to encode any characters that are either described as unsafe in
 		the Uniform Resource Locator specification(see
 		http://www.faqs.org/rfcs/rfc1738.html) or that are reserved in the URL
-		scheme of the URLRequest object(when not used for their reserved
+		scheme of the URLRequest object (when not used for their reserved
 		purpose). For example, use `"%25"` for the percent(%) symbol
 		and `"%23"` for the number sign(#), as in
 		`"http://www.example.com/orderForm.cfm?item=%23B-3&discount=50%25"`.
@@ -312,7 +333,7 @@ import haxe.macro.Compiler;
 
 		**Note:** IPv6(Internet Protocol version 6) is supported in AIR and
 		in Flash Player 9.0.115.0 and later. IPv6 is a version of Internet
-		Protocol that supports 128-bit addresses(an improvement on the earlier
+		Protocol that supports 128-bit addresses (an improvement on the earlier
 		IPv4 protocol that supports 32-bit addresses). You might need to activate
 		IPv6 on your networking interfaces. For more information, see the Help for
 		the operating system hosting the data. If IPv6 is supported on the hosting

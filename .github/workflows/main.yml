@@ -6,46 +6,40 @@ jobs:
   unit-test-neko-haxe3:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
-
       - uses: krdlab/setup-haxe@v1
         with:
           haxe-version: 3.4.7
-
       - name: Set HAXEPATH
         run: |
           echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
-
       - name: Install Haxe dependencies
         run: |
           haxelib install hxcpp --quiet
           haxelib install format --quiet
           haxelib install hxp --quiet
-          haxelib install lime --quiet
+          haxelib install lime 8.1.3 --quiet
           haxelib install utest --quiet
-
       - name: Setup environment
         run: |
-          haxelib dev openfl $GITHUB_WORKSPACE
-
+          haxelib dev openfl ${{ github.workspace }}
       - name: Install command aliases
         run: |
           haxelib run lime setup -alias -y
           haxelib run openfl setup -alias -y
-
       - name: Run tests on Neko
         run: |
-          haxelib run hxp test -Dtarget=neko --install-hxp-alias
+          haxelib run hxp test -Dtarget=neko -verbose --install-hxp-alias
 
   unit-test-neko:
     strategy:
       matrix:
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.6]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -62,12 +56,12 @@ jobs:
           haxelib install hxcpp --quiet
           haxelib install format --quiet
           haxelib install hxp --quiet
-          haxelib install lime --quiet
+          haxelib install lime 8.1.3 --quiet
           haxelib install utest --quiet
 
       - name: Setup environment
         run: |
-          haxelib dev openfl $GITHUB_WORKSPACE
+          haxelib dev openfl ${{ github.workspace }}
 
       - name: Install command aliases
         run: |
@@ -76,16 +70,18 @@ jobs:
 
       - name: Run tests on Neko
         run: |
-          haxelib run hxp test -Dtarget=neko -Duse-lime-tools --install-hxp-alias
+          haxelib run hxp test -Dtarget=neko -Duse-lime-tools -verbose --install-hxp-alias
 
   unit-test-hashlink:
     strategy:
       matrix:
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+        # Lime doesn't support Haxe 3 with HashLink
+        haxe-version: [4.0.5, 4.1.5, 4.2.5]
     # AL init fails on both windows and ubuntu
-    runs-on: macos-latest
+    # macos-14 is arm64, which setup-haxe doesn't support yet
+    runs-on: macos-13
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -107,7 +103,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          haxelib dev openfl $GITHUB_WORKSPACE
+          haxelib dev openfl ${{ github.workspace }}
 
       - name: Install command aliases
         run: |
@@ -116,16 +112,82 @@ jobs:
 
       - name: Run tests on HashLink
         run: |
-          haxelib run hxp test -Dtarget=hl -Duse-lime-tools --install-hxp-alias
+          haxelib run hxp test -Dtarget=hl -Duse-lime-tools -verbose --install-hxp-alias
+
+  unit-test-lime-develop:
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.6
+
+      - uses: joshtynjala/setup-adobe-air-action@v2
+        with:
+          air-version: "33.1"
+          accept-license: true
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib install utest --quiet
+
+      - name: Print Haxe Version
+        run: haxe -version
+
+      - name: Install dependencies with Homebrew
+        run: |
+          brew update
+          rm /usr/local/bin/2to3*
+          rm /usr/local/bin/idle3*
+          rm /usr/local/bin/pydoc3*
+          rm /usr/local/bin/python3*
+          brew install mbedtls
+
+      - name: Setup environment
+        run: |
+          haxelib dev openfl ${{ github.workspace }}
+
+      - name: Setup Lime dev
+        run: |
+          haxelib git lime https://github.com/openfl/lime
+          haxelib run lime rebuild tools
+          haxelib run lime rebuild hl
+          haxelib run lime config AIR_SDK ${{ env.AIR_HOME }}
+
+      - name: Install command aliases
+        run: |
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Run tests on Neko
+        run: |
+          haxelib run hxp test -Dtarget=neko -Duse-lime-tools -verbose --install-hxp-alias
+
+      - name: Run tests on Hashlink
+        run: |
+          haxelib run hxp test -Dtarget=hl -Duse-lime-tools -verbose --install-hxp-alias
+
+      - name: Run tests on Adobe AIR
+        run: |
+          haxelib run hxp test -Dtarget=air -Duse-lime-tools -verbose --install-hxp-alias
 
   unit-test-air:
     strategy:
       matrix:
-        # until Lime 8.0.3 is release, we can't test Haxe 3.4.7 with AIR
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.6]
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -153,7 +215,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          haxelib dev openfl $Env:GITHUB_WORKSPACE
+          haxelib dev openfl ${{ github.workspace }}
 
       - name: Install command aliases
         run: |
@@ -162,19 +224,19 @@ jobs:
 
       - name: Run tests on Adobe AIR
         run: |
-          haxelib run hxp test -Dtarget=air -Duse-lime-tools --install-hxp-alias
+          haxelib run hxp test -Dtarget=air -Duse-lime-tools -verbose --install-hxp-alias
 
   package-haxelib:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: 4.1.5
+          haxe-version: 4.2.5
 
       - name: Set HAXEPATH
         run: |
@@ -189,7 +251,7 @@ jobs:
         run: |
           haxe run.hxml
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: openfl-haxelib
           path: |
@@ -204,13 +266,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: 4.1.5
+          haxe-version: 4.2.5
 
       - name: Set HAXEPATH
         run: |
@@ -222,15 +284,15 @@ jobs:
           haxelib install format --quiet
           haxelib install hxp --quiet
           haxelib install lime --quiet
-          haxelib install dox --quiet
-          haxelib dev openfl $GITHUB_WORKSPACE
+          haxelib git dox https://github.com/HaxeFoundation/dox --quiet --never
+          haxelib dev openfl ${{ github.workspace }}
 
       - name: Build docs
         working-directory: scripts
         run: |
           haxe docs.hxml
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: openfl-docs
           path: docs
@@ -240,7 +302,7 @@ jobs:
     needs: package-haxelib
     strategy:
       matrix:
-        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.1]
+        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.6]
     runs-on: ubuntu-20.04
     steps:
 
@@ -258,7 +320,7 @@ jobs:
           haxelib install actuate --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: openfl-haxelib
           path: openfl-haxelib
@@ -305,7 +367,7 @@ jobs:
           haxelib install genes --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: openfl-haxelib
           path: openfl-haxelib
@@ -359,7 +421,7 @@ jobs:
           haxelib install actuate --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: openfl-haxelib
           path: openfl-haxelib
@@ -405,7 +467,7 @@ jobs:
           haxelib install actuate --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: openfl-haxelib
           path: openfl-haxelib

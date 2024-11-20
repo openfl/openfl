@@ -2,7 +2,6 @@ package openfl.events;
 
 #if !flash
 // import openfl.utils.ObjectPool;
-
 /**
 	A Timer object dispatches a TimerEvent objects whenever the Timer object
 	reaches the interval specified by the `Timer.delay` property.

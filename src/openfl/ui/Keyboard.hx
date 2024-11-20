@@ -11,6 +11,9 @@ import lime.ui.KeyCode;
 	the Keyboard class without using a constructor. The properties of the
 	Keyboard class are constants representing the keys that are most commonly
 	used to control games.
+
+	@see [Capturing keyboard input](https://books.openfl.org/openfl-developers-guide/keyboard-input/capturing-keyboard-input.html)
+	@see `openfl.events.KeyboardEvent`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -380,7 +383,7 @@ import lime.ui.KeyCode;
 	public static inline var TAB:Int = 9;
 
 	/**
-		Constant associated with the key code value for the Alternate(Option) key
+		Constant associated with the key code value for the Alternate (Option) key
 		(18).
 	**/
 	public static inline var ALTERNATE:Int = 18;
@@ -391,7 +394,7 @@ import lime.ui.KeyCode;
 	public static inline var ENTER:Int = 13;
 
 	/**
-		Constant associated with the Mac command key(15). This constant is
+		Constant associated with the Mac command key (15). This constant is
 		currently only used for setting menu key equivalents.
 	**/
 	public static inline var COMMAND:Int = 15;
@@ -539,13 +542,13 @@ import lime.ui.KeyCode;
 	public static inline var QUOTE:Int = 222;
 
 	/**
-		Specifies whether the Caps Lock key is activated(`true`) or
-		not(`false`).
+		Specifies whether the Caps Lock key is activated (`true`) or
+		not (`false`).
 	**/
 	public static var capsLock(default, null):Bool;
 
 	/**
-		Specifies whether the Num Lock key is activated(`true`) or not
+		Specifies whether the Num Lock key is activated (`true`) or not
 		(`false`).
 	**/
 	public static var numLock(default, null):Bool;

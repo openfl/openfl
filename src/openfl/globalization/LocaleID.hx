@@ -1,8 +1,33 @@
 package openfl.globalization;
 
 #if !flash
+/**
+	The LocaleID class provides methods for parsing and using locale ID names.
+	This class supports locale ID names that use the syntax defined by the
+	[Unicode Technical Standard #35](https://unicode.org/reports/tr35/).
+
+	@see [Unicode Technical Standard #35](https://unicode.org/reports/tr35/)
+**/
 @:final class LocaleID
 {
+	/**
+		Indicates that the user's default linguistic preferences should be used,
+		as specified in the user's operating system settings. For example, suc
+		preferences are typically set using the "Control Panel" for Windows, or
+		the "System Preferences" in macOS.
+
+		Using the `LocaleID.DEFAULT` setting can result in the use of a
+		different locale ID name for different kinds of operations. For example,
+		one locale could be used for sorting and a different one for formatting.
+		This flexibility respects the user preferences, and the class behaves
+		this way by design.
+
+		This locale identifier is not always the most appropriate one to use.
+		For applications running in the browser, the browser's preferred locale
+		could be a better choice. It is often a good idea to let the user alter
+		the preferred locale ID name setting and preserve that preference in a
+		user profile, cookie, or shared object.
+	**/
 	public static inline var DEFAULT:String = "i-default";
 
 	@:noCompletion private static var RTL_LANGUAGES = [
@@ -90,6 +115,29 @@ package openfl.globalization;
 		return result;
 	}
 
+	/**
+		Constructs a new LocaleID object, given a locale name. The locale name
+		must conform to the syntax defined by the
+		[Unicode Technical Standard #35](https://unicode.org/reports/tr35/).
+
+		When the constructor completes successfully the `lastOperationStatus`
+		property is set to:
+
+		- `LastOperationStatus.NO_ERROR`
+
+		When the requested locale ID name is not available then the
+		`lastOperationStatus` is set to one of the following:
+
+		- LastOperationStatus.USING_FALLBACK_WARNING
+		- LastOperationStatus.USING_DEFAULT_WARNING
+
+		Otherwise, the `lastOperationStatus` property is set to one of the
+		constants defined in the `LastOperationStatu`s class.
+
+		For details on the warnings listed above and other possible values of
+		the `lastOperationStatus` property, see the descriptions in the
+		`LastOperationStatus` class.
+	**/
 	public function new(name:String)
 	{
 		if (name == DEFAULT)
@@ -148,8 +196,34 @@ package openfl.globalization;
 		}
 	}
 
+	/**
+		Returns a slightly more "canonical" locale identifier.
+
+		This method performs the following conversion to the locale ID name to
+		give it a more canonical form.
+
+		- Proper casing is applied to all of the components.
+		- Underscores are converted to dashes.
+
+		No additional processing is performed. For example, aliases are not
+		replaced, and no elements are added or removed.
+
+		When this method is called and it completes successfully, the
+		`lastOperationStatus property` is set to:
+
+		- `LastOperationStatus.NO_ERROR`
+
+		Otherwise, the `lastOperationStatus` property is set to one of the
+		constants defined in the LastOperationStatus class.
+	**/
 	public var name(default, null):String;
 
+	/**
+		The status of the most recent operation that this LocaleID object
+		performed. The `lastOperationStatus` property is set whenever the
+		constructor or a method of this class is called or another property is
+		set. For the possible values see the description for each method.
+	**/
 	public var lastOperationStatus(default, null):LastOperationStatus;
 
 	@:noCompletion private var language:String;
@@ -157,26 +231,118 @@ package openfl.globalization;
 	@:noCompletion private var script:String;
 	@:noCompletion private var rtl:Bool;
 
+	/**
+		Returns the language code specified by the locale ID name.
+
+		If the locale name cannot be properly parsed then the language code is
+		the same as the full locale name.
+
+		When this method is called and it completes successfully, the
+		`lastOperationStatus` property is set to:
+
+		- `LastOperationStatus.NO_ERROR`
+
+		Otherwise, the `lastOperationStatus` property is set to one of the
+		constants defined in the `LastOperationStatus` class.
+	**/
 	public function getLanguage():String
 	{
 		return language;
 	}
 
+	/**
+		Returns the region code specified by the locale ID name.
+
+		This method returns an empty string if the region code cannot be parsed
+		or guessed/ This could occur if an unknown or incomplete locale ID name
+		like "xy" is used. The region code is not validated against a fixed
+		list. For example, the region code returned for a locale ID name of
+		"xx-YY" is "YY".
+
+		When this method is called and it completes successfully, the
+		`lastOperationStatus` property is set to:
+
+		- `LastOperationStatus.NO_ERROR`
+
+		If the region is not part of the specified locale name, the most likely
+		region code for the locale is "guessed" and `lastOperationStatus`
+		property is set to `LastOperationStatus.USING_FALLBACK_WARNING`.
+
+		Otherwise, the `lastOperationStatus` property is set to one of the
+		constants defined in the `LastOperationStatus` class.
+	**/
 	public function getRegion():String
 	{
 		return region;
 	}
 
+	/**
+		Returns the script code specified by the locale ID name.
+
+		This method returns an empty string if the script code cannot be parsed
+		or guessed. This could occur if an unknown or incomplete locale ID name
+		like "xy" is used. The script code is not validated against a fixed
+		list. For example, the script code returned for a locale ID name of
+		"xx-Abcd-YY" is "Abcd".
+
+		The region, as well as the language, can also affect the return value.
+		For example, the script code for "mn-MN" (Mongolian-Mongolia) is "Cyrl"
+		(Cyrillic), while the script code for "mn-CN" (Mongolian-China) is
+		"Mong" (Mongolian).
+
+		When this method is called and it completes successfully, the
+		`lastOperationStatus` property is set to:
+
+		- `LastOperationStatus.NO_ERROR`
+
+		If the script code is not part of the specified locale name, the most
+		likely script code is "guessed" and `lastOperationStatus` property is
+		set to `LastOperationStatus.USING_FALLBACK_WARNING`.
+
+		Otherwise, the `lastOperationStatus` property is set to one of the
+		constants defined in the `LastOperationStatus` class.
+	**/
 	public function getScript():String
 	{
 		return script;
 	}
 
+	/**
+		Returns the language variant code specified by the locale ID name.
+
+		This method returns an empty string if there is no language variant code
+		in the given locale ID name. (No guessing is necessary because few
+			locales have or need a language variant.)
+
+		When this method is called and it completes successfully, the
+		`lastOperationStatus` property is set to:
+
+		- `LastOperationStatus.NO_ERROR`
+
+		Otherwise, the `lastOperationStatus` property is set to one of the
+		constants defined in the `LastOperationStatus` class.
+	**/
 	public function getVariant():String
 	{
 		return "";
 	}
 
+	/**
+		Specifies whether the text direction for the specified locale is right
+		to left.
+
+		The result can be used to determine the direction of the text in the
+		OpenFL text engine, and to decide whether to mirror the user interface
+		to support the current text direction.
+
+		When this method is called and it completes successfully, the
+		`lastOperationStatus` property is set to:
+
+		- `LastOperationStatus.NO_ERROR`
+
+		Otherwise, the `lastOperationStatus` property is set to one of the
+		constants defined in the `LastOperationStatus` class.
+	**/
 	public function isRightToLeft():Bool
 	{
 		return rtl;

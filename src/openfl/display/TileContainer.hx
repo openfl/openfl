@@ -158,7 +158,7 @@ class TileContainer extends Tile implements ITileContainer
 	public override function getBounds(targetCoordinateSpace:Tile):Rectangle
 	{
 		var result = new Rectangle();
-		var rect = null;
+		var rect:Rectangle = null;
 
 		for (tile in __tiles)
 		{
@@ -379,7 +379,7 @@ class TileContainer extends Tile implements ITileContainer
 	override function get_height():Float
 	{
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
-		var rect = null;
+		var rect:Rectangle = null;
 
 		for (tile in __tiles)
 		{
@@ -406,7 +406,7 @@ class TileContainer extends Tile implements ITileContainer
 	override function set_height(value:Float):Float
 	{
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
-		var rect = null;
+		var rect:Rectangle = null;
 
 		for (tile in __tiles)
 		{
@@ -435,7 +435,7 @@ class TileContainer extends Tile implements ITileContainer
 	override function get_width():Float
 	{
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
-		var rect = null;
+		var rect:Rectangle = null;
 
 		for (tile in __tiles)
 		{
@@ -462,7 +462,7 @@ class TileContainer extends Tile implements ITileContainer
 	override function set_width(value:Float):Float
 	{
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
-		var rect = null;
+		var rect:Rectangle = null;
 
 		for (tile in __tiles)
 		{

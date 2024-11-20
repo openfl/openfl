@@ -10,6 +10,15 @@ package flash.net;
 	public var method:String;
 	public var requestHeaders:Array<URLRequestHeader>;
 	public var url:String;
+	public var withCredentials(get, set):Bool;
+	@:noCompletion private inline function get_withCredentials():Bool
+	{
+		return false;
+	}
+	@:noCompletion private inline function set_withCredentials(value:Bool):Bool
+	{
+		return value;
+	}
 	#if air
 	public var authenticate:Bool;
 	public var cacheResponse:Bool;
@@ -63,6 +72,15 @@ package flash.net;
 	@:flash.property var method(get, set):String;
 	@:flash.property var requestHeaders(get, set):Array<URLRequestHeader>;
 	@:flash.property var url(get, set):String;
+	@:flash.property var withCredentials(get, set):Bool;
+	@:noCompletion private inline function get_withCredentials():Bool
+	{
+		return false;
+	}
+	@:noCompletion private inline function set_withCredentials(value:Bool):Bool
+	{
+		return value;
+	}
 	#if air
 	@:flash.property public var authenticate(get, set):Bool;
 	@:flash.property public var cacheResponse(get, set):Bool;

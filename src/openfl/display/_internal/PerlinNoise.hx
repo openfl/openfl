@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 /**
 	Title:      Perlin noise
 	Version:    1.3
@@ -264,3 +265,4 @@ class PerlinNoise extends AbstractNoise
 		this.z_offset = seed = Std.int((seed * 16807.0) % 2147483647);
 	}
 }
+#end

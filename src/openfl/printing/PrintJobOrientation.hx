@@ -1,7 +1,6 @@
 package openfl.printing;
 
 #if !flash
-
 #if !openfljs
 /**
 	This class provides values that are used by the `PrintJob.orientation`

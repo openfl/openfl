@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 import openfl.display.DisplayObject;
 import openfl.display.OpenGLRenderer;
 #if gl_stats
@@ -113,3 +114,4 @@ class Context3DShape
 		}
 	}
 }
+#end

@@ -30,7 +30,8 @@ import sys.ssl.Socket as SysSecureSocket;
 	You can test for support at run time using the `SecureSocket.isSupported`
 	property.
 
-	_OpenFL target support:_ This feature is not supported on all platforms.
+	_OpenFL target support:_ This feature is supported on all desktop operating
+	systems, on iOS, and on Android. It is not supported on non-sys targets.
 
 	_Adobe AIR profile support:_ This feature is supported on all desktop
 	operating systems, but is not supported on all AIR for TV devices. On mobile

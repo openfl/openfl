@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.CanvasRenderer;
@@ -75,15 +76,15 @@ class CanvasTilemap
 		var tiles = group.__tiles;
 		var length = group.__length;
 
-		var tile,
-			tileset,
-			alpha,
-			visible,
-			blendMode = null,
-			id,
-			tileData,
-			tileRect,
-			bitmapData;
+		var tile:Tile;
+		var tileset:Tileset;
+		var alpha:Float;
+		var visible:Bool;
+		var blendMode:BlendMode = null;
+		var id:Int;
+		var tileData:TileData;
+		var tileRect:Rectangle;
+		var bitmapData:BitmapData;
 
 		for (i in 0...length)
 		{
@@ -138,7 +139,7 @@ class CanvasTilemap
 				}
 
 				bitmapData = tileset.__bitmapData;
-				if (bitmapData == null) continue;
+				if (bitmapData == null || bitmapData.image == null) continue;
 
 				if (bitmapData != cacheBitmapData)
 				{
@@ -186,3 +187,4 @@ class CanvasTilemap
 
 	public static function renderDrawableMask(tilemap:Tilemap, renderer:CanvasRenderer):Void {}
 }
+#end

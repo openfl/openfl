@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 import openfl.display3D._internal.GLBuffer;
 import openfl.utils._internal.Float32Array;
 import openfl.display3D.Context3DMipFilter;
@@ -123,7 +124,7 @@ class ShaderBuffer
 		shader.__init();
 
 		inputCount = shader.__inputBitmapData.length;
-		var input;
+		var input:ShaderInput<BitmapData>;
 
 		for (i in 0...inputCount)
 		{
@@ -144,7 +145,7 @@ class ShaderBuffer
 		paramIntCount = intCount;
 
 		var length = 0, p = 0;
-		var param;
+		var param:ShaderParameter<Bool>;
 
 		for (i in 0...boolCount)
 		{
@@ -160,7 +161,7 @@ class ShaderBuffer
 			p++;
 		}
 
-		var param;
+		var param:ShaderParameter<Float>;
 
 		for (i in 0...floatCount)
 		{
@@ -176,7 +177,7 @@ class ShaderBuffer
 			p++;
 		}
 
-		var param;
+		var param:ShaderParameter<Int>;
 
 		for (i in 0...intCount)
 		{
@@ -211,7 +212,10 @@ class ShaderBuffer
 		var intIndex = 0;
 
 		var paramPosition:Int = 0;
-		var boolParam, floatParam, intParam, length;
+		var boolParam:ShaderParameter<Bool>;
+		var floatParam:ShaderParameter<Float>;
+		var intParam:ShaderParameter<Int>;
+		var length:Int;
 
 		for (i in 0...paramCount)
 		{
@@ -256,3 +260,4 @@ class ShaderBuffer
 		#end
 	}
 }
+#end

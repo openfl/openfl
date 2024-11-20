@@ -1,7 +1,6 @@
 package openfl.text;
 
 #if !flash
-
 #if !openfljs
 /**
 	The TextFieldType class is an enumeration of constant values used in
@@ -17,6 +16,8 @@ package openfl.text;
 
 	/**
 		Used to specify an `input` TextField.
+
+		@see [Capturing text input](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/capturing-text-input.html)
 	**/
 	public var INPUT = 1;
 

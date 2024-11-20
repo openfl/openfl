@@ -69,14 +69,14 @@ import js.html.CSSStyleDeclaration;
 	`activate` and `deactivate`.
 
 	Some properties previously used in the ActionScript 1.0 and 2.0
-	MovieClip, TextField, and Button classes(such as `_alpha`,
+	MovieClip, TextField, and Button classes (such as `_alpha`,
 	`_height`, `_name`, `_width`,
 	`_x`, `_y`, and others) have equivalents in the
-	ActionScript 3.0 DisplayObject class that are renamed so that they no
-	longer begin with the underscore(_) character.
+	OpenFL DisplayObject class that are renamed so that they no
+	longer begin with the underscore (_) character.
 
 	For more information, see the "Display Programming" chapter of the
-	_ActionScript 3.0 Developer's Guide_.
+	_OpenFL Developer's Guide_.
 
 	@event added            Dispatched when a display object is added to the
 							display list. The following methods trigger this
@@ -154,9 +154,26 @@ import js.html.CSSStyleDeclaration;
 							by all display objects with a listener registered
 							for this event.
 
-							**Note: **This event is not dispatched if the
+							**Note:** This event is not dispatched if the
 							display is not rendering. This is the case when the
 							content is either minimized or obscured.
+
+	@see [Display programming](https://books.openfl.org/openfl-developers-guide/display-programming/)
+	@see [Basics of display programming](https://books.openfl.org/openfl-developers-guide/display-programming/basics-of-display-programming.html)
+	@see [Core display classes](https://books.openfl.org/openfl-developers-guide/display-programming/core-display-classes.html)
+	@see [Working with display objects](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/)
+	@see [Adding display objects to the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/adding-display-objects-to-the-display-list.html)
+	@see [Traversing the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/traversing-the-display-list.html)
+	@see [Panning and scrolling display objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/panning-and-scrolling-display-objects.html)
+	@see [Caching display objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/caching-display-objects.html)
+	@see [Setting an opaque background](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/setting-an-opaque-background.html)
+	@see [Applying blending modes](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/applying-blending-modes.html)
+	@see [Adjusting display object colors](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/adjusting-displayobject-colors.html)
+	@see [Handling events for display objects](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/handling-events-for-display-objects.html)
+	@see [Choosing a display object subclass](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/choosing-a-displayobject-subclass.html)
+	@see [Manipulating display objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/)
+	@see [Animating objects](https://books.openfl.org/openfl-developers-guide/display-programming/animating-objects.html)
+	@see [Loading display content dynamically](https://books.openfl.org/openfl-developers-guide/display-programming/loading-display-content-dynamically/)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -181,6 +198,10 @@ import js.html.CSSStyleDeclaration;
 @:access(openfl.geom.Transform)
 class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
 {
+	#if (openfl_enable_experimental_update_queue && !dom)
+	@:noCompletion private static var updateQueue:Array<DisplayObject> = [];
+	#end
+
 	@:noCompletion private static var __broadcastEvents:Map<String, Array<DisplayObject>> = new Map();
 	@:noCompletion private static var __initStage:Stage;
 	@:noCompletion private static var __instanceCount:Int = 0;
@@ -207,6 +228,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		Indicates the alpha transparency value of the object specified. Valid
 		values are 0 (fully transparent) to 1 (fully opaque). The default value is 1.
 		Display objects with `alpha` set to 0 _are_ active, even though they are invisible.
+
+		@see [Fading objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/fading-objects.html)
 	**/
 	@:keep public var alpha(get, set):Float;
 
@@ -253,6 +276,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		| `BlendMode.OVERLAY` | ![blend mode OVERLAY](/images/blendMode-13.jpg) | Adjusts the color of each pixel based on the darkness of the background. If the background is lighter than 50% gray, the display object and background colors are screened, which results in a lighter color. If the background is darker than 50% gray, the colors are multiplied, which results in a darker color. This setting is commonly used for shading effects. Not supported under GPU rendering. |
 		| `BlendMode.HARDLIGHT` | ![blend mode HARDLIGHT](/images/blendMode-14.jpg) | Adjusts the color of each pixel based on the darkness of the display object. If the display object is lighter than 50% gray, the display object and background colors are screened, which results in a lighter color. If the display object is darker than 50% gray, the colors are multiplied, which results in a darker color. This setting is commonly used for shading effects. Not supported under GPU rendering. |
 		| `BlendMode.SHADER` | N/A | Adjusts the color using a custom shader routine. The shader that is used is specified as the Shader instance assigned to the blendShader property. Setting the blendShader property of a display object to a Shader instance automatically sets the display object's `blendMode` property to `BlendMode.SHADER`. If the `blendMode` property is set to `BlendMode.SHADER` without first setting the `blendShader` property, the `blendMode` property is set to `BlendMode.NORMAL`. Not supported under GPU rendering. |
+
+		@see [Applying blending modes](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/applying-blending-modes.html)
 	**/
 	public var blendMode(get, set):BlendMode;
 
@@ -322,13 +347,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		is 8,191 pixels wide, it can only be 2,048 pixels high.) In Flash Player 9
 		and earlier, the limitation is is 2880 pixels in height and 2,880 pixels
 		in width.
-		*  The bitmap fails to allocate(out of memory error).
+		*  The bitmap fails to allocate (out of memory error).
 
 		The `cacheAsBitmap` property is best used with movie clips
 		that have mostly static content and that do not scale and rotate
 		frequently. With such movie clips, `cacheAsBitmap` can lead to
-		performance increases when the movie clip is translated(when its _x_
+		performance increases when the movie clip is translated (when its _x_
 		and _y_ position is changed).
+
+		@see [Caching display objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/caching-display-objects.html)
 	**/
 	public var cacheAsBitmap(get, set):Bool;
 
@@ -381,6 +408,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		transformations in 3D, you may do so by setting a 3D property of the object and manipulating its
 		`transform.matrix3D` property. If the application is packaged using GPU mode, this allows the 3D transforms
 		to be applied to the object by the GPU. The `cacheAsBitmapMatrix` is ignored for 3D objects.
+
+		@see [Caching display objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/caching-display-objects.html)
 	**/
 	public var cacheAsBitmapMatrix(get, set):Matrix;
 
@@ -390,13 +419,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		classes that define specific filters you can use.
 
 		Filters can be applied in Flash Professional at design time, or at run
-		time by using ActionScript code. To apply a filter by using ActionScript,
+		time by using Haxe code. To apply a filter by using Haxe,
 		you must make a temporary copy of the entire `filters` array,
 		modify the temporary array, then assign the value of the temporary array
 		back to the `filters` array. You cannot directly add a new
 		filter object to the `filters` array.
 
-		To add a filter by using ActionScript, perform the following steps
+		To add a filter by using Haxe, perform the following steps
 		(assume that the target display object is named
 		`myDisplayObject`):
 
@@ -442,7 +471,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		@throws ArgumentError When `filters` includes a ShaderFilter
 							  and the shader output type is not compatible with
-							  this operation(the shader must specify a
+							  this operation (the shader must specify a
 							  `pixel4` output).
 		@throws ArgumentError When `filters` includes a ShaderFilter
 							  and the shader doesn't specify any image input or
@@ -470,6 +499,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		Except for TextField and Video objects, a display object with no
 		content(such as an empty sprite) has a height of 0, even if you try to
 		set `height` to a different value.
+
+		@see [Manipulating size and scaling objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/manipulating-size-and-scaling-objects.html)
 	**/
 	@:keep public var height(get, set):Float;
 
@@ -477,7 +508,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		Returns a LoaderInfo object containing information about loading the file
 		to which this display object belongs. The `loaderInfo` property
 		is defined only for the root display object of a SWF file or for a loaded
-		Bitmap(not for a Bitmap that is drawn with ActionScript). To find the
+		Bitmap (not for a Bitmap that is drawn with Haxe). To find the
 		`loaderInfo` object associated with the SWF file that contains
 		a display object named `myDisplayObject`, use
 		`myDisplayObject.root.loaderInfo`.
@@ -496,7 +527,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		`mask` to `null` to remove the mask.
 
 		To be able to scale a mask object, it must be on the display list. To
-		be able to drag a mask Sprite object(by calling its
+		be able to drag a mask Sprite object (by calling its
 		`startDrag()` method), it must be on the display list. To call
 		the `startDrag()` method for a mask sprite based on a
 		`mouseDown` event being dispatched by the sprite, set the
@@ -518,6 +549,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		assigned to a second display object, it is removed as the mask of the
 		first object, and that object's `mask` property becomes
 		`null`.
+
+		@see [Masking display objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/masking-display-objects.html)
 	**/
 	public var mask(get, set):DisplayObject;
 
@@ -527,6 +560,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		**Note**: For a DisplayObject that has been rotated, the returned x
 		coordinate will reflect the non-rotated object.
+
+		@see [Capturing mouse input](https://books.openfl.org/openfl-developers-guide/mouse-input/capturing-mouse-input.html)
 	**/
 	public var mouseX(get, never):Float;
 
@@ -536,6 +571,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		**Note**: For a DisplayObject that has been rotated, the returned y
 		coordinate will reflect the non-rotated object.
+
+		@see [Capturing mouse input](https://books.openfl.org/openfl-developers-guide/mouse-input/capturing-mouse-input.html)
 	**/
 	public var mouseY(get, never):Float;
 
@@ -554,11 +591,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	/**
 		Specifies whether the display object is opaque with a certain background
 		color. A transparent bitmap contains alpha channel data and is drawn
-		transparently. An opaque bitmap has no alpha channel(and renders faster
+		transparently. An opaque bitmap has no alpha channel (and renders faster
 		than a transparent bitmap). If the bitmap is opaque, you specify its own
 		background color to use.
 
-		If set to a number value, the surface is opaque(not transparent) with
+		If set to a number value, the surface is opaque (not transparent) with
 		the RGB background color that the number specifies. If set to
 		`null`(the default value), the display object has a
 		transparent background.
@@ -574,6 +611,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		parameter set to `true`.
 
 		The opaque background region does not respond to mouse events.
+
+		@see [Setting an opaque background](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/setting-an-opaque-background.html)
 	**/
 	public var opaqueBackground:Null<Int>;
 
@@ -594,6 +633,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 							  sandbox to which you do not have access. You can
 							  avoid this situation by having the parent movie call
 							  the `Security.allowDomain()` method.
+
+		@see [Traversing the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/traversing-the-display-list.html)
 	**/
 	public var parent(default, null):DisplayObjectContainer;
 
@@ -612,7 +653,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		For example, if you create a new Sprite object by calling the
 		`Sprite()` constructor method, its `root` property
-		is `null` until you add it to the display list(or to a display
+		is `null` until you add it to the display list (or to a display
 		object container that is off the display list but that is a child of the
 		top-most display object in a SWF file).
 
@@ -622,6 +663,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		object does not have its `root` property set until it is added
 		as a child of a display object for which the `root` property is
 		set.
+
+		@see [Traversing the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/traversing-the-display-list.html)
 	**/
 	public var root(get, never):DisplayObject;
 
@@ -632,6 +675,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		this range are added to or subtracted from 360 to obtain a value within
 		the range. For example, the statement `my_video.rotation = 450`
 		is the same as ` my_video.rotation = 90`.
+
+		@see [Rotating objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/rotating-objects.html)
 	**/
 	@:keep public var rotation(get, set):Float;
 
@@ -644,7 +689,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var rotationX:Float;
 	#end
-
 	#if false
 	/**
 		Indicates the y-axis rotation of the DisplayObject instance, in degrees, from its original orientation
@@ -654,7 +698,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var rotationY:Float;
 	#end
-
 	#if false
 	/**
 		Indicates the z-axis rotation of the DisplayObject instance, in degrees, from its original orientation
@@ -737,6 +780,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		Scaling the local coordinate system changes the `x` and
 		`y` property values, which are defined in whole pixels.
+
+		@see [Manipulating size and scaling objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/manipulating-size-and-scaling-objects.html)
 	**/
 	@:keep public var scaleX(get, set):Float;
 
@@ -747,6 +792,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		Scaling the local coordinate system changes the `x` and
 		`y` property values, which are defined in whole pixels.
+
+		@see [Manipulating size and scaling objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/manipulating-size-and-scaling-objects.html)
 	**/
 	@:keep public var scaleY(get, set):Float;
 
@@ -780,8 +827,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		property of the `scrollRect` Rectangle object. You can scroll
 		an object up and down by setting the `y` property of the
 		`scrollRect` Rectangle object. If the display object is rotated
-		90� and you scroll it left and right, the display object actually scrolls
+		90° and you scroll it left and right, the display object actually scrolls
 		up and down.
+
+		@see [Panning and scrolling display objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/panning-and-scrolling-display-objects.html)
 	**/
 	public var scrollRect(get, set):Rectangle;
 
@@ -799,11 +848,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		The Stage of the display object. A Flash runtime application has only one
 		Stage object. For example, you can create and load multiple display
 		objects into the display list, and the `stage` property of each
-		display object refers to the same Stage object(even if the display object
+		display object refers to the same Stage object (even if the display object
 		belongs to a loaded SWF file).
 
 		If a display object is not added to the display list, its
 		`stage` property is set to `null`.
+
+		@see [Traversing the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/traversing-the-display-list.html)
 	**/
 	public var stage(default, null):Stage;
 
@@ -863,6 +914,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		Except for TextField and Video objects, a display object with no
 		content(such as an empty sprite) has a width of 0, even if you try to set
 		`width` to a different value.
+
+		@see [Manipulating size and scaling objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/manipulating-size-and-scaling-objects.html)
 	**/
 	@:keep public var width(get, set):Float;
 
@@ -871,10 +924,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		to the local coordinates of the parent DisplayObjectContainer. If the
 		object is inside a DisplayObjectContainer that has transformations, it is
 		in the local coordinate system of the enclosing DisplayObjectContainer.
-		Thus, for a DisplayObjectContainer rotated 90� counterclockwise, the
+		Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
 		DisplayObjectContainer's children inherit a coordinate system that is
-		rotated 90� counterclockwise. The object's coordinates refer to the
+		rotated 90° counterclockwise. The object's coordinates refer to the
 		registration point position.
+
+		@see [Changing position](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/changing-position.html)
 	**/
 	@:keep public var x(get, set):Float;
 
@@ -883,10 +938,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		to the local coordinates of the parent DisplayObjectContainer. If the
 		object is inside a DisplayObjectContainer that has transformations, it is
 		in the local coordinate system of the enclosing DisplayObjectContainer.
-		Thus, for a DisplayObjectContainer rotated 90� counterclockwise, the
+		Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
 		DisplayObjectContainer's children inherit a coordinate system that is
-		rotated 90� counterclockwise. The object's coordinates refer to the
+		rotated 90° counterclockwise. The object's coordinates refer to the
 		registration point position.
+
+		@see [Changing position](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/changing-position.html)
 	**/
 	@:keep public var y(get, set):Float;
 
@@ -1215,8 +1272,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 
 	/**
-		Converts the `point` object from the Stage(global) coordinates
-		to the display object's(local) coordinates.
+		Converts the `point` object from the Stage (global) coordinates
+		to the display object's (local) coordinates.
 
 		To use this method, first create an instance of the Point class. The
 		_x_ and _y_ values that you assign represent global coordinates
@@ -1264,7 +1321,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		point specified by the `x` and `y` parameters. The
 		`x` and `y` parameters specify a point in the
 		coordinate space of the Stage, not the display object container that
-		contains the display object(unless that display object container is the
+		contains the display object (unless that display object container is the
 		Stage).
 
 		@param x         The _x_ coordinate to test against this object.
@@ -1297,13 +1354,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 
 	/**
-		Converts the `point` object from the display object's(local)
-		coordinates to the Stage(global) coordinates.
+		Converts the `point` object from the display object's (local)
+		coordinates to the Stage (global) coordinates.
 
 		This method allows you to convert any given _x_ and _y_
 		coordinates from values that are relative to the origin(0,0) of a
-		specific display object(local coordinates) to values that are relative to
-		the origin of the Stage(global coordinates).
+		specific display object (local coordinates) to values that are relative to
+		the origin of the Stage (global coordinates).
 
 		To use this method, first create an instance of the Point class. The
 		_x_ and _y_ values that you assign represent local coordinates
@@ -1570,7 +1627,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		if (transformDirty)
 		{
-			var list = [];
+			var list:Array<DisplayObject> = [];
 			var current = this;
 
 			if (parent == null)
@@ -1668,6 +1725,27 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
+	#if (openfl_enable_experimental_update_queue && !dom)
+	@:noCompletion private var _updateQueueFlag:Bool = false;
+
+	@:noCompletion inline private function __setUpdateQueueFlag(add:Bool = true):Void
+	{
+		if (add)
+		{
+			if (!_updateQueueFlag)
+			{
+				_updateQueueFlag = true;
+				updateQueue.push(this);
+			}
+		}
+		else
+		{
+			_updateQueueFlag = false;
+			updateQueue.remove(this);
+		}
+	}
+	#end
+
 	@:noCompletion private inline function __setRenderDirty():Void
 	{
 		if (!__renderDirty)
@@ -1675,6 +1753,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__renderDirty = true;
 			__setParentRenderDirty();
 		}
+		#if (openfl_enable_experimental_update_queue && !dom)
+		__setUpdateQueueFlag();
+		#end
 	}
 
 	@:noCompletion private function __setStageReference(stage:Stage):Void
@@ -1691,6 +1772,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__setWorldTransformInvalid();
 			__setParentRenderDirty();
 		}
+		#if (openfl_enable_experimental_update_queue && !dom)
+		__setUpdateQueueFlag();
+		#end
 	}
 
 	@:noCompletion private function __setWorldTransformInvalid():Void
@@ -1706,6 +1790,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__updateTransforms();
+
+		#if (openfl_enable_experimental_update_queue && !dom)
+		transformOnly = false;
+		#end
 
 		// if (updateChildren && __transformDirty) {
 
@@ -1738,15 +1826,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					var worldVisible = (renderParent.__worldVisible && __visible);
 					__worldVisibleChanged = (__worldVisible != worldVisible);
 					__worldVisible = worldVisible;
-
-					var worldAlpha = alpha * renderParent.__worldAlpha;
-					__worldAlphaChanged = (__worldAlpha != worldAlpha);
-					__worldAlpha = worldAlpha;
 				}
-				else
-				{
-					__worldAlpha = alpha * renderParent.__worldAlpha;
-				}
+				var worldAlpha = alpha * renderParent.__worldAlpha;
+				__worldAlphaChanged = (__worldAlpha != worldAlpha);
+				__worldAlpha = worldAlpha;
 
 				if (__objectTransform != null)
 				{
@@ -1794,9 +1877,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				{
 					__worldVisibleChanged = (__worldVisible != __visible);
 					__worldVisible = __visible;
-
-					__worldAlphaChanged = (__worldAlpha != alpha);
 				}
+				__worldAlphaChanged = (__worldAlpha != alpha);
 
 				if (__objectTransform != null)
 				{
@@ -2088,6 +2170,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		if (value != __rotation)
 		{
+			value = value % 360.0;
+			if (value > 180.0)
+			{
+				value -= 360.0;
+			}
+			else if (value < -180.0)
+			{
+				value += 360.0;
+			}
+
 			__rotation = value;
 			var radians = __rotation * (Math.PI / 180);
 			__rotationSine = Math.sin(radians);

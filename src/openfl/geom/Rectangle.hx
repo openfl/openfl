@@ -49,6 +49,9 @@ import lime.math.Rectangle as LimeRectangle;
 	**Note:** The Rectangle class does not define a rectangular Shape
 	display object. To draw a rectangular Shape object onscreen, use the
 	`drawRect()` method of the Graphics class.
+
+	@see [Working with geometry](https://books.openfl.org/openfl-developers-guide/working-with-geometry/)
+	@see [Using Rectangle objects](https://books.openfl.org/openfl-developers-guide/working-with-geometry/using-rectangle-objects.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -241,8 +244,8 @@ class Rectangle
 		Determines whether the specified point is contained within the rectangular
 		region defined by this Rectangle object.
 
-		@param x The _x_ coordinate(horizontal position) of the point.
-		@param y The _y_ coordinate(vertical position) of the point.
+		@param x The _x_ coordinate (horizontal position) of the point.
+		@param y The _y_ coordinate (vertical position) of the point.
 		@return A value of `true` if the Rectangle object contains the
 				specified point; otherwise `false`.
 	**/
@@ -334,7 +337,7 @@ class Rectangle
 				  Rectangle object. The following equation is used to
 				  calculate the new width and position of the rectangle:
 
-				  ```as3
+				  ```haxe
 				  x -= dx;
 				  width += 2 * dx;
 				  ```
@@ -342,7 +345,7 @@ class Rectangle
 				  Rectangle. The following equation is used to calculate the
 				  new height and position of the rectangle:
 
-				  ```
+				  ```haxe
 				  y -= dy;
 				  height += 2 * dy;
 				  ```
@@ -416,6 +419,53 @@ class Rectangle
 		}
 
 		return new Rectangle(x0, y0, x1 - x0, y1 - y0);
+	}
+
+	/**
+		If the Rectangle object specified in the `toIntersect` parameter
+		intersects with this Rectangle object, returns the area of
+		intersection as a Rectangle object. If the rectangles do not
+		intersect, this method returns an empty Rectangle object with its
+		properties set to 0.
+
+		![The resulting intersection rectangle.](/images/rectangle_intersect.jpg)
+
+		@param toIntersect The Rectangle object to compare against to see if
+						   it intersects with this Rectangle object.
+		@param output An optional Rectangle to be used as the output value,
+					  avoiding the creation of a new object
+		@return A Rectangle object that equals the area of intersection. If
+				the rectangles do not intersect, this method returns an empty
+				Rectangle object; that is, a rectangle with its `x`, `y`,
+				`width`, and `height` properties set to 0.
+	**/
+	public function intersectionToOutput(toIntersect:Rectangle, output:Rectangle):Rectangle
+	{
+		if (output == null)
+		{
+			output = new Rectangle();
+		}
+
+		var x0 = x < toIntersect.x ? toIntersect.x : x;
+		var x1 = right > toIntersect.right ? toIntersect.right : right;
+
+		if (x1 <= x0)
+		{
+			output.setTo(0.0, 0.0, 0.0, 0.0);
+			return output;
+		}
+
+		var y0 = y < toIntersect.y ? toIntersect.y : y;
+		var y1 = bottom > toIntersect.bottom ? toIntersect.bottom : bottom;
+
+		if (y1 <= y0)
+		{
+			output.setTo(0.0, 0.0, 0.0, 0.0);
+			return output;
+		}
+
+		output.setTo(x0, y0, x1 - x0, y1 - y0);
+		return output;
 	}
 
 	/**
@@ -548,6 +598,49 @@ class Rectangle
 		var y1 = bottom < toUnion.bottom ? toUnion.bottom : bottom;
 
 		return new Rectangle(x0, y0, x1 - x0, y1 - y0);
+	}
+
+	/**
+		Adds two rectangles together to create a new Rectangle object, by
+		filling in the horizontal and vertical space between the two
+		rectangles.
+
+		![The resulting union rectangle.](/images/rectangle_union.jpg)
+
+		**Note:** The `union()` method ignores rectangles with `0` as the
+		height or width value, such as: `var rect2:Rectangle = new Rectangle(300,300,50,0);`
+
+		@param toUnion A Rectangle object to add to this Rectangle object.
+		@param output An optional Rectangle to be used as the output value,
+					  avoiding the creation of a new object
+		@return A new Rectangle object (or the object passed in as the output
+				parameter, if not null) that is the union of the two rectangles.
+	**/
+	public function unionToOutput(toUnion:Rectangle, output:Rectangle):Rectangle
+	{
+		if (output == null)
+		{
+			output = new Rectangle();
+		}
+
+		if (width == 0 || height == 0)
+		{
+			output.setTo(toUnion.x, toUnion.y, toUnion.width, toUnion.height);
+			return output;
+		}
+		else if (toUnion.width == 0 || toUnion.height == 0)
+		{
+			output.setTo(x, y, width, height);
+			return output;
+		}
+
+		var x0 = x > toUnion.x ? toUnion.x : x;
+		var x1 = right < toUnion.right ? toUnion.right : right;
+		var y0 = y > toUnion.y ? toUnion.y : y;
+		var y1 = bottom < toUnion.bottom ? toUnion.bottom : bottom;
+
+		output.setTo(x0, y0, x1 - x0, y1 - y0);
+		return output;
 	}
 
 	@:noCompletion private function __contract(x:Float, y:Float, width:Float, height:Float):Void

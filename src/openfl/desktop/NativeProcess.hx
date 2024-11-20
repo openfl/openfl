@@ -1,9 +1,11 @@
 package openfl.desktop;
 
-#if (haxe4 && sys && !flash)
+#if (haxe4 && !flash && sys && (!flash_doc_gen || air_doc_gen))
 import haxe.Json;
 import haxe.Serializer;
 import haxe.io.Bytes;
+import haxe.io.BytesInput;
+import haxe.io.BytesOutput;
 import haxe.io.Eof;
 import haxe.io.Output;
 import openfl.errors.Error;
@@ -15,6 +17,12 @@ import openfl.events.IOErrorEvent;
 import openfl.events.NativeProcessExitEvent;
 import openfl.events.ProgressEvent;
 import openfl.net.ObjectEncoding;
+import openfl.utils._internal.format.amf.AMFReader;
+import openfl.utils._internal.format.amf.AMFTools;
+import openfl.utils._internal.format.amf.AMFWriter;
+import openfl.utils._internal.format.amf3.AMF3Reader;
+import openfl.utils._internal.format.amf3.AMF3Tools;
+import openfl.utils._internal.format.amf3.AMF3Writer;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.IDataInput;
@@ -22,27 +30,18 @@ import openfl.utils.IDataOutput;
 import sys.io.Process;
 import sys.thread.Mutex;
 import sys.thread.Thread;
-#if format
-import format.amf.Reader as AMFReader;
-import format.amf.Tools as AMFTools;
-import format.amf.Writer as AMFWriter;
-import format.amf3.Reader as AMF3Reader;
-import format.amf3.Tools as AMF3Tools;
-import format.amf3.Writer as AMF3Writer;
-import haxe.io.BytesInput;
-import haxe.io.BytesOutput;
-#end
 
 /**
 	The NativeProcess class provides command line integration and general
-	launching capabilities. The NativeProcess class lets an AIR application
-	execute native processes on the host operating system. The AIR applcation
-	can monitor the standard input (stdin) and standard output (stdout) stream
-	of the process as well as the process's standard error (stderr) stream.
+	launching capabilities. The NativeProcess class lets an OpenFL application
+	execute native processes on the host operating system. The OpenFL
+	application can monitor the standard input (stdin) and standard output
+	(stdout) stream of the process as well as the process's standard error
+	(stderr) stream.
 
 	The NativeProcess class and its capabilities are only available to Haxe
 	"sys" targets and AIR applications installed with a native installer
-	(extended desktop profile applications). When debugging an AIR application,
+	("extendedDesktop" profile applications). When debugging an AIR application,
 	you can pass the `-profile extendedDesktop` argument to ADL to enable the
 	NativeProcess functionality. At runtime, you can check the
 	`NativeProcess.isSupported` property to to determine whether native process
@@ -56,12 +55,13 @@ import haxe.io.BytesOutput;
 class NativeProcess extends EventDispatcher
 {
 	/**
-		ndicates if running native processes is supported in the current
-		profile. This property returns `true` only when running on Haxe "sys"
-		targets or the Adobe AIR extendedDesktop profile. In addition,
+		Indicates if running native processes is supported in the current
+		OpenFL target. This property returns `true` only when running on Haxe
+		"sys" targets or the Adobe AIR "extendedDesktop" profile. In addition,
 		`NativeProcess.isSupported` is always `false` for applications installed
 		as an `.air` file. You must package an AIR application using the ADT
-		`-target native` flag in order to use the NativeProcess class in AIR.
+		`-target native` flag or the `-target bundle` flag in order to use the
+		NativeProcess class in AIR.
 	**/
 	public static var isSupported(default, never):Bool = true;
 
@@ -832,7 +832,6 @@ private class OutboundPipe implements IDataOutput
 		}
 		switch (objectEncoding)
 		{
-			#if format
 			case AMF0:
 				var value = AMFTools.encode(object);
 				var output:BytesOutput = new BytesOutput();
@@ -848,7 +847,6 @@ private class OutboundPipe implements IDataOutput
 				writer.write(value);
 				var bytes:Bytes = output.getBytes();
 				output.writeBytes(bytes, 0, bytes.length);
-			#end
 
 			case HXSF:
 				var value = Serializer.run(object);

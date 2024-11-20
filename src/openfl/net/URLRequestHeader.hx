@@ -6,8 +6,13 @@ package openfl.net;
 	consists of a name/value pair. URLRequestHeader objects are used in the
 	`requestHeaders` property of the URLRequest class.
 
+	In OpenFL's HTML5 target, a number of request headers cannot be used, due
+	to web browser security restrictions. See
+	[MDN: Forbidden Request Headers](https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name)
+	for details.
+
 	In Adobe<sup>®</sup> AIR<sup>®</sup>, content in the application
-	security sandbox(such as content installed with the AIR application) can
+	security sandbox (such as content installed with the AIR application) can
 	use any request headers, without error. However, for content running in
 	Adobe AIR that is in a different security sandbox, or for content running
 	in Flash<sup>®</sup> Player, using following request headers cause a
@@ -19,7 +24,7 @@ package openfl.net;
 	security sandbox, the following request headers cannot be used, and the
 	restricted terms are not case-sensitive(for example, `Get`,
 	`get`, and `GET` are all not allowed). Also,
-	hyphenated terms apply if an underscore character is used(for example,
+	hyphenated terms apply if an underscore character is used (for example,
 	both `Content-Length` and `Content_Length` are not
 	allowed):
 
@@ -44,7 +49,7 @@ package openfl.net;
 	`x-flash-version`.
 
 	URLRequestHeader objects are restricted in length. If the cumulative
-	length of a URLRequestHeader object(the length of the `name`
+	length of a URLRequestHeader object (the length of the `name`
 	property plus the `value` property) or an array of
 	URLRequestHeader objects used in the `URLRequest.requestHeaders`
 	property exceeds the acceptable length, an exception is thrown.
@@ -67,6 +72,10 @@ package openfl.net;
 	Due to browser limitations, custom HTTP request headers are only
 	supported for `POST` requests, not for `GET`
 	requests.
+
+	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see `openfl.net.URLRequest`
+	@see `openfl.net.URLLoader`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -75,7 +84,7 @@ package openfl.net;
 @:final class URLRequestHeader
 {
 	/**
-		An HTTP request header name(such as `Content-Type` or
+		An HTTP request header name (such as `Content-Type` or
 		`SOAPAction`).
 	**/
 	public var name:String;
@@ -91,7 +100,7 @@ package openfl.net;
 		request header. URLRequestHeader objects are used in the
 		`requestHeaders` property of the URLRequest class.
 
-		@param name  An HTTP request header name(such as
+		@param name  An HTTP request header name (such as
 					 `Content-Type` or `SOAPAction`).
 		@param value The value associated with the `name` property
 					(such as `text/plain`).

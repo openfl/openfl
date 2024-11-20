@@ -4,6 +4,9 @@ package openfl.events;
 /**
 	The EventPhase class provides values for the `eventPhase`
 	property of the Event class.
+
+	@see `openfl.events.EventDispatcher`
+	@see `openfl.events.Event`
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract EventPhase(Int) from Int to Int from UInt to UInt
 

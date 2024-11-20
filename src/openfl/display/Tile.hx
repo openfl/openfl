@@ -77,6 +77,8 @@ class Tile
 
 		If the `matrix` property is set to a value (not `null`), the `x`, `y`,
 		`scaleX`, `scaleY` and the `rotation` values will be overwritten.
+
+		@see [Using Matrix objects](https://books.openfl.org/openfl-developers-guide/working-with-geometry/using-matrix-objects.html)
 	**/
 	public var matrix(get, set):Matrix;
 

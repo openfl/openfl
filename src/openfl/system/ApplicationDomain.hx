@@ -25,7 +25,7 @@ package openfl.system;
 	parent doesn't already define them. You cannot override a loaded class
 	definition with a newer definition.
 
-	For usage examples of application domains, see the _ActionScript 3.0
+	For usage examples of application domains, see the _OpenFL
 	Developer's Guide_.
 
 	The `ApplicationDomain()` constructor function allows you to create an

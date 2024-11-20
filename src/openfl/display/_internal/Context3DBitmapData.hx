@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
 import openfl.display._internal.stats.DrawCallContext;
@@ -68,3 +69,4 @@ class Context3DBitmapData
 		renderer.__clearShader();
 	}
 }
+#end

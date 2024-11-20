@@ -8,13 +8,13 @@ package openfl.errors;
 	Examples of illegal operation error exceptions include:
 
 	* A base class, such as DisplayObjectContainer, provides more
-	functionality than a Stage can support(such as masks)
+	functionality than a Stage can support (such as masks)
 	* Certain accessibility methods are called when the player is compiled
 	without accessibility support
 	* The mms.cfg setting prohibits a FileReference action
-	* ActionScript tries to run a `FileReference.browse()` call
+	* Haxe code tries to run a `FileReference.browse()` call
 	when a browse dialog box is already open
-	* ActionScript tries to use an unsupported protocol for a FileReference
+	* Haxe code tries to use an unsupported protocol for a FileReference
 	object(such as FTP)
 	* Authoring-only features are invoked from a run-time
 	player

@@ -1,6 +1,6 @@
 package openfl.events;
 
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 /**
 	The SystemTrayIcon object dispatches events of type ScreenMouseEvent in
 	response to mouse interaction.

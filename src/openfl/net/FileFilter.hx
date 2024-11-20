@@ -30,7 +30,7 @@ package openfl.net;
 	myFileReference.browse([imagesFilter, docFilter]);
 	```
 
-	Or in an AIR application:
+	Or in an OpenFL desktop application:
 
 	```haxe
 	var imagesFilter = new FileFilter("Images", "*.jpg;*.gif;*.png");

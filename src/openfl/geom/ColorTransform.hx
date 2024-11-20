@@ -46,6 +46,10 @@ import lime.math.ColorMatrix;
 	Color transformations do not apply to the background color of a movie
 	clip(such as a loaded SWF object). They apply only to graphics and symbols
 	that are attached to the movie clip.
+
+	@see [Adjusting display object colors](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/adjusting-displayobject-colors.html)
+	@see `openfl.geom.Transform.colorTransform`
+	@see `openfl.display.DisplayObject.transform`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -101,7 +105,7 @@ class ColorTransform
 		When you pass a value for this property, use the format
 		0x_RRGGBB_. _RR_, _GG_, and _BB_ each consist of two
 		hexadecimal digits that specify the offset of each color component. The 0x
-		tells the ActionScript compiler that the number is a hexadecimal
+		tells the Haxe compiler that the number is a hexadecimal
 		value.
 	**/
 	public var color(get, set):Int;

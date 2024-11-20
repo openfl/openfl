@@ -7,7 +7,7 @@ import hxtelemetry.HxTelemetry;
 import openfl.utils._internal.Lib;
 
 /**
-	The Telemetry class lets an application profile ActionScript code and register handlers
+	The Telemetry class lets an application profile Haxe code and register handlers
 	for commands
 **/
 #if !openfl_debug

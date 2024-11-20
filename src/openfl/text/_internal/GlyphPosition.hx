@@ -1,5 +1,6 @@
 package openfl.text._internal;
 
+#if !flash
 #if lime
 import lime.math.Vector2;
 import lime.text.Glyph;
@@ -16,8 +17,7 @@ class GlyphPosition
 	public var glyph:#if lime Glyph #else Dynamic #end;
 	public var offset:#if lime Vector2 #else Dynamic #end;
 
-	public function new(glyph:#if lime Glyph #else Dynamic #end, advance:#if lime Vector2 #else Dynamic #end,
-			offset:#if lime Vector2 #else Dynamic #end = null)
+	public function new(glyph:#if lime Glyph #else Dynamic #end, advance:#if lime Vector2 #else Dynamic #end, offset:#if lime Vector2 #else Dynamic #end = null)
 	{
 		this.glyph = glyph;
 		this.advance = advance;
@@ -32,3 +32,4 @@ class GlyphPosition
 		}
 	}
 }
+#end

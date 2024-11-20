@@ -1,6 +1,6 @@
 package openfl.display;
 
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 import openfl.Lib;
 import openfl.desktop.NativeApplication;
 import openfl.display.Stage;
@@ -24,7 +24,7 @@ import openfl.geom.Point;
 	`NativeWindow.isSupported` property.
 
 	_OpenFL target support:_ This feature is supported on all desktop operating
-	systems, but is not support on mobile operating systems, including iOS and
+	systems, but is not supported on mobile operating systems, including iOS and
 	Android.
 
 	_Adobe AIR profile support:_ This feature is supported on all desktop
@@ -215,6 +215,8 @@ class NativeWindow extends EventDispatcher
 		__previousDisplayState = NORMAL;
 		__window.stage.nativeWindow = this;
 		NativeApplication.nativeApplication.__openedWindows.push(this);
+		__window.onActivate.add(window_onActivate);
+		__window.onDeactivate.add(window_onDeactivate);
 		__window.onFocusIn.add(window_onFocusIn);
 		__window.onFocusOut.add(window_onFocusOut);
 		__window.onMove.add(window_onMove);
@@ -824,7 +826,7 @@ class NativeWindow extends EventDispatcher
 		are smaller than the new minimum size.
 
 		The `minSize` restriction is enforced for window resizing operations
-		invoked both through ActionScript code and through the operating system.
+		invoked both through Haxe code and through the operating system.
 
 		Note: The width and height of any displayed system chrome may make it
 		impossible to set a window as small as the specified minimum size.
@@ -1093,8 +1095,29 @@ class NativeWindow extends EventDispatcher
 		return __ownedWindows.copy();
 	}
 
+	@:noCompletion private function window_onActivate():Void
+	{
+		if (!__active)
+		{
+			window_onFocusIn();
+		}
+	}
+
+	@:noCompletion private function window_onDeactivate():Void
+	{
+		if (__active)
+		{
+			window_onFocusOut();
+		}
+	}
+
 	@:noCompletion private function window_onFocusIn():Void
 	{
+		if (__active)
+		{
+			return;
+		}
+
 		__active = true;
 		NativeApplication.nativeApplication.__activeWindow = this;
 		dispatchEvent(new Event(Event.ACTIVATE, false, false));
@@ -1105,6 +1128,11 @@ class NativeWindow extends EventDispatcher
 
 	@:noCompletion private function window_onFocusOut():Void
 	{
+		if (!__active)
+		{
+			return;
+		}
+
 		__active = false;
 		if (NativeApplication.nativeApplication.__activeWindow == this)
 		{

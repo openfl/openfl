@@ -17,10 +17,10 @@ import openfl.Vector;
 	Explorer and in the Insert Target Path dialog box in the Actions panel.
 	After you create an instance of a button in Flash Professional, you can use
 	the methods and properties of the SimpleButton class to manipulate buttons
-	with ActionScript.
+	with Haxe.
 
-	In ActionScript 3.0, you use the `new SimpleButton()`
-	constructor to create a SimpleButton instance.
+	In Haxe, you use the `new SimpleButton()` constructor to create a
+	SimpleButton instance.
 
 	The SimpleButton class inherits from the InteractiveObject class.
 **/
@@ -43,7 +43,7 @@ class SimpleButton extends InteractiveObject
 
 	/**
 		A Boolean value that specifies whether a button is enabled. When a button
-		is disabled(the enabled property is set to `false`), the
+		is disabled (the enabled property is set to `false`), the
 		button is visible but cannot be clicked. The default value is
 		`true`. This property is useful if you want to disable part of
 		your navigation; for example, you might want to disable a button in the

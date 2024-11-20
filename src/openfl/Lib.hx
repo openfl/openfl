@@ -1,5 +1,6 @@
 package openfl;
 
+import openfl.utils.Dictionary;
 import haxe.Constraints.Function;
 import haxe.PosInfos;
 import haxe.Timer;
@@ -22,7 +23,9 @@ import js.Browser;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display.Stage) class Lib
+@:access(openfl.display.Stage)
+@:access(openfl.events.UncaughtErrorEvents)
+class Lib
 {
 	public static var application(get, never):Application;
 	public static var current(get, never):MovieClip;
@@ -30,6 +33,7 @@ import js.Browser;
 	@:noCompletion private static var __sentWarnings:Map<String, Bool> = new Map();
 	@:noCompletion private static var __timers:Map<UInt, Timer> = new Map();
 	@:noCompletion private static var __registeredClassAliases:Map<String, Class<Dynamic>> = new Map();
+	@:noCompletion private static var __registeredClasses:Dictionary<Class<Dynamic>, String> = new Dictionary();
 	#if 0
 	private static var __unusedImports:Array<Class<Dynamic>> = [SWFLibrary, SWFLiteLibrary];
 	#end
@@ -130,6 +134,7 @@ import js.Browser;
 	public static function getDefinitionByName(name:String):Class<Dynamic>
 	{
 		if (name == null) return null;
+		name = StringTools.replace(name, "::", ".");
 		#if flash
 		if (StringTools.startsWith(name, "openfl."))
 		{
@@ -145,8 +150,8 @@ import js.Browser;
 		Returns the fully qualified class name of an object.
 
 		@param	value	The object for which a fully qualified class name is desired. Any
-		ActionScript value may be passed to this method including all available
-		ActionScript types, object instances, primitive types such as uint, and class
+		Haxe value may be passed to this method including all available
+		Haxe types, object instances, primitive types such as Int, and class
 		objects.
 		@returns	String	A string containing the fully qualified class name.
 	**/
@@ -232,6 +237,47 @@ import js.Browser;
 		#end
 	}
 
+	/**
+		Produces an `Xml` object that describes the Haxe object named as the
+		parameter of the method. This method implements the programming concept
+		of reflection for OpenFL.
+
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
+
+		If the `value` parameter is an instance of a type, the returned `Xml`
+		object includes all the instance properties of that type, but does not
+		include any static properties. You can check for this condition when you
+		parse the `Xml` object by examining the value of the `<type>` tag's
+		`isStatic` attribute, which is `false` when the `value` parameter is an
+		instance of a type.
+
+		To obtain the static properties of a type, pass the type itself for the
+		`value` parameter. The returned `Xml` object includes not only the
+		type's static properties, but also all of its instance properties. The
+		instance properties are nested inside a tag named `<factory>` to
+		distinguish them from the static properties. In this case, the
+		`isStatic` attribute of the `<type>` tag is true.
+
+		Note: If you need only to traverse an object's inheritance hierarchy and
+		do not need the other information provided by `describeType()`, use the
+		`getQualifiedClassName()` and `getQualifiedSuperclassName()` functions
+		instead.
+	**/
+	public static function describeType(value:Dynamic):Xml
+	{
+		#if lime
+		#if flash
+		return Xml.parse(flash.Lib.describeType(value).toString());
+		#else
+		notImplemented();
+		return null;
+		#end
+		#else
+		notImplemented();
+		return null;
+		#end
+	}
+
 	public static function getURL(request:URLRequest, target:String = null):Void
 	{
 		navigateToURL(request, target);
@@ -293,7 +339,7 @@ import js.Browser;
 
 		In Flash Player, and in non-application sandboxes in Adobe AIR, you cannot connect to
 		commonly reserved ports. For a complete list of blocked ports, see "Restricting
-		Networking APIs" in the ActionScript 3.0 Developer's Guide.
+		Networking APIs" in the _OpenFL Developer's Guide_.
 
 		In Flash Player 10 and later running in a browser, using this method programmatically
 		to open a pop-up window may not be successful. Various browsers (and browser
@@ -381,7 +427,7 @@ import js.Browser;
 		* You cannot navigate a window with a nondefault name from within a SWF file that
 		is in the local-with-filesystem sandbox.
 		* You cannot connect to commonly reserved ports. For a complete list of blocked
-		ports, see "Restricting Networking APIs" in the ActionScript 3.0 Developer's Guide.
+		ports, see "Restricting Networking APIs" in the _OpenFL Developer's Guide_.
 		@throws	Error	If the method is not called in response to a user action, such as a
 		 mouse event or keypress event. This requirement only applies to content in Flash
 		 Player and to non-application sandbox content in Adobe AIR.
@@ -423,6 +469,27 @@ import js.Browser;
 		#end
 	}
 
+	/**
+		Encodes a string into a valid URI component. Converts a substring of a
+		URI into a string in which all characters are encoded as UTF-8 escape
+		sequences unless a character belongs to a very small group of basic
+		characters.
+	**/
+	public static function encodeURIComponent(value:String):String
+	{
+		return StringTools.urlEncode(value);
+	}
+
+	/**
+		Decodes an encoded URI component into a string. Returns a string in
+		which all characters previously escaped by the `encodeURIComponent`
+		function are restored to their uncoded representation.
+	**/
+	public static function decodeURIComponent(value:String):String
+	{
+		return StringTools.urlDecode(value);
+	}
+
 	public static function notImplemented(?posInfo:PosInfos):Void
 	{
 		var api = posInfo.className + "." + posInfo.methodName;
@@ -458,7 +525,7 @@ import js.Browser;
 		To examine the server response, use the `URLLoader.load()` method instead.
 
 		You cannot connect to commonly reserved ports. For a complete list of blocked
-		ports, see "Restricting Networking APIs" in the ActionScript 3.0 Developer's Guide.
+		ports, see "Restricting Networking APIs" in the _OpenFL Developer's Guide_.
 
 		You can prevent a SWF file from using this method by setting the `allowNetworking`
 		parameter of the the object and embed tags in the HTML page that contains the SWF
@@ -488,7 +555,7 @@ import js.Browser;
 		local-with-networking or trusted.
 		@throws	SecurityError	You cannot connect to commonly reserved ports. For a
 		complete list of blocked ports, see "Restricting Networking APIs" in the
-		ActionScript 3.0 Developer's Guide.
+		_OpenFL Developer's Guide_.
 	**/
 	public static function sendToURL(request:URLRequest):Void
 	{
@@ -526,7 +593,25 @@ import js.Browser;
 		__timers[id] = timer;
 		timer.run = function()
 		{
+			#if flash
 			Reflect.callMethod(closure, closure, args == null ? [] : args);
+			#else
+			if (Lib.current != null && Lib.current.stage != null && Lib.current.stage.__uncaughtErrorEvents.__enabled)
+			{
+				try
+				{
+					Reflect.callMethod(closure, closure, args == null ? [] : args);
+				}
+				catch (e:Dynamic)
+				{
+					Lib.current.stage.__handleError(e);
+				}
+			}
+			else
+			{
+				Reflect.callMethod(closure, closure, args == null ? [] : args);
+			}
+			#end
 		};
 		return id;
 	}
@@ -559,7 +644,25 @@ import js.Browser;
 		__timers[id] = Timer.delay(function()
 		{
 			__timers.remove(id);
+			#if flash
 			Reflect.callMethod(closure, closure, args == null ? [] : args);
+			#else
+			if (Lib.current != null && Lib.current.stage != null && Lib.current.stage.__uncaughtErrorEvents.__enabled)
+			{
+				try
+				{
+					Reflect.callMethod(closure, closure, args == null ? [] : args);
+				}
+				catch (e:Dynamic)
+				{
+					Lib.current.stage.__handleError(e);
+				}
+			}
+			else
+			{
+				Reflect.callMethod(closure, closure, args == null ? [] : args);
+			}
+			#end
 		}, delay);
 		return id;
 	}
@@ -651,6 +754,7 @@ import js.Browser;
 			throw new TypeError("Parameter aliasName must be non-null");
 		}
 		__registeredClassAliases.set(aliasName, classObject);
+		__registeredClasses.set(classObject, aliasName);
 		#end
 	}
 

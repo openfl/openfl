@@ -1,7 +1,6 @@
 package openfl.desktop;
 
-#if (!flash && sys)
-
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 #if !openfljs
 /**
 	The NotificationType class defines constants for use in the priority

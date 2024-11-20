@@ -237,7 +237,7 @@ class AGALMiniAssembler
 
 			// grab options
 			var optsi = reg1.match(line) ? reg1.matchedPos().pos : -1;
-			var opts = null;
+			var opts:Array<String> = null;
 
 			if (optsi != -1)
 			{
@@ -246,8 +246,8 @@ class AGALMiniAssembler
 			}
 
 			// find opcode
-			var opCode = null;
-			var opFound = null;
+			var opCode:String = null;
+			var opFound:OpCode = null;
 
 			if (reg3.match(line))
 			{
@@ -773,9 +773,9 @@ class AGALMiniAssembler
 
 	@:noCompletion private function match(value:String, reg:EReg):Array<String>
 	{
-		var matches = [];
+		var matches:Array<String> = [];
 		var index = 0;
-		var match;
+		var match:String;
 
 		while (reg.matchSub(value, index))
 		{

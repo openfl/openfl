@@ -66,6 +66,9 @@ import lime.math.Matrix3;
 
 	Use the `new Matrix()` constructor to create a Matrix object before you
 	can call the methods of the Matrix object.
+
+	@see [Working with geometry](https://books.openfl.org/openfl-developers-guide/working-with-geometry/)
+	@see [Using Matrix objects](https://books.openfl.org/openfl-developers-guide/working-with-geometry/using-matrix-objects.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -473,6 +476,30 @@ class Matrix
 		return new Point(point.x * a + point.y * c, point.x * b + point.y * d);
 	}
 
+	/**
+		Given a point in the pretransform coordinate space, returns the
+		coordinates of that point after the transformation occurs. Unlike the
+		standard transformation applied using the `transformPoint()`
+		method, the `deltaTransformPoint()` method's transformation
+		does not consider the translation parameters `tx` and
+		`ty`.
+
+		@param point The point for which you want to get the result of the matrix
+					 transformation.
+		@param output An optional point to be set with the output value and
+					  returned, to avoid the runtime creating a new point object.
+		@return The point resulting from applying the matrix transformation.
+	**/
+	public function deltaTransformPointToOutput(point:Point, output:Point):Point
+	{
+		if (output != null)
+		{
+			output.setTo(point.x * a + point.y * c, point.x * b + point.y * d);
+			return output;
+		}
+		return new Point(point.x * a + point.y * c, point.x * b + point.y * d);
+	}
+
 	@:dox(hide) @:noCompletion @SuppressWarnings("checkstyle:FieldDocComment") public function equals(matrix:Matrix):Bool
 	{
 		return (matrix != null && tx == matrix.tx && ty == matrix.ty && a == matrix.a && b == matrix.b && c == matrix.c && d == matrix.d);
@@ -682,6 +709,26 @@ class Matrix
 	**/
 	public function transformPoint(pos:Point):Point
 	{
+		return new Point(__transformX(pos.x, pos.y), __transformY(pos.x, pos.y));
+	}
+
+	/**
+		Returns the result of applying the geometric transformation represented by
+		the Matrix object to the specified point.
+
+		@param point The point for which you want to get the result of the Matrix
+					 transformation.
+		@param output An optional point to be set with the output value and
+					  returned, to avoid the runtime creating a new point object.
+		@return The point resulting from applying the Matrix transformation.
+	**/
+	public function transformPointToOutput(pos:Point, output:Point):Point
+	{
+		if (output != null)
+		{
+			output.setTo(__transformX(pos.x, pos.y), __transformY(pos.x, pos.y));
+			return output;
+		}
 		return new Point(__transformX(pos.x, pos.y), __transformY(pos.x, pos.y));
 	}
 

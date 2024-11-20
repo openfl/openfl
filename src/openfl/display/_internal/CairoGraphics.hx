@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 import openfl.display._internal.DrawCommandBuffer;
 import openfl.display._internal.DrawCommandReader;
 import openfl.display.BitmapData;
@@ -135,7 +136,7 @@ class CairoGraphics
 
 			ratio = ratios[i] / 0xFF;
 			if (ratio < 0) ratio = 0;
-			if (ratio > 1) ratio = 1;
+			else if (ratio > 1) ratio = 1;
 
 			pattern.addColorStopRGBA(ratio, r, g, b, alpha);
 		}
@@ -225,6 +226,7 @@ class CairoGraphics
 
 		if (graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0 || !bounds.contains(x, y))
 		{
+			CairoGraphics.graphics = null;
 			return false;
 		}
 		else
@@ -302,6 +304,7 @@ class CairoGraphics
 						if (hasFill && cairo.inFill(x, y))
 						{
 							data.destroy();
+							CairoGraphics.graphics = null;
 							return true;
 						}
 
@@ -310,6 +313,7 @@ class CairoGraphics
 						if (hasStroke && cairo.inStroke(x, y))
 						{
 							data.destroy();
+							CairoGraphics.graphics = null;
 							return true;
 						}
 
@@ -322,6 +326,7 @@ class CairoGraphics
 						if (hasFill && cairo.inFill(x, y))
 						{
 							data.destroy();
+							CairoGraphics.graphics = null;
 							return true;
 						}
 
@@ -330,6 +335,7 @@ class CairoGraphics
 						if (hasStroke && cairo.inStroke(x, y))
 						{
 							data.destroy();
+							CairoGraphics.graphics = null;
 							return true;
 						}
 
@@ -417,6 +423,7 @@ class CairoGraphics
 
 			data.destroy();
 
+			CairoGraphics.graphics = null;
 			return hitTest;
 		}
 		#end
@@ -495,20 +502,20 @@ class CairoGraphics
 
 		var data = new DrawCommandReader(commands);
 
-		var x,
-			y,
-			width,
-			height,
-			kappa = .5522848,
-			ox,
-			oy,
-			xe,
-			ye,
-			xm,
-			ym,
-			r,
-			g,
-			b;
+		var x:Float;
+		var y:Float;
+		var width:Float;
+		var height:Float;
+		var kappa = 0.5522848;
+		var ox:Float;
+		var oy:Float;
+		var xe:Float;
+		var ye:Float;
+		var xm:Float;
+		var ym:Float;
+		var r:Float;
+		var g:Float;
+		var b:Float;
 
 		for (type in commands.types)
 		{
@@ -526,10 +533,16 @@ class CairoGraphics
 						c.anchorY
 						- offsetY);
 
+					positionX = c.anchorX;
+					positionY = c.anchorY;
+
 				case CURVE_TO:
 					var c = data.readCurveTo();
 					hasPath = true;
 					quadraticCurveTo(c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+
+					positionX = c.anchorX;
+					positionY = c.anchorY;
 
 				case DRAW_CIRCLE:
 					var c = data.readDrawCircle();
@@ -685,13 +698,35 @@ class CairoGraphics
 					}
 
 					cairo.moveTo(positionX - offsetX, positionY - offsetY);
-					strokePattern = createImagePattern(c.bitmap, c.matrix, c.repeat, c.smooth);
+
+					if (c.bitmap.readable)
+					{
+						strokePattern = createImagePattern(c.bitmap, c.matrix, c.repeat, c.smooth);
+					}
+					else
+					{
+						// if it's hardware-only BitmapData, fall back to
+						// drawing solid black because we have no software
+						// pixels to work with
+						strokePattern = CairoPattern.createRGB(0, 0, 0);
+					}
 
 					hasStroke = true;
 
 				case BEGIN_BITMAP_FILL:
 					var c = data.readBeginBitmapFill();
-					fillPattern = createImagePattern(c.bitmap, c.matrix, c.repeat, c.smooth);
+
+					if (c.bitmap.readable)
+					{
+						fillPattern = createImagePattern(c.bitmap, c.matrix, c.repeat, c.smooth);
+					}
+					else
+					{
+						// if it's hardware-only BitmapData, fall back to
+						// drawing solid black because we have no software
+						// pixels to work with
+						fillPattern = CairoPattern.createRGB(0, 0, 0);
+					}
 
 					bitmapFill = c.bitmap;
 					bitmapRepeat = c.repeat;
@@ -788,7 +823,8 @@ class CairoGraphics
 					// var roundPixels = renderer.__roundPixels;
 					var alpha = CairoGraphics.worldAlpha;
 
-					var ri, ti;
+					var ri:Int;
+					var ti:Int;
 
 					for (i in 0...length)
 					{
@@ -1117,7 +1153,7 @@ class CairoGraphics
 
 	private static function quadraticCurveTo(cx:Float, cy:Float, x:Float, y:Float):Void
 	{
-		var current = null;
+		var current:Vector2 = null;
 
 		if (!cairo.hasCurrentPoint)
 		{
@@ -1153,7 +1189,11 @@ class CairoGraphics
 
 		graphics.__update(renderer.__worldTransform, pixelRatio);
 
-		if (!graphics.__softwareDirty || graphics.__managed) return;
+		if (!graphics.__softwareDirty || graphics.__managed)
+		{
+			CairoGraphics.graphics = null;
+			return;
+		}
 
 		bounds = graphics.__bounds;
 
@@ -1436,6 +1476,7 @@ class CairoGraphics
 
 		graphics.__softwareDirty = false;
 		graphics.__dirty = false;
+		CairoGraphics.graphics = null;
 		#end
 	}
 
@@ -1454,7 +1495,17 @@ class CairoGraphics
 
 			var data = new DrawCommandReader(graphics.__commands);
 
-			var x, y, width, height, kappa = .5522848, ox, oy, xe, ye, xm, ym;
+			var x:Float;
+			var y:Float;
+			var width:Float;
+			var height:Float;
+			var kappa = 0.5522848;
+			var ox:Float;
+			var oy:Float;
+			var xe:Float;
+			var ye:Float;
+			var xm:Float;
+			var ym:Float;
 
 			for (type in graphics.__commands.types)
 			{
@@ -1546,3 +1597,4 @@ private typedef NormalizedUVT =
 	max:Float,
 	uvt:Vector<Float>
 }
+#end

@@ -1,5 +1,7 @@
 package openfl.display._internal;
 
+import openfl.text.Font;
+#if !flash
 import openfl.text._internal.TextEngine;
 import openfl.display.BitmapData;
 import openfl.display.CairoRenderer;
@@ -68,7 +70,7 @@ class CairoTextField
 						cursorOffsetX += textField.defaultTextFormat.indent;
 						cursorOffsetX += textField.defaultTextFormat.blockIndent;
 					case START:
-					// not supported?
+						// not supported?
 					case JUSTIFY:
 						cursorOffsetX += textField.defaultTextFormat.leftMargin;
 						cursorOffsetX += textField.defaultTextFormat.indent;
@@ -239,7 +241,13 @@ class CairoTextField
 				scrollY -= textEngine.lineHeights[i];
 			}
 
-			var color, r, g, b, font, size, advance;
+			var color:Int;
+			var r:Float;
+			var g:Float;
+			var b:Float;
+			var font:Font;
+			var size:Int;
+			var advance:Float;
 
 			for (group in textEngine.layoutGroups)
 			{
@@ -285,7 +293,7 @@ class CairoTextField
 
 					cairo.translate(0, 0);
 
-					var glyphs = [];
+					var glyphs:Array<CairoGlyph> = [];
 					var x:Float = group.offsetX + scrollX - bounds.x;
 					var y:Float = group.offsetY + group.ascent + scrollY - bounds.y;
 
@@ -354,14 +362,8 @@ class CairoTextField
 								selectionEnd = group.endIndex;
 							}
 
-							// this isn't supposed to happen, but better to
-							// avoid a crash if there's a bug somewhere
-							if (glyphs.length < selectionEnd - selectionStart)
-							{
-								selectionEnd = selectionStart + glyphs.length;
-							}
-
-							var start, end;
+							var start:Rectangle;
+							var end:Rectangle;
 
 							start = textField.getCharBoundaries(selectionStart);
 
@@ -388,10 +390,15 @@ class CairoTextField
 
 								// TODO: draw only once
 
-								var selectedGylphs = [];
+								var selectedGylphs:Array<CairoGlyph> = [];
 
 								selectionStart -= group.startIndex;
 								selectionEnd -= group.startIndex;
+								if (selectionEnd > glyphs.length)
+								{
+									selectionEnd = glyphs.length;
+								}
+
 								for (i in selectionStart...selectionEnd)
 									selectedGylphs.push(glyphs[i]);
 								cairo.showGlyphs(selectedGylphs);
@@ -475,3 +482,4 @@ class CairoTextField
 		CairoDisplayObject.renderDrawableMask(textField, renderer);
 	}
 }
+#end

@@ -14,12 +14,19 @@ import openfl.utils.AssetLibrary;
 	A Sprite object is similar to a movie clip, but does not have a
 	timeline. Sprite is an appropriate base class for objects that do not
 	require timelines. For example, Sprite would be a logical base class for
-	user interface(UI) components that typically do not use the timeline.
+	user interface (UI) components that typically do not use the timeline.
 
-	The Sprite class is new in ActionScript 3.0. It provides an alternative
+	The Sprite class is new in OpenFL (compared to ActionScript 2.0). It
+	provides an alternative
 	to the functionality of the MovieClip class, which retains all the
 	functionality of previous ActionScript releases to provide backward
 	compatibility.
+
+	@see [Display programming](https://books.openfl.org/openfl-developers-guide/display-programming/)
+	@see [Basics of display programming](https://books.openfl.org/openfl-developers-guide/display-programming/basics-of-display-programming.html)
+	@see [Core display classes](https://books.openfl.org/openfl-developers-guide/display-programming/core-display-classes.html)
+	@see [Working with display objects](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/)
+	@see [Choosing a display object subclass](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/choosing-a-displayobject-subclass.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -106,7 +113,7 @@ class Sprite extends DisplayObjectContainer
 	#end
 
 	/**
-		A Boolean value that indicates whether the pointing hand(hand cursor)
+		A Boolean value that indicates whether the pointing hand (hand cursor)
 		appears when the pointer rolls over a sprite in which the
 		`buttonMode` property is set to `true`. The default
 		value of the `useHandCursor` property is `true`. If
@@ -201,9 +208,9 @@ class Sprite extends DisplayObjectContainer
 		plane defined by the three-dimensional parent object.
 
 		@param lockCenter Specifies whether the draggable sprite is locked to the
-						  center of the pointer position(`true`), or
+						  center of the pointer position (`true`), or
 						  locked to the point where the user first clicked the
-						  sprite(`false`).
+						  sprite (`false`).
 		@param bounds     Value relative to the coordinates of the Sprite's parent
 						  that specify a constraint rectangle for the Sprite.
 	**/
@@ -254,6 +261,15 @@ class Sprite extends DisplayObjectContainer
 		{
 			stage.__stopDrag(this);
 		}
+	}
+
+	@:noCompletion private override function __setStageReference(stage:Stage):Void
+	{
+		if (this.stage != stage && this.stage != null && this.stage.__dragObject == this)
+		{
+			stopDrag();
+		}
+		super.__setStageReference(stage);
 	}
 
 	#if false

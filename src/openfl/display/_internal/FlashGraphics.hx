@@ -177,7 +177,8 @@ class FlashGraphics
 			}
 		}
 
-		var ri, ti;
+		var ri:Int;
+		var ti:Int;
 
 		var vertices = new Vector<Float>(length * 8);
 		var vIndices = new Vector<Int>(length * 6);
@@ -186,8 +187,18 @@ class FlashGraphics
 		var offset6 = 0;
 		var offset8 = 0;
 
-		var x, y, tw, th, t0, t1, t2, t3;
-		var uvX = 0.0, uvY = 0.0, uvWidth = 1.0, uvHeight = 1.0;
+		var x:Float;
+		var y:Float;
+		var tw:Float;
+		var th:Float;
+		var t0:Float;
+		var t1:Float;
+		var t2:Float;
+		var t3:Float;
+		var uvX = 0.0;
+		var uvY = 0.0;
+		var uvWidth = 1.0;
+		var uvHeight = 1.0;
 
 		for (i in 0...length)
 		{

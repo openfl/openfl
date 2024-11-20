@@ -29,7 +29,14 @@ import openfl.Vector;
 	`ArgumentError` exception.
 
 	For more information, see the "Display Programming" chapter of the
-	_ActionScript 3.0 Developer's Guide_.
+	_OpenFL Developer's Guide_.
+
+	@see [Adding display objects to the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/adding-display-objects-to-the-display-list.html)
+	@see [Traversing the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/traversing-the-display-list.html)
+	@see [Working with display object containers](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/working-with-display-object-containers.html)
+	@see [Display programming](https://books.openfl.org/openfl-developers-guide/display-programming/)
+	@see [Basics of display programming](https://books.openfl.org/openfl-developers-guide/display-programming/basics-of-display-programming.html)
+	@see [Core display classes](https://books.openfl.org/openfl-developers-guide/display-programming/core-display-classes.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -43,6 +50,10 @@ import openfl.Vector;
 @:access(openfl.geom.Rectangle)
 class DisplayObjectContainer extends InteractiveObject
 {
+	#if (openfl_enable_experimental_update_queue && !dom)
+	public var __updateRequired:Bool = true;
+	#end
+
 	/**
 		Determines whether or not the children of the object are mouse, or user
 		input device, enabled. If an object is enabled, a user can interact with
@@ -50,7 +61,7 @@ class DisplayObjectContainer extends InteractiveObject
 		`true`.
 
 		This property is useful when you create a button with an instance of
-		the Sprite class(instead of using the SimpleButton class). When you use a
+		the Sprite class (instead of using the SimpleButton class). When you use a
 		Sprite instance to create a button, you can choose to decorate the button
 		by using the `addChild()` method to add additional Sprite
 		instances. This process can cause unexpected behavior with mouse events
@@ -122,7 +133,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 	/**
 		Adds a child DisplayObject instance to this DisplayObjectContainer
-		instance. The child is added to the front(top) of all other children in
+		instance. The child is added to the front (top) of all other children in
 		this DisplayObjectContainer instance.(To add a child to a specific index
 		position, use the `addChildAt()` method.)
 
@@ -145,10 +156,12 @@ class DisplayObjectContainer extends InteractiveObject
 		@return The DisplayObject instance that you pass in the `child`
 				parameter.
 		@throws ArgumentError Throws if the child is the same as the parent. Also
-							  throws if the caller is a child(or grandchild etc.)
+							  throws if the caller is a child (or grandchild etc.)
 							  of the child being added.
 		@event added Dispatched when a display object is added to the display
 					 list.
+
+		@see [Adding display objects to the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/adding-display-objects-to-the-display-list.html)
 	**/
 	public function addChild(child:DisplayObject):DisplayObject
 	{
@@ -158,7 +171,7 @@ class DisplayObjectContainer extends InteractiveObject
 	/**
 		Adds a child DisplayObject instance to this DisplayObjectContainer
 		instance. The child is added at the index position specified. An index of
-		0 represents the back(bottom) of the display list for this
+		0 represents the back (bottom) of the display list for this
 		DisplayObjectContainer object.
 
 		For example, the following example shows three display objects, labeled
@@ -179,12 +192,14 @@ class DisplayObjectContainer extends InteractiveObject
 		@return The DisplayObject instance that you pass in the `child`
 				parameter.
 		@throws ArgumentError Throws if the child is the same as the parent. Also
-							  throws if the caller is a child(or grandchild etc.)
+							  throws if the caller is a child (or grandchild etc.)
 							  of the child being added.
 		@throws RangeError    Throws if the index position does not exist in the
 							  child list.
 		@event added Dispatched when a display object is added to the display
 					 list.
+
+		@see [Adding display objects to the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/adding-display-objects-to-the-display-list.html)
 	**/
 	public function addChildAt(child:DisplayObject, index:Int):DisplayObject
 	{
@@ -192,6 +207,12 @@ class DisplayObjectContainer extends InteractiveObject
 		{
 			var error = new TypeError("Error #2007: Parameter child must be non-null.");
 			error.errorID = 2007;
+			throw error;
+		}
+		else if (child == this)
+		{
+			var error = new ArgumentError("Error #2024: An object cannot be added as a child of itself.");
+			error.errorID = 2024;
 			throw error;
 		}
 		#if ((haxe_ver >= "3.4.0") || !cpp)
@@ -335,6 +356,8 @@ class DisplayObjectContainer extends InteractiveObject
 							  which you do not have access. You can avoid this
 							  situation by having the child movie call
 							  `Security.allowDomain()`.
+
+		@see [Traversing the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/traversing-the-display-list.html)
 	**/
 	public function getChildAt(index:Int):DisplayObject
 	{
@@ -363,6 +386,9 @@ class DisplayObjectContainer extends InteractiveObject
 							  which you do not have access. You can avoid this
 							  situation by having the child movie call the
 							  `Security.allowDomain()` method.
+
+		@see [Traversing the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/traversing-the-display-list.html)
+		@see `openfl.display.DisplayObject.name`
 	**/
 	public function getChildByName(name:String):DisplayObject
 	{

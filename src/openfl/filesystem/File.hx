@@ -1,6 +1,6 @@
 package openfl.filesystem;
 
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 import haxe.io.Path;
 import lime.system.System;
 import openfl.desktop.Icon;
@@ -17,11 +17,7 @@ import sys.io.Process;
 #if (lime && !macro)
 import lime.ui.FileDialog;
 #end
-#if (lime >= "8.2.0")
-import lime.system.ThreadPool;
-#else
 import lime.system.BackgroundWorker;
-#end
 
 @:noCompletion private typedef HaxeFile = sys.io.File;
 
@@ -57,20 +53,20 @@ import lime.system.BackgroundWorker;
 	resolvePath() method to refine the path. For example, this code points to the preferences.xml
 	file in the application storage directory:
 
-	```hx
-		var prefsFile:File = File.applicationStorageDirectory;
-		prefsFile = prefsFile.resolvePath("preferences.xml");
+	```haxe
+	var prefsFile:File = File.applicationStorageDirectory;
+	prefsFile = prefsFile.resolvePath("preferences.xml");
 	```
 
 	If you use a literal native path in referencing a file, it will only work on one platform.
 	For example, the following File object would only work on Windows:
 
-	```hx
-		new File("C:\Documents and Settings\joe\My Documents\test.txt")
+	```haxe
+	new File("C:\Documents and Settings\joe\My Documents\test.txt")
 	```
 
 	The application storage directory is particularly useful. It gives an application-specific
-	storage directory for the AIR application. It is defined by the File.applicationStorageDirectory
+	storage directory for the OpenFL application. It is defined by the File.applicationStorageDirectory
 	property.
 
 	@see [Related: FileStream](https://api.openfl.org/openfl/filesystem/FileStream.html)
@@ -86,6 +82,13 @@ import lime.system.BackgroundWorker;
 	@event selectMultiple  		Dispatched when the user selects files from the dialog box opened
 	by a call to the browseForOpenMultiple() method.
 
+	@see [Using the native file system API](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/using-the-native-file-system-api.html)
+	@see [Native file system basics](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/native-file-system-basics.html)
+	@see [Working with File objects in OpenFL](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-file-objects-in-openfl.html)
+	@see [Getting file system information](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/getting-file-system-information.html)
+	@see [Working with directories](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-directories.html)
+	@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
+	@see `openfl.filesystem.FileStream`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -119,6 +122,7 @@ class File extends FileReference
 		On Android, the nativePath property of a File object pointing to the application directory
 		is an empty string. Use the url property to access application files.
 
+		@see [Working with File objects in OpenFL](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-file-objects-in-openfl.html)
 	**/
 	public static var applicationDirectory(get, never):File;
 
@@ -144,13 +148,15 @@ class File extends FileReference
 
 		The following code creates a File object pointing to the "images" subdirectory of the application storage directory.
 
-		```hx
+		```haxe
 		import openfl.filesystem.File;
 
 		var tempFiles:File = File.applicationStorageDirectory;
 		tempFiles = tempFiles.resolvePath("images/");
 		trace(tempFiles.url); // app-storage:/images
 		```
+
+		@see [Working with File objects in OpenFL](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-file-objects-in-openfl.html)
 	**/
 	public static var applicationStorageDirectory(get, never):File;
 
@@ -168,16 +174,18 @@ class File extends FileReference
 
 		The following code outputs a list of files and directories contained in the user's desktop directory.
 
-		```hx
+		```haxe
 		import openfl.filesystem.File;
 		var desktop:File = File.desktopDirectory;
 
 		var files:Array = desktop.getDirectoryListing();
 
-		for (var i:uint = 0; i < files.length; i++) {
+		for (i in 0...files.length) {
 			trace(files[i].nativePath);
 		}
 		```
+
+		@see [Working with File objects in OpenFL](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-file-objects-in-openfl.html)
 	**/
 	public static var desktopDirectory(get, never):File;
 
@@ -198,7 +206,7 @@ class File extends FileReference
 		The following code uses the File.documentsDirectory property and the File.createDirectory() method to
 		ensure that a directory named "OpenFL Test" exists in the user's documents directory.
 
-		```hx
+		```haxe
 		import openfl.filesystem.File;
 
 		var directory:File = File.documentsDirectory;
@@ -207,8 +215,15 @@ class File extends FileReference
 		File.createDirectory(directory);
 		trace(directory.exists); // true
 		```
+
+		@see [Working with File objects in OpenFL](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-file-objects-in-openfl.html)
 	**/
 	public static var documentsDirectory(get, never):File;
+
+	/**
+		The application's working directory.
+	**/
+	public static var workingDirectory(get, never):File;
 
 	// public var downloaded:Bool;
 	// TODO
@@ -220,7 +235,7 @@ class File extends FileReference
 		The following code creates a temporary file, then deletes it and uses the File.exists property to check
 		for the existence of the file.
 
-		```hx
+		```haxe
 		import openfl.filesystem.*;
 
 		var temp:File = File.createTempFile();
@@ -245,16 +260,18 @@ class File extends FileReference
 		The following code creates an array of File objects pointing to files and directories in the user directory and then uses the
 		isDirectory property to list only those File objects that point to directories (not to files).
 
-		```hx
+		```haxe
 		import openfl.filesystem.*;
 
 		var userDirFiles:Array = File.userDirectory.getDirectoryListing();
-		for (var i:uint = 0; i < userDirFiles.length; i++) {
+		for (i in 0...userDirFiles.length) {
 			if (userDirFiles[i].isDirectory) {
 				trace(userDirFiles[i].nativePath);
 			}
 		}
 		```
+
+		@see [Working with directories](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-directories.html)
 	**/
 	public var isDirectory(get, never):Bool;
 
@@ -265,11 +282,11 @@ class File extends FileReference
 		The following code creates an array of File objects pointing to files and directories in
 		the user directory and then uses the isHidden property to list hidden files and directories.
 
-		```hx
+		```haxe
 		import openfl.filesystem.*;
 
 		var userDirFiles:Array = File.userDirectory.getDirectoryListing();
-		for (var i:uint = 0; i < userDirFiles.length; i++) {
+		for (i in 0...userDirFiles.length) {
 			if (userDirFiles[i].isHidden) {
 				trace(userDirFiles[i].nativePath);
 			}
@@ -290,6 +307,8 @@ class File extends FileReference
 		`0x0A` hexadecimal). On Windows, this is the carriage return character
 		(character code `0x0D` hexadecimal) followed by the line-feed character
 		(character code `0x0A` hexadecimal).
+
+		@see [Getting file system information](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/getting-file-system-information.html)
 	**/
 	public static var lineEnding(get, never):String;
 
@@ -318,7 +337,7 @@ class File extends FileReference
 		The following code shows the difference between the nativePath property and the url property of a File object.
 		The comments show results on an example Windows computer.
 
-		```hx
+		```haxe
 		import openfl.filesystem.File;
 
 		var docs:File = File.documentsDirectory;
@@ -339,13 +358,15 @@ class File extends FileReference
 
 		The following code uses the parent property to show the directory that contains a temporary file.
 
-		```hx
+		```haxe
 		import openfl.filesystem.File;
 
 		var tempFile:File = File.createTempDirectory();
 		trace(tempFile.parent.nativePath);
 		tempFile.deleteFile();
 		```
+
+		@see [Working with directories](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-directories.html)
 	**/
 	public var parent(get, never):File;
 
@@ -364,6 +385,8 @@ class File extends FileReference
 		to type the character twice (as in `"directory\\file.ext"`). Each pair
 		of backslashes in a String literal represent a single backslash in the
 		String.
+
+		@see [Getting file system information](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/getting-file-system-information.html)
 	**/
 	public static var separator(get, never):String;
 
@@ -371,8 +394,7 @@ class File extends FileReference
 	// TODO
 	// public static var systemCharset:String;
 	// TODO: platorm specific code?
-	// public var url:String;
-	// TODO
+	public var url(get, never):String;
 
 	/**
 		The user's directory.
@@ -389,15 +411,16 @@ class File extends FileReference
 
 		The following code outputs a list of files and directories contained in the root level of the user directory:
 
-		```hx
+		```haxe
 		import openfl.filesystem.File;
 
 		var files:Array = File.userDirectory.listDirectory();
-		for (var i:uint = 0; i < files.length; i++) {
+		for (i in 0...files.length) {
 			trace(files[i].nativePath);
 		}
 		```
 
+		@see [Working with File objects in OpenFL](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-file-objects-in-openfl.html)
 	**/
 	public static var userDirectory(get, never):File;
 
@@ -415,7 +438,7 @@ class File extends FileReference
 		#end
 
 	@:noCompletion private var __fileDialog:#if (lime && !macro) FileDialog #else Dynamic #end;
-	@:noCompletion private var __fileWorker:#if (lime >= "8.2.0") ThreadPool #else BackgroundWorker #end;
+	@:noCompletion private var __fileWorker:BackgroundWorker;
 	@:noCompletion private var __sep:String = #if windows "\\" #else "/" #end;
 	@:noCompletion private var __fileStatsDirty:Bool = false;
 
@@ -439,7 +462,7 @@ class File extends FileReference
 		You can then use the resolvePath() method to get a path relative to these directories. For example, the following code
 		sets up a File object to point to the settings.xml file in the application storage directory:
 
-		```hx
+		```haxe
 		var file:File = File.applicationStorageDirectory.resolvePath("settings.xml");
 		```
 
@@ -492,7 +515,7 @@ class File extends FileReference
 		The following code uses the File.browseForDirectory() method to let the user select a directory. When the directory
 		is selected, the code lists the contents of the selected directory in the trace() output.
 
-		```hx
+		```haxe
 		import openfl.filesystem.File;
 		import openfl.events.Event;
 
@@ -508,11 +531,11 @@ class File extends FileReference
 			trace("Failed:", error.message);
 		}
 
-		function directorySelected(event:Event):void
+		function directorySelected(event:Event):Void
 		{
 			directory = event.target as File;
 			var files:Array = directory.getDirectoryListing();
-			for(var i:uint = 0; i < files.length; i++)
+			for(i in 0...files.length)
 			{
 				trace(files[i].name);
 			}
@@ -554,7 +577,7 @@ class File extends FileReference
 		The following code uses the File.browseForOpen() method to let the user choose a text file. When the file is
 		selected, the code reads the file data into a string.
 
-		```hx
+		```haxe
 		import openfl.filesystem.*;
 		import openfl.events.Event;
 		import openfl.net.FileFilter;
@@ -572,7 +595,7 @@ class File extends FileReference
 			trace("Failed:", error.message);
 		}
 
-		function fileSelected(event:Event):void
+		function fileSelected(event:Event):Void
 		{
 			var stream:FileStream = new FileStream();
 			stream.open(event.target, FileMode.READ);
@@ -618,7 +641,7 @@ class File extends FileReference
 		The following code uses the File.browseForOpenMultiple() method to let the user choose multiple files. When the
 		files are selected, the code outputs the paths for the selected files.
 
-		```hx
+		```haxe
 		import openfl.filesystem.*;
 		import openfl.events.FileListEvent;
 
@@ -633,9 +656,9 @@ class File extends FileReference
 			trace("Failed:", error.message);
 		}
 
-		function filesSelected(event:FileListEvent):void
+		function filesSelected(event:FileListEvent):Void
 		{
-			for (var i:uint = 0; i < event.files.length; i++)
+			for (i in 0...event.files.length)
 			{
 				trace(event.files[i].nativePath);
 			}
@@ -677,7 +700,7 @@ class File extends FileReference
 		The following code uses the File.browseForSave() method to let the user select a path for saving a file. When
 		the files are selected, the code saves data to the selected file path.
 
-		```hx
+		```haxe
 		import openfl.filesystem.*;
 		import openfl.events.Event;
 
@@ -692,7 +715,7 @@ class File extends FileReference
 			trace("Failed:", error.message);
 		}
 
-		function saveData(event:Event):void
+		function saveData(event:Event):Void
 		{
 			var newFile:File = event.target as File;
 			var str:String = "Hello.";
@@ -739,15 +762,15 @@ class File extends FileReference
 		the path to match the first file found (in an order determined by the file system).
 
 		The following code shows how to use the canonicalize() method to find the correct capitalization of a
-		directory name. Before running this example, create a directory named AIR Test on the desktop of your computer.
+		directory name. Before running this example, create a directory named _OpenFL Test_ on the desktop of your computer.
 
-		```hx
+		```haxe
 		import openfl.filesystem.*;
 
-		var path:File = File.desktopDirectory.resolvePath("air test");
+		var path:File = File.desktopDirectory.resolvePath("openfl test");
 		trace(path.nativePath);
 		path.canonicalize();
-		trace(path.nativePath); // ...\AIR Test
+		trace(path.nativePath); // ...\OpenFL Test
 		```
 	**/
 	public function canonicalize():Void
@@ -832,7 +855,7 @@ class File extends FileReference
 		create a test1.txt file in the OpenFL Test subdirectory of the home directory on your computer. The
 		resulting copied file is named test2.txt. The try and catch statements show how to respond to errors.
 
-		```hx
+		```haxe
 		import openfl.filesystem.File;
 
 		var sourceFile:File = File.documentsDirectory;
@@ -849,6 +872,8 @@ class File extends FileReference
 			trace("Error:", error.message);
 		}
 		```
+
+		@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
 	**/
 	public function copyTo(newLocation:FileReference, overwrite:Bool = false):Void
 	{
@@ -929,10 +954,10 @@ class File extends FileReference
 
 		The following code shows how to use the copyToAsync() method to copy a file. Before running this code,
 		be sure to create a test1.txt file in the OpenFL Test subdirectory of the documents directory on your computer.
-		The resulting copied file is named test2.txt, and it is also in the AIR Test subdirectory. When you set the
+		The resulting copied file is named test2.txt, and it is also in the _OpenFL Test_ subdirectory. When you set the
 		overwrite parameter to true, the operation overwrites any existing test2.txt file.
 
-		```hx
+		```haxe
 		import openfl.filesystem.File;
 		import openfl.events.Event;
 
@@ -944,14 +969,16 @@ class File extends FileReference
 		sourceFile.copyToAsync(destination, true);
 		sourceFile.addEventListener(Event.COMPLETE, fileCopiedHandler);
 
-		function fileCopiedHandler(event:Event):void {
+		function fileCopiedHandler(event:Event):Void {
 			trace("Done.");
 		}
 		```
+
+		@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
 	**/
 	public function copyToAsync(newLocation:FileReference, overwrite:Bool = false):Void
 	{
-		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
+		__fileWorker = new BackgroundWorker();
 		__fileWorker.onError.add(function(e:Dynamic):Void
 		{
 			__fileWorker = null;
@@ -997,10 +1024,10 @@ class File extends FileReference
 		@throws SecurityError The application does not have the necessary permissions.
 
 		The following code moves a file named test.txt on the desktop to the OpenFL Test subdirectory of the
-		documents directory. The call to the createDirectory() method ensures that the OpenFL Test directory
+		documents directory. The call to the createDirectory() method ensures that the _OpenFL Test_ directory
 		exists before the file is moved.
 
-		```hx
+		```haxe
 		import openfl.filesystem.*;
 
 		var source:File = File.desktopDirectory.resolvePath("test.txt");
@@ -1010,6 +1037,7 @@ class File extends FileReference
 		source.moveTo(target, true);
 		```
 
+		@see [Working with directories](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-directories.html)
 	**/
 	public function createDirectory():Void
 	{
@@ -1028,7 +1056,7 @@ class File extends FileReference
 
 		The following code creates an empty directory and then uses the deleteDirectory() method to delete the directory.
 
-		```hx
+		```haxe
 		import openfl.filesystem.File;
 
 		var directory:File = File.documentsDirectory.resolvePath("Empty Junk Directory/");
@@ -1037,6 +1065,8 @@ class File extends FileReference
 		directory.deleteDirectory();
 		trace(directory.exists); // false
 		```
+
+		@see [Working with directories](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-directories.html)
 	**/
 	public function deleteDirectory(deleteDirectoryContents:Bool = false):Void
 	{
@@ -1046,7 +1076,14 @@ class File extends FileReference
 
 			for (file in files)
 			{
-				file.deleteFile();
+				if (file.isDirectory)
+				{
+					file.deleteDirectory(deleteDirectoryContents);
+				}
+				else
+				{
+					file.deleteFile();
+				}
 			}
 		}
 
@@ -1066,15 +1103,16 @@ class File extends FileReference
 		@param deleteDirectoryContents Specifies whether or not to delete a directory that contains files or
 		subdirectories. When false, if the directory contains files or directories, a call to this method throws
 		an exception.
-		@events complete Dispatched when the directory has been deleted successfully.
-		@events ioError The directory does not exist or could not be deleted. On Windows, you cannot delete a
+		@event complete Dispatched when the directory has been deleted successfully.
+		@event ioError The directory does not exist or could not be deleted. On Windows, you cannot delete a
 		directory that contains a file that is open.
 		@throws SecurityError The application does not have the necessary permissions to delete the directory.
 
+		@see [Working with directories](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-directories.html)
 	**/
 	public function deleteDirectoryAsync(deleteDirectoryContents:Bool = false):Void
 	{
-		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
+		__fileWorker = new BackgroundWorker();
 		__fileWorker.onError.add(function(e:Dynamic):Void
 		{
 			__fileWorker = null;
@@ -1121,7 +1159,7 @@ class File extends FileReference
 
 		The following code creates a temporary file and then calls the deleteFile() method to delete it.
 
-		```hx
+		```haxe
 		import openfl.filesystem.*;
 
 		var file:File = File.createTempFile();
@@ -1129,6 +1167,8 @@ class File extends FileReference
 		file.deleteFile();
 		trace(file.exists); // false
 		```
+
+		@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
 	**/
 	public function deleteFile():Void
 	{
@@ -1138,14 +1178,16 @@ class File extends FileReference
 	/**
 		Deletes the file asynchronously.
 
-		@events complete Dispatched when the directory has been deleted successfully.
-		@events ioError The directory does not exist or could not be deleted. On Windows, you cannot delete a
+		@event complete Dispatched when the directory has been deleted successfully.
+		@event ioError The directory does not exist or could not be deleted. On Windows, you cannot delete a
 		directory that contains a file that is open.
 		@throws SecurityError The application does not have the necessary permissions to delete the directory.
+
+		@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
 	**/
 	public function deleteFileAsync():Void
 	{
-		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
+		__fileWorker = new BackgroundWorker();
 		__fileWorker.onError.add(function(e:Dynamic):Void
 		{
 			__fileWorker = null;
@@ -1187,20 +1229,22 @@ class File extends FileReference
 		Returns an array of File objects corresponding to files and directories in the directory
 		represented by this File object. This method does not explore the contents of subdirectories.
 
-		@returns Array An array of File objects.
-
 		The following code shows how to use the getDirectoryListing() method to enumerate the contents of the
 		user directory.
 
-		```hx
+		```haxe
 		import openfl.filesystem.File;
 
 		var directory:File = File.userDirectory;
 		var list:Array = directory.getDirectoryListing();
-		for (var i:uint = 0; i < list.length; i++) {
+		for (i in 0...list.length) {
 			trace(list[i].nativePath);
 		}
 		```
+
+		@returns Array An array of File objects.
+
+		@see [Working with directories](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-directories.html)
 	**/
 	public function getDirectoryListing():Array<File>
 	{
@@ -1224,15 +1268,15 @@ class File extends FileReference
 		Asynchronously retrieves an array of File objects corresponding to the contents of the
 		directory represented by this File object.
 
-		@events ioError You do not have adequate permissions to read this directory, or the directory does
+		@event ioError You do not have adequate permissions to read this directory, or the directory does
 		not exist.
-		@events directoryListing The directory contents have been enumerated successfully. The contents
+		@event directoryListing The directory contents have been enumerated successfully. The contents
 		event includes a files property, which is the resulting array of File objects.
 
 		The following code shows how to use the getDirectoryListingAsync() method to enumerate the contents
 		of the user directory.
 
-		```hx
+		```haxe
 		import openfl.filesystem.File;
 		import openfl.events.FileListEvent;
 
@@ -1240,13 +1284,15 @@ class File extends FileReference
 		directory.getDirectoryListingAsync();
 		directory.addEventListener(FileListEvent.DIRECTORY_LISTING, directoryListingHandler);
 
-		function directoryListingHandler(event:FileListEvent):void {
+		function directoryListingHandler(event:FileListEvent):Void {
 			var list:Array = event.files;
-			for (var i:uint = 0; i < list.length; i++) {
+			for (i in 0...list.length) {
 				trace(list[i].nativePath);
 			}
 		}
 		```
+
+		@see [Working with directories](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-directories.html)
 	**/
 	public function getDirectoryListingAsync():Void
 	{
@@ -1255,7 +1301,7 @@ class File extends FileReference
 			throw new Error("Not a directory.", 3007);
 		}
 
-		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
+		__fileWorker = new BackgroundWorker();
 		__fileWorker.onError.add(function(e:Dynamic):Void
 		{
 			__fileWorker = null;
@@ -1289,7 +1335,7 @@ class File extends FileReference
 			var files:Array<File> = [];
 			for (directory in directories)
 			{
-				files.push(new File(__path + directory));
+				files.push(new File(__path + __sep + directory));
 			}
 			// don't dispatch events directly from doWork because the listeners
 			// will be called in the wrong thread
@@ -1443,7 +1489,7 @@ class File extends FileReference
 		computer. When you set the overwrite parameter to true, the operation overwrites any existing test2.txt
 		file.
 
-		```hx
+		```haxe
 		import openfl.filesystem.File;
 		import openfl.events.Event;
 
@@ -1461,6 +1507,8 @@ class File extends FileReference
 			trace("Error:" + error.message);
 		}
 		```
+
+		@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
 	**/
 	public function moveTo(newLocation:FileReference, overwrite:Bool = false):Void
 	{
@@ -1501,32 +1549,34 @@ class File extends FileReference
 
 			The following code shows how to use the moveToAsync() method to rename a file. The original filename
 			is test1.txt and the resulting name is test2.txt. Since both the source and destination File object
-			point to the same directory (the Apollo Test subdirectory of the user's documents directory), the
+			point to the same directory (the _OpenFL Test_ subdirectory of the user's documents directory), the
 			moveToAsync() method renames the file, rather than moving it to a new directory. Before running this
-			code, create a test1.txt file in the Apollo Test subdirectory of the documents directory on your
+			code, create a test1.txt file in the _OpenFL Test_ subdirectory of the documents directory on your
 			computer. When you set overwrite parameter to true, the operation overwrites any existing test2.txt file.
 
-			```hx
+			```haxe
 			import openfl.filesystem.File;
 			import openfl.events.Event;
 
 			var sourceFile:File = File.documentsDirectory;
-			sourceFile = sourceFile.resolvePath("Apollo Test/test1.txt");
+			sourceFile = sourceFile.resolvePath("OpenFL Test/test1.txt");
 			var destination:File = File.documentsDirectory;
-			destination = destination.resolvePath("Apollo Test/test2.txt");
+			destination = destination.resolvePath("OpenFL Test/test2.txt");
 
 			sourceFile.moveToAsync(destination, true);
 			sourceFile.addEventListener(Event.COMPLETE, fileMoveCompleteHandler);
 
-			function fileMoveCompleteHandler(event:Event):void
+			function fileMoveCompleteHandler(event:Event):Void
 			{
 				trace("Done.")
 			}
 		```
+
+		@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
 	**/
 	public function moveToAsync(newLocation:FileReference, overwrite:Bool = false):Void
 	{
-		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
+		__fileWorker = new BackgroundWorker();
 		__fileWorker.onError.add(function(e:Dynamic):Void
 		{
 			__fileWorker = null;
@@ -1619,12 +1669,10 @@ class File extends FileReference
 		You may want to delete the temporary directory before closing the application, since on some
 		devices it is not deleted automatically.
 
-		@returns File A File object referencing the new temporary directory.
-
 		The following code uses the createTempFile() method to obtain a reference to a new temporary
 		directory.
 
-		```hx
+		```haxe
 		import openfl.File;
 
 		var temp:File = File.createTempDirectory();
@@ -1632,6 +1680,10 @@ class File extends FileReference
 		```
 
 		Each time you run this code, a new (unique) file is created.
+
+		@returns File A File object referencing the new temporary directory.
+
+		@see [Working with directories](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-directories.html)
 	**/
 	public static function createTempDirectory():File
 	{
@@ -1648,16 +1700,18 @@ class File extends FileReference
 		You may want to delete the temporary file before closing the application, since it is not deleted
 		automatically.
 
-		@returns File A File object referencing the new temporary file;
-
 		The following code uses the createTempFile() method to obtain a reference to a new temporary file.
 
-		```hx
+		```haxe
 		import openfl.File;
 
 		var temp:File = File.createTempFile();
 		trace(temp.nativePath);
 		```
+
+		@returns File A File object referencing the new temporary file;		
+
+		@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
 	**/
 	public static function createTempFile():File
 	{
@@ -1665,28 +1719,28 @@ class File extends FileReference
 	}
 
 	/**
-		 Returns an array of File objects, listing the file system root directories.
+		Returns an array of File objects, listing the file system root directories.
 
-		 For example, on Windows this is a list of volumes such as the C: drive and the D: drive. An empty
-		 drive, such as a CD or DVD drive in which no disc is inserted, is not included in this array. On Mac
-		 OS and Linux, this method always returns the unique root directory for the machine (the "/" directory)
+		For example, on Windows this is a list of volumes such as the C: drive and the D: drive. An empty
+		drive, such as a CD or DVD drive in which no disc is inserted, is not included in this array. On Mac
+		OS and Linux, this method always returns the unique root directory for the machine (the "/" directory)
 
 		On file systems for which the root is not readable, such as the Android file system, the properties of
 		the returned File object do not always reflect the true value. For example, on Android, the
 		spaceAvailable property reports 0.
 
-		@returns Array An array of File objects, listing the root directories.
-
 		The following code outputs a list of root directories:
 
-		```hx
+		```haxe
 		import flash.filesystem.File;
 		var rootDirs:Array = File.getRootDirectories();
 
-		for (var i:uint = 0; i < rootDirs.length; i++) {
+		for (i in 0...rootDirs.length) {
 			trace(rootDirs[i].nativePath);
 		}
 		```
+
+		@returns Array An array of File objects, listing the root directories.		
 	**/
 	public static function getRootDirectories():Array<File>
 	{
@@ -1813,7 +1867,7 @@ class File extends FileReference
 	@:noCompletion private function __getFilterTypes(typeFilter:Array<FileFilter>):String
 	{
 		var filterString:String = null;
-		var filters = [];
+		var filters:Array<String> = [];
 
 		if (typeFilter != null)
 		{
@@ -1966,6 +2020,11 @@ class File extends FileReference
 		return new File(Path.removeTrailingSlashes(System.userDirectory));
 	}
 
+	@:noCompletion private static function get_workingDirectory():File
+	{
+		return new File(Path.removeTrailingSlashes(Sys.getCwd()));
+	}
+
 	@:noCompletion override private function get_creationDate():Date
 	{
 		if (__fileStatsDirty)
@@ -2036,24 +2095,51 @@ class File extends FileReference
 
 	@:noCompletion private function set_nativePath(path:String):String
 	{
-		#if windows
-		if (path.indexOf("%") > -1)
+		if (path != null)
 		{
-			path = __replaceWindowsEnvVars(path);
-		}
-		#end
-		if (path.charAt(path.length - 1) == ":" /*|| FileSystem.isDirectory(path)*/)
-		{
-			path = Path.addTrailingSlash(path);
-		}
-		if (Path.directory(path).length == 0)
-		{
-			throw new ArgumentError("One of the parameters is invalid.");
+			if (StringTools.startsWith(path, "app:"))
+			{
+				// TODO: Prevent writing
+				path = StringTools.replace(path, "app:", File.applicationDirectory.nativePath);
+			}
+			else if (StringTools.startsWith(path, "app-storage:"))
+			{
+				path = StringTools.replace(path, "app-storage:", File.applicationStorageDirectory.nativePath);
+			}
+
+			#if windows
+			if (path.indexOf("%") > -1)
+			{
+				path = __replaceWindowsEnvVars(path);
+			}
+			#end
+
+			if (path.charAt(path.length - 1) == ":" /*|| FileSystem.isDirectory(path)*/)
+			{
+				path = Path.addTrailingSlash(path);
+			}
+
+			if (Path.directory(path).length == 0)
+			{
+				throw new ArgumentError("One of the parameters is invalid.");
+			}
+
+			__updateFileStats(path);
+
+			if (path.indexOf(#if windows "/" #else "\\" #end) > 0)
+			{
+				path = __formatPath(path);
+			}
 		}
 
-		__updateFileStats(path);
+		return __path = path;
+	}
 
-		return __path = path.indexOf(#if windows "/" #else "\\" #end) > 0 ? __formatPath(path) : path;
+	@:noCompletion private function get_url():String
+	{
+		// TODO: url encode the native path to avoid invalid URL characters
+		// TODO: use app: and app-storage: protocols instead of file:, when path is relative to those directories
+		return "file:///" + nativePath;
 	}
 
 	@:noCompletion private function get_exists():Bool

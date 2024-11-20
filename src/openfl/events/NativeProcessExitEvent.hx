@@ -1,6 +1,6 @@
 package openfl.events;
 
-#if (haxe4 && sys && !flash)
+#if (haxe4 && !flash && sys)
 /**
 	This event is dispatched by the NativeProcess object when the process exits.
 	It is possible that this event will never be dispatched. For example, if the

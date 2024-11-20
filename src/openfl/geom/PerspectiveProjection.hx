@@ -125,6 +125,37 @@ class PerspectiveProjection
 		return matrix3D;
 	}
 
+	/**
+		Returns the underlying Matrix3D object of the display object.
+
+		A display object, like the root object, can have a `PerspectiveProjection` object without needing a `Matrix3D`
+		property defined for its transformations. In fact, use either a `PerspectiveProjection` or a `Matrix3D` object
+		to specify the perspective transformation. If when using the `PerspectiveProjection` object, a `Matrix3D`
+		object was needed, the `toMatrix3D()` method can retrieve the underlying `Matrix3D` object of the display object.
+		For example, the `toMatrix3D()` method can be used with the `Utils3D.projectVectors()` method.
+
+		@param output An optional Matrix3D to be set to the underlying Matrix3D, avoiding the creation of a new object.
+		@return The underlying `Matrix3D` object.
+	**/
+	public function toMatrix3DToOutput(output:Matrix3D):Matrix3D
+	{
+		if (#if neko __fieldOfView == null || #end projectionCenter == null) return null;
+
+		if (output == null)
+		{
+			output = new Matrix3D();
+		}
+
+		var _mp = output.rawData;
+		_mp[0] = focalLength;
+		_mp[5] = focalLength;
+		_mp[11] = 1.0;
+		_mp[15] = 0;
+
+		// output.rawData = [357.0370178222656,0,0,0,0,357.0370178222656,0,0,0,0,1,1,0,0,0,0];
+		return output;
+	}
+
 	// Getters & Setters
 	@:noCompletion private function get_fieldOfView():Float
 	{

@@ -1,6 +1,6 @@
 package openfl.sensors;
 
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 import openfl.errors.IllegalOperationError;
 import openfl.permissions.PermissionStatus;
 
@@ -153,6 +153,6 @@ class Geolocation
 }
 #else
 #if air
-typedef Geolocation = flash.desktop.Geolocation;
+typedef Geolocation = flash.sensors.Geolocation;
 #end
 #end

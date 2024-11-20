@@ -6,11 +6,11 @@ import openfl.display.Graphics;
 
 /**
 	This class represents StaticText objects on the display list. You cannot
-	create a StaticText object using ActionScript. Only the authoring tool can
+	create a StaticText object using Haxe code. Only the authoring tool can
 	create a StaticText object. An attempt to create a new StaticText object
 	generates an `ArgumentError`.
-	To create a reference to an existing static text field in ActionScript
-	3.0, you can iterate over the items in the display list. For example, the
+	To create a reference to an existing static text field in Haxe code,
+	you can iterate over the items in the display list. For example, the
 	following snippet checks to see if the display list contains a static text
 	field and assigns the field to a variable:
 
@@ -24,6 +24,9 @@ import openfl.display.Graphics;
 		}
 	}
 	```
+
+	@see [Working with static text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/working-with-static-text.html)
+	@see `openfl.text.TextField`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

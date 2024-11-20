@@ -309,7 +309,7 @@ class DOMRenderer extends DisplayObjectRenderer
 		switch (object.__drawableType)
 		{
 			case BITMAP_DATA:
-			// DOMBitmapData.renderDrawable(cast object, this);
+				// DOMBitmapData.renderDrawable(cast object, this);
 			case STAGE, SPRITE:
 				DOMDisplayObjectContainer.renderDrawable(cast object, this);
 			case BITMAP:
@@ -360,7 +360,7 @@ class DOMRenderer extends DisplayObjectRenderer
 		switch (object.__drawableType)
 		{
 			case BITMAP_DATA:
-			// DOMBitmapData.renderDrawableClear(cast object, this);
+				// DOMBitmapData.renderDrawableClear(cast object, this);
 			case STAGE, SPRITE:
 				DOMDisplayObjectContainer.renderDrawableClear(cast object, this);
 			case BITMAP:

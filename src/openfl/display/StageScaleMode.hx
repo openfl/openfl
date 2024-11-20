@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-
 #if !openfljs
 /**
 	The StageScaleMode class provides values for the

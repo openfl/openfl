@@ -33,10 +33,18 @@ import js.html.CanvasRenderingContext2D;
 	`drawRoundRect()`, `drawCircle()`, and
 	`drawEllipse()`.
 
-	You cannot create a Graphics object directly from ActionScript code. If
+	You cannot create a Graphics object directly from Haxe code. If
 	you call `new Graphics()`, an exception is thrown.
 
 	The Graphics class is final; it cannot be subclassed.
+
+	@see [Basics of the drawing API](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/basics-of-the-drawing-api.html)
+	@see [Drawing lines and curves](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-lines-and-curves.html)
+	@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
+	@see [Creating gradient lines and fills](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/creating-gradient-lines-and-fills.html)
+	@see [Using the Math class with drawing methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/using-the-math-class-with-drawing-methods.html)
+	@see [Understanding the Graphics class](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/understanding-the-graphics-class.html)
+	@see [Advanced use of the drawing API](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/advanced-use-of-the-drawing-api/)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -127,22 +135,22 @@ import js.html.CanvasRenderingContext2D;
 
 		@param bitmap A transparent or opaque bitmap image that contains the bits
 					  to be displayed.
-		@param matrix A matrix object(of the openfl.geom.Matrix class), which you
+		@param matrix A matrix object (of the openfl.geom.Matrix class), which you
 					  can use to define transformations on the bitmap. For
 					  example, you can use the following matrix to rotate a bitmap
 					  by 45 degrees(pi/4 radians):
 
-		```haxe
-		matrix = new openfl.geom.Matrix();
-			 	matrix.rotate(Math.PI / 4);
-			 	```
+					  ```haxe
+					  matrix = new openfl.geom.Matrix();
+					  matrix.rotate(Math.PI / 4);
+					  ```
 
 		@param repeat If `true`, the bitmap image repeats in a tiled
 					  pattern. If `false`, the bitmap image does not
 					  repeat, and the edges of the bitmap are used for any fill
 					  area that extends beyond the bitmap.
 
-					  For example, consider the following bitmap(a 20 x
+					  For example, consider the following bitmap (a 20 x
 					  20-pixel checkerboard pattern):
 
 					  ![20 by 20 pixel checkerboard](/images/movieClip_beginBitmapFill_repeat_1.jpg)
@@ -166,14 +174,6 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function beginBitmapFill(bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void
 	{
-		if (!bitmap.readable)
-		{
-			// begin bitmap fill doesn't work with a hardware-only bitmap
-			// to avoid exceptions, delegate to beginFill()
-			beginFill(0, 1.0);
-			return;
-		}
-
 		__commands.beginBitmapFill(bitmap, matrix != null ? matrix.clone() : null, repeat, smooth);
 
 		__visible = true;
@@ -292,6 +292,8 @@ import js.html.CanvasRenderingContext2D;
 		![radial gradient with focalPointRatio set to 0.75](/images/radial_sketch.jpg)
 
 		@throws ArgumentError If the `type` parameter is not valid.
+
+		@see [Creating gradient lines and fills](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/creating-gradient-lines-and-fills.html)
 	**/
 	public function beginGradientFill(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null,
 			spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void
@@ -489,6 +491,8 @@ import js.html.CanvasRenderingContext2D;
 		the registration point of the parent display object.
 		@param	anchorY	Specifies the vertical position of the anchor point relative to
 		the registration point of the parent display object.
+
+		@see [Drawing lines and curves](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-lines-and-curves.html)
 	**/
 	public function cubicCurveTo(controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void
 	{
@@ -537,13 +541,16 @@ import js.html.CanvasRenderingContext2D;
 		@param anchorY  A number that specifies the vertical position of the next
 						anchor point relative to the registration point of the
 						parent display object.
+
+		@see [Drawing lines and curves](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-lines-and-curves.html)
 	**/
 	public function curveTo(controlX:Float, controlY:Float, anchorX:Float, anchorY:Float):Void
 	{
 		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
 		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
 
-		var ix, iy;
+		var ix:Float;
+		var iy:Float;
 
 		if ((controlX < anchorX && controlX > __positionX) || (controlX > anchorX && controlX < __positionX))
 		{
@@ -579,6 +586,10 @@ import js.html.CanvasRenderingContext2D;
 		__dirty = true;
 	}
 
+	/**
+
+		@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
+	**/
 	public function drawCircle(x:Float, y:Float, radius:Float):Void
 	{
 		if (radius <= 0) return;
@@ -594,18 +605,20 @@ import js.html.CanvasRenderingContext2D;
 	/**
 		Draws an ellipse. Set the line style, fill, or both before you call the
 		`drawEllipse()` method, by calling the
-		`linestyle()`, `lineGradientStyle()`,
+		`lineStyle()`, `lineGradientStyle()`,
 		`beginFill()`, `beginGradientFill()`, or
 		`beginBitmapFill()` method.
 
 		@param x      The _x_ location of the top-left of the bounding-box of
 					  the ellipse relative to the registration point of the parent
-					  display object(in pixels).
+					  display object (in pixels).
 		@param y      The _y_ location of the top left of the bounding-box of
 					  the ellipse relative to the registration point of the parent
-					  display object(in pixels).
-		@param width  The width of the ellipse(in pixels).
-		@param height The height of the ellipse(in pixels).
+					  display object (in pixels).
+		@param width  The width of the ellipse (in pixels).
+		@param height The height of the ellipse (in pixels).
+
+		@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
 	**/
 	public function drawEllipse(x:Float, y:Float, width:Float, height:Float):Void
 	{
@@ -747,7 +760,7 @@ import js.html.CanvasRenderingContext2D;
 			* A sub-path of less than 3 points is not rendered.(But note that the
 			stroke rendering will still occur, consistent with the rules for strokes
 			below.)
-			* A sub-path that isn't closed(the end point is not equal to the
+			* A sub-path that isn't closed (the end point is not equal to the
 			begin point) is implicitly closed.
 		* When a stroke is applied to rendering a path:
 			* The sub-paths can be composed of any number of points.
@@ -761,6 +774,8 @@ import js.html.CanvasRenderingContext2D;
 		numbers represents a coordinate location.
 		@param	winding	Specifies the winding rule using a value defined in the
 		GraphicsPathWinding class.
+
+		@see [Drawing paths](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/advanced-use-of-the-drawing-api/drawing-paths.html)
 	**/
 	public function drawPath(commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD):Void
 	{
@@ -870,7 +885,8 @@ import js.html.CanvasRenderingContext2D;
 		var maxX = Math.NEGATIVE_INFINITY;
 		var maxY = Math.NEGATIVE_INFINITY;
 
-		var ri, ti;
+		var ri:Int;
+		var ti:Int;
 
 		for (i in 0...length)
 		{
@@ -927,20 +943,22 @@ import js.html.CanvasRenderingContext2D;
 
 	/**
 		Draws a rectangle. Set the line style, fill, or both before you call the
-		`drawRect()` method, by calling the `linestyle()`,
+		`drawRect()` method, by calling the `lineStyle()`,
 		`lineGradientStyle()`, `beginFill()`,
 		`beginGradientFill()`, or `beginBitmapFill()`
 		method.
 
 		@param x      A number indicating the horizontal position relative to the
-					  registration point of the parent display object(in pixels).
+					  registration point of the parent display object (in pixels).
 		@param y      A number indicating the vertical position relative to the
-					  registration point of the parent display object(in pixels).
-		@param width  The width of the rectangle(in pixels).
-		@param height The height of the rectangle(in pixels).
+					  registration point of the parent display object (in pixels).
+		@param width  The width of the rectangle (in pixels).
+		@param height The height of the rectangle (in pixels).
 		@throws ArgumentError If the `width` or `height`
 							  parameters are not a number
-							 (`Number.NaN`).
+							  (`Number.NaN`).
+
+		@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
 	**/
 	public function drawRect(x:Float, y:Float, width:Float, height:Float):Void
 	{
@@ -960,7 +978,7 @@ import js.html.CanvasRenderingContext2D;
 	/**
 		Draws a rounded rectangle. Set the line style, fill, or both before you
 		call the `drawRoundRect()` method, by calling the
-		`linestyle()`, `lineGradientStyle()`,
+		`lineStyle()`, `lineGradientStyle()`,
 		`beginFill()`, `beginGradientFill()`, or
 		`beginBitmapFill()` method.
 
@@ -969,9 +987,9 @@ import js.html.CanvasRenderingContext2D;
 							 object(in pixels).
 		@param y             A number indicating the vertical position relative to
 							 the registration point of the parent display object
-							(in pixels).
-		@param width         The width of the round rectangle(in pixels).
-		@param height        The height of the round rectangle(in pixels).
+							 (in pixels).
+		@param width         The width of the round rectangle (in pixels).
+		@param height        The height of the round rectangle (in pixels).
 		@param ellipseWidth  The width of the ellipse used to draw the rounded
 							 corners(in pixels).
 		@param ellipseHeight The height of the ellipse used to draw the rounded
@@ -982,6 +1000,8 @@ import js.html.CanvasRenderingContext2D;
 							  `ellipseWidth` or
 							  `ellipseHeight` parameters are not a
 							  number(`Number.NaN`).
+
+		@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
 	**/
 	public function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float> = null):Void
 	{
@@ -1065,6 +1085,8 @@ import js.html.CanvasRenderingContext2D;
 					   of triangles that cannot be seen in the current view. This
 					   parameter can be set to any value defined by the
 					   TriangleCulling class.
+
+		@see [About using drawTriangles()](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/advanced-use-of-the-drawing-api/about-using-drawtriangles.html)
 	**/
 	public function drawTriangles(vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null,
 			culling:TriangleCulling = TriangleCulling.NONE):Void
@@ -1095,7 +1117,8 @@ import js.html.CanvasRenderingContext2D;
 			culling = NONE;
 		}
 
-		var x, y;
+		var x:Float;
+		var y:Float;
 		var minX = Math.POSITIVE_INFINITY;
 		var minY = Math.POSITIVE_INFINITY;
 		var maxX = Math.NEGATIVE_INFINITY;
@@ -1243,6 +1266,8 @@ import js.html.CanvasRenderingContext2D;
 		`focalPointRatio` of -0.75:
 
 		![radial gradient with focalPointRatio set to 0.75](/images/radial_sketch.jpg)
+
+		@see [Creating gradient lines and fills](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/creating-gradient-lines-and-fills.html)
 	**/
 	public function lineGradientStyle(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null,
 			spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void
@@ -1300,10 +1325,10 @@ import js.html.CanvasRenderingContext2D;
 		drawing a path to specify different styles for different line segments
 		within the path.
 
-		**Note: **Calls to the `clear()` method set the line
+		**Note:** Calls to the `clear()` method set the line
 		style back to `undefined`.
 
-		**Note: **Flash Lite 4 supports only the first three parameters
+		**Note:** Flash Lite 4 supports only the first three parameters
 		(`thickness`, `color`, and `alpha`).
 
 		@param thickness    An integer that indicates the thickness of the line in
@@ -1316,10 +1341,10 @@ import js.html.CanvasRenderingContext2D;
 		@param color        A hexadecimal color value of the line; for example,
 							red is 0xFF0000, blue is 0x0000FF, and so on. If a
 							value is not indicated, the default is 0x000000
-						   (black). Optional.
+							(black). Optional.
 		@param alpha        A number that indicates the alpha value of the color
 							of the line; valid values are 0 to 1. If a value is
-							not indicated, the default is 1(solid). If the value
+							not indicated, the default is 1 (solid). If the value
 							is less than 0, the default is 0. If the value is
 							greater than 1, the default is 1.
 		@param pixelHinting (Not supported in Flash Lite 4) A Boolean value that
@@ -1335,7 +1360,7 @@ import js.html.CanvasRenderingContext2D;
 							rectangles that are identical, except that the
 							`pixelHinting` parameter used in the
 							`lineStyle()` method is set differently
-						   (the images are scaled by 200%, to emphasize the
+							(the images are scaled by 200%, to emphasize the
 							difference):
 
 							![pixelHinting false and pixelHinting true](/images/lineStyle_pixelHinting.jpg)
@@ -1348,7 +1373,7 @@ import js.html.CanvasRenderingContext2D;
 
 							 *  `LineScaleMode.NORMAL` - Always
 							scale the line thickness when the object is scaled
-						   (the default).
+							(the default).
 							 *  `LineScaleMode.NONE` - Never scale
 							the line thickness.
 							 *  `LineScaleMode.VERTICAL` - Do not
@@ -1385,9 +1410,9 @@ import js.html.CanvasRenderingContext2D;
 							For example, the following illustrations show the
 							different `capsStyle` settings. For each
 							setting, the illustration shows a blue line with a
-							thickness of 30(for which the `capsStyle`
+							thickness of 30 (for which the `capsStyle`
 							applies), and a superimposed black line with a
-							thickness of 1(for which no `capsStyle`
+							thickness of 1 (for which no `capsStyle`
 							applies):
 
 							![NONE, ROUND, and SQUARE](/images/linecap.jpg)
@@ -1403,9 +1428,9 @@ import js.html.CanvasRenderingContext2D;
 							For example, the following illustrations show the
 							different `joints` settings. For each
 							setting, the illustration shows an angled blue line
-							with a thickness of 30(for which the
+							with a thickness of 30 (for which the
 							`jointStyle` applies), and a superimposed
-							angled black line with a thickness of 1(for which no
+							angled black line with a thickness of 1 (for which no
 							`jointStyle` applies):
 
 							![MITER, ROUND, and BEVEL](/images/linejoin.jpg)
@@ -1416,7 +1441,7 @@ import js.html.CanvasRenderingContext2D;
 							of the miter.
 		@param miterLimit  (Not supported in Flash Lite 4) A number that
 							indicates the limit at which a miter is cut off. Valid
-							values range from 1 to 255(and values outside that
+							values range from 1 to 255 (and values outside that
 							range are rounded to 1 or 255). This value is only
 							used if the `jointStyle` is set to
 							`"miter"`. The `miterLimit`
@@ -1490,9 +1515,11 @@ import js.html.CanvasRenderingContext2D;
 		method fails and the current drawing position is not changed.
 
 		@param x A number that indicates the horizontal position relative to the
-				 registration point of the parent display object(in pixels).
+				 registration point of the parent display object (in pixels).
 		@param y A number that indicates the vertical position relative to the
-				 registration point of the parent display object(in pixels).
+				 registration point of the parent display object (in pixels).
+
+		@see [Drawing lines and curves](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-lines-and-curves.html)
 	**/
 	public function lineTo(x:Float, y:Float):Void
 	{
@@ -1523,9 +1550,9 @@ import js.html.CanvasRenderingContext2D;
 		drawing position is not changed.
 
 		@param x A number that indicates the horizontal position relative to the
-				 registration point of the parent display object(in pixels).
+				 registration point of the parent display object (in pixels).
 		@param y A number that indicates the vertical position relative to the
-				 registration point of the parent display object(in pixels).
+				 registration point of the parent display object (in pixels).
 	**/
 	public function moveTo(x:Float, y:Float):Void
 	{
@@ -1762,7 +1789,8 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private function __readGraphicsData(graphicsData:Vector<IGraphicsData>):Void
 	{
 		var data = new DrawCommandReader(__commands);
-		var path = null, stroke;
+		var path:GraphicsPath = null;
+		var stroke:GraphicsStroke;
 
 		for (type in __commands.types)
 		{
@@ -1948,7 +1976,8 @@ import js.html.CanvasRenderingContext2D;
 			scaleY = maxTextureHeight / __bounds.height;
 		}
 
-		var inverseA, inverseD;
+		var inverseA:Float;
+		var inverseD:Float;
 
 		if (__owner.__worldScale9Grid != null)
 		{
