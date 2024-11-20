@@ -379,8 +379,8 @@ class CanvasTextField
 				// Clear old cache immediately.
 				if(graphics.__bitmap != null)
 				{
-					if(graphics.__bitmap._texture != null)
-						graphics.__bitmap._texture.dispose();
+					if(graphics.__bitmap.__texture != null)
+						graphics.__bitmap.__texture.dispose();
 					
 					graphics.__bitmap.dispose();
 				}
