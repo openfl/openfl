@@ -430,16 +430,16 @@ class SharedObject extends EventDispatcher
 							allotted for this object.
 		@return Either of the following values:
 
-				 * `SharedObjectFlushStatus.PENDING`: The user has
-				permitted local information storage for objects from this domain,
-				but the amount of space allotted is not sufficient to store the
-				object. Flash Player prompts the user to allow more space. To
-				allow space for the shared object to grow when it is saved, thus
-				avoiding a `SharedObjectFlushStatus.PENDING` return
-				value, pass a value for `minDiskSpace`.
-				 * `SharedObjectFlushStatus.FLUSHED`: The shared
-				object has been successfully written to a file on the local
-				disk.
+				 *  `SharedObjectFlushStatus.PENDING`: The user has permitted
+		local information storage for objects from this domain, but the
+		amount of space allotted is not sufficient to store the object.
+		Flash Player prompts the user to allow more space. To allow
+		space for the shared object to grow when it is saved, thus
+		avoiding a `SharedObjectFlushStatus.PENDING` return
+		value, pass a value for `minDiskSpace`.
+
+				 *  `SharedObjectFlushStatus.FLUSHED`: The shared object has been
+		successfully written to a file on the local disk.
 
 		@throws Error Flash Player cannot write the shared object to disk. This
 					  error might occur if the user has permanently disallowed
@@ -848,9 +848,8 @@ class SharedObject extends EventDispatcher
 		the server that the value of the property has changed. The
 		`setProperty()` method explicitly marks properties as changed, or
 		dirty.
-		For more information about remote shared objects see the <a
-		href="http://www.adobe.com/go/learn_fms_docs_en"> Flash Media Server
-		documentation</a>.
+		For more information about remote shared objects see the
+		[Flash Media Server documentation](http://www.adobe.com/go/learn_fms_docs_en).
 
 		**Note:** The `SharedObject.setProperty()` method implements the
 		`setDirty()` method. In most cases, such as when the value of a

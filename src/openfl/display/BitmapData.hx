@@ -112,6 +112,10 @@ import openfl.display._internal.stats.DrawCallContext;
 	@see `openfl.display.Graphics.beginBitmapFill()`
 	@see `openfl.display.Graphics.lineBitmapStyle()`
 **/
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 @:access(lime.graphics.opengl.GL)
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
@@ -127,10 +131,6 @@ import openfl.display._internal.stats.DrawCallContext;
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 @:autoBuild(openfl.utils._internal.AssetsMacro.embedBitmap())
 class BitmapData implements IBitmapDrawable
 {
@@ -619,16 +619,16 @@ class BitmapData implements IBitmapDrawable
 								the new channel data is placed. To copy only
 								channel data from one area to a different area in
 								the destination image, specify a point other than
-							   (0,0).
+								(0,0).
 		@param sourceChannel    The source channel. Use a value from the
 								BitmapDataChannel class
-							   (`BitmapDataChannel.RED`,
+								(`BitmapDataChannel.RED`,
 								`BitmapDataChannel.BLUE`,
 								`BitmapDataChannel.GREEN`,
 								`BitmapDataChannel.ALPHA`).
 		@param destChannel      The destination channel. Use a value from the
 								BitmapDataChannel class
-							   (`BitmapDataChannel.RED`,
+								(`BitmapDataChannel.RED`,
 								`BitmapDataChannel.BLUE`,
 								`BitmapDataChannel.GREEN`,
 								`BitmapDataChannel.ALPHA`).
@@ -2570,10 +2570,10 @@ class BitmapData implements IBitmapDrawable
 	}
 
 	/**
-		When targeting AIR, this method locks an image so that any objects 
-		that reference the BitmapData object, such as Bitmap objects, are not 
-		updated when this BitmapData object changes. To improve performance, 
-		use this method along with the `unlock()` method before and after numerous 
+		When targeting AIR, this method locks an image so that any objects
+		that reference the BitmapData object, such as Bitmap objects, are not
+		updated when this BitmapData object changes. To improve performance,
+		use this method along with the `unlock()` method before and after numerous
 		calls to the `setPixel()` or `setPixel32()` method.
 
 		Note: This method only provides an optimization on the AIR(Flash) target.
@@ -3072,8 +3072,8 @@ class BitmapData implements IBitmapDrawable
 	}
 
 	/**
-		When targeting AIR, this method Unlocks an image so that any objects that reference 
-		the BitmapData object, such as Bitmap objects, are updated when this BitmapData object 
+		When targeting AIR, this method Unlocks an image so that any objects that reference
+		the BitmapData object, such as Bitmap objects, are updated when this BitmapData object
 		changes.
 
 		To improve performance, use this method along with the `lock()`

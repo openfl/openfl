@@ -32,7 +32,7 @@ import openfl.events.MouseEvent;
 	stop the playhead in any child MovieClip objects of that MovieClip
 	object.
 
-	**Note:**Flash Lite 4 supports the MovieClip.opaqueBackground
+	**Note:** Flash Lite 4 supports the MovieClip.opaqueBackground
 	property only if FEATURE_BITMAPCACHE is defined. The default configuration
 	of Flash Lite 4 does not define FEATURE_BITMAPCACHE. To enable the
 	MovieClip.opaqueBackground property for a suitable device, define

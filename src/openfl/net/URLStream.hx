@@ -194,9 +194,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		security limitations.
 
 		For more information related to security, see The Flash Player
-		Developer Center Topic: <a
-		href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
+		Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 
 		In AIR, a URLRequest object can register for the `httpResponse` status
 		event. Unlike the `httpStatus` event, the `httpResponseStatus` event

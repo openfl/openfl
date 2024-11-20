@@ -140,10 +140,10 @@ import js.html.CanvasRenderingContext2D;
 					  example, you can use the following matrix to rotate a bitmap
 					  by 45 degrees(pi/4 radians):
 
-		```haxe
-		matrix = new openfl.geom.Matrix();
-			 	matrix.rotate(Math.PI / 4);
-			 	```
+					  ```haxe
+					  matrix = new openfl.geom.Matrix();
+					  matrix.rotate(Math.PI / 4);
+					  ```
 
 		@param repeat If `true`, the bitmap image repeats in a tiled
 					  pattern. If `false`, the bitmap image does not
@@ -605,7 +605,7 @@ import js.html.CanvasRenderingContext2D;
 	/**
 		Draws an ellipse. Set the line style, fill, or both before you call the
 		`drawEllipse()` method, by calling the
-		`linestyle()`, `lineGradientStyle()`,
+		`lineStyle()`, `lineGradientStyle()`,
 		`beginFill()`, `beginGradientFill()`, or
 		`beginBitmapFill()` method.
 
@@ -943,7 +943,7 @@ import js.html.CanvasRenderingContext2D;
 
 	/**
 		Draws a rectangle. Set the line style, fill, or both before you call the
-		`drawRect()` method, by calling the `linestyle()`,
+		`drawRect()` method, by calling the `lineStyle()`,
 		`lineGradientStyle()`, `beginFill()`,
 		`beginGradientFill()`, or `beginBitmapFill()`
 		method.
@@ -956,7 +956,7 @@ import js.html.CanvasRenderingContext2D;
 		@param height The height of the rectangle (in pixels).
 		@throws ArgumentError If the `width` or `height`
 							  parameters are not a number
-							 (`Number.NaN`).
+							  (`Number.NaN`).
 
 		@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
 	**/
@@ -978,7 +978,7 @@ import js.html.CanvasRenderingContext2D;
 	/**
 		Draws a rounded rectangle. Set the line style, fill, or both before you
 		call the `drawRoundRect()` method, by calling the
-		`linestyle()`, `lineGradientStyle()`,
+		`lineStyle()`, `lineGradientStyle()`,
 		`beginFill()`, `beginGradientFill()`, or
 		`beginBitmapFill()` method.
 
@@ -987,7 +987,7 @@ import js.html.CanvasRenderingContext2D;
 							 object(in pixels).
 		@param y             A number indicating the vertical position relative to
 							 the registration point of the parent display object
-							(in pixels).
+							 (in pixels).
 		@param width         The width of the round rectangle (in pixels).
 		@param height        The height of the round rectangle (in pixels).
 		@param ellipseWidth  The width of the ellipse used to draw the rounded
@@ -1341,7 +1341,7 @@ import js.html.CanvasRenderingContext2D;
 		@param color        A hexadecimal color value of the line; for example,
 							red is 0xFF0000, blue is 0x0000FF, and so on. If a
 							value is not indicated, the default is 0x000000
-						   (black). Optional.
+							(black). Optional.
 		@param alpha        A number that indicates the alpha value of the color
 							of the line; valid values are 0 to 1. If a value is
 							not indicated, the default is 1 (solid). If the value
@@ -1360,7 +1360,7 @@ import js.html.CanvasRenderingContext2D;
 							rectangles that are identical, except that the
 							`pixelHinting` parameter used in the
 							`lineStyle()` method is set differently
-						   (the images are scaled by 200%, to emphasize the
+							(the images are scaled by 200%, to emphasize the
 							difference):
 
 							![pixelHinting false and pixelHinting true](/images/lineStyle_pixelHinting.jpg)
@@ -1373,7 +1373,7 @@ import js.html.CanvasRenderingContext2D;
 
 							 *  `LineScaleMode.NORMAL` - Always
 							scale the line thickness when the object is scaled
-						   (the default).
+							(the default).
 							 *  `LineScaleMode.NONE` - Never scale
 							the line thickness.
 							 *  `LineScaleMode.VERTICAL` - Do not

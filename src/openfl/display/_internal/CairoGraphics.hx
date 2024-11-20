@@ -136,7 +136,7 @@ class CairoGraphics
 
 			ratio = ratios[i] / 0xFF;
 			if (ratio < 0) ratio = 0;
-			if (ratio > 1) ratio = 1;
+			else if (ratio > 1) ratio = 1;
 
 			pattern.addColorStopRGBA(ratio, r, g, b, alpha);
 		}
@@ -533,10 +533,16 @@ class CairoGraphics
 						c.anchorY
 						- offsetY);
 
+					positionX = c.anchorX;
+					positionY = c.anchorY;
+
 				case CURVE_TO:
 					var c = data.readCurveTo();
 					hasPath = true;
 					quadraticCurveTo(c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+
+					positionX = c.anchorX;
+					positionY = c.anchorY;
 
 				case DRAW_CIRCLE:
 					var c = data.readDrawCircle();

@@ -129,9 +129,7 @@ class SoundLoaderContext
 		content, regardless of its origin.
 
 		For more information related to security, see the Flash Player
-		Developer Center Topic: <a
-		href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
+		Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	**/
 	public var checkPolicyFile:Bool;
 

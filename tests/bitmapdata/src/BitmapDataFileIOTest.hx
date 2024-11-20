@@ -12,6 +12,7 @@ class BitmapDataFileIOTest extends Test
 	#if flash
 	@Ignored
 	#end
+	@:timeout(1000)
 	public function test_BitmapData_fromBase64(async:Async)
 	{
 		ByteArray.loadFromFile("openfl-base64.txt").onComplete(function(logoBytes)

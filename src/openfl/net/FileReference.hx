@@ -722,9 +722,7 @@ class FileReference extends EventDispatcher
 		these security limitations.
 
 		For more information related to security, see the Flash Player
-		Developer Center Topic: <a
-		href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
+		Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 
 		When you download a file using this method, it is flagged as
 		downloaded on operating systems that flag downloaded files:
@@ -1200,9 +1198,7 @@ class FileReference extends EventDispatcher
 		these security limitations.
 
 		For more information related to security, see the Flash Player
-		Developer Center Topic: <a
-		href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
+		Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 
 		Note that because of new functionality added to the Flash Player, when
 		publishing to Flash Player 10, you can have only one of the following

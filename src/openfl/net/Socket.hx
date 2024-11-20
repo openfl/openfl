@@ -95,8 +95,7 @@ import sys.net.Socket as SysSocket;
 	application security sandbox.
 
 	For more information related to security, see the Flash Player Developer
-	Center Topic: <a href="http://www.adobe.com/go/devnet_security_en"
-	scope="external">Security</a>
+	Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).s
 
 	@event close         Dispatched when the server closes the socket
 						 connection.
@@ -287,9 +286,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 							 more information on policy files, see "Website
 							 controls (policy files)" in the _OpenFL
 							 Developer's Guide_ and the Flash Player Developer
-							 Center Topic: <a
-							 href="http://www.adobe.com/go/devnet_security_en"
-							 scope="external">Security</a>.
+							 Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	**/
 	public function new(host:String = null, port:Int = 0)
 	{
@@ -370,9 +367,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 							 more information on policy files, see "Website
 							 controls (policy files)" in the _OpenFL
 							 Developer's Guide_ and the Flash Player Developer
-							 Center Topic: <a
-							 href="http://www.adobe.com/go/devnet_security_en"
-							 scope="external">Security</a>.
+							 Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	**/
 	public function connect(host:String, port:Int):Void
 	{

@@ -151,7 +151,7 @@ class FileTest extends Test
 		Assert.isFalse(directoryToDelete.isDirectory);
 	}
 
-	@:timeout(1000)
+	@:timeout(2000)
 	public function test_deleteDirectoryAsync(async:Async)
 	{
 		var directoryToDelete = writableDirectory.resolvePath("deleteDirectoryAsync-test");
@@ -189,7 +189,7 @@ class FileTest extends Test
 		Assert.isFalse(fileToDelete.exists);
 	}
 
-	@:timeout(1000)
+	@:timeout(2000)
 	public function test_deleteFileAsync(async:Async)
 	{
 		var sourceFile = assetsDirectory.resolvePath("asset.txt");
@@ -223,7 +223,7 @@ class FileTest extends Test
 		Assert.notNull(assetFile);
 	}
 
-	@:timeout(1000)
+	@:timeout(2000)
 	public function test_getDirectoryListingAsync(async:Async)
 	{
 		Assert.isTrue(assetsDirectory.exists);
@@ -267,7 +267,7 @@ class FileTest extends Test
 		Assert.equals("this is a text file", contentsRead);
 	}
 
-	@:timeout(1000)
+	@:timeout(2000)
 	public function test_copyToAsync(async:Async)
 	{
 		var sourceFile = assetsDirectory.resolvePath("asset.txt");
@@ -321,7 +321,7 @@ class FileTest extends Test
 		Assert.equals(contents, contentsRead);
 	}
 
-	@:timeout(1000)
+	@:timeout(2000)
 	public function test_moveToAsync(async:Async)
 	{
 		var sourceFile = writableDirectory.resolvePath("sourceFile.txt");

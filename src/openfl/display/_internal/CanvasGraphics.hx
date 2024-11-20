@@ -137,12 +137,42 @@ class CanvasGraphics
 				{
 					ratio = ratios[i] / 0xFF;
 					if (ratio < 0) ratio = 0;
-					if (ratio > 1) ratio = 1;
+					else if (ratio > 1) ratio = 1;
 
 					gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
 				}
 
+				if (point != null) Point.__pool.release(point);
+				if (point2 != null) Point.__pool.release(point2);
+				if (releaseMatrix) Matrix.__pool.release(matrix);
+
+				return cast(gradientFill);
+
 			case LINEAR:
+				if (spreadMethod == PAD)
+				{
+					gradientFill = context.createLinearGradient(-819.2, 0, 819.2, 0);
+
+					pendingMatrix = matrix.clone();
+					inversePendingMatrix = matrix.clone();
+					inversePendingMatrix.invert();
+
+					for (i in 0...colors.length)
+					{
+						ratio = ratios[i] / 0xFF;
+						if (ratio < 0) ratio = 0;
+						else if (ratio > 1) ratio = 1;
+
+						gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
+					}
+
+					if (point != null) Point.__pool.release(point);
+					if (point2 != null) Point.__pool.release(point2);
+					if (releaseMatrix) Matrix.__pool.release(matrix);
+
+					return cast(gradientFill);
+				}
+
 				var gradientScale:Float = spreadMethod == PAD ? 1.0 : 25.0;
 				var dx = 0.5 * (gradientScale - 1.0) * 1638.4;
 				var canvas:CanvasElement = cast Browser.document.createElement("canvas");
@@ -153,18 +183,7 @@ class CanvasGraphics
 				canvas.width = context.canvas.width;
 				canvas.height = context.canvas.height;
 				gradientFill = context.createLinearGradient(-819.2 - dx, 0, 819.2 + dx, 0);
-				if (spreadMethod == PAD)
-				{
-					for (i in 0...colors.length)
-					{
-						ratio = ratios[i] / 0xFF;
-						if (ratio < 0) ratio = 0;
-						if (ratio > 1) ratio = 1;
-
-						gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
-					}
-				}
-				else if (spreadMethod == REFLECT)
+				if (spreadMethod == REFLECT)
 				{
 					var t:Float = 0;
 					var step:Float = 1 / 25;
@@ -176,7 +195,7 @@ class CanvasGraphics
 							ratio = ratios[i] / 0xFF;
 							ratio = t + ratio * step;
 							if (ratio < 0) ratio = 0;
-							if (ratio > 1) ratio = 1;
+							else if (ratio > 1) ratio = 1;
 
 							gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
 						}
@@ -187,7 +206,7 @@ class CanvasGraphics
 							ratio = ratios[a] / 0xFF;
 							ratio = t + (1.0 - ratio) * step;
 							if (ratio < 0) ratio = 0;
-							if (ratio > 1) ratio = 1;
+							else if (ratio > 1) ratio = 1;
 							gradientFill.addColorStop(ratio, getRGBA(colors[a], alphas[a]));
 							a--;
 						}
@@ -206,14 +225,14 @@ class CanvasGraphics
 							ratio = ratios[i] / 0xFF;
 							ratio = t + ratio * step;
 							if (ratio < 0) ratio = 0;
-							if (ratio > 1) ratio = 1 - 0.001;
+							else if (ratio > 1) ratio = 1 - 0.001;
 
 							gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
 						}
 
 						ratio = t + 0.001;
 						if (ratio < 0) ratio = 0;
-						if (ratio > 1) ratio = 1;
+						else if (ratio > 1) ratio = 1;
 						gradientFill.addColorStop(ratio - 0.001, getRGBA(colors[colors.length - 1], alphas[alphas.length - 1]));
 						gradientFill.addColorStop(ratio, getRGBA(colors[0], alphas[0]));
 
@@ -686,10 +705,16 @@ class CanvasGraphics
 						c.anchorY
 						- offsetY);
 
+					positionX = c.anchorX;
+					positionY = c.anchorY;
+
 				case CURVE_TO:
 					var c = data.readCurveTo();
 					hasPath = true;
 					context.quadraticCurveTo(c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+
+					positionX = c.anchorX;
+					positionY = c.anchorY;
 
 				case DRAW_CIRCLE:
 					var c = data.readDrawCircle();

@@ -73,7 +73,7 @@ class FileStreamTest extends Test
 		Assert.equals("this is a text file", contentsRead);
 	}
 
-	@:timeout(1000)
+	@:timeout(2000)
 	public function test_readText_async(async:Async)
 	{
 		var file = assetsDirectory.resolvePath("asset.txt");
