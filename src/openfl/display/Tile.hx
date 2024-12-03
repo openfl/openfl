@@ -39,7 +39,7 @@ class Tile
 	/**
 	 	Reserved for multiTexture rendering.
 	**/
-	private var multiTextureShaderIndex:Int = 0;
+	private var multiTextureShader:Shader;
 	#end
 
 	/**

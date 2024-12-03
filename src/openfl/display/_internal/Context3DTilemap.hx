@@ -53,9 +53,6 @@ class Context3DTilemap
 	private static var lastFlushedPosition:Int;
 	private static var lastUsedBitmapData:BitmapData;
 	private static var lastUsedShader:Shader;
-	#if openfl_experimental_multitexture
-	private static var lastUsedMultiTextureShaderIndex:Int;
-	#end
 	private static var numTiles:Int;
 	private static var vertexBufferData:Float32Array;
 	private static var vertexDataPosition:Int;
@@ -519,7 +516,7 @@ class Context3DTilemap
 			#if openfl_experimental_multitexture
 			if(multiTextureEnabled)
 			{
-				tile.multiTextureId = tile.multiTextureShaderIndex = 0;
+				tile.multiTextureId = 0;
 				bitmapData = tile.tileset != null ? tile.tileset.bitmapData : bitmapData;
 				if(bitmapData != null && tile.shader == null)
 				{
@@ -535,7 +532,7 @@ class Context3DTilemap
 						multiTextureArrayIndex = Math.floor(multiTextureBitmapDataArrayIndex / multiTextureSize);
 					}
 
-					tile.multiTextureShaderIndex = multiTextureArrayIndex;
+					tile.multiTextureShader = multiTextureShaders[multiTextureArrayIndex];
 					tile.multiTextureId =  multiTextureBitmapDataArrayIndex % multiTextureSize;
 				}
 			}
@@ -658,11 +655,12 @@ class Context3DTilemap
 			shader = tile.shader != null ? tile.shader : defaultShader;
 
 			#if openfl_experimental_multitexture
-			if (multiTextureEnabled && shader == tilemap.__worldShader && tileset != null) {
-				var shaderIndex:Int = tile.multiTextureShaderIndex;
-				if (multiTextureShaders.length > shaderIndex) {
-					shader = multiTextureShaders[shaderIndex];
-				}
+			if(multiTextureEnabled && tile.multiTextureShader != null)
+			{
+				shader = tile.multiTextureShader;
+
+				// Clear the multiTextureShader because it is not needed anymore.
+				tile.multiTextureShader = null;
 			}
 			#end
 
@@ -698,11 +696,10 @@ class Context3DTilemap
 				#if openfl_experimental_multitexture
 				if(Std.isOfType(shader, MultiTextureShader))
 				{
-					if ((shader != currentShader) || (currentBlendMode != blendMode) || (tile.multiTextureShaderIndex != lastUsedMultiTextureShaderIndex))
+					if ((shader != currentShader) || (currentBlendMode != blendMode))
 					{
 						flush(tilemap, renderer, currentBlendMode, tile.multiTextureId);
 					}
-					lastUsedMultiTextureShaderIndex = tile.multiTextureShaderIndex;
 				}else #end {
 					if ((shader != currentShader)
 					|| (bitmapData != currentBitmapData && currentBitmapData != null)
