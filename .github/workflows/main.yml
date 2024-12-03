@@ -115,10 +115,16 @@ jobs:
           haxelib run hxp test -Dtarget=hl -Duse-lime-tools -verbose --install-hxp-alias
 
   unit-test-lime-develop:
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
         with:
+          submodules: true
+
+      - uses: actions/checkout@v4
+        with:
+          repository: openfl/lime
+          path: lime-develop
           submodules: true
 
       - uses: krdlab/setup-haxe@master
@@ -141,25 +147,24 @@ jobs:
           haxelib install hxp --quiet
           haxelib install utest --quiet
 
-      - name: Print Haxe Version
-        run: haxe -version
-
-      - name: Install dependencies with Homebrew
+      - name: Setup environment
         run: |
+          haxelib dev openfl ${{ github.workspace }}
+          haxelib dev lime ${{ github.workspace }}/lime-develop
+
+      - name: Install HashLink dependencies with Homebrew
+        run: |
+          pushd ${{ github.workspace }}/lime-develop/project/lib/hashlink
           brew update
           rm /usr/local/bin/2to3*
           rm /usr/local/bin/idle3*
           rm /usr/local/bin/pydoc3*
           rm /usr/local/bin/python3*
-          brew install mbedtls
+          brew bundle
+          popd
 
-      - name: Setup environment
+      - name: Rebuild Lime
         run: |
-          haxelib dev openfl ${{ github.workspace }}
-
-      - name: Setup Lime dev
-        run: |
-          haxelib git lime https://github.com/openfl/lime
           haxelib run lime rebuild tools
           haxelib run lime rebuild hl
           haxelib run lime config AIR_SDK ${{ env.AIR_HOME }}
