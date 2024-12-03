@@ -64,7 +64,6 @@ class Context3DTilemap
 	private static var multiTextureSize:Int = -1;
 	private static var multiTextureEnabled:Bool;
 	private static var multiTextureBitmapDataArray:Array<BitmapData> = [];
-	private static var tempMultiTextureShaders:Array<MultiTextureShader> = [];
 	private static var multiTextureShaders:Array<MultiTextureShader> = [];
 	#end
 
@@ -79,17 +78,6 @@ class Context3DTilemap
 		}
 
 		#if openfl_experimental_multitexture
-		if(tempMultiTextureShaders.length > 0)
-		{
-			for(i in 0...tempMultiTextureShaders.length)
-			{
-				if(tempMultiTextureShaders[i] != null)
-					multiTextureShaders[i] = tempMultiTextureShaders[i];
-			}
-			tempMultiTextureShaders = [];
-		}
-
-
 		multiTextureEnabled = tilemap.multiTextureEnabled;
 		if(multiTextureEnabled)
 		{
@@ -163,14 +151,9 @@ class Context3DTilemap
 				{
 					var shader = multiTextureShaders[shaderIndex];
 
-					// MultiTextureShader not available, create and use next frame!
 					if(shader == null)
 					{
-						if(tempMultiTextureShaders[shaderIndex] == null)
-						{
-							tempMultiTextureShaders[shaderIndex] = new MultiTextureShader(multiTextureSize);
-						}
-						continue;
+						shader = multiTextureShaders[shaderIndex] = new MultiTextureShader(multiTextureSize);
 					}
 
 					var multiTextureBitmapDataStartIndex:Int = shaderIndex * multiTextureSize;
