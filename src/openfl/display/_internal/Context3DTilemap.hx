@@ -508,7 +508,7 @@ class Context3DTilemap
 		lastUsedShader = currentShader;
 	}
 
-	private static function update(tilemap:Tilemap, _group:TileContainer#if openfl_experimental_multitexture , bitmapData:BitmapData #end):Void
+	private static function update(tilemap:Tilemap, _group:TileContainer#if openfl_experimental_multitexture , bitmapData:BitmapData, shader:Shader = null #end):Void
 	{
 		var _tiles = _group.__tiles;
 		for (tile in _tiles)
@@ -518,7 +518,8 @@ class Context3DTilemap
 			{
 				tile.multiTextureId = 0;
 				bitmapData = tile.tileset != null ? tile.tileset.bitmapData : bitmapData;
-				if(bitmapData != null && tile.shader == null)
+				shader = tile.shader != null ? tile.shader : shader;
+				if(bitmapData != null && shader == null)
 				{
 					var multiTextureAssetLength:Int = multiTextureBitmapDataArray.length;
 					var multiTextureArrayIndex = Math.floor(multiTextureAssetLength / multiTextureSize);
@@ -541,7 +542,7 @@ class Context3DTilemap
 			if (tile.__length > 0)
 			{
 				#if openfl_experimental_multitexture
-				update(tilemap, cast tile, bitmapData);
+				update(tilemap, cast tile, bitmapData, shader);
 				#else
 				update(tilemap, cast tile);
 				#end
