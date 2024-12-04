@@ -321,10 +321,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 		else if (__currentShader != null)
 		{
-			if (__currentShader.__textureId != null) {
-				__currentShader.__textureId.__useArray = true;
-				__currentShader.__textureId.value = [id];
-			}
+			if (__currentShader.__textureId != null) __currentShader.__textureId.value = [id];
 		}
 	}
 	#end
