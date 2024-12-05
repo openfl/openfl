@@ -593,6 +593,22 @@ class Context3DTilemap
 			tilemap.tileBlendModeEnabled, currentBlendMode, null);
 		flush(tilemap, renderer, currentBlendMode);
 
+		#if openfl_experimental_multitexture
+		if(multiTextureEnabled)
+		{
+			// Clear shader inputs for the next render.
+			for(shader in multiTextureShaders)
+			{
+				for(samplerIndex in 0...multiTextureSize)
+				{
+					var bitmapDataInput:ShaderInput<BitmapData> = cast Reflect.getProperty(@:privateAccess shader.__data, "uSampler" + samplerIndex);
+					bitmapDataInput.input = null;
+					bitmapDataInput.filter = null;
+				}
+			}
+		}
+		#end
+
 		// renderer.filterManager.popObject (tilemap);
 		renderer.__popMaskRect();
 		renderer.__popMaskObject(tilemap);
