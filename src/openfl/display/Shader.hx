@@ -360,16 +360,15 @@ class Shader
 			}
 
 			var lineNumber = Std.parseInt(__lineExtractor.matched(1));
-			// Note lines is zero-based while lineNumber is 1-based
-			if (lines.length <= lineNumber - 1)
+			var info = StringTools.trim(__lineExtractor.matched(2));
+			// EOF errors will not have a valid line
+			if (lineNumber > lines.length)
 			{
-				// Invalid line number
-				success = false;
-				break;
+				prettyLog += '\n\nLine $lineNumber: $info';
+				continue;
 			}
 
 			// Add the relevant line to each log
-			var info = StringTools.trim(__lineExtractor.matched(2));
 			var line = StringTools.trim(lines[lineNumber - 1]);
 			prettyLog += '\n\nLine $lineNumber: $info\n\t$line';
 		}
