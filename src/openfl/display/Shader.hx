@@ -326,19 +326,61 @@ class Shader
 		gl.compileShader(shader);
 		var shaderInfoLog = gl.getShaderInfoLog(shader);
 		var hasInfoLog = shaderInfoLog != null && StringTools.trim(shaderInfoLog) != "";
-		var compileStatus = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+		var isError = gl.getShaderParameter(shader, gl.COMPILE_STATUS) == 0;
 
-		if (hasInfoLog || compileStatus == 0)
+		if (hasInfoLog || isError)
 		{
-			var message = (compileStatus == 0) ? "Error" : "Info";
-			message += (type == gl.VERTEX_SHADER) ? " compiling vertex shader" : " compiling fragment shader";
-			message += "\n" + shaderInfoLog;
-			message += "\n" + source;
-			if (compileStatus == 0) Log.error(message);
-			else if (hasInfoLog) Log.debug(message);
+			__logGLShaderInfo(isError, type, shaderInfoLog, source);
 		}
 
 		return shader;
+	}
+
+	private var __lineExtractor = ~/^\w+?: \d+:(\d+):(.+$)/;
+	@:noCompletion private function __logGLShaderInfo(isError:Bool, type:Int, infoLog:String, source:String):Void
+	{
+		var message = isError ? "Error" : "Info";
+		var typeName = (type == __context.gl.VERTEX_SHADER) ? "vertex" : "fragment";
+		message += ' compiling $typeName shader';
+		
+		var lines = source.split("\n");
+		var success = true;
+		var prettyLog = "";
+		for (log in infoLog.split("\n"))
+		{
+			if (StringTools.trim(log) == "")
+				continue;
+
+			// look for a line number
+			if (!__lineExtractor.match(log))
+			{
+				// Could not find line numbers
+				success = false;
+				break;
+			}
+
+			var lineNumber = Std.parseInt(__lineExtractor.matched(1));
+			// Note lines is zero-based while lineNumber is 1-based
+			if (lines.length <= lineNumber - 1)
+			{
+				// Invalid line number
+				success = false;
+				break;
+			}
+
+			// Add the relevant line to each log
+			var info = StringTools.trim(__lineExtractor.matched(2));
+			var line = StringTools.trim(lines[lineNumber - 1]);
+			prettyLog += '\n\nLine $lineNumber: $info\n\t$line';
+		}
+
+		if (success)
+			message += prettyLog;
+		else
+			message += "\nFailed to simplify log info, showing full source\n" + infoLog + "\n" + source;
+
+		if (isError) Log.error(message);
+		else Log.debug(message);
 	}
 
 	@:noCompletion private function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
