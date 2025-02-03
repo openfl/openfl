@@ -349,12 +349,8 @@ class Shader
 	@:noCompletion private var __isEmptyLine = ~/^\W*$/;
 	@:noCompletion private function __logGLShaderInfo(isError:Bool, type:Int, infoLog:String, source:String):Void
 	{
-		var message = isError ? "Error" : "Info";
-		var typeName = (type == __context.gl.VERTEX_SHADER) ? "vertex" : "fragment";
-		message += ' compiling $typeName shader';
-		
+		var message = "";
 		var lines = source.split("\n");
-		var prettyLog = "";
 		var failingLine:String = null;
 		for (log in infoLog.split("\n"))
 		{
@@ -376,24 +372,24 @@ class Shader
 			if (lineNumber >= lines.length)
 			{
 				// EOF errors will not have a valid line
-				prettyLog += '\n\n $lineNumber | $info';
+				message += '\n\n $lineNumber | $info';
 			}
 			else
 			{
 				// Add the relevant line to each log
 				var line = lines[lineNumber - 1];
 				var indent = StringTools.lpad("|", " ", lineNumberStr.length + 3);
-				prettyLog += '\n\n $lineNumber | $line\n$indent ${info}';
+				message += '\n\n $lineNumber | $line\n$indent ${info}';
 			}
 		}
 
+		// If we couldn't parse the logs, output the old, verbose format
 		if (failingLine != null)
-			message += '\nFailed to simplify log:"$failingLine"\n$infoLog\n$source';
-		else
-			message += prettyLog;
-
-		if (isError) Log.error(message);
-		else Log.debug(message);
+			message = '\nFailed to simplify log:"$failingLine"\n$infoLog\n$source';
+		
+		var typeName = (type == __context.gl.VERTEX_SHADER) ? "vertex" : "fragment";
+		if (isError) Log.error('Error compiling $typeName shader $message');
+		else Log.debug('Info compiling $typeName shader $message');
 	}
 
 	@:noCompletion private function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
