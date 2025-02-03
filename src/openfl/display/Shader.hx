@@ -336,7 +336,17 @@ class Shader
 		return shader;
 	}
 
-	private var __lineExtractor = ~/^\w+?: \d+:(\d+):(.+$)/;
+	/**
+	 * Retrieves the line number from a shader log line.
+	 */
+	@:noCompletion private var __lineExtractor = ~/^\w+?: \d+:(\d+):(.+$)/;
+	/**
+	 * Searches for strings that have only whitespace.
+	 * 
+	 * **Note:** Searching for all whitespace via `~/^\s*$/` caused false-negatives,
+	 * notably: `String.fromCharCode(0)` is `false` but `\W` is `true`.
+	 */
+	@:noCompletion private var __isEmptyLine = ~/^\W*$/;
 	@:noCompletion private function __logGLShaderInfo(isError:Bool, type:Int, infoLog:String, source:String):Void
 	{
 		var message = isError ? "Error" : "Info";
@@ -344,39 +354,43 @@ class Shader
 		message += ' compiling $typeName shader';
 		
 		var lines = source.split("\n");
-		var success = true;
 		var prettyLog = "";
+		var failingLine:String = null;
 		for (log in infoLog.split("\n"))
 		{
-			if (StringTools.trim(log) == "")
+			// ignore empty lines
+			if (__isEmptyLine.match(log))
 				continue;
 
 			// look for a line number
 			if (!__lineExtractor.match(log))
 			{
-				// Could not find line numbers
-				success = false;
+				// Could not find expected info, abort pretty formatting
+				failingLine = log;
 				break;
 			}
 
-			var lineNumber = Std.parseInt(__lineExtractor.matched(1));
-			var info = StringTools.trim(__lineExtractor.matched(2));
-			// EOF errors will not have a valid line
-			if (lineNumber > lines.length)
+			var lineNumberStr = __lineExtractor.matched(1);
+			var lineNumber = Std.parseInt(lineNumberStr);
+			var info = __lineExtractor.matched(2);
+			if (lineNumber >= lines.length)
 			{
-				prettyLog += '\n\nLine $lineNumber: $info';
-				continue;
+				// EOF errors will not have a valid line
+				prettyLog += '\n\n $lineNumber | $info';
 			}
-
-			// Add the relevant line to each log
-			var line = StringTools.trim(lines[lineNumber - 1]);
-			prettyLog += '\n\nLine $lineNumber: $info\n\t$line';
+			else
+			{
+				// Add the relevant line to each log
+				var line = lines[lineNumber - 1];
+				var indent = StringTools.lpad("|", " ", lineNumberStr.length + 3);
+				prettyLog += '\n\n $lineNumber | $line\n$indent ${info}';
+			}
 		}
 
-		if (success)
-			message += prettyLog;
+		if (failingLine != null)
+			message += '\nFailed to simplify log:"$failingLine"\n$infoLog\n$source';
 		else
-			message += "\nFailed to simplify log info, showing full source\n" + infoLog + "\n" + source;
+			message += prettyLog;
 
 		if (isError) Log.error(message);
 		else Log.debug(message);
