@@ -31,12 +31,15 @@ Currently, OpenFL supports the following platforms:
 
 There is also a community effort to bring OpenFL to consoles, OpenFL is running on:
 
- * Switch
+ * Nintendo Switch 2 (upcoming)
+ * Nintendo Switch
  * Wii U
+ * PlayStation 5
  * PlayStation 4
  * PlayStation 3
  * PlayStation Vita
  * Xbox One
+ * Xbox Series X|S
 
 _Additional details on console support will be available in the future._
 
