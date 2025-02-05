@@ -920,7 +920,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		// when using Haxe 4, this value doesn't seem to get initialized,
 		// so it is undefined, which breaks ObjectMap. this line changes it
 		// from undefined to 0, but won't mess with numeric value > 0.
-		untyped #if haxe4 js.Syntax.code #else __js__ #end ("$global.$haxeUID |= 0;");
+		untyped js.Syntax.code("$global.$haxeUID |= 0;");
 		#end
 
 		untyped Object.defineProperties(Stage.prototype, {
