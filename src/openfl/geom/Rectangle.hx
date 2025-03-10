@@ -547,7 +547,7 @@ class Rectangle
 	}
 
 	/**
-		Sets the Rectangle object's properties to the specified values.
+		Sets the members of Rectangle to the specified values.
 
 		@param xa      The _x_ coordinate of the top-left corner of the
 					   rectangle.
