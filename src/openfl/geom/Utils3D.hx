@@ -163,8 +163,8 @@ class Utils3D
 		if (verts.length % 3 != 0) return;
 
 		var n = m.rawData;
-		var x, y, z, w;
-		var x1, y1, z1, w1;
+		var x:Float, y:Float, z:Float, w:Float;
+		var x1:Float, y1:Float, z1:Float, w1:Float;
 		var i = 0;
 
 		while (i < verts.length)

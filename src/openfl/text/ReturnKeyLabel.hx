@@ -9,7 +9,6 @@ package openfl.text;
 	@see `openfl.text.StageText.returnKeyLabel`
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract ReturnKeyLabel(Null<Int>)
-
 {
 	/**
 		Use the default label.
@@ -63,9 +62,7 @@ package openfl.text;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract ReturnKeyLabel(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract ReturnKeyLabel(String) from String to String
 {
 	public var DEFAULT = "default";
 	public var DONE = "done";

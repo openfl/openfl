@@ -12,6 +12,7 @@ class Build extends Script
 		hxml.cp("../../src");
 		hxml.lib("utest");
 		hxml.lib("lime");
+		hxml.define("openfl");
 		hxml.define("openfl-unit-testing");
 
 		var target = defines.get("target");
@@ -47,7 +48,7 @@ class Build extends Script
 		switch (target)
 		{
 			case "hl":
-				var hdllPath = NDLL.getLibraryPath(new NDLL("lime", new Haxelib("lime")), getPlatformDirectoryName());
+				var hdllPath = NDLL.getLibraryPath(new NDLL("lime", new Haxelib("lime")), getHashLinkPlatformDirectoryName(true));
 				hdllPath = hdllPath.substr(0, hdllPath.length - Path.extension(hdllPath).length) + "hdll";
 				System.copyFile(hdllPath, "bin/hl/lime.hdll");
 				var limePath = Haxelib.getPath(new Haxelib("lime"));
@@ -76,10 +77,10 @@ class Build extends Script
 		}
 	}
 
-	private function getHashLinkPlatformDirectoryName():String
+	private function getHashLinkPlatformDirectoryName(forRuntime:Bool = false):String
 	{
 		var limePath = Haxelib.getPath(new Haxelib("lime"));
-		if (Haxelib.getPathVersion(limePath).major < 8)
+		if (forRuntime && Haxelib.getPathVersion(limePath).major < 8)
 		{
 			if (System.hostPlatform == WINDOWS)
 			{
@@ -94,6 +95,10 @@ class Build extends Script
 				return "linux";
 			}
 		}
+		if (System.hostPlatform == MAC)
+		{
+			return (System.hostArchitecture == X64 || System.hostArchitecture == ARM64) ? "Mac64" : "Mac";
+		}
 		return getPlatformDirectoryName();
 	}
 
@@ -105,7 +110,12 @@ class Build extends Script
 		}
 		else if (System.hostPlatform == MAC)
 		{
-			return System.hostArchitecture == X64 ? "Mac64" : "Mac";
+			return switch (System.hostArchitecture)
+			{
+				case X64: "Mac64";
+				case ARM64: "MacArm64";
+				default: "Mac";
+			}
 		}
 		else
 		{

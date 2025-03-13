@@ -68,7 +68,7 @@ import lime.media.AudioSource;
 
 
 	However, in Adobe AIR, content in the `application` security
-	sandbox(content installed with the AIR application) are not restricted by
+	sandbox (content installed with the AIR application) are not restricted by
 	these security limitations.
 
 	For more information related to security, see the Flash Player Developer
@@ -196,9 +196,7 @@ class Sound extends EventDispatcher
 		these security limitations.
 
 		For more information related to security, see the Flash Player
-		Developer Center Topic: <a
-		href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
+		Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	**/
 	public var id3(get, never):ID3Info;
 
@@ -447,7 +445,7 @@ class Sound extends EventDispatcher
 		`embed` tags in the HTML page that contains the SWF
 		content.
 
-		 In Flash Player 10 and later, if you use a multipart Content-Type(for
+		 In Flash Player 10 and later, if you use a multipart Content-Type (for
 		example "multipart/form-data") that contains an upload (indicated by a
 		"filename" parameter in a "content-disposition" header within the POST
 		body), the POST operation is subject to the security rules applied to
@@ -455,7 +453,7 @@ class Sound extends EventDispatcher
 
 		* The POST operation must be performed in response to a user-initiated
 		action, such as a mouse click or key press.
-		* If the POST operation is cross-domain(the POST target is not on the
+		* If the POST operation is cross-domain (the POST target is not on the
 		same server as the SWF file that is sending the POST request), the target
 		server must provide a URL policy file that permits cross-domain
 		access.

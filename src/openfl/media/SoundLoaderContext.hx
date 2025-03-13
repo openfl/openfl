@@ -24,7 +24,7 @@ package openfl.media;
 
 
 	However, in Adobe AIR, content in the `application` security
-	sandbox(content installed with the AIR application) are not restricted by
+	sandbox (content installed with the AIR application) are not restricted by
 	these security limitations.
 
 	For more information related to security, see the Flash Player Developer
@@ -129,9 +129,7 @@ class SoundLoaderContext
 		content, regardless of its origin.
 
 		For more information related to security, see the Flash Player
-		Developer Center Topic: <a
-		href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
+		Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	**/
 	public var checkPolicyFile:Bool;
 

@@ -166,7 +166,7 @@ class AMF3Reader
 			// parse any dynamic members (name-value pairs) until empty string name is found
 			if (dyn)
 			{
-				var s;
+				var s:Dynamic;
 				while (true)
 				{
 					s = AMF3Tools.decode(readString());

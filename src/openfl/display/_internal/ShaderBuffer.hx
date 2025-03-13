@@ -212,7 +212,10 @@ class ShaderBuffer
 		var intIndex = 0;
 
 		var paramPosition:Int = 0;
-		var boolParam, floatParam, intParam, length;
+		var boolParam:ShaderParameter<Bool>;
+		var floatParam:ShaderParameter<Float>;
+		var intParam:ShaderParameter<Int>;
+		var length:Int;
 
 		for (i in 0...paramCount)
 		{

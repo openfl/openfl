@@ -22,7 +22,7 @@ package openfl.net;
 
 	In Flash Player and in Adobe AIR content outside of the application
 	security sandbox, the following request headers cannot be used, and the
-	restricted terms are not case-sensitive(for example, `Get`,
+	restricted terms are not case-sensitive (for example, `Get`,
 	`get`, and `GET` are all not allowed). Also,
 	hyphenated terms apply if an underscore character is used (for example,
 	both `Content-Length` and `Content_Length` are not
@@ -90,7 +90,7 @@ package openfl.net;
 	public var name:String;
 
 	/**
-		The value associated with the `name` property(such as
+		The value associated with the `name` property (such as
 		`text/plain`).
 	**/
 	public var value:String;

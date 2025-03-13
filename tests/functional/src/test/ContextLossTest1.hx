@@ -58,7 +58,22 @@ class ContextLossTest1 extends FunctionalTest
 
 				projectionTransform = new Matrix3D();
 				projectionTransform.copyRawDataFrom(Vector.ofArray([
-					2.0 / contentWidth, 0.0, 0.0, 0.0, 0.0, 2.0 / contentHeight, 0.0, 0.0, 0.0, 0.0, -2.0 / 2000, 0.0, -1.0, -1.0, 0.0, 1.0
+					2.0 / contentWidth,
+					0.0,
+					0.0,
+					0.0,
+					0.0,
+					2.0 / contentHeight,
+					0.0,
+					0.0,
+					0.0,
+					0.0,
+					-2.0 / 2000,
+					0.0,
+					-1.0,
+					-1.0,
+					0.0,
+					1.0
 				]));
 			}
 		}
@@ -236,7 +251,26 @@ class ContextLossTest1 extends FunctionalTest
 		bitmapTexture.uploadFromBitmapData(bitmapData);
 
 		var vertexData = new Vector<Float>([
-			bitmapData.width, bitmapData.height, 0, 1, 1, 0, bitmapData.height, 0, 0, 1, bitmapData.width, 0, 0, 1, 0, 0, 0, 0, 0, 0.0
+			bitmapData.width,
+			bitmapData.height,
+			0,
+			1,
+			1,
+			0,
+			bitmapData.height,
+			0,
+			0,
+			1,
+			bitmapData.width,
+			0,
+			0,
+			1,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0.0
 		]);
 
 		bitmapVertexBuffer = context.createVertexBuffer(4, 5);

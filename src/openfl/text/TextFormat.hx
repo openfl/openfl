@@ -137,7 +137,7 @@ class TextFormat
 	public var kerning:Null<Bool>;
 
 	/**
-		An integer representing the amount of vertical space(called
+		An integer representing the amount of vertical space (called
 		_leading_) between lines. The default value is `null`,
 		which indicates that the amount of leading used is 0.
 	**/

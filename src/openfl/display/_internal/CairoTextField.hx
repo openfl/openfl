@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+import openfl.text.Font;
 #if !flash
 import openfl.text._internal.TextEngine;
 import openfl.display.BitmapData;
@@ -240,7 +241,13 @@ class CairoTextField
 				scrollY -= textEngine.lineHeights[i];
 			}
 
-			var color, r, g, b, font, size, advance;
+			var color:Int;
+			var r:Float;
+			var g:Float;
+			var b:Float;
+			var font:Font;
+			var size:Int;
+			var advance:Float;
 
 			for (group in textEngine.layoutGroups)
 			{
@@ -355,7 +362,8 @@ class CairoTextField
 								selectionEnd = group.endIndex;
 							}
 
-							var start, end;
+							var start:Rectangle;
+							var end:Rectangle;
 
 							start = textField.getCharBoundaries(selectionStart);
 

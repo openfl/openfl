@@ -1219,6 +1219,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		super(length, bytes.getData());
 		#end
 
+		#if openfljs
+		__length = length;
+		#end
 		__allocated = length;
 
 		endian = defaultEndian;

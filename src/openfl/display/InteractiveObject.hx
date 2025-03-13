@@ -181,7 +181,7 @@ import openfl.geom.Rectangle;
 								  a secondary tap, the InteractiveObject
 								  instance can dispatch a
 								  `mouseOver` event and a
-								  `click` event(among others) as
+								  `click` event (among others) as
 								  well as the `gesturePressAndTap`
 								  event, or all if the current environment
 								  supports it. Choose how you want to handle
@@ -207,10 +207,10 @@ import openfl.geom.Rectangle;
 								  When handling the properties of the event
 								  object, note that the `localX` and
 								  `localY` properties are set to the
-								  primary point of contact(the "push"). The
+								  primary point of contact (the "push"). The
 								  `offsetX` and `offsetY`
 								  properties are the distance to the secondary
-								  point of contact(the "tap").
+								  point of contact (the "tap").
 	@event gestureRotate          Dispatched when the user performs a rotation
 								  gesture at a point of contact with an
 								  InteractiveObject instance (such as touching
@@ -228,7 +228,7 @@ import openfl.geom.Rectangle;
 								  over an InteractiveObject, the
 								  InteractiveObject instance can dispatch a
 								  `mouseOver` event and a
-								  `click` event(among others), in
+								  `click` event (among others), in
 								  addition to the `gestureRotate`
 								  event, or all if the current environment
 								  supports it. Choose how you want to handle
@@ -278,7 +278,7 @@ import openfl.geom.Rectangle;
 								  over an InteractiveObject, and then moves the
 								  fingers together, the InteractiveObject
 								  instance can dispatch a `rollOver`
-								  event and a `rollOut` event(among
+								  event and a `rollOut` event (among
 								  others), in addition to the
 								  `gestureSwipe` event, or all if
 								  the current environment supports it. Choose
@@ -326,7 +326,7 @@ import openfl.geom.Rectangle;
 								  both if the current environment supports it.
 								  Choose how you want to handle the user
 								  interaction. Use the openfl.ui.Multitouch
-								  class to manage touch event handling(enable
+								  class to manage touch event handling (enable
 								  touch gesture event handling, simple touch
 								  point event handling, or disable touch events
 								  so only mouse events are dispatched). If you
@@ -362,7 +362,7 @@ import openfl.geom.Rectangle;
 								  over an InteractiveObject, and then moves the
 								  fingers apart, the InteractiveObject instance
 								  can dispatch a `mouseOver` event
-								  and a `click` event(among
+								  and a `click` event (among
 								  others), in addition to the
 								  `gestureZoom` event, or all if the
 								  current environment supports it. Choose how
@@ -584,7 +584,7 @@ import openfl.geom.Rectangle;
 								  The `nativeDragComplete` event
 								  handler is a convenient place to update the
 								  state of the initiating display object, for
-								  example, by removing an item from a list(on
+								  example, by removing an item from a list (on
 								  a drag action of "move"), or by changing the
 								  visual properties.
 	@event nativeDragDrop         Dispatched by the target InteractiveObject
@@ -816,7 +816,7 @@ import openfl.geom.Rectangle;
 								  both if the current environment supports it.
 								  Choose how you want to handle the user
 								  interaction. Use the openfl.ui.Multitouch
-								  class to manage touch event handling(enable
+								  class to manage touch event handling (enable
 								  touch gesture event handling, simple touch
 								  point event handling, or disable touch events
 								  so only mouse events are dispatched). If you
@@ -883,7 +883,7 @@ import openfl.geom.Rectangle;
 								  both if the current environment supports it.
 								  Choose how you want to handle the user
 								  interaction. Use the openfl.ui.Multitouch
-								  class to manage touch event handling(enable
+								  class to manage touch event handling (enable
 								  touch gesture event handling, simple touch
 								  point event handling, or disable touch events
 								  so only mouse events are dispatched). If you
@@ -1023,7 +1023,7 @@ import openfl.geom.Rectangle;
 								  both if the current environment supports it.
 								  Choose how you want to handle the user
 								  interaction. Use the openfl.ui.Multitouch
-								  class to manage touch event handling(enable
+								  class to manage touch event handling (enable
 								  touch gesture event handling, simple touch
 								  point event handling, or disable touch events
 								  so only mouse events are dispatched). If you

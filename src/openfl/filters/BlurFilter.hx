@@ -27,9 +27,8 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	BlurFilter()`. The use of filters depends on the object to which you
 	apply the filter:
 
-
 	* To apply filters to movie clips, text fields, buttons, and video, use
-	the `filters` property(inherited from DisplayObject). Setting
+	the `filters` property (inherited from DisplayObject). Setting
 	the `filters` property of an object does not modify the object,
 	and you can remove the filter by clearing the `filters`
 	property.
@@ -38,7 +37,6 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	`applyFilter()` on a BitmapData object takes the source
 	BitmapData object and the filter object and generates a filtered image as a
 	result.
-
 
 	If you apply a filter to a display object, the
 	`cacheAsBitmap` property of the display object is set to
@@ -60,6 +58,9 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	example, you zoom in on a large movie clip with a filter applied, the
 	filter is turned off if the resulting image exceeds the maximum
 	dimensions.
+
+	@see `openfl.display.DisplayObject.filters`
+	@see `openfl.display.BitmapData.applyFilter`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -72,14 +73,14 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	@:noCompletion private static var __blurShader:BlurShader = new BlurShader();
 
 	/**
-		The amount of horizontal blur. Valid values are from 0 to 255(floating
+		The amount of horizontal blur. Valid values are from 0 to 255 (floating
 		point). The default value is 4. Values that are a power of 2 (such as 2,
 		4, 8, 16 and 32) are optimized to render more quickly than other values.
 	**/
 	public var blurX(get, set):Float;
 
 	/**
-		The amount of vertical blur. Valid values are from 0 to 255(floating
+		The amount of vertical blur. Valid values are from 0 to 255 (floating
 		point). The default value is 4. Values that are a power of 2 (such as 2,
 		4, 8, 16 and 32) are optimized to render more quickly than other values.
 	**/
@@ -141,9 +142,9 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		create a soft, unfocused image.
 
 		@param blurX   The amount to blur horizontally. Valid values are from 0 to
-					   255.0(floating-point value).
+					   255.0 (floating-point value).
 		@param blurY   The amount to blur vertically. Valid values are from 0 to
-					   255.0(floating-point value).
+					   255.0 (floating-point value).
 		@param quality The number of times to apply the filter. You can specify
 					   the quality using the BitmapFilterQuality constants:
 

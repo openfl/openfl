@@ -7,7 +7,6 @@ package openfl.permissions;
 	the authorization status of a permission.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract PermissionStatus(Null<Int>)
-
 {
 	/**
 		Specifies that the permission has been denied.
@@ -57,9 +56,7 @@ package openfl.permissions;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract PermissionStatus(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract PermissionStatus(String) from String to String
 {
 	public var DENIED = "denied";
 	public var GRANTED = "granted";

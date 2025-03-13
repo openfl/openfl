@@ -626,7 +626,7 @@ class MouseEvent extends Event
 		@param ctrlKey       On Windows or Linux, indicates whether the Ctrl key
 							 is activated. On Mac, indicates whether either the
 							 Ctrl key or the Command key is activated.
-		@param altKey        Indicates whether the Alt key is activated(Windows
+		@param altKey        Indicates whether the Alt key is activated (Windows
 							 or Linux only).
 		@param shiftKey      Indicates whether the Shift key is activated.
 		@param buttonDown    Indicates whether the primary mouse button is
@@ -678,7 +678,17 @@ class MouseEvent extends Event
 	public override function toString():String
 	{
 		return __formatToString("MouseEvent", [
-			"type", "bubbles", "cancelable", "localX", "localY", "relatedObject", "ctrlKey", "altKey", "shiftKey", "buttonDown", "delta"
+			"type",
+			"bubbles",
+			"cancelable",
+			"localX",
+			"localY",
+			"relatedObject",
+			"ctrlKey",
+			"altKey",
+			"shiftKey",
+			"buttonDown",
+			"delta"
 		]);
 	}
 

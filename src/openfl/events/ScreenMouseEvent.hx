@@ -9,6 +9,8 @@ package openfl.events;
 	additional properties, `screenX` and `screenY`, that report the mouse
 	coordinates in relation to the primary desktop screen rather than an
 	application window or stage.
+
+	_OpenFL target support:_ Not currently supported, except when targeting AIR.
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

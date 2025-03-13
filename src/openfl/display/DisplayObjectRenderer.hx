@@ -250,8 +250,9 @@ class DisplayObjectRenderer extends EventDispatcher
 
 		// TODO: Do not force cacheAsBitmap on OpenGL once Scale-9 is properly supported in Context3DShape
 		if (displayObject.cacheAsBitmap
-			|| (renderer.__type != OPENGL && !colorTransform.__isDefault(true) #if openfl_force_gl_cacheasbitmap_for_scale9grid
-				|| (renderer.__type == OPENGL && displayObject.scale9Grid != null) #end))
+			|| (renderer.__type != OPENGL
+				&& !colorTransform.__isDefault(true) #if openfl_force_gl_cacheasbitmap_for_scale9grid
+					|| (renderer.__type == OPENGL && displayObject.scale9Grid != null) #end))
 		{
 			var rect:Rectangle = null;
 
@@ -646,7 +647,8 @@ class DisplayObjectRenderer extends EventDispatcher
 						// var sourceRect = bitmap.rect;
 						// if (__tempPoint == null) __tempPoint = new Point ();
 						// var destPoint = __tempPoint;
-						var shader, cacheBitmap;
+						var shader:Shader;
+						var cacheBitmap:BitmapData;
 
 						for (filter in displayObject.__filters)
 						{
@@ -762,7 +764,8 @@ class DisplayObjectRenderer extends EventDispatcher
 
 						if (displayObject.__tempPoint == null) displayObject.__tempPoint = new Point();
 						var destPoint = displayObject.__tempPoint;
-						var cacheBitmap, lastBitmap;
+						var cacheBitmap:BitmapData;
+						var lastBitmap:BitmapData;
 
 						for (filter in displayObject.__filters)
 						{

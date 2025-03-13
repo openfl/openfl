@@ -99,24 +99,23 @@ import openfl.display._internal.GraphicsDataType;
 	/**
 		Specifies the stroke thickness scaling. Valid values are:
 
-		* `LineScaleMode.NORMAL` - Always scale the line thickness
+		*  `LineScaleMode.NORMAL` - Always scale the line thickness
 		when the object is scaled (the default).
-		* `LineScaleMode.NONE` - Never scale the line thickness.
+		*  `LineScaleMode.NONE` - Never scale the line thickness.
 
-		* `LineScaleMode.VERTICAL` - Do not scale the line
+		*  `LineScaleMode.VERTICAL` - Do not scale the line
 		thickness if the object is scaled vertically _only_. For example,
 		consider the following circles, drawn with a one-pixel line, and each with
 		the `scaleMode` parameter set to
 		`LineScaleMode.VERTICAL`. The circle on the left is scaled
 		vertically only, and the circle on the right is scaled both vertically and
 		horizontally:
-		* `LineScaleMode.HORIZONTAL` - Do not scale the line
+		*  `LineScaleMode.HORIZONTAL` - Do not scale the line
 		thickness if the object is scaled horizontally _only_. For example,
 		consider the following circles, drawn with a one-pixel line, and each with
-		the `scaleMode` parameter set to
-		`LineScaleMode.HORIZONTAL`. The circle on the left is scaled
-		horizontally only, and the circle on the right is scaled both vertically
-		and horizontally:
+		the `scaleMode` parameter set to `LineScaleMode.HORIZONTAL`. The circle
+		on the left is scaled horizontally only, and the circle on the right is
+		scaled both vertically and horizontally:
 
 	**/
 	public var scaleMode:LineScaleMode;
@@ -147,7 +146,7 @@ import openfl.display._internal.GraphicsDataType;
 							rounded rectangles that are identical, except that the
 							`pixelHinting` parameter used in the
 							`lineStyle()` method is set differently
-						   (the images are scaled by 200%, to emphasize the
+							(the images are scaled by 200%, to emphasize the
 							difference):
 
 							If a value is not supplied, the line does not use
@@ -157,7 +156,7 @@ import openfl.display._internal.GraphicsDataType;
 
 							 *  `LineScaleMode.NORMAL` - Always
 							scale the line thickness when the object is scaled
-						   (the default).
+							(the default).
 							 *  `LineScaleMode.NONE` - Never scale
 							the line thickness.
 							 *  `LineScaleMode.VERTICAL` - Do not

@@ -8,9 +8,13 @@ import openfl.display.InteractiveObject;
 	An InteractiveObject dispatches a ContextMenuEvent object when the user
 	opens or interacts with the context menu. There are two types of
 	ContextMenuEvent objects:
+
 	* `ContextMenuEvent.MENU_ITEM_SELECT`
 	* `ContextMenuEvent.MENU_SELECT`
 
+	_OpenFL target support:_ Not currently supported, except when targeting AIR.
+
+	@see `InteractiveObject.contextMenu`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

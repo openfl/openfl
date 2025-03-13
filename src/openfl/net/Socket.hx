@@ -95,8 +95,7 @@ import sys.net.Socket as SysSocket;
 	application security sandbox.
 
 	For more information related to security, see the Flash Player Developer
-	Center Topic: <a href="http://www.adobe.com/go/devnet_security_en"
-	scope="external">Security</a>
+	Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).s
 
 	@event close         Dispatched when the server closes the socket
 						 connection.
@@ -213,7 +212,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	public var timeout:Int;
 
 	@:noCompletion private var __buffer:Bytes;
-	@:noCompletion private var __connected:Bool;
+	@:noCompletion private var __connected:Bool = false;
 	@:noCompletion private var __endian:Endian;
 	@:noCompletion private var __host:String;
 	@:noCompletion private var __input:ByteArray;
@@ -287,9 +286,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 							 more information on policy files, see "Website
 							 controls (policy files)" in the _OpenFL
 							 Developer's Guide_ and the Flash Player Developer
-							 Center Topic: <a
-							 href="http://www.adobe.com/go/devnet_security_en"
-							 scope="external">Security</a>.
+							 Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	**/
 	public function new(host:String = null, port:Int = 0)
 	{
@@ -300,7 +297,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 
 		__buffer = Bytes.alloc(4096);
 
-		if (port > 0 && port < 65535)
+		if (host != null && port > 0 && port < 65535)
 		{
 			connect(host, port);
 		}
@@ -370,9 +367,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 							 more information on policy files, see "Website
 							 controls (policy files)" in the _OpenFL
 							 Developer's Guide_ and the Flash Player Developer
-							 Center Topic: <a
-							 href="http://www.adobe.com/go/devnet_security_en"
-							 scope="external">Security</a>.
+							 Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	**/
 	public function connect(host:String, port:Int):Void
 	{
@@ -1285,22 +1280,38 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	#if sys
 	@:noCompletion private function get_localAddress():String
 	{
-		return __socket.host().host.host;
+		if (__connected)
+		{
+			return __socket.host().host.host;
+		}
+		return null;
 	}
 
 	@:noCompletion private function get_localPort():Int
 	{
-		return __socket.host().port;
+		if (__connected)
+		{
+			return __socket.host().port;
+		}
+		return 0;
 	}
 
 	@:noCompletion private function get_remoteAddress():String
 	{
-		return __socket.peer().host.host;
+		if (__connected)
+		{
+			return __socket.peer().host.host;
+		}
+		return null;
 	}
 
 	@:noCompletion private function get_remotePort():Int
 	{
-		return __socket.peer().port;
+		if (__connected)
+		{
+			return __socket.peer().port;
+		}
+		return 0;
 	}
 	#end
 }

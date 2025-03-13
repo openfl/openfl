@@ -9,7 +9,6 @@ package openfl.utils;
 	`ByteArray.uncompress()` methods.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract CompressionAlgorithm(Null<Int>)
-
 {
 	/**
 		Defines the string to use for the deflate compression algorithm.
@@ -47,9 +46,7 @@ package openfl.utils;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract CompressionAlgorithm(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract CompressionAlgorithm(String) from String to String
 {
 	public var DEFLATE = "deflate";
 	// GZIP;

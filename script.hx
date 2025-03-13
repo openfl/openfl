@@ -47,7 +47,20 @@ class Script extends hxp.Script
 		if (command == "test-functional")
 		{
 			var targets = [
-				"haxelib", "flash", "html5", "neko", "cpp", "hl", "hashlink", "windows", "mac", "linux", "air", "web", "electron", "extern"
+				"haxelib",
+				"flash",
+				"html5",
+				"neko",
+				"cpp",
+				"hl",
+				"hashlink",
+				"windows",
+				"mac",
+				"linux",
+				"air",
+				"web",
+				"electron",
+				"extern"
 			];
 
 			if (commandArgs.length > 0)
@@ -75,11 +88,11 @@ class Script extends hxp.Script
 		}
 		else if (command == "test")
 		{
-			System.runCommand("tests", "hxp", getTestArgs());
+			System.runCommand("tests", "haxelib", ["run", "hxp"].concat(getTestArgs()));
 		}
 		else
 		{
-			System.runCommand("tests", "hxp", [command].concat(getTestArgs()));
+			System.runCommand("tests", "haxelib", ["run", "hxp", command].concat(getTestArgs()));
 		}
 	}
 

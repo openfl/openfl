@@ -819,7 +819,6 @@ private class RegisterMapEntry
 }
 
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract RegisterType(Int)
-
 {
 	public var ATTRIBUTE = 0;
 	public var CONSTANT = 1;

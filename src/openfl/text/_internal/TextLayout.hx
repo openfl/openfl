@@ -2,12 +2,17 @@ package openfl.text._internal;
 
 #if !flash
 import haxe.io.Bytes;
+#if cppia
+import haxe.io.UInt16Array;
+#end
 #if lime
 import lime.math.Vector2;
 import lime.text.harfbuzz.HBBuffer;
 import lime.text.harfbuzz.HBBufferClusterLevel;
 import lime.text.harfbuzz.HBDirection;
 import lime.text.harfbuzz.HBFTFont;
+import lime.text.harfbuzz.HBGlyphInfo;
+import lime.text.harfbuzz.HBGlyphPosition;
 import lime.text.harfbuzz.HBLanguage;
 import lime.text.harfbuzz.HBScript;
 import lime.text.harfbuzz.HB;
@@ -69,6 +74,7 @@ class TextLayout
 	private var __font:Font;
 	@SuppressWarnings("checkstyle:Dynamic") private var __hbBuffer:#if lime HBBuffer #else Dynamic #end;
 	@SuppressWarnings("checkstyle:Dynamic") private var __hbFont:#if lime HBFTFont #else Dynamic #end;
+	private var __hbFontSize:Int = -1;
 
 	public function new(text:String = "", font:Font = null, size:Int = 12, direction:TextDirection = LEFT_TO_RIGHT, script:TextScript = COMMON,
 			language:String = "en")
@@ -85,6 +91,33 @@ class TextLayout
 
 		__create(__direction, __script, __language);
 	}
+
+	#if cppia
+	/**
+	 *   Why this is necessary for `cppia`:
+	 *   In cppia, Haxe String can be stored as UTF-16, but its memory layout is not actually guaranteed
+	 *   to be directly compatible with native APIs.
+	 *   Unlike cpp, we cannot just use wc_str() to get a direct UTF-16 pointer.
+	 *   Instead, we manually create a correctly aligned UTF-16 Bytes to ensure 
+	 *   the expected layout.
+	 *   UInt16Array.fromBytes() efficiently maps the buffer as 16-bit words, ensuring correct 
+	 *   memory layout and endianness in this case.
+	 */
+	@:noCompletion private inline function stringToUTF16LEBytes(s:String):Bytes
+	{
+		var len = s.length;
+		var buffer = Bytes.alloc(len << 1);
+
+		var view = UInt16Array.fromBytes(buffer, 0, len); // Wrap buffer in a UInt16 view
+
+		for (i in 0...len)
+		{
+			view[i] = s.charCodeAt(i);
+		}
+
+		return buffer;
+	}
+	#end
 
 	private function __create(direction:TextDirection, script:TextScript, language:String):Void
 	{
@@ -111,12 +144,15 @@ class TextLayout
 				// __buffer.endian = (System.endianness == BIG_ENDIAN ? "bigEndian" : "littleEndian");
 			}
 
-			if (__font != font)
+			// if the Font has changed, or the size used when creating the
+			// HBFTFont has changed, we need to create a new HBFTFont
+			if (__font != font || __hbFontSize != size)
 			{
 				__font = font;
 				// 	hb_font_destroy ((hb_font_t*)mHBFont);
 				@:privateAccess font.__setSize(size);
 				__hbFont = new HBFTFont(font);
+				__hbFontSize = size;
 
 				if (autoHint)
 				{
@@ -128,6 +164,10 @@ class TextLayout
 			}
 			else
 			{
+				// a Font may be shared by multiple TextLayouts, each rendering
+				// with different sizes, so the size may have been changed by
+				// another TextLayout since this method was last called. we can
+				// simply restore our size, though.
 				@:privateAccess font.__setSize(size);
 			}
 
@@ -144,14 +184,26 @@ class TextLayout
 			__hbBuffer.script = script.toHBScript();
 			__hbBuffer.language = new HBLanguage(language);
 			__hbBuffer.clusterLevel = HBBufferClusterLevel.CHARACTERS;
-			#if (neko)
-			// other targets still uses dummy positions to make UTF8 work
-			// TODO: confirm
+
+			#if haxe4
+			#if (lime >= version("8.3.0"))
+			__hbBuffer.addString(text, 0, -1);
+			#elseif (neko || (cpp && disable_unicode_strings))
 			__hbBuffer.addUTF8(text, 0, -1);
-			#elseif (hl)
+			#elseif hl
+			__hbBuffer.addUTF16(text, text.length, 0, -1);
+			#elseif cppia
+			__hbBuffer.addUTF16(stringToUTF16LEBytes(text), text.length, 0, -1);
+			#elseif cpp
+			__hbBuffer.addUTF16(untyped __cpp__('(uintptr_t){0}', text.wc_str()), text.length, 0, -1);
+			#end
+			#else
+			// if haxe3
+			#if hl
 			__hbBuffer.addUTF16(text, text.length, 0, -1);
 			#else
-			__hbBuffer.addUTF16(untyped __cpp__('(uintptr_t){0}', text.wc_str()), text.length, 0, -1);
+			__hbBuffer.addUTF8(text, 0, -1);
+			#end
 			#end
 
 			HB.shape(__hbFont, __hbBuffer);
@@ -161,7 +213,8 @@ class TextLayout
 
 			if (_info != null && _positions != null)
 			{
-				var info, position;
+				var info:HBGlyphInfo;
+				var position:HBGlyphPosition;
 				var lastCluster = -1;
 
 				var length = Std.int(Math.min(_info.length, _positions.length));
@@ -286,9 +339,7 @@ class TextLayout
 	}
 }
 
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextDirection(Int) to Int
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextDirection(Int) to Int
 {
 	public var INVALID = 0;
 	public var LEFT_TO_RIGHT = 4;
@@ -352,9 +403,7 @@ class TextLayout
 	}
 }
 
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextScript(String) to (String)
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextScript(String) to (String)
 {
 	public var COMMON = "Zyyy";
 	public var INHERITED = "Zinh";

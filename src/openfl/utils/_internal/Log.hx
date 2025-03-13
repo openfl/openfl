@@ -147,7 +147,6 @@ class Log
 }
 
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract LogLevel(Int) from Int to Int from UInt to UInt
-
 {
 	public var NONE = 0;
 	public var ERROR = 1;

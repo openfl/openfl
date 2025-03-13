@@ -30,6 +30,8 @@ import openfl.errors.ArgumentError;
 	SWF file into this. That is, it cannot load another SWF file over itself.
 	However, child Sprite objects, MovieClip objects, or other AVM1 SWF files
 	loaded by this SWF file can load into this.
+
+	_OpenFL target support:_ Not supported, except when targeting AIR.
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

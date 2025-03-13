@@ -51,8 +51,7 @@ import openfl.display3D.Context3D;
 **/
 @:access(openfl.display3D.Context3D)
 #if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
+@:fileXml('tags="haxe,release"') @:noDebug
 #end
 #if (!js && !display)
 @:generic

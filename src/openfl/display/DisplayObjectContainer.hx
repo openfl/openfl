@@ -309,7 +309,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 		The `point` parameter is in the coordinate space of the
 		Stage, which may differ from the coordinate space of the display object
-		container(unless the display object container is the Stage). You can use
+		container (unless the display object container is the Stage). You can use
 		the `globalToLocal()` and the `localToGlobal()`
 		methods to convert points between these coordinate spaces.
 
@@ -420,7 +420,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 	/**
 		Returns an array of objects that lie under the specified point and are
-		children(or grandchildren, and so on) of this DisplayObjectContainer
+		children (or grandchildren, and so on) of this DisplayObjectContainer
 		instance. Any child objects that are inaccessible for security reasons are
 		omitted from the returned array. To determine whether this security
 		restriction affects the returned array, call the
@@ -428,13 +428,13 @@ class DisplayObjectContainer extends InteractiveObject
 
 		The `point` parameter is in the coordinate space of the
 		Stage, which may differ from the coordinate space of the display object
-		container(unless the display object container is the Stage). You can use
+		container (unless the display object container is the Stage). You can use
 		the `globalToLocal()` and the `localToGlobal()`
 		methods to convert points between these coordinate spaces.
 
 		@param point The point under which to look.
 		@return An array of objects that lie under the specified point and are
-				children(or grandchildren, and so on) of this
+				children (or grandchildren, and so on) of this
 				DisplayObjectContainer instance.
 	**/
 	public function getObjectsUnderPoint(point:Point):Array<DisplayObject>

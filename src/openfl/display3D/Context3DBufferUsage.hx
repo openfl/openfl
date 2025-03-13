@@ -10,7 +10,6 @@ import openfl.utils._internal.NullUtils;
 	Defines the values to use for specifying the buffer usage type.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DBufferUsage(Null<Int>)
-
 {
 	/**
 		Indicates the buffer will be used for drawing and be updated frequently
@@ -59,9 +58,7 @@ import openfl.utils._internal.NullUtils;
 	#end
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DBufferUsage(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DBufferUsage(String) from String to String
 {
 	public var DYNAMIC_DRAW = "dynamicDraw";
 	public var STATIC_DRAW = "staticDraw";

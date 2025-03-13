@@ -991,17 +991,18 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	{
 		if (clipRect != null)
 		{
-			var x = Math.floor(clipRect.x);
-			var y = Math.floor(clipRect.y);
-			var width = (clipRect.width > 0 ? Math.ceil(clipRect.right) - x : 0);
-			var height = (clipRect.height > 0 ? Math.ceil(clipRect.bottom) - y : 0);
+			var x = Math.ffloor(clipRect.x);
+			var y = Math.ffloor(clipRect.y);
+			var width = (clipRect.width > 0 ? Math.fceil(clipRect.right) - x : 0);
+			var height = (clipRect.height > 0 ? Math.fceil(clipRect.bottom) - y : 0);
 			#if !openfl_dpi_aware
 			if (__context3D.__backBufferWantsBestResolution)
 			{
-				x = Math.floor(clipRect.x / __pixelRatio);
-				y = Math.floor(clipRect.y / __pixelRatio);
-				width = (clipRect.width > 0 ? Math.ceil(clipRect.right / __pixelRatio) - x : 0);
-				height = (clipRect.height > 0 ? Math.ceil(clipRect.bottom / __pixelRatio) - y : 0);
+				var uv = 1.5 / __pixelRatio;
+				x = clipRect.x / __pixelRatio;
+				y = clipRect.y / __pixelRatio;
+				width = (clipRect.width > 0 ? (clipRect.right / __pixelRatio) - x + uv : 0);
+				height = (clipRect.height > 0 ? (clipRect.bottom / __pixelRatio) - y + uv : 0);
 			}
 			#end
 

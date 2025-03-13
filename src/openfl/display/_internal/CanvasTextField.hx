@@ -279,7 +279,8 @@ class CanvasTextField
 									selectionEnd = group.endIndex;
 								}
 
-								var start, end;
+								var start:Rectangle;
+								var end:Rectangle;
 
 								start = textField.getCharBoundaries(selectionStart);
 
