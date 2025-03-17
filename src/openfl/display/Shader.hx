@@ -524,8 +524,6 @@ class Shader
 					catch (e:Dynamic)
 					{
 						Lib.current.stage.__handleError(e);
-	
-						program.__glProgram = null;
 					}
 				}
 				else
