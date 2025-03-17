@@ -635,7 +635,9 @@ class Shader
 					if (__isGenerated) Reflect.setField(this, name, input);
 				}
 				catch (e:Dynamic)
+				{
 					Log.debug('Failed to set field $name: $e');
+				}
 			}
 			else if (!Reflect.hasField(__data, name) || Reflect.field(__data, name) == null)
 			{
@@ -707,7 +709,9 @@ class Shader
 							if (__isGenerated) Reflect.setField(this, name, parameter);
 						}
 						catch (e:Dynamic)
+						{
 							Log.debug('Failed to set field $name: $e');
+						}
 
 					case INT, INT2, INT3, INT4:
 						var parameter = new ShaderParameter<Int>();
@@ -726,7 +730,9 @@ class Shader
 							if (__isGenerated) Reflect.setField(this, name, parameter);
 						}
 						catch (e:Dynamic)
+						{
 							Log.debug('Failed to set field $name: $e');
+						}
 					default:
 						var parameter = new ShaderParameter<Float>();
 						parameter.name = name;
@@ -762,7 +768,9 @@ class Shader
 							if (__isGenerated) Reflect.setField(this, name, parameter);
 						}
 						catch (e:Dynamic)
+						{
 							Log.debug('Failed to set field $name: $e');
+						}
 				}
 			}
 
