@@ -801,8 +801,9 @@ class BitmapData implements IBitmapDrawable
 	}
 
 	/**
-		Draws the `source` display object onto the bitmap image, using
-		the OpenFL software renderer. You can specify `matrix`,
+		Draws the `source` display object onto the bitmap image. If the bitmap
+		image is readable, the OpenFL software renderer is used; otherwise, 
+		the hardware renderer is used. You can specify `matrix`,
 		`colorTransform`, `blendMode`, and a destination
 		`clipRect` parameter to control how the rendering performs.
 		Optionally, you can specify whether the bitmap should be smoothed when
