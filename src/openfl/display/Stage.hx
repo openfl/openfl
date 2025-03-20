@@ -323,7 +323,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 
 		The scaling behavior of the movie in full-screen mode is determined by
-		the `scaleMode` setting(set using the
+		the `scaleMode` setting (set using the
 		`Stage.scaleMode` property or the SWF file's `embed`
 		tag settings in the HTML file). If the `scaleMode` property is
 		set to `noScale` while the application transitions to
@@ -335,7 +335,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		dispatch a `resize` event.
 
 		The following restrictions apply to SWF files that play within an HTML
-		page(not those using the stand-alone Flash Player or not running in the
+		page (not those using the stand-alone Flash Player or not running in the
 		AIR runtime):
 
 
@@ -379,7 +379,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		@throws SecurityError Calling the `displayState` property of a
 							  Stage object throws an exception for any caller that
 							  is not in the same security sandbox as the Stage
-							  owner(the main SWF file). To avoid this, the Stage
+							  owner (the main SWF file). To avoid this, the Stage
 							  owner can grant permission to the domain of the
 							  caller by calling the
 							  `Security.allowDomain()` method or the
@@ -431,7 +431,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		@throws SecurityError Calling the `frameRate` property of a
 							  Stage object throws an exception for any caller that
 							  is not in the same security sandbox as the Stage
-							  owner(the main SWF file). To avoid this, the Stage
+							  owner (the main SWF file). To avoid this, the Stage
 							  owner can grant permission to the domain of the
 							  caller by calling the
 							  `Security.allowDomain()` method or the
@@ -536,7 +536,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		* `StageQuality.BEST` - Very high rendering quality.
 		Graphics are anti-aliased using a 4 x 4 pixel grid. If
 		`Bitmap.smoothing` is `true` the runtime uses a high
-		quality downscale algorithm that produces fewer artifacts(however, using
+		quality downscale algorithm that produces fewer artifacts (however, using
 		`StageQuality.BEST` with `Bitmap.smoothing` set to
 		`true` slows performance significantly and is not a recommended
 		setting).
@@ -556,7 +556,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		For content running in Adobe AIR, setting the `quality`
 		property of one Stage object changes the rendering quality for all Stage
-		objects(used by different NativeWindow objects).
+		objects (used by different NativeWindow objects).
 		**_Note:_** The operating system draws the device fonts, which are
 		therefore unaffected by the `quality` property.
 
@@ -597,7 +597,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		@throws SecurityError Calling the `scaleMode` property of a
 							  Stage object throws an exception for any caller that
 							  is not in the same security sandbox as the Stage
-							  owner(the main SWF file). To avoid this, the Stage
+							  owner (the main SWF file). To avoid this, the Stage
 							  owner can grant permission to the domain of the
 							  caller by calling the
 							  `Security.allowDomain()` method or the
@@ -708,7 +708,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		@throws SecurityError Calling the `stageHeight` property of a
 							  Stage object throws an exception for any caller that
 							  is not in the same security sandbox as the Stage
-							  owner(the main SWF file). To avoid this, the Stage
+							  owner (the main SWF file). To avoid this, the Stage
 							  owner can grant permission to the domain of the
 							  caller by calling the
 							  `Security.allowDomain()` method or the
@@ -916,6 +916,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
+		#if haxe4
+		// when using Haxe 4, this value doesn't seem to get initialized,
+		// so it is undefined, which breaks ObjectMap. this line changes it
+		// from undefined to 0, but won't mess with numeric value > 0.
+		untyped #if haxe4 js.Syntax.code #else __js__ #end ("$global.$haxeUID |= 0;");
+		#end
+
 		untyped Object.defineProperties(Stage.prototype, {
 			"color": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_color (); }"),
@@ -1125,7 +1132,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	/**
 		Calling the `invalidate()` method signals Flash runtimes to
 		alert display objects on the next opportunity it has to render the display
-		list(for example, when the playhead advances to a new frame). After you
+		list (for example, when the playhead advances to a new frame). After you
 		call the `invalidate()` method, when the display list is next
 		rendered, the Flash runtime sends a `render` event to each
 		display object that has registered to listen for the `render`
@@ -2162,11 +2169,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Telemetry.__endTiming(TelemetryCommandName.RENDER);
 		Telemetry.__rewindStack(stack);
 		#end
-		
+
 		#if HXCPP_TRACY
 		cpp.vm.tracy.TracyProfiler.frameMark();
 		#end
-		
+
 		return cancelled;
 	}
 

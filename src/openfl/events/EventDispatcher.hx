@@ -23,7 +23,7 @@ package openfl.events;
 
 	In general, the easiest way for a user-defined class to gain event
 	dispatching capabilities is to extend EventDispatcher. If this is
-	impossible(that is, if the class is already extending another class), you
+	impossible (that is, if the class is already extending another class), you
 	can instead implement the IEventDispatcher interface, create an
 	EventDispatcher member, and write simple hooks to route calls into the
 	aggregated EventDispatcher.
@@ -119,7 +119,7 @@ class EventDispatcher implements IEventDispatcher
 		`removeEventListener()`, or memory problems could result. Event
 		listeners are not automatically removed from memory because the garbage
 		collector does not remove the listener as long as the dispatching object
-		exists(unless the `useWeakReference` parameter is set to
+		exists (unless the `useWeakReference` parameter is set to
 		`true`).
 
 		Copying an EventDispatcher instance does not copy the event listeners
@@ -135,7 +135,7 @@ class EventDispatcher implements IEventDispatcher
 
 		If an event listener is removed from a node while an event is being
 		processed on the node, it is still triggered by the current actions. After
-		it is removed, the event listener is never invoked again(unless
+		it is removed, the event listener is never invoked again (unless
 		registered again for future processing).
 
 		@param type             The type of event.
@@ -162,7 +162,7 @@ class EventDispatcher implements IEventDispatcher
 								processed in the order in which they were added.
 								The default priority is 0.
 		@param useWeakReference Determines whether the reference to the listener
-								is strong or weak. A strong reference(the
+								is strong or weak. A strong reference (the
 								default) prevents your listener from being
 								garbage-collected. A weak reference does not.
 

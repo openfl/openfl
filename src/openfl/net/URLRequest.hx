@@ -78,7 +78,7 @@ import haxe.macro.Compiler;
 		request is set automatically to `multipart/form-data`, and the
 		value of the `contentType` property is ignored.
 
-		In Flash Player 10 and later, if you use a multipart Content-Type(for
+		In Flash Player 10 and later, if you use a multipart Content-Type (for
 		example "multipart/form-data") that contains an upload (indicated by a
 		"filename" parameter in a "content-disposition" header within the POST
 		body), the POST operation is subject to the security rules applied to
@@ -86,7 +86,7 @@ import haxe.macro.Compiler;
 
 		* The POST operation must be performed in response to a user-initiated
 		action, such as a mouse click or key press.
-		* If the POST operation is cross-domain(the POST target is not on the
+		* If the POST operation is cross-domain (the POST target is not on the
 		same server as the SWF file that is sending the POST request), the target
 		server must provide a URL policy file that permits cross-domain
 		access.
@@ -309,7 +309,7 @@ import haxe.macro.Compiler;
 		The URL to be requested.
 
 		Be sure to encode any characters that are either described as unsafe in
-		the Uniform Resource Locator specification(see
+		the Uniform Resource Locator specification (see
 		http://www.faqs.org/rfcs/rfc1738.html) or that are reserved in the URL
 		scheme of the URLRequest object (when not used for their reserved
 		purpose). For example, use `"%25"` for the percent(%) symbol
@@ -331,7 +331,7 @@ import haxe.macro.Compiler;
 		* `app-storage`
 		* `app`
 
-		**Note:** IPv6(Internet Protocol version 6) is supported in AIR and
+		**Note:** IPv6 (Internet Protocol version 6) is supported in AIR and
 		in Flash Player 9.0.115.0 and later. IPv6 is a version of Internet
 		Protocol that supports 128-bit addresses (an improvement on the earlier
 		IPv4 protocol that supports 32-bit addresses). You might need to activate

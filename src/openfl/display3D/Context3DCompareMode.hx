@@ -11,7 +11,6 @@ import openfl.utils._internal.NullUtils;
 	`setDepthTest()` and `setStencilAction()` methods of a Context3D instance.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DCompareMode(Null<Int>)
-
 {
 	/**
 		The comparison always evaluates as true.
@@ -100,9 +99,7 @@ import openfl.utils._internal.NullUtils;
 	#end
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DCompareMode(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DCompareMode(String) from String to String
 {
 	public var ALWAYS = "always";
 	public var EQUAL = "equal";

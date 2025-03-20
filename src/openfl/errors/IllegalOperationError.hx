@@ -15,7 +15,7 @@ package openfl.errors;
 	* Haxe code tries to run a `FileReference.browse()` call
 	when a browse dialog box is already open
 	* Haxe code tries to use an unsupported protocol for a FileReference
-	object(such as FTP)
+	object (such as FTP)
 	* Authoring-only features are invoked from a run-time
 	player
 	* An attempt is made to set the name of a Timeline-placed

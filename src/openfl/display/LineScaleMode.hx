@@ -7,7 +7,6 @@ package openfl.display;
 	parameter in the `Graphics.lineStyle()` method.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract LineScaleMode(Null<Int>)
-
 {
 	/**
 		With this setting used as the `scaleMode` parameter of the
@@ -79,9 +78,7 @@ package openfl.display;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract LineScaleMode(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract LineScaleMode(String) from String to String
 {
 	public var HORIZONTAL = "horizontal";
 	public var NONE = "none";

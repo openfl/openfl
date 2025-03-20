@@ -2,7 +2,6 @@ package flash.display;
 
 #if flash
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageScaleMode(String) from String to String
-
 {
 	public var EXACT_FIT = "exactFit";
 	public var NO_BORDER = "noBorder";

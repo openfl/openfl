@@ -5,7 +5,6 @@ package openfl.utils;
 	asset types from the OpenFL command-line tools.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract AssetType(String)
-
 {
 	/**
 		Binary assets (data that is not readable as text)

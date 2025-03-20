@@ -55,8 +55,20 @@ class StyleSheet extends EventDispatcher /*implements Dynamic*/
 	public var styleNames(get, never):Array<String>;
 
 	@:noCompletion private static var __supportedStyles:Array<String> = [
-		"color", "display", "font-family", "font-size", "font-style", "font-weight", "kerning", "leading", "letter-spacing", "margin-left", "margin-right",
-		"text-align", "text-decoration", "text-indent"
+		"color",
+		"display",
+		"font-family",
+		"font-size",
+		"font-style",
+		"font-weight",
+		"kerning",
+		"leading",
+		"letter-spacing",
+		"margin-left",
+		"margin-right",
+		"text-align",
+		"text-decoration",
+		"text-indent"
 	];
 
 	@:noCompletion private var __styleNames:Array<String>;

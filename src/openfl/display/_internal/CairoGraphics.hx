@@ -81,6 +81,21 @@ class CairoGraphics
 		cairo.newPath();
 	}
 
+	private static function createImagePattern(bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool, smooth:Bool):CairoPattern
+	{
+		var pattern = CairoPattern.createForSurface(bitmapFill.getSurface());
+		pattern.filter = (smooth && allowSmoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
+
+		if (bitmapRepeat)
+		{
+			pattern.extend = CairoExtend.REPEAT;
+		}
+
+		fillPatternMatrix = matrix;
+
+		return pattern;
+	}
+
 	private static function createGradientPattern(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
 			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):CairoPattern
 	{
@@ -151,21 +166,6 @@ class CairoGraphics
 		mat.ty = bounds.y;
 
 		pattern.matrix = mat;
-
-		return pattern;
-	}
-
-	private static function createImagePattern(bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool, smooth:Bool):CairoPattern
-	{
-		var pattern = CairoPattern.createForSurface(bitmapFill.getSurface());
-		pattern.filter = (smooth && allowSmoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
-
-		if (bitmapRepeat)
-		{
-			pattern.extend = CairoExtend.REPEAT;
-		}
-
-		fillPatternMatrix = matrix;
 
 		return pattern;
 	}
@@ -441,7 +441,7 @@ class CairoGraphics
 	}
 
 	#if lime_cairo
-	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float)
+	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Bool
 	{
 		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
 	}
@@ -558,11 +558,6 @@ class CairoGraphics
 					hasPath = true;
 					cairo.moveTo(c.x - offsetX + c.radius, c.y - offsetY);
 					cairo.arc(c.x - offsetX, c.y - offsetY, c.radius, 0, Math.PI * 2);
-
-				case DRAW_RECT:
-					var c = data.readDrawRect();
-					hasPath = true;
-					cairo.rectangle(c.x - offsetX, c.y - offsetY, c.width, c.height);
 
 				case DRAW_ELLIPSE:
 					var c = data.readDrawEllipse();
@@ -784,8 +779,7 @@ class CairoGraphics
 						var bitmap = shaderBuffer.inputs[0];
 						if (bitmap.readable)
 						{
-							fillPattern = createImagePattern(bitmap, null, shaderBuffer.inputWrap[0] != CLAMP,
-								shaderBuffer.inputFilter[0] != NEAREST);
+							fillPattern = createImagePattern(bitmap, null, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
 						}
 						else
 						{
@@ -1094,6 +1088,11 @@ class CairoGraphics
 
 					cairo.matrix = graphics.__renderTransform.__toMatrix3();
 
+				case DRAW_RECT:
+					var c = data.readDrawRect();
+					hasPath = true;
+					cairo.rectangle(c.x - offsetX, c.y - offsetY, c.width, c.height);
+
 				case WINDING_EVEN_ODD:
 					data.readWindingEvenOdd();
 					cairo.fillRule = EVEN_ODD;
@@ -1338,7 +1337,6 @@ class CairoGraphics
 						endFill();
 						endStroke();
 						hasFill = false;
-						hasLineStyle = false;
 						bitmapFill = null;
 						initStrokeX = 0;
 						initStrokeY = 0;

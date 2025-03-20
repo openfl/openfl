@@ -2,7 +2,6 @@ package openfl.display3D._internal;
 
 #if !flash
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract ATFFormat(Int)
-
 {
 	public var RGB888 = 0;
 	public var RGBA8888 = 1;

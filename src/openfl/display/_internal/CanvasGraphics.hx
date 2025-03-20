@@ -1,11 +1,11 @@
 package openfl.display._internal;
 
 #if !flash
+import openfl.display._internal.DrawCommandBuffer;
+import openfl.display._internal.DrawCommandReader;
 import openfl.display.BitmapData;
 import openfl.display.CanvasRenderer;
 import openfl.display.CapsStyle;
-import openfl.display._internal.DrawCommandBuffer;
-import openfl.display._internal.DrawCommandReader;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
@@ -442,15 +442,6 @@ class CanvasGraphics
 						fillCommands.moveTo(c.x, c.y);
 						strokeCommands.moveTo(c.x, c.y);
 
-					case LINE_GRADIENT_STYLE:
-						var c = data.readLineGradientStyle();
-						strokeCommands.lineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-							c.focalPointRatio);
-
-					case LINE_BITMAP_STYLE:
-						var c = data.readLineBitmapStyle();
-						strokeCommands.lineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
-
 					case LINE_STYLE:
 						endStroke();
 
@@ -465,6 +456,15 @@ class CanvasGraphics
 
 						var c = data.readLineStyle();
 						strokeCommands.lineStyle(c.thickness, c.color, 1, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+
+					case LINE_GRADIENT_STYLE:
+						var c = data.readLineGradientStyle();
+						strokeCommands.lineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+							c.focalPointRatio);
+
+					case LINE_BITMAP_STYLE:
+						var c = data.readLineBitmapStyle();
+						strokeCommands.lineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
 
 					case END_FILL:
 						data.readEndFill();
@@ -1491,7 +1491,6 @@ class CanvasGraphics
 							endFill();
 							endStroke();
 							hasFill = false;
-							hasLineStyle = false;
 							bitmapFill = null;
 							initStrokeX = 0;
 							initStrokeY = 0;

@@ -11,7 +11,6 @@ import openfl.utils._internal.NullUtils;
 	or a vertex program.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DProgramType(Null<Int>)
-
 {
 	/**
 		A fragment (or pixel) program.
@@ -58,9 +57,7 @@ import openfl.utils._internal.NullUtils;
 	#end
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DProgramType(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DProgramType(String) from String to String
 {
 	public var FRAGMENT = "fragment";
 	public var VERTEX = "vertex";

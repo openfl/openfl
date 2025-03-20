@@ -12,7 +12,7 @@ import openfl.utils.ByteArray;
 	interacts with a device such as a mobile phone or tablet with a touch
 	screen, the user typically touches the screen with his or her fingers or a
 	pointing device. You can develop applications that respond to basic touch
-	events(such as a single finger tap) with the TouchEvent class. Create
+	events (such as a single finger tap) with the TouchEvent class. Create
 	event listeners using the event types defined in this class. For user
 	interaction with multiple points of contact (such as several fingers moving
 	across a touch screen at the same time) use the related GestureEvent,
@@ -27,7 +27,7 @@ import openfl.utils.ByteArray;
 	**Note:** When objects are nested on the display list, touch events
 	target the deepest possible nested object that is visible in the display
 	list. This object is called the target node. To have a target node's
-	ancestor(an object containing the target node in the display list) receive
+	ancestor (an object containing the target node in the display list) receive
 	notification of a touch event, use
 	`EventDispatcher.addEventListener()` on the ancestor node with
 	the type parameter set to the specific touch event you want to detect.
@@ -491,8 +491,22 @@ class TouchEvent extends Event
 	public override function toString():String
 	{
 		return __formatToString("TouchEvent", [
-			"type", "bubbles", "cancelable", "touchPointID", "isPrimaryTouchPoint", "localX", "localY", "sizeX", "sizeY", "pressure", "relatedObject",
-			"ctrlKey", "altKey", "shiftKey", "commandKey", "controlKey"
+			"type",
+			"bubbles",
+			"cancelable",
+			"touchPointID",
+			"isPrimaryTouchPoint",
+			"localX",
+			"localY",
+			"sizeX",
+			"sizeY",
+			"pressure",
+			"relatedObject",
+			"ctrlKey",
+			"altKey",
+			"shiftKey",
+			"commandKey",
+			"controlKey"
 		]);
 	}
 

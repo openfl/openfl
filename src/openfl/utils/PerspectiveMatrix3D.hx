@@ -101,7 +101,22 @@ class PerspectiveMatrix3D extends Matrix3D
 	public function orthoLH(width:Float, height:Float, zNear:Float, zFar:Float):Void
 	{
 		this.copyRawDataFrom(Vector.ofArray([
-			2.0 / width, 0.0, 0.0, 0.0, 0.0, 2.0 / height, 0.0, 0.0, 0.0, 0.0, 1.0 / (zFar - zNear), 0.0, 0.0, 0.0, zNear / (zNear - zFar), 1.0
+			2.0 / width,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			2.0 / height,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0 / (zFar - zNear),
+			0.0,
+			0.0,
+			0.0,
+			zNear / (zNear - zFar),
+			1.0
 		]));
 	}
 
@@ -152,7 +167,22 @@ class PerspectiveMatrix3D extends Matrix3D
 	public function orthoRH(width:Float, height:Float, zNear:Float, zFar:Float):Void
 	{
 		this.copyRawDataFrom(Vector.ofArray([
-			2.0 / width, 0.0, 0.0, 0.0, 0.0, 2.0 / height, 0.0, 0.0, 0.0, 0.0, 1.0 / (zNear - zNear), 0.0, 0.0, 0.0, zNear / (zNear - zFar), 1.0
+			2.0 / width,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			2.0 / height,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0 / (zNear - zNear),
+			0.0,
+			0.0,
+			0.0,
+			zNear / (zNear - zFar),
+			1.0
 		]));
 	}
 

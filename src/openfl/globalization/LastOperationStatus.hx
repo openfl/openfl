@@ -9,7 +9,6 @@ package openfl.globalization;
 **/
 #if !openfljs
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract LastOperationStatus(Null<Int>)
-
 {
 	/**
 		Indicates that given buffer is not enough to hold the result.
@@ -176,9 +175,7 @@ package openfl.globalization;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract LastOperationStatus(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract LastOperationStatus(String) from String to String
 {
 	public var BUFFER_OVERFLOW_ERROR = "bufferOverflowError";
 	public var ERROR_CODE_UNKNOWN = "errorCodeUnknown";

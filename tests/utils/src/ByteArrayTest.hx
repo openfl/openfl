@@ -693,7 +693,6 @@ class ByteArrayTest extends Test
 		return str.substr(0, str.length - 1);
 	}*/
 	// #if (cpp || neko)
-
 	/*#if (cpp)
 		public function test_testCompressUncompressLzma() {
 

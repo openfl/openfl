@@ -12,7 +12,18 @@ import js.lib.intl.DateTimeFormat;
 {
 	private static var WEEKDAY_NAMES_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 	private static var MONTH_NAMES_EN = [
-		"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+		"January",
+		"February",
+		"March",
+		"April",
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December"
 	];
 	private static inline var MERIDIEM_AM = "AM";
 	private static inline var MERIDIEM_PM = "PM";

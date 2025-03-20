@@ -7,7 +7,6 @@ package openfl.display;
 	`Stage.align` property.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageAlign(Null<Int>)
-
 {
 	/**
 		Specifies that the Stage is aligned at the bottom.
@@ -82,9 +81,7 @@ package openfl.display;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageAlign(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageAlign(String) from String to String
 {
 	public var BOTTOM = "bottom";
 	public var BOTTOM_LEFT = "bottomLeft";

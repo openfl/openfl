@@ -80,7 +80,7 @@ import sys.FileSystem;
 	available to individual domains or to all domains. When users decrease the
 	amount of disk space available, some local shared objects may be deleted.
 	Flash Player users also have privacy controls that can prevent third-party
-	domains(domains other than the domain in the current browser address bar)
+	domains (domains other than the domain in the current browser address bar)
 	from reading or writing local shared objects.
 
 	**Note**: SWF files that are stored and run on a local computer, not
@@ -110,7 +110,7 @@ import sys.FileSystem;
 
 	If your SWF file attempts to create or modify local shared objects, make
 	sure that your SWF file is at least 215 pixels wide and at least 138 pixels
-	high(the minimum dimensions for displaying the dialog box that prompts
+	high (the minimum dimensions for displaying the dialog box that prompts
 	users to increase their local shared object storage limit). If your SWF
 	file is smaller than these dimensions and an increase in the storage limit
 	is required, `SharedObject.flush()` fails, returning
@@ -511,7 +511,7 @@ class SharedObject extends EventDispatcher
 		this domain, the object is not saved locally, even if a value for
 		`localPath` is specified. The exception to this rule is local
 		content. Local content can always write shared objects from third-party
-		domains(domains other than the domain in the current browser address bar)
+		domains (domains other than the domain in the current browser address bar)
 		to disk, even if writing of third-party shared objects to disk is
 		disallowed.
 
@@ -632,7 +632,7 @@ class SharedObject extends EventDispatcher
 		@throws Error Flash Player cannot create the shared object for whatever
 					  reason. This error might occur is if persistent shared
 					  object creation and storage by third-party Flash content is
-					  prohibited(does not apply to local content). Users can
+					  prohibited (does not apply to local content). Users can
 					  prohibit third-party persistent shared objects on the Global
 					  Storage Settings panel of the Settings Manager, located at
 					  [http://www.adobe.com/support/documentation/en/flashplayer/help/settings_manager03.html](http://www.adobe.com/support/documentation/en/flashplayer/help/settings_manager03.html).

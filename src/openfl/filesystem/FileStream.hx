@@ -78,8 +78,7 @@ import lime.system.BackgroundWorker;
 @:access(openfl.utils.ByteArrayData)
 @:access(openfl.filesystem.File)
 #if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
+@:fileXml('tags="haxe,release"') @:noDebug
 #end
 class FileStream extends EventDispatcher implements IDataInput implements IDataOutput
 {
@@ -296,7 +295,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		@see https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/initializing-a-filestream-object-and-opening-and-closing-files.html
 		@see https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/filestream-open-modes.html
- 	*/
+	 */
 	public function open(file:File, fileMode:FileMode):Void
 	{
 		__file = file;

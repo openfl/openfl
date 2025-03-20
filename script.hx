@@ -47,7 +47,20 @@ class Script extends hxp.Script
 		if (command == "test-functional")
 		{
 			var targets = [
-				"haxelib", "flash", "html5", "neko", "cpp", "hl", "hashlink", "windows", "mac", "linux", "air", "web", "electron", "extern"
+				"haxelib",
+				"flash",
+				"html5",
+				"neko",
+				"cpp",
+				"hl",
+				"hashlink",
+				"windows",
+				"mac",
+				"linux",
+				"air",
+				"web",
+				"electron",
+				"extern"
 			];
 
 			if (commandArgs.length > 0)

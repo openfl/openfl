@@ -20,7 +20,6 @@ package openfl.filesystem;
 	@see `openfl.filesystem.FileStream.openAsync()`
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract FileMode(String) from String to String
-
 {
 	/**
 		Used for a file to be opened in write mode, with all written data

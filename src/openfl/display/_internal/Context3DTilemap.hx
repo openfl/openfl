@@ -90,7 +90,7 @@ class Context3DTilemap
 		var roundPixels = renderer.__roundPixels;
 
 		var tiles = group.__tiles;
-		var length = group.__length;		
+		var length = group.__length;
 
 		if (isTopLevel) resizeBuffer(tilemap, numTiles + getRecursiveLength(group));
 
@@ -396,10 +396,10 @@ class Context3DTilemap
 	}
 
 	private static function getRecursiveLength(tileContainer:TileContainer):Int
-	{		
+	{
 		var tiles = tileContainer.__tiles;
 		var totalLength = 0;
-		
+
 		for (tile in tiles)
 		{
 			if (tile.__length > 0) totalLength += getRecursiveLength(cast tile);
@@ -539,7 +539,11 @@ class Context3DTilemap
 					if (tileData == null) continue;
 				}
 
-				if ((shader != currentShader)
+				var numBuffer:Int = bufferPosition - lastFlushedPosition;
+				var forceFlush:Bool = numBuffer >= 16383;
+
+				if ((forceFlush)
+					|| (shader != currentShader)
 					|| (bitmapData != currentBitmapData && currentBitmapData != null)
 					|| (currentBlendMode != blendMode))
 				{

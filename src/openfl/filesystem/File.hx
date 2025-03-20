@@ -1709,7 +1709,7 @@ class File extends FileReference
 		trace(temp.nativePath);
 		```
 
-		@returns File A File object referencing the new temporary file;		
+		@returns File A File object referencing the new temporary file;
 
 		@see [Working with files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/working-with-files.html)
 	**/
@@ -1740,7 +1740,7 @@ class File extends FileReference
 		}
 		```
 
-		@returns Array An array of File objects, listing the root directories.		
+		@returns Array An array of File objects, listing the root directories.
 	**/
 	public static function getRootDirectories():Array<File>
 	{
@@ -1757,19 +1757,43 @@ class File extends FileReference
 
 	@:noCompletion private function __canonicalize(cpath:String, seg:String):String
 	{
-		seg = seg.toLowerCase();
-		var items:Array<String> = FileSystem.readDirectory(Path.directory(cpath));
+		var items:Array<String> = null;
+		try
+		{
+			items = FileSystem.readDirectory(Path.directory(cpath));
+		}
+		catch (e:Dynamic) {}
 		if (items == null)
 		{
-			return "";
+			// if the directory doesn't exist, or if something goes wrong, like
+			// we don't have permission to read it, use the original name.
+			return seg;
 		}
+
+		// we're using toLowerCase() for comparisons only.
+		// we'll return the original casing if the file doesn't exist.
+		var segLower = seg.toLowerCase();
 		for (item in items)
 		{
-			if (item.toLowerCase() == seg)
+			#if (windows || mac || ios)
+			if (item.toLowerCase() == segLower)
 			{
-				seg = item;
-				break;
+				// generally, file systems on Windows and macOS are not
+				// case-sensitive, but file systems on Linux are.
+				// technically, Windows and macOS file systems (or, sometimes,
+				// individual directories) can be configured to be
+				// case-sensitive, but that's rare.
+				// ideally, we should detect case-sensitivity, instead of
+				// assuming, but this is good enough for now.
+				return item;
 			}
+			#else
+			if (item == seg)
+			{
+				// found an exact match for case-sensitive file systems
+				return item;
+			}
+			#end
 		}
 
 		return seg;

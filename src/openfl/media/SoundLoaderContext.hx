@@ -24,7 +24,7 @@ package openfl.media;
 
 
 	However, in Adobe AIR, content in the `application` security
-	sandbox(content installed with the AIR application) are not restricted by
+	sandbox (content installed with the AIR application) are not restricted by
 	these security limitations.
 
 	For more information related to security, see the Flash Player Developer

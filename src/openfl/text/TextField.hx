@@ -173,8 +173,8 @@ class TextField extends InteractiveObject
 		If `autoSize` is set to `TextFieldAutoSize.LEFT`,
 		the text is treated as left-justified text, meaning that the left margin
 		of the text field remains fixed and any resizing of a single line of the
-		text field is on the right margin. If the text includes a line break(for
-		example, `"\n"` or `"\r"`), the bottom is also
+		text field is on the right margin. If the text includes a line break
+		(for example, `"\n"` or `"\r"`), the bottom is also
 		resized to fit the next line of text. If `wordWrap` is also set
 		to `true`, only the bottom of the text field is resized and the
 		right side remains fixed.
@@ -258,7 +258,7 @@ class TextField extends InteractiveObject
 		you restored focus to the field (typically where the insertion point last
 		was, or 0 if the field has not had focus).
 
-		Selection span indexes are zero-based(for example, the first position
+		Selection span indexes are zero-based (for example, the first position
 		is 0, the second position is 1, and so on).
 	**/
 	public var caretIndex(get, never):Int;
@@ -585,7 +585,7 @@ class TextField extends InteractiveObject
 		field is set to `openfl.text.AntiAliasType.ADVANCED`. The range
 		for `sharpness` is a number from -400 to 400. If you attempt to
 		set `sharpness` to a value outside that range, Flash sets the
-		property to the nearest value in the range(either -400 or 400).
+		property to the nearest value in the range (either -400 or 400).
 
 		@default 0
 	**/
@@ -1394,7 +1394,7 @@ class TextField extends InteractiveObject
 		`caretIndex` property.
 
 		@param beginIndex The zero-based index value of the first character in the
-						  selection(for example, the first character is 0, the
+						  selection (for example, the first character is 0, the
 						  second character is 1, and so on).
 		@param endIndex   The zero-based index value of the last character in the
 						  selection.
@@ -2022,7 +2022,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __getPositionByIdentifier(x:Float, y:Float, line:Bool):Int
 	{
 		var position = __getPosition(x, y);
-		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
+		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"\n";
 		var char = __text.charAt(position);
 		if (__specialSelectionInitialIndex <= position)
 		{
@@ -2050,16 +2050,18 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __getOppositeIdentifierBound(charIndex:Int, line:Bool):Int
 	{
 		var position = charIndex;
-		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
+		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"\n";
 		var char = __text.charAt(position);
 
 		if (position <= __caretIndex)
 		{
-			while (delimiters.indexOf(char) == -1 && position > 0)
+			if (position == 0) return position;
+			do
 			{
 				position--;
 				char = __text.charAt(position);
 			}
+			while (delimiters.indexOf(char) == -1 && position > 0);
 			if (position == 0) return position;
 			position++;
 		}
@@ -3421,14 +3423,14 @@ class TextField extends InteractiveObject
 		if (__lineSelection)
 		{
 			var prevCaretIndex = __caretIndex;
-			__caretIndex = __getPositionByIdentifier(event.stageX + scrollH, event.stageY, true);
+			__caretIndex = __getPositionByIdentifier(mouseX + scrollH, mouseY, true);
 			__selectionIndex = __getOppositeIdentifierBound(prevCaretIndex, true);
 			setSelection(__caretIndex, __selectionIndex);
 		}
 		else if (__wordSelection)
 		{
 			var prevCaretIndex = __caretIndex;
-			__caretIndex = __getPositionByIdentifier(event.stageX + scrollH, event.stageY, false);
+			__caretIndex = __getPositionByIdentifier(mouseX + scrollH, mouseY, false);
 			__selectionIndex = __getOppositeIdentifierBound(prevCaretIndex, false);
 			__specialSelectionInitialIndex = prevCaretIndex;
 			setSelection(__caretIndex, __selectionIndex);

@@ -547,12 +547,14 @@ class Rectangle
 	}
 
 	/**
-		Sets the members of Rectangle to the specified values
+		Sets the members of Rectangle to the specified values.
 
-		@param	xa	the values to set the rectangle to.
-		@param	ya
-		@param	widtha
-		@param	heighta
+		@param xa      The _x_ coordinate of the top-left corner of the
+					   rectangle.
+		@param ya      The _y_ coordinate of the top-left corner of the
+					   rectangle.
+		@param widtha  The width of the rectangle, in pixels.
+		@param heighta The height of the rectangle, in pixels.
 	**/
 	public function setTo(xa:Float, ya:Float, widtha:Float, heighta:Float):Void
 	{

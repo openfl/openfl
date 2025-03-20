@@ -10,7 +10,6 @@ import openfl.utils._internal.NullUtils;
 	Defines the values to use for sampler mipmap filter mode
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DMipFilter(Null<Int>)
-
 {
 	/**
 		Select the two closest MIP levels and linearly blend between them (the highest
@@ -65,9 +64,7 @@ import openfl.utils._internal.NullUtils;
 	#end
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DMipFilter(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DMipFilter(String) from String to String
 {
 	public var MIPLINEAR = "miplinear";
 	public var MIPNEAREST = "mipnearest";

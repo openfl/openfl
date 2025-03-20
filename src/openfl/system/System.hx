@@ -254,7 +254,7 @@ import hl.Gc;
 	/**
 		Replaces the contents of the Clipboard with a specified text string. This
 		method works from any security context when called as a result of a user
-		event(such as a keyboard or input device event handler).
+		event (such as a keyboard or input device event handler).
 
 		This method is provided for SWF content running in Flash Player 9. It
 		allows only adding String content to the Clipboard.

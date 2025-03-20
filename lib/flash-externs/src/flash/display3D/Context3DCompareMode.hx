@@ -2,7 +2,6 @@ package flash.display3D;
 
 #if flash
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DCompareMode(String) from String to String
-
 {
 	public var ALWAYS = "always";
 	public var EQUAL = "equal";

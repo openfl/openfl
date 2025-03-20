@@ -7,7 +7,6 @@ package openfl.net;
 	IP addresses.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract IPVersion(Null<Int>)
-
 {
 	/**
 		An Internet Protocol version 4 (IPv4) address.
@@ -45,9 +44,7 @@ package openfl.net;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract IPVersion(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract IPVersion(String) from String to String
 {
 	public var IPV4 = "IPv4";
 	public var IPV6 = "IPv6";

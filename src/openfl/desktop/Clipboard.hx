@@ -50,6 +50,9 @@ import lime.system.Clipboard as LimeClipboard;
 	application - typically resulting in an undesireable pause as the file
 	data is downloaded or created.
 
+	_OpenFL target support:_ Only `ClipboardFormats.TEXT_FORMAT` is currently
+	supported, except when targeting AIR.
+
 	**Note for AIR applications:** The clipboard object referenced by the
 	event objects dispatched for HTML drag-and-drop and copy-and-paste events
 	are not the same type as the AIR Clipboard object. The JavaScript
