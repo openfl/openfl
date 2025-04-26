@@ -79,7 +79,7 @@ import openfl.errors.TypeError;
 			}
 			else if (opengl.match(version))
 			{
-				var major = Std.parseInt(opengl.matched(1));
+				var major = Std.parseInt(opengl.matched(1).split(".")[0]);
 				if (major < 3)
 				{
 					if (gl.getExtension("OES_element_index_uint") == null && gl.getExtension("EXT_element_index_uint") == null)
