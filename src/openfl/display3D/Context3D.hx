@@ -767,6 +767,7 @@ import lime.math.Vector2;
 		@param	bufferUsage	the expected buffer usage. Use one of the constants defined
 		in Context3DBufferUsage. The hardware driver can do appropriate optimization
 		when you set it correctly. This parameter is only available after Flash 12/AIR 4.
+		@param  bufferFormat the data format to be used in the buffer.
 		@return	A new IndexBuffer3D object
 		@throws	Error	Object Disposed: if this Context3D object has been disposed by a
 		calling `dispose()` or because the underlying rendering hardware has been lost.
@@ -776,9 +777,10 @@ import lime.math.Vector2;
 		@throws	ArgumentError	Buffer Too Big: when `numIndices` is greater than or equal
 		to 0xf0000.
 	**/
-	public function createIndexBuffer(numIndices:Int, bufferUsage:Context3DBufferUsage = STATIC_DRAW):IndexBuffer3D
+	public function createIndexBuffer(numIndices:Int, bufferUsage:Context3DBufferUsage = STATIC_DRAW,
+			bufferFormat:Context3DIndexBufferFormat = UINT16):IndexBuffer3D
 	{
-		return new IndexBuffer3D(this, numIndices, bufferUsage);
+		return new IndexBuffer3D(this, numIndices, bufferUsage, bufferFormat);
 	}
 
 	/**
@@ -1236,7 +1238,17 @@ import lime.math.Vector2;
 		var count = (numTriangles == -1) ? indexBuffer.__numIndices : (numTriangles * 3);
 
 		__bindGLElementArrayBuffer(indexBuffer.__id);
-		gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, firstIndex * 2);
+		switch indexBuffer.__format
+		{
+			case UINT8:
+				gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_BYTE, firstIndex);
+
+			case UINT16:
+				gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, firstIndex * 2);
+
+			case UINT32:
+				gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_INT, firstIndex * 4);
+		}
 	}
 
 	/**
