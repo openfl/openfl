@@ -399,7 +399,12 @@ class Shader
 			message = '\nFailed to simplify log:"$failingLine"\n$infoLog\n$source';
 		
 		var typeName = (type == __context.gl.VERTEX_SHADER) ? "vertex" : "fragment";
-		if (isError) Log.error('Error compiling $typeName shader: $__shaderLocation $message');
+		if (isError)
+		{
+			var logMessage = 'Error compiling $typeName shader';
+			if (__shaderLocation != null) logMessage += ': $__shaderLocation';
+			Log.error('$logMessage $message');
+		}
 		else Log.debug('Info compiling $typeName shader $message');
 	}
 

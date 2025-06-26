@@ -186,8 +186,8 @@ class ShaderMacro
 							});
 						}
 						
-						final loc = pos.toLocation();
-						final locString = '${loc.file}:${loc.range.start.line}';
+						var loc = pos.toLocation();
+						var locString = '${loc.file}:${loc.range.start.line}';
 						block.push(macro
 						{
 							__shaderLocation = $v{locString};
