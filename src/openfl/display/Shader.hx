@@ -165,6 +165,11 @@ class Shader
 	public var glVertexSource(get, set):String;
 
 	/**
+		Used internally to show files that caused shader errors.
+	 */
+	private var __shaderLocation:String = null;
+
+	/**
 		The precision of math operations performed by the shader.
 		The set of possible values for the `precisionHint` property is defined
 		by the constants in the ShaderPrecision class.
@@ -394,7 +399,7 @@ class Shader
 			message = '\nFailed to simplify log:"$failingLine"\n$infoLog\n$source';
 		
 		var typeName = (type == __context.gl.VERTEX_SHADER) ? "vertex" : "fragment";
-		if (isError) Log.error('Error compiling $typeName shader $message');
+		if (isError) Log.error('Error compiling $typeName shader: $__shaderLocation $message');
 		else Log.debug('Info compiling $typeName shader $message');
 	}
 

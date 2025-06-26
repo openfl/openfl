@@ -185,6 +185,13 @@ class ShaderMacro
 								__glFragmentSource = $v{glFragmentSource};
 							});
 						}
+						
+						final loc = pos.toLocation();
+						final locString = '${loc.file}:${loc.range.start.line}';
+						block.push(macro
+						{
+							__shaderLocation = $v{locString};
+						});
 
 						block.push(Context.parse("__isGenerated = true", pos));
 						block.push(Context.parse("__initGL ()", pos));
