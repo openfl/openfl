@@ -186,12 +186,14 @@ class ShaderMacro
 							});
 						}
 						
+						#if haxe4
 						var loc = pos.toLocation();
 						var locString = '${loc.file}:${loc.range.start.line}';
 						block.push(macro
 						{
 							__shaderLocation = $v{locString};
 						});
+						#end
 
 						block.push(Context.parse("__isGenerated = true", pos));
 						block.push(Context.parse("__initGL ()", pos));
