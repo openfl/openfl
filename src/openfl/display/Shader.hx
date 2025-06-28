@@ -413,13 +413,13 @@ class Shader
 		var linesBack = 0;
 		while (i-- > 0)
 		{
-			if (StringTools.contains(lines[i], "openfl_endregion"))
+			if (lines[i].indexOf("openfl_endregion") != -1)
 				nests++;
 			
 			if (nests == 0)
 				linesBack++;
 			
-			if (StringTools.contains(lines[i], "openfl_region"))
+			if (lines[i].indexOf("openfl_region") != -1)
 			{
 				if (nests == 0)
 					break;
