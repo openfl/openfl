@@ -321,7 +321,7 @@ abstract GlMetas(Array<Map<String, MetadataEntry>>)
 	
 	inline function getFirst(name:String):Null<String>
 	{
-		var meta = Lambda.find(this, (item)->item.exists(name));
+		var meta = Lambda.find(this, function (item) { return item.exists(name); });
 		return meta == null ? null : metaToString(meta[name]);
 	}
 
