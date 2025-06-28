@@ -165,11 +165,6 @@ class Shader
 	public var glVertexSource(get, set):String;
 
 	/**
-		Used internally to show files that caused shader errors.
-	 */
-	private var __shaderLocation:String = null;
-
-	/**
 		The precision of math operations performed by the shader.
 		The set of possible values for the `precisionHint` property is defined
 		by the constants in the ShaderPrecision class.
@@ -390,7 +385,12 @@ class Shader
 				// Add the relevant line to each log
 				var line = lines[lineNumber - 1];
 				var indent = StringTools.lpad("|", " ", lineNumberStr.length + 3);
+				#if haxe4 
+				var pos = getSourcePos(lines, lineNumber - 1);
+				message += '\n\n${pos.file}:${pos.lineNumber}\n ${pos.lineNumber} | $line\n$indent ${info}';
+				#else
 				message += '\n\n $lineNumber | $line\n$indent ${info}';
+				#end
 			}
 		}
 
@@ -401,11 +401,37 @@ class Shader
 		var typeName = (type == __context.gl.VERTEX_SHADER) ? "vertex" : "fragment";
 		if (isError)
 		{
-			var logMessage = 'Error compiling $typeName shader';
-			if (__shaderLocation != null) logMessage += ': $__shaderLocation';
-			Log.error('$logMessage $message');
+			Log.error('Error compiling $typeName shader $message');
 		}
 		else Log.debug('Info compiling $typeName shader $message');
+	}
+	
+	function getSourcePos(lines:Array<String>, lineNumber:Int):{file:String, lineNumber:Int}
+	{
+		var nests = 0;
+		var i = lineNumber;
+		var linesBack = 0;
+		while (i-- > 0)
+		{
+			if (StringTools.contains(lines[i], "openfl_endregion"))
+				nests++;
+			
+			if (nests == 0)
+				linesBack++;
+			
+			if (StringTools.contains(lines[i], "openfl_region"))
+			{
+				if (nests == 0)
+					break;
+				nests--;
+			}
+		}
+		
+		var sourceData = lines[i].split("// { openfl_region       ")[1].split(":");
+		return {
+			file: sourceData[0],
+			lineNumber: Std.parseInt(sourceData[1]) + linesBack - 1
+		};
 	}
 
 	@:noCompletion private function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
