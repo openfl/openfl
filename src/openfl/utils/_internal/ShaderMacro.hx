@@ -291,7 +291,7 @@ abstract GlMetas(Array<Map<String, MetadataEntry>>)
 		for (meta in metas)
 		{
 			var metaName = meta.name.split(":").join("");
-			if (names.contains(metaName))
+			if (names.indexOf(metaName) != -1)
 				result[metaName] = meta;
 		}
 		
