@@ -1,7 +1,6 @@
 package openfl.utils._internal;
 
 #if macro
-import haxe.display.Position;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
