@@ -126,6 +126,11 @@ import openfl.utils.ByteArray;
 class Shader
 {
 	/**
+		the version of the shader `#version <version>`.
+	**/
+	public var version:String = '120';
+
+	/**
 		The raw shader bytecode for this Shader instance.
 	**/
 	public var byteCode(null, default):ByteArray;
@@ -485,9 +490,11 @@ class Shader
 			var gl = __context.gl;
 
 			#if (js && html5)
-			var prefix = (precisionHint == FULL ? "precision mediump float;\n" : "precision lowp float;\n");
+			var prefix = (precisionHint == FULL ? 'version $version' + "\nprecision mediump float;\n" : "precision lowp float;\n");
 			#else
-			var prefix = "#ifdef GL_ES\n"
+			var prefix = "#version "
+				+ version
+				+ "\n#ifdef GL_ES\n"
 				+ (precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH\n"
 					+ "precision highp float;\n"
 					+ "#else\n"
@@ -573,21 +580,22 @@ class Shader
 
 	@:noCompletion private function __processGLData(source:String, storageType:String):Void
 	{
-		var lastMatch = 0, position, regex, name, type;
+		var lastMatch = 0, position, regex, name, type, arrLength:Int;
 
 		if (storageType == "uniform")
 		{
-			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)(?:\[(\d+)\])?/;
 		}
 		else
 		{
-			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)(?:\[(\d+)\])?/;
 		}
 
 		while (regex.matchSub(source, lastMatch))
 		{
 			type = regex.matched(1);
 			name = regex.matched(2);
+			arrLength = Std.parseInt(regex.matched(3) ?? '0');
 
 			if (StringTools.startsWith(name, "gl_"))
 			{
@@ -619,51 +627,62 @@ class Shader
 			{
 				var parameterType:ShaderParameterType = switch (type)
 				{
-					case "bool": BOOL;
-					case "double", "float": FLOAT;
-					case "int", "uint": INT;
-					case "bvec2": BOOL2;
-					case "bvec3": BOOL3;
-					case "bvec4": BOOL4;
-					case "ivec2", "uvec2": INT2;
-					case "ivec3", "uvec3": INT3;
-					case "ivec4", "uvec4": INT4;
-					case "vec2", "dvec2": FLOAT2;
-					case "vec3", "dvec3": FLOAT3;
-					case "vec4", "dvec4": FLOAT4;
-					case "mat2", "mat2x2": MATRIX2X2;
-					case "mat2x3": MATRIX2X3;
-					case "mat2x4": MATRIX2X4;
-					case "mat3x2": MATRIX3X2;
-					case "mat3", "mat3x3": MATRIX3X3;
-					case "mat3x4": MATRIX3X4;
-					case "mat4x2": MATRIX4X2;
-					case "mat4x3": MATRIX4X3;
-					case "mat4", "mat4x4": MATRIX4X4;
+					case "bool": arrLength > 0 ? BOOLV : BOOL;
+					case "double", "float": arrLength > 0 ? FLOATV : FLOAT;
+					case "int", "uint": arrLength > 0 ? INTV : INT;
+					case "bvec2": arrLength > 0 ? BOOL2V : BOOL2;
+					case "bvec3": arrLength > 0 ? BOOL3V : BOOL3;
+					case "bvec4": arrLength > 0 ? BOOL4V : BOOL4;
+					case "ivec2", "uvec2": arrLength > 0 ? INT2V : INT2;
+					case "ivec3", "uvec3": arrLength > 0 ? INT3V : INT3;
+					case "ivec4", "uvec4": arrLength > 0 ? INT4V : INT4;
+					case "vec2", "dvec2": arrLength > 0 ? FLOAT2V : FLOAT2;
+					case "vec3", "dvec3": arrLength > 0 ? FLOAT3V : FLOAT3;
+					case "vec4", "dvec4": arrLength > 0 ? FLOAT4V : FLOAT4;
+					case "mat2", "mat2x2": arrLength > 0 ? MATRIX2X2V : MATRIX2X2;
+					case "mat2x3": arrLength > 0 ? MATRIX2X3V : MATRIX2X3;
+					case "mat2x4": arrLength > 0 ? MATRIX2X4V : MATRIX2X4;
+					case "mat3x2": arrLength > 0 ? MATRIX3X2V : MATRIX3X2;
+					case "mat3", "mat3x3": arrLength > 0 ? MATRIX3X3V : MATRIX3X3;
+					case "mat3x4": arrLength > 0 ? MATRIX3X4V : MATRIX3X4;
+					case "mat4x2": arrLength > 0 ? MATRIX4X2V : MATRIX4X2;
+					case "mat4x3": arrLength > 0 ? MATRIX4X3V : MATRIX4X3;
+					case "mat4", "mat4x4": arrLength > 0 ? MATRIX4X4V : MATRIX4X4;
 					default: null;
 				}
 
 				var length = switch (parameterType)
 				{
-					case BOOL2, INT2, FLOAT2: 2;
-					case BOOL3, INT3, FLOAT3: 3;
-					case BOOL4, INT4, FLOAT4, MATRIX2X2: 4;
-					case MATRIX3X3: 9;
-					case MATRIX4X4: 16;
+					case BOOL2, BOOL2V, INT2, INT2V, FLOAT2, FLOAT2V, MATRIX2X2: 2;
+					case BOOL3, BOOL3V, INT3, INT3V, FLOAT3, FLOAT3V, MATRIX3X3: 3;
+					case BOOL4, BOOL4V, INT4, INT4V, FLOAT4, FLOAT4V, MATRIX4X4, MATRIX2X2V: 4;
+
+					case MATRIX2X3, MATRIX4X3: 3;
+					case MATRIX2X4, MATRIX3X4: 4;
+					case MATRIX3X2, MATRIX4X2: 2;
+
+					case MATRIX3X3V: 9;
+					case MATRIX4X4V: 16;
+					case MATRIX2X3V, MATRIX3X2V: 6;
+					case MATRIX2X4V, MATRIX4X2V: 8;
+					case MATRIX3X4V, MATRIX4X3V: 12;
 					default: 1;
 				}
 
 				var arrayLength = switch (parameterType)
 				{
-					case MATRIX2X2: 2;
-					case MATRIX3X3: 3;
-					case MATRIX4X4: 4;
+					case MATRIX2X2, MATRIX2X3, MATRIX2X4: 2;
+					case MATRIX3X3, MATRIX3X2, MATRIX3X4: 3;
+					case MATRIX4X4, MATRIX4X2, MATRIX4X3: 4;
+					case FLOATV, FLOAT2V, FLOAT3V, FLOAT4V, INTV, INT2V, INT3V, INT4V, BOOLV, BOOL2V, BOOL3V, BOOL4V, MATRIX2X2V, MATRIX2X3V, MATRIX2X4V,
+						MATRIX3X2V, MATRIX3X3V, MATRIX3X4V, MATRIX4X2V, MATRIX4X3V, MATRIX4X4V: arrLength;
 					default: 1;
 				}
+				length *= arrayLength;
 
 				switch (parameterType)
 				{
-					case BOOL, BOOL2, BOOL3, BOOL4:
+					case BOOL, BOOL2, BOOL3, BOOL4, BOOLV, BOOL2V, BOOL3V, BOOL4V:
 						var parameter = new ShaderParameter<Bool>();
 						parameter.name = name;
 						parameter.type = parameterType;
@@ -681,7 +700,7 @@ class Shader
 						Reflect.setField(__data, name, parameter);
 						if (__isGenerated) Reflect.setField(this, name, parameter);
 
-					case INT, INT2, INT3, INT4:
+					case INT, INT2, INT3, INT4, INTV, INT2V, INT3V, INT4V:
 						var parameter = new ShaderParameter<Int>();
 						parameter.name = name;
 						parameter.type = parameterType;
@@ -699,7 +718,7 @@ class Shader
 						parameter.type = parameterType;
 						parameter.__arrayLength = arrayLength;
 						#if lime
-						if (arrayLength > 0) parameter.__uniformMatrix = new Float32Array(arrayLength * arrayLength);
+						if (arrayLength > 0) parameter.__uniformMatrix = new Float32Array(length);
 						#end
 						parameter.__isFloat = true;
 						parameter.__isUniform = isUniform;
