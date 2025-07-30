@@ -164,13 +164,13 @@ package openfl.display;
 		Indicates that the shader parameter is defined as an `int3` value,
 		equivalent to an Array of three int or uint instances in ActionScript.
 	**/
-	public var INT3 = 31;
+	public var INT3 = 10;
 
 	/**
 		Indicates that the shader parameter is defined as an `int3[...]` value,
 		equivalent to an Array of 3 triplets of int or uint instances in ActionScript.
 	**/
-	public var INT3V = 32;
+	public var INT3V = 31;
 
 	/**
 		Indicates that the shader parameter is defined as an `int4` value,
@@ -182,7 +182,7 @@ package openfl.display;
 		Indicates that the shader parameter is defined as an `int4[...]` value,
 		equivalent to an Array of 4 quadruplets of int or uint instances in ActionScript.
 	**/
-	public var INT4V = 33;
+	public var INT4V = 32;
 
 	/**
 		Indicates that the shader parameter is defined as a `float2x2` value,
@@ -195,7 +195,7 @@ package openfl.display;
 		Indicates that the shader parameter is defined as a `float2x2[...]` value,
 		equivalent to an Array of 2 2x2 matrices of Number instances in ActionScript. 
 	**/
-	public var MATRIX2X2V = 34;
+	public var MATRIX2X2V = 33;
 
 	/**
 		Indicates that the shader parameter is defined as a `float2x3` value,
@@ -208,7 +208,7 @@ package openfl.display;
 		Indicates that the shader parameter is defined as a `float2x3[...]` value,
 		equivalent to an Array of 2 2x3 matrices of Float instances in Haxe.
 	**/
-	public var MATRIX2X3V = 35;
+	public var MATRIX2X3V = 34;
 
 	/**
 		Indicates that the shader parameter is defined as a `float2x4` value,
@@ -221,7 +221,7 @@ package openfl.display;
 		Indicates that the shader parameter is defined as a `float2x4[...]` value,
 		equivalent to an Array of 2 2x4 matrices of Float instances in Haxe.
 	**/
-	public var MATRIX2X4V = 36;
+	public var MATRIX2X4V = 35;
 
 	/**
 		Indicates that the shader parameter is defined as a `float3x2` value,
@@ -234,7 +234,7 @@ package openfl.display;
 		Indicates that the shader parameter is defined as a `float3x2[...]` value,
 		equivalent to an Array of 3 3x2 matrices of Float instances in Haxe.
 	**/
-	public var MATRIX3X2V = 37;
+	public var MATRIX3X2V = 36;
 
 	/**
 		Indicates that the shader parameter is defined as a `float3x3` value,
@@ -247,7 +247,7 @@ package openfl.display;
 		Indicates that the shader parameter is defined as a `float3x3[...]` value,
 		equivalent to an Array of 3 3x3 matrices of Number instances in ActionScript.
 	**/
-	public var MATRIX3X3V = 38;
+	public var MATRIX3X3V = 37;
 
 	/**
 		Indicates that the shader parameter is defined as a `float3x4` value,
@@ -260,7 +260,7 @@ package openfl.display;
 		Indicates that the shader parameter is defined as a `float3x4[...]` value,
 		equivalent to an Array of 3 3x4 matrices of Float instances in Haxe.
 	**/
-	public var MATRIX3X4V = 39;
+	public var MATRIX3X4V = 38;
 
 	/**
 		Indicates that the shader parameter is defined as a `float4x2` value,
@@ -273,7 +273,7 @@ package openfl.display;
 		Indicates that the shader parameter is defined as a `float4x2[...]` value,
 		equivalent to an Array of 4 4x2 matrices of Float instances in Haxe.
 	**/
-	public var MATRIX4X2V = 40;
+	public var MATRIX4X2V = 39;
 
 	/**
 		Indicates that the shader parameter is defined as a `float4x3` value,
@@ -286,7 +286,7 @@ package openfl.display;
 		Indicates that the shader parameter is defined as a `float4x3[...]` value,
 		equivalent to an Array of 4 4x3 matrices of Float instances in Haxe.
 	**/
-	public var MATRIX4X3V = 41;
+	public var MATRIX4X3V = 40;
 
 	/**
 		Indicates that the shader parameter is defined as a `float4x4` value,
@@ -299,7 +299,7 @@ package openfl.display;
 		Indicates that the shader parameter is defined as a `float4x4[...]` value,
 		equivalent to an Array of 4 4x4 matrices of Number instances in ActionScript.
 	**/
-	public var MATRIX4X4V = 42;
+	public var MATRIX4X4V = 41;
 
 	@:from private static function fromString(value:String):ShaderParameterType
 	{
