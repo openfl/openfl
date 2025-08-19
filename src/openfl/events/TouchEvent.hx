@@ -533,6 +533,7 @@ class TouchEvent extends Event
 	@:noCompletion private override function __init():Void
 	{
 		super.__init();
+		bubbles = true;
 		touchPointID = 0;
 		isPrimaryTouchPoint = false;
 		localX = 0;

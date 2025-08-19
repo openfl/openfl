@@ -720,10 +720,10 @@ class MouseEvent extends Event
 	@:noCompletion private override function __init():Void
 	{
 		super.__init();
+		bubbles = true;
 		shiftKey = false;
 		altKey = false;
 		ctrlKey = false;
-		bubbles = false;
 		relatedObject = null;
 		delta = 0;
 		localX = 0;
