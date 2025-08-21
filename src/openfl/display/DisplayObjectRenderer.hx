@@ -327,7 +327,6 @@ class DisplayObjectRenderer extends EventDispatcher
 						if (__isShaderFilter(filter))
 						{
 							displayObject.__cacheBitmapData = null;
-							needRender = true;
 							break;
 						}
 					}
