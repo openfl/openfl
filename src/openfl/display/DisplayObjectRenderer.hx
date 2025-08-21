@@ -298,23 +298,38 @@ class DisplayObjectRenderer extends EventDispatcher
 			}
 			#end
 
-			if (hasFilters && !needRender)
+			if (hasFilters)
 			{
-				var affineChanged:Bool = updateTransform
-					&& __affineChanged(displayObject.__cacheBitmap.__worldTransform, displayObject.__worldTransform);
-
-				for (filter in displayObject.__filters)
+				if (!needRender)
 				{
-					if (filter.__renderDirty)
+					var affineChanged:Bool = updateTransform
+						&& __affineChanged(displayObject.__cacheBitmap.__worldTransform, displayObject.__worldTransform);
+
+					for (filter in displayObject.__filters)
 					{
-						needRender = true;
-						break;
+						if (filter.__renderDirty)
+						{
+							needRender = true;
+							break;
+						}
+						if (affineChanged && __isShaderFilter(filter))
+						{
+							displayObject.__cacheBitmapData = null;
+							needRender = true;
+							break;
+						}
 					}
-					if (affineChanged && __isShaderFilter(filter))
+				}
+				else
+				{
+					for (filter in displayObject.__filters)
 					{
-						displayObject.__cacheBitmapData = null;
-						needRender = true;
-						break;
+						if (__isShaderFilter(filter))
+						{
+							displayObject.__cacheBitmapData = null;
+							needRender = true;
+							break;
+						}
 					}
 				}
 			}
