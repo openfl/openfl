@@ -749,8 +749,8 @@ class Context3DGraphics
 								renderer.__setShaderBuffer(shaderBuffer);
 								renderer.applyMatrix(uMatrix);
 								renderer.applyBitmapData(bitmap, false, repeat);
-								renderer.applyAlpha(1);
-								renderer.applyColorTransform(null);
+								renderer.applyAlpha(graphics.__owner.__worldAlpha);
+								renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
 								renderer.__updateShaderBuffer(shaderBufferOffset);
 							}
 							else
