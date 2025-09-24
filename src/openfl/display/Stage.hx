@@ -3268,6 +3268,12 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __resize():Void
 	{
+
+		if (__renderer != null)
+		{
+			__renderer.__pixelRatio = #if openfl_disable_hdpi 1 #else window.scale #end;
+		}
+
 		var cacheWidth = stageWidth;
 		var cacheHeight = stageHeight;
 
