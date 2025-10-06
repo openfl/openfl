@@ -279,10 +279,17 @@ class Assets
 	{
 		#if (lime_vorbis && lime > "7.9.0")
 		var path = getPath(id);
-		// TODO: What if it is a WAV or non-Vorbis file?
 		var vorbisFile = VorbisFile.fromFile(path);
-		var buffer = AudioBuffer.fromVorbisFile(vorbisFile);
-		return Sound.fromAudioBuffer(buffer);
+		if (vorbisFile != null)
+		{
+			var buffer = AudioBuffer.fromVorbisFile(vorbisFile);
+			return Sound.fromAudioBuffer(buffer);
+		}
+		else
+		{
+			// TODO: Streaming sound
+			return getSound(id, useCache);
+		}
 		#else
 		// TODO: Streaming sound
 		return getSound(id, useCache);
