@@ -1202,8 +1202,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private function __createRenderer():Void
 	{
 		#if lime
-		var windowWidth = Math.ceil(window.width * window.scale);
-		var windowHeight = Math.ceil(window.height * window.scale);
+		var windowWidth = Std.int(window.width * window.scale);
+		var windowHeight = Std.int(window.height * window.scale);
 
 		switch (window.context.type)
 		{
@@ -3277,8 +3277,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var cacheWidth = stageWidth;
 		var cacheHeight = stageHeight;
 
-		var windowWidth = Math.ceil(window.width * window.scale);
-		var windowHeight = Math.ceil(window.height * window.scale);
+		var windowWidth = Std.int(window.width * window.scale);
+		var windowHeight = Std.int(window.height * window.scale);
 
 		__displayMatrix.identity();
 
@@ -3307,8 +3307,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				stageWidth = windowWidth;
 				stageHeight = windowHeight;
 				#else
-				stageWidth = Math.ceil(windowWidth / window.scale);
-				stageHeight = Math.ceil(windowHeight / window.scale);
+				stageWidth = Math.round(windowWidth / window.scale);
+				stageHeight = Math.round(windowHeight / window.scale);
 
 				__displayMatrix.scale(window.scale, window.scale);
 				#end
@@ -3338,10 +3338,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						var scaledWidth = stageWidth * scale;
 						var scaledHeight = stageHeight * scale;
 
-						var visibleWidth = stageWidth - Math.floor((scaledWidth - windowWidth) / scale);
-						var visibleHeight = stageHeight - Math.floor((scaledHeight - windowHeight) / scale);
-						var visibleX = Math.floor((stageWidth - visibleWidth) / 2);
-						var visibleY = Math.floor((stageHeight - visibleHeight) / 2);
+						var visibleWidth = stageWidth - Math.round((scaledWidth - windowWidth) / scale);
+						var visibleHeight = stageHeight - Math.round((scaledHeight - windowHeight) / scale);
+						var visibleX = Math.round((stageWidth - visibleWidth) / 2);
+						var visibleY = Math.round((stageHeight - visibleHeight) / 2);
 
 						__displayMatrix.translate(-visibleX, -visibleY);
 						__displayMatrix.scale(scale, scale);
@@ -3358,10 +3358,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						var scaledWidth = stageWidth * scale;
 						var scaledHeight = stageHeight * scale;
 
-						var visibleWidth = stageWidth - Math.floor((scaledWidth - windowWidth) / scale);
-						var visibleHeight = stageHeight - Math.floor((scaledHeight - windowHeight) / scale);
-						var visibleX = Math.floor((stageWidth - visibleWidth) / 2);
-						var visibleY = Math.floor((stageHeight - visibleHeight) / 2);
+						var visibleWidth = stageWidth - Math.round((scaledWidth - windowWidth) / scale);
+						var visibleHeight = stageHeight - Math.round((scaledHeight - windowHeight) / scale);
+						var visibleX = Math.round((stageWidth - visibleWidth) / 2);
+						var visibleY = Math.round((stageHeight - visibleHeight) / 2);
 
 						__displayMatrix.translate(-visibleX, -visibleY);
 						__displayMatrix.scale(scale, scale);
