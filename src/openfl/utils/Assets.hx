@@ -1,5 +1,6 @@
 package openfl.utils;
 
+import lime.media.AudioBuffer;
 import openfl.utils._internal.Log;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
@@ -16,6 +17,9 @@ import lime.utils.Assets as LimeAssets;
 #if lime_vorbis
 import lime.media.AudioBuffer;
 import lime.media.vorbis.VorbisFile;
+#end
+#if lime_howlerjs
+import lime.media.howlerjs.Howl;
 #end
 
 /**
@@ -289,6 +293,24 @@ class Assets
 		{
 			// TODO: Streaming sound
 			return getSound(id, useCache);
+		}
+		#elseif lime_howlerjs
+		if (useCache && cache.enabled && cache.hasSound(id))
+		{
+			return cache.getSound(id);
+		}
+		else
+		{
+			var buffer = new AudioBuffer();
+			buffer.src = new Howl({src: [getPath(id)], html5: true});
+			var sound = Sound.fromAudioBuffer(buffer);
+
+			if (useCache && cache.enabled)
+			{
+				cache.setSound(id, sound);
+			}
+
+			return sound;
 		}
 		#else
 		// TODO: Streaming sound
