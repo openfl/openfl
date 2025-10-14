@@ -570,14 +570,14 @@ class File extends FileReference
 			directory.browseForDirectory("Select Directory");
 			directory.addEventListener(Event.SELECT, directorySelected);
 		}
-		catch (error:Error)
+		catch (error)
 		{
 			trace("Failed:", error.message);
 		}
 
 		function directorySelected(event:Event):Void
 		{
-			directory = event.target as File;
+			directory = (cast event.target:File);
 			var files:Array = directory.getDirectoryListing();
 			for(i in 0...files.length)
 			{
