@@ -2131,7 +2131,7 @@ class NetStream extends EventDispatcher
 
 	@:noCompletion private function video_onDurationChange(event:Dynamic):Void
 	{
-		__playStatus("NetStream.Play.durationchanged");
+		__playStatus("NetStream.Play.durationchange");
 	}
 
 	@:noCompletion private function video_onEnd(event:Dynamic):Void
