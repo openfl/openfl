@@ -364,7 +364,7 @@ class CanvasGraphics
 				var untransformedPath:Path2D = cast new Path2D();
 				untransformedPath.addPath(path, inverseMatrix);
 				context2.fillStyle = gradientFill;
-				context2.setTransform(gradientMatrix);
+				context2.setTransform(gradientMatrix.a, gradientMatrix.b, gradientMatrix.c, gradientMatrix.d, gradientMatrix.e, gradientMatrix.f);
 				context2.fill(untransformedPath);
 				return cast context.createPattern(canvas, 'no-repeat');
 		}
