@@ -4,6 +4,7 @@ package openfl.geom;
 import openfl.utils.ObjectPool;
 #if lime
 import openfl.utils._internal.Float32Array;
+import lime.math.ARGB;
 import lime.math.ColorMatrix;
 #end
 
@@ -242,6 +243,19 @@ class ColorTransform
 		greenOffset += ct.greenOffset;
 		blueOffset += ct.blueOffset;
 		alphaOffset += ct.alphaOffset;
+	}
+
+	@:noCompletion private function __setBaseColorTransform(fill:ARGB, world:ColorTransform):Void
+	{
+		redMultiplier = world.redMultiplier;
+		greenMultiplier = world.greenMultiplier;
+		blueMultiplier = world.blueMultiplier;
+		alphaMultiplier = world.alphaMultiplier;
+
+		redOffset = fill.r * world.redMultiplier + world.redOffset;
+		greenOffset = fill.g * world.greenMultiplier + world.greenOffset;
+		blueOffset = fill.b * world.blueMultiplier + world.blueOffset;
+		alphaOffset = fill.a * world.alphaMultiplier + world.alphaOffset;
 	}
 
 	@:noCompletion private function __identity():Void

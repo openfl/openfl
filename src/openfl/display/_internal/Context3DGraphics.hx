@@ -760,10 +760,7 @@ class Context3DGraphics
 							renderer.applyBitmapData(blankBitmapData, true, repeat);
 							#if lime
 							var color:ARGB = (fill : ARGB);
-							tempColorTransform.redOffset = color.r;
-							tempColorTransform.greenOffset = color.g;
-							tempColorTransform.blueOffset = color.b;
-							tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
+							tempColorTransform.__setBaseColorTransform(color, graphics.__owner.__worldColorTransform);
 							renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 							renderer.applyColorTransform(tempColorTransform);
 							#else
@@ -921,10 +918,7 @@ class Context3DGraphics
 									renderer.applyBitmapData(blankBitmapData, true, repeat);
 									#if lime
 									var color:ARGB = (fill : ARGB);
-									tempColorTransform.redOffset = color.r;
-									tempColorTransform.greenOffset = color.g;
-									tempColorTransform.blueOffset = color.b;
-									tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
+									tempColorTransform.__setBaseColorTransform(color, graphics.__owner.__worldColorTransform);
 									renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 									renderer.applyColorTransform(tempColorTransform);
 									#else
@@ -1036,10 +1030,7 @@ class Context3DGraphics
 								renderer.applyBitmapData(blankBitmapData, true, repeat);
 								#if lime
 								var color:ARGB = (fill : ARGB);
-								tempColorTransform.redOffset = color.r;
-								tempColorTransform.greenOffset = color.g;
-								tempColorTransform.blueOffset = color.b;
-								tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
+								tempColorTransform.__setBaseColorTransform(color, graphics.__owner.__worldColorTransform);
 								renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 								renderer.applyColorTransform(tempColorTransform);
 								#else
