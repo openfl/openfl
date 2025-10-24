@@ -1979,8 +1979,8 @@ import js.html.CanvasRenderingContext2D;
 		}
 		#end
 
-		var width = __bounds.width * scaleX;
-		var height = __bounds.height * scaleY;
+		var width = Math.abs(__bounds.width * scaleX);
+		var height = Math.abs(__bounds.height * scaleY);
 
 		if (width < 1 || height < 1)
 		{
