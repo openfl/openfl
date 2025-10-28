@@ -1488,6 +1488,8 @@ import js.html.CanvasRenderingContext2D;
 			joints = JointStyle.ROUND;
 		}
 
+		__strokePadding = 0;
+
 		if (thickness != null)
 		{
 			if (joints == JointStyle.MITER)
@@ -1662,13 +1664,15 @@ import js.html.CanvasRenderingContext2D;
 		__bitmap = null;
 
 		#if (js && html5)
-		if (__canvas != null) {
+		if (__canvas != null)
+		{
 			__canvas.width = 0;
 			__canvas.height = 0;
 			__canvas = null;
 		}
 
-		if (__context != null) {
+		if (__context != null)
+		{
 			__context.clearRect(0, 0, 0, 0);
 			__context = null;
 		}
