@@ -103,7 +103,7 @@ class Context3DGraphics
 			if (bitmap != null && uvtData == null)
 			{
 				uvtData = tempUvtVector;
-				populateUvtVector(vertices, bitmap, uvtData);
+				populateUvtVector(vertices, bitmap, bitmapMatrix, uvtData);
 			}
 
 			var hasIndices = (indices != null);
@@ -532,12 +532,6 @@ class Context3DGraphics
 			switch (type)
 			{
 				case BEGIN_BITMAP_FILL:
-					var c = data.readBeginBitmapFill();
-					if (c.matrix != null)
-					{
-						data.destroy();
-						return false;
-					}
 					hasBitmapFill = true;
 					hasColorFill = false;
 					hasShaderFill = false;
@@ -1182,7 +1176,7 @@ class Context3DGraphics
 		}
 	}
 
-	private static function populateUvtVector(vertices:Vector<Float>, bitmap:BitmapData, result:Vector<Float>):Void
+	private static function populateUvtVector(vertices:Vector<Float>, bitmap:BitmapData, matrix:Matrix, result:Vector<Float>):Void
 	{
 		var minX = vertices[0];
 		var maxX = minX;
@@ -1214,12 +1208,15 @@ class Context3DGraphics
 		}
 		var trianglesWidth = maxX - minX;
 		var trianglesHeight = maxY - minY;
+		var x:Float, y:Float;
 		result.length = length;
 		i = 0;
 		while (i < length)
 		{
-			result[i] = trianglesWidth * (vertices[i] / trianglesWidth) / bitmap.width;
-			result[i + 1] = trianglesHeight * (vertices[i + 1] / trianglesHeight) / bitmap.height;
+			x = matrix != null ? matrix.__transformInverseX(vertices[i], vertices[i + 1]) : vertices[i];
+			y = matrix != null ? matrix.__transformInverseY(vertices[i], vertices[i + 1]) : vertices[i + 1];
+			result[i] = trianglesWidth * (x / trianglesWidth) / bitmap.width;
+			result[i + 1] = trianglesHeight * (y / trianglesHeight) / bitmap.height;
 			i += 2;
 		}
 	}
