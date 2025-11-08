@@ -5,6 +5,7 @@ import openfl.display3D.Context3DClearMask;
 import openfl.display.DisplayObject;
 import openfl.display.OpenGLRenderer;
 import openfl.geom.Rectangle;
+import openfl.geom.Matrix;
 #if lime
 import lime.math.ARGB;
 #end
@@ -30,13 +31,20 @@ class Context3DDisplayObject
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
+			if (!renderer.__cleared)
+			{
+				renderer.__clear();
+			}
+
 			renderer.__setBlendMode(displayObject.__worldBlendMode);
 			renderer.__pushMaskObject(displayObject);
 
 			var context = renderer.__context3D;
 
 			var rect = Rectangle.__pool.get();
-			rect.setTo(0, 0, displayObject.width, displayObject.height);
+			var matrix = Matrix.__pool.get();
+
+			displayObject.__getRenderBounds(rect, matrix);
 			renderer.__pushMaskRect(rect, displayObject.__renderTransform);
 
 			#if lime
@@ -48,6 +56,7 @@ class Context3DDisplayObject
 			renderer.__popMaskObject(displayObject);
 
 			Rectangle.__pool.release(rect);
+			Matrix.__pool.release(matrix);
 		}
 
 		if (displayObject.__graphics != null)

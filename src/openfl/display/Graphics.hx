@@ -1137,8 +1137,8 @@ import js.html.CanvasRenderingContext2D;
 			if (maxY < y) maxY = y;
 		}
 
-		__inflateBounds(minX, minY);
-		__inflateBounds(maxX, maxY);
+		__inflateBounds(minX - __strokePadding, minY - __strokePadding);
+		__inflateBounds(maxX + __strokePadding, maxY + __strokePadding);
 
 		__commands.drawTriangles(vertices, indices, uvtData, culling);
 
@@ -1662,13 +1662,15 @@ import js.html.CanvasRenderingContext2D;
 		__bitmap = null;
 
 		#if (js && html5)
-		if (__canvas != null) {
+		if (__canvas != null)
+		{
 			__canvas.width = 0;
 			__canvas.height = 0;
 			__canvas = null;
 		}
 
-		if (__context != null) {
+		if (__context != null)
+		{
 			__context.clearRect(0, 0, 0, 0);
 			__context = null;
 		}
@@ -2074,6 +2076,79 @@ import js.html.CanvasRenderingContext2D;
 
 		__width = newWidth;
 		__height = newHeight;
+	}
+
+	private static function generateUVT(vertices:Vector<Float>, textureWidth:Float, textureHeight:Float, matrix:Matrix, result:Vector<Float>):Vector<Float>
+	{
+		var length = vertices.length;
+		var x:Float, y:Float;
+		result.length = length;
+		var i = 0;
+		while (i < length)
+		{
+			x = matrix != null ? matrix.__transformInverseX(vertices[i], vertices[i + 1]) : vertices[i];
+			y = matrix != null ? matrix.__transformInverseY(vertices[i], vertices[i + 1]) : vertices[i + 1];
+			result[i] = x / textureWidth;
+			result[i + 1] = y / textureHeight;
+			i += 2;
+		}
+
+		return result;
+	}
+
+	private static inline function edgeKey(a:Int, b:Int):Int
+	{
+		// Make an unordered unique 32-bit key
+		return (a < b) ? (a << 16) | b : (b << 16) | a;
+	}
+
+	private static function normalizeUVT(uvt:Vector<Float>, result:Vector<Float>):Vector<Float>
+	{
+		var len = uvt.length;
+		for (t in 1...len + 1)
+		{
+			if (t % 3 == 0)
+			{
+				continue;
+			}
+
+			result.push(uvt[t - 1]);
+		}
+
+		return result;
+	}
+
+	private static inline function calculatePatternMatrixFromTri(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, u1:Float, v1:Float, u2:Float,
+			v2:Float, u3:Float, v3:Float, offsetX:Float, offsetY:Float, texWidth:Int, texHeight:Int, matrix:Matrix):Matrix
+	{
+		u1 *= texWidth;
+		u2 *= texWidth;
+		u3 *= texWidth;
+		v1 *= texHeight;
+		v2 *= texHeight;
+		v3 *= texHeight;
+
+		var denom = (u1 * (v3 - v2) + u2 * (v1 - v3) + u3 * (v2 - v1));
+		if (Math.abs(denom) < 1e-12)
+		{
+			matrix.identity();
+		}
+		else
+		{
+			var a = -(x1 * (v2 - v3) + x2 * (v3 - v1) + x3 * (v1 - v2)) / denom;
+			var b = -(y1 * (v2 - v3) + y2 * (v3 - v1) + y3 * (v1 - v2)) / denom;
+			var c = -(x1 * (u3 - u2) + x2 * (u1 - u3) + x3 * (u2 - u1)) / denom;
+			var d = -(y1 * (u3 - u2) + y2 * (u1 - u3) + y3 * (u2 - u1)) / denom;
+			var e = (x1 * (u2 * v3 - u3 * v2) + x2 * (u3 * v1 - u1 * v3) + x3 * (u1 * v2 - u2 * v1)) / denom;
+			var f = (y1 * (u2 * v3 - u3 * v2) + y2 * (u3 * v1 - u1 * v3) + y3 * (u1 * v2 - u2 * v1)) / denom;
+
+			e += offsetX;
+			f += offsetY;
+
+			matrix.setTo(a, b, c, d, e, f);
+		}
+
+		return matrix;
 	}
 
 	// Get & Set Methods

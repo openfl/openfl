@@ -78,9 +78,6 @@ class Matrix
 {
 	@:noCompletion private static var __identity:Matrix = new Matrix();
 	@:noCompletion private static var __pool:ObjectPool<Matrix> = new ObjectPool<Matrix>(function() return new Matrix(), function(m) m.identity());
-	#if lime
-	@:noCompletion private static var __matrix3:Matrix3 = new Matrix3();
-	#end
 
 	/**
 		The value that affects the positioning of pixels along the _x_ axis
@@ -794,10 +791,10 @@ class Matrix
 	}
 
 	#if lime
-	@:noCompletion private function __toMatrix3():Matrix3
+	@:noCompletion private function __toMatrix3(mat:Matrix3):Matrix3
 	{
-		__matrix3.setTo(a, b, c, d, tx, ty);
-		return __matrix3;
+		mat.setTo(a, b, c, d, tx, ty);
+		return mat;
 	}
 	#end
 

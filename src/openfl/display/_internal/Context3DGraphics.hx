@@ -60,16 +60,9 @@ class Context3DGraphics
 		var bitmap:BitmapData = null;
 		var bitmapMatrix:Matrix = null;
 
-		var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
-		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
-		if (!hasScale9Grid)
-		{
-			scale9Grid = null;
-		}
-
 		inline function buildDrawTrianglesBuffer(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void
 		{
-			if (hasScale9Grid)
+			if (Scale9Grid.valid)
 			{
 				if (tempScale9VerticesVector == null)
 				{
@@ -86,13 +79,11 @@ class Context3DGraphics
 				{
 					if (isX)
 					{
-						tempScale9VerticesVector[i] = toScale9Position(vertices[i], scale9Grid.x, scale9Grid.width, bounds.width,
-							graphics.__owner.scaleX) / graphics.__owner.scaleX;
+						tempScale9VerticesVector[i] = Scale9Grid.toPositionX(vertices[i]) / graphics.__owner.scaleX;
 					}
 					else
 					{
-						tempScale9VerticesVector[i] = toScale9Position(vertices[i], scale9Grid.y, scale9Grid.height, bounds.height,
-							graphics.__owner.scaleY) / graphics.__owner.scaleY;
+						tempScale9VerticesVector[i] = Scale9Grid.toPositionY(vertices[i]) / graphics.__owner.scaleY;
 					}
 					i++;
 					isX = !isX;
@@ -103,7 +94,7 @@ class Context3DGraphics
 			if (bitmap != null && uvtData == null)
 			{
 				uvtData = tempUvtVector;
-				populateUvtVector(vertices, bitmap, bitmapMatrix, uvtData);
+				Graphics.generateUVT(vertices, bitmap.width, bitmap.height, bitmapMatrix, uvtData);
 			}
 
 			var hasIndices = (indices != null);
@@ -413,12 +404,12 @@ class Context3DGraphics
 					var radiusX = c.ellipseWidth / 2.0;
 					var radiusY = (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth) / 2.0;
 
-					var scaleX = (hasScale9Grid
-						&& c.x + radiusX <= scale9Grid.x
-						&& c.x + c.width - radiusX >= scale9Grid.x + scale9Grid.width) ? 1.0 : graphics.__owner.scaleX;
-					var scaleY = (hasScale9Grid
-						&& c.y + radiusY <= scale9Grid.y
-						&& c.y + c.height - radiusX >= scale9Grid.y + scale9Grid.height) ? 1.0 : graphics.__owner.scaleY;
+					var scaleX = (Scale9Grid.valid
+						&& c.x + radiusX <= Scale9Grid.x
+						&& c.x + c.width - radiusX >= Scale9Grid.x + Scale9Grid.width) ? 1.0 : graphics.__owner.scaleX;
+					var scaleY = (Scale9Grid.valid
+						&& c.y + radiusY <= Scale9Grid.y
+						&& c.y + c.height - radiusX >= Scale9Grid.y + Scale9Grid.height) ? 1.0 : graphics.__owner.scaleY;
 
 					PolygonFunctions.buildRoundRectVerticesAndIndices(x, y, width, height, radiusX, radiusY, scaleX, scaleY, tempVerticesVector,
 						tempIndicesVector);
@@ -549,29 +540,7 @@ class Context3DGraphics
 					hasShaderFill = true;
 					data.skip(type);
 
-				case DRAW_QUADS:
-					if (hasColorFill || hasBitmapFill || hasShaderFill)
-					{
-						data.skip(type);
-					}
-					else
-					{
-						data.destroy();
-						return false;
-					}
-
-				case DRAW_RECT:
-					if (hasColorFill || hasBitmapFill || hasShaderFill)
-					{
-						data.skip(type);
-					}
-					else
-					{
-						data.destroy();
-						return false;
-					}
-
-				case DRAW_TRIANGLES:
+				case DRAW_QUADS, DRAW_ROUND_RECT, DRAW_ELLIPSE, DRAW_CIRCLE, DRAW_RECT, DRAW_TRIANGLES:
 					if (hasColorFill || hasBitmapFill || hasShaderFill)
 					{
 						data.skip(type);
@@ -657,6 +626,8 @@ class Context3DGraphics
 			var pixelRatio = renderer.__pixelRatio;
 			#end
 
+			Scale9Grid.setTo(graphics);
+
 			graphics.__update(renderer.__worldTransform, pixelRatio);
 
 			var bounds = graphics.__bounds;
@@ -670,13 +641,6 @@ class Context3DGraphics
 					|| (graphics.__quadBuffer == null && graphics.__vertexBuffer == null && graphics.__vertexBufferUVT == null))
 				{
 					buildBuffer(graphics, renderer);
-				}
-
-				var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
-				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
-				if (!hasScale9Grid)
-				{
-					scale9Grid = null;
 				}
 
 				var data = new DrawCommandReader(graphics.__commands);
@@ -980,12 +944,12 @@ class Context3DGraphics
 							var radiusX = c.ellipseWidth / 2.0;
 							var radiusY = (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth) / 2.0;
 
-							var scaleX = (hasScale9Grid
-								&& c.x + radiusX <= scale9Grid.x
-								&& c.x + c.width - radiusX >= scale9Grid.x + scale9Grid.width) ? 1.0 : graphics.__owner.scaleX;
-							var scaleY = (hasScale9Grid
-								&& c.y + radiusY <= scale9Grid.y
-								&& c.y + c.height - radiusX >= scale9Grid.y + scale9Grid.height) ? 1.0 : graphics.__owner.scaleY;
+							var scaleX = (Scale9Grid.valid
+								&& c.x + radiusX <= Scale9Grid.x
+								&& c.x + c.width - radiusX >= Scale9Grid.x + Scale9Grid.width) ? 1.0 : graphics.__owner.scaleX;
+							var scaleY = (Scale9Grid.valid
+								&& c.y + radiusY <= Scale9Grid.y
+								&& c.y + c.height - radiusX >= Scale9Grid.y + Scale9Grid.height) ? 1.0 : graphics.__owner.scaleY;
 
 							var numVertices = PolygonFunctions.getRoundRectNumVertices(radiusX * scaleX, radiusY * scaleY);
 							renderDrawTriangles(numVertices * 2, (numVertices - 2) * 3, 0, NONE);
@@ -1004,13 +968,12 @@ class Context3DGraphics
 								var width = c.width;
 								var height = c.height;
 
-								if (hasScale9Grid)
+								if (Scale9Grid.valid)
 								{
-									var scaledLeft = toScale9Position(c.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-									var scaledTop = toScale9Position(c.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-									var scaledRight = toScale9Position(c.x + c.width, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-									var scaledBottom = toScale9Position(c.y + c.height, scale9Grid.y, scale9Grid.height, bounds.height,
-										graphics.__owner.scaleY);
+									var scaledLeft = Scale9Grid.toPositionX(c.x);
+									var scaledTop = Scale9Grid.toPositionY(c.y);
+									var scaledRight = Scale9Grid.toPositionX(c.x + c.width);
+									var scaledBottom = Scale9Grid.toPositionY(c.y + c.height);
 
 									x = scaledLeft / graphics.__owner.scaleX;
 									y = scaledTop / graphics.__owner.scaleY;
@@ -1173,51 +1136,6 @@ class Context3DGraphics
 		if (newBuffer != null)
 		{
 			hasUVTData ? graphics.__vertexBufferDataUVT = newBuffer : graphics.__vertexBufferData = newBuffer;
-		}
-	}
-
-	private static function populateUvtVector(vertices:Vector<Float>, bitmap:BitmapData, matrix:Matrix, result:Vector<Float>):Void
-	{
-		var minX = vertices[0];
-		var maxX = minX;
-		var minY = vertices[1];
-		var maxY = minY;
-		var i = 2;
-		var length = vertices.length;
-		while (i < length)
-		{
-			var x = vertices[i];
-			if (minX > x)
-			{
-				minX = x;
-			}
-			else if (maxX < x)
-			{
-				maxX = x;
-			}
-			var y = vertices[i + 1];
-			if (minY > y)
-			{
-				minY = y;
-			}
-			else if (maxY < y)
-			{
-				maxY = y;
-			}
-			i += 2;
-		}
-		var trianglesWidth = maxX - minX;
-		var trianglesHeight = maxY - minY;
-		var x:Float, y:Float;
-		result.length = length;
-		i = 0;
-		while (i < length)
-		{
-			x = matrix != null ? matrix.__transformInverseX(vertices[i], vertices[i + 1]) : vertices[i];
-			y = matrix != null ? matrix.__transformInverseY(vertices[i], vertices[i + 1]) : vertices[i + 1];
-			result[i] = trianglesWidth * (x / trianglesWidth) / bitmap.width;
-			result[i + 1] = trianglesHeight * (y / trianglesHeight) / bitmap.height;
-			i += 2;
 		}
 	}
 
