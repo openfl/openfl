@@ -1800,7 +1800,6 @@ class CanvasGraphics
 						canvas.style.height = height + "px";
 					}
 
-					var transform = graphics.__renderTransform;
 					context.setTransform(transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale,
 						transform.ty * scale);
 				}
