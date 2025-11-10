@@ -838,6 +838,16 @@ class Assets
 	{
 		if (useCache == null) useCache = true;
 
+		if (useCache && cache.enabled && cache.hasSound(id))
+		{
+			var sound = cache.getSound(id);
+
+			if (isValidSound(sound))
+			{
+				return Future.withValue(sound);
+			}
+		}
+
 		#if lime
 		var promise = new Promise<Sound>();
 
