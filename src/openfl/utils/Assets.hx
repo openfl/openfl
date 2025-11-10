@@ -15,7 +15,6 @@ import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.Assets as LimeAssets;
 #end
 #if lime_vorbis
-import lime.media.AudioBuffer;
 import lime.media.vorbis.VorbisFile;
 #end
 #if lime_howlerjs
