@@ -1,6 +1,58 @@
 Changelog
 =========
 
+9.5.0 (11/11/2025)
+------------------
+
+* Added new, more accurate `scale9Grid` implementation for `Graphics`. Set the new `openfl_legacy_scale9grid` define to restore legacy behavior.
+* Added `orientation`, `deviceOrientation`, `supportedOrientations`, `supportsOrientationChange` and `autoOrients` properties, `setOrientation()` method, and `StageOrientationEvent.ORIENTATION_CHANGE` event to `Stage`. You must check the value of `supportsOrientationChange` to determine if they may be used on the current target.
+* Added `safeArea` property to `Screen` to get the region of the screen without cutouts or rounded corners.
+* Added `BevelFilter` implementation.
+* Added `passwordChar` property to `TextField` to allow customizing the password mask character.
+* Added `strikethrough` property to `TextFormat` to allow rendering a line striking out the text.
+* Added `getFileBytes()`, `getFileText()`, `saveBytes()`, and `saveText()` static helper methods to `File` class.
+* Added implementation of AGAL2 opcodes `ddx`, `ddy,` `ife`, `ine`, `ifg`, `ifl`, `els`, and `eif` to Stage 3D.
+* Added `IDisplayObjectLoader` interface for loading custom `openfl.display.Loader` content.
+* Added `LARGE_HXSF` and `LARGE_JSON` to `ObjectEncoding` to support reading and writing larger objects with `ByteArray`.
+* Added support for rendering more than 16384 tiles in `Tilemap`.
+* Added `Event.CLOSING` event to `NativeWindow`, which may be cancelled.
+* Added readable `type` property to `NativeWindow`, but it cannot yet be customized in `NativeWindowInitOptions`.
+* Added static `ofValues()` helper function to `Vector` as an alternative to `ofArray()` that accepts a `...rest` argument instead of an array.
+* Added support for `drawEllipse()`, `drawCircle()`, and `drawRoundRect()` with basic fills (but no strokes) when `Graphics` is forced to be rendered in hardware.
+* Added bitmap and shader fills when using `drawRect()` and `Graphics` is forced to be rendered in hardware.
+* Added solid color fills when using `drawTriangles()` and `drawQuads()` and `Graphics` is forced to be rendered in hardware.
+* Added setter for `url` property on `File` class.
+* Added `...rest` argument to the `push()` method of `Vector` when the Haxe version is 4.2 or newer.
+* Added internal `clippingLayer` property to `DisplayObject` for use with SWF library to support shared masks.
+* Added `metaData` property to `DisplayObject` for potential future use by SWF library.
+* Added support for externalizable traits in AMF `ByteArray` data.
+* Added support for vectors in AMF `ByteArray` data.
+* Fixed missing final `ProgressEvent.PROGRESS` before `Event.COMPLETE` on `Sound` load.
+* Fixed missing detection of new mouse target after mouse events or transformation, including dispatch of appropriate over/out events.
+* Fixed values of `setSelection()` getting lost while dragging selection in `TextField` when it has not scrolled.
+* Fixed default caret and selection indices on `TextField` to be `0`.
+* Fixed missing exceptions when calling `getLineText()` and `getLineOffset()` with negative line numbers.
+* Fixed `openfl.utils.Object` incorrectly returning a function unbound to `this` when resolving with member access on HTML5 target.
+* Fixed passing `null` for `uvtData` parameter when calling `drawTriangles()` on `Graphics`.
+* Fixed gradient fill not getting cleared when forcing hardware rendering of `Graphics`.
+* Fixed incorrect `align` behavior on `Stage` when `scaleMode` is `NO_BORDER` or `SHOW_ALL`.
+* Fixed `BitmapData` with `disposeImage()` recreating shaders too frequently to improve performance.
+* Fixed `DisplayObject` failing to dispose some of its `cacheAsBitmap` internal `BitmapData` objects to improve memory usage.
+* Fixed `Graphics` rendering not clearing an internal flag in some situations, leading to rendering every frame unnecessarily.
+* Fixed `loaderInfo.width` and `loaderInfo.height` not being initialized with the dimensions of the first window.
+* Fixed `opaqueBackground` on `DisplayObject` not rendering correctly.
+* Fixed `fillRect()` on `BitmapData` when backed by a hardware texture.
+* Fixed using incorrect underline position and thickness on native targets that use Cairo, when available.
+* Fixed compatibility with Haxe 5 `IMap` interface on `Dictionary`.
+* Fixed `durationchanged` event listener type on video to `durationchange` in `NetStream` on HTML5 target.
+* Fixed many variables that defaulted to `Dynamic` because they did not declare a type and were not initialized.
+* Fixed use of newer `setTransform()` overload on HTML5 target to use older overload for wider browser compatibility.
+* Changed `URLVariables` to remove support for `;` as a delimiter for better compatibility with Flash, which uses only the `&` character.
+* Changed _index.html_ template to use `mobile-web-app-capable` instead of deprecated `apple-mobile-web-app-capable`.
+* Changed `Graphics` and `TextField` on the HTML5 target to reuse `BitmapData` to improve performance and to properly dispose texture to improve memory usage.
+* Changed `TextField` on the HTML5 target to remove an implicit `moveTo()` on its internal `Graphics`, to improve performance and fix issues after implementing `scale9Grid`.
+* Changed `Assets.getMusic()` to fall back to `getSound()` if music isn't a Vorbis file.
+
 9.4.2 (10/01/2025)
 ------------------
 

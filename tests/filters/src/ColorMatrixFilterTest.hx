@@ -73,7 +73,7 @@ class ColorMatrixFilterTest extends Test
 		var matrix = [5.0, 1.0, 3.0];
 
 		var color = new ColorMatrixFilter();
-		var color_matrix = null;
+		var color_matrix:Array<Float> = null;
 
 		#if !flash
 		color.matrix = null;

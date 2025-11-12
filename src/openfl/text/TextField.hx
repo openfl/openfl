@@ -701,6 +701,8 @@ class TextField extends InteractiveObject
 	/**
 		The character to be displayed when displayAsPassword is set to true.
 		The default value is `*`.
+
+		The `passwordChar` property is ignored in Flash Player and AIR targets.
 	**/
 	public var passwordChar(get, set):String;
 

@@ -226,7 +226,7 @@ class AMF3Tools
 	// 	return switch (a)
 	// 	{
 	// 		case AArray(a, m):
-	// 			var b = [];
+	// 			var b:Array<Dynamic> = [];
 	// 			for (f in a)
 	// 				b.push(decode(f));
 	// 			var c = new Map<String, Dynamic>();
@@ -243,7 +243,7 @@ class AMF3Tools
 		return switch (a)
 		{
 			case AArray(a, m):
-				var b = [];
+				var b:Array<Dynamic> = [];
 				for (f in a)
 					b.push(decode(f));
 				b;
@@ -293,7 +293,7 @@ class AMF3Tools
 		return switch (a)
 		{
 			case AObject(f, _, className):
-				var o = null;
+				var o:Dynamic = null;
 				if (className != null && className != "")
 				{
 					var cls = Lib.getClassByAlias(className);

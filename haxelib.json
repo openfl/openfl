@@ -5,7 +5,7 @@
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
 	"version": "9.5.0",
-	"releasenote": "Various bug fixes",
+	"releasenote": "scale9Grid, stage orientation, screen safe area, bevel filter, TextFormat strikethrough, AGAL2",
 	"contributors": [
 		"singmajesty",
 		"bowlerhat",

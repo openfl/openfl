@@ -34,6 +34,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable
 	public var height:Float;
 	public var loaderInfo(default, never):LoaderInfo;
 	public var mask:DisplayObject;
+	public var metaData:Dynamic;
 	public var mouseX(default, never):Float;
 	public var mouseY(default, never):Float;
 	public var name:String;
@@ -86,6 +87,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable
 	@:flash.property var height(get, set):Float;
 	@:flash.property var loaderInfo(get, never):LoaderInfo;
 	@:flash.property var mask(get, set):DisplayObject;
+	@:flash.property var metaData(get, set):DisplayObject;
 	@:flash.property var mouseX(get, never):Float;
 	@:flash.property var mouseY(get, never):Float;
 	@:flash.property var name(get, set):String;

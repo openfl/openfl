@@ -554,6 +554,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	public var mask(get, set):DisplayObject;
 
+	/**
+		Obtains the meta data object of the DisplayObject instance if meta data
+		was stored alongside the the instance of this DisplayObject in the SWF
+		file through a PlaceObject4 tag.
+	**/
+	public var metaData(get, set):Dynamic;
+
 	// normal masks cannot be shared by multiple display objects, but swfs may
 	// define clipping layers, which involve depth checks where multiple display
 	// objects are allowed to be masked.
@@ -980,6 +987,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __loaderInfo:LoaderInfo;
 	@:noCompletion private var __mask:DisplayObject;
 	@:noCompletion private var __maskTarget:DisplayObject;
+	@:noCompletion private var __metaData:Dynamic;
 	@:noCompletion private var __name:String;
 	@:noCompletion private var __objectTransform:Transform;
 	@:noCompletion private var __renderable:Bool;
@@ -1053,6 +1061,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			"mask": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mask (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mask (v); }")
+			},
+			"metaData": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_metaData (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_metaData (v); }")
 			},
 			"mouseX": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mouseX (); }")
@@ -2169,6 +2181,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__setMask(value);
 
 		return __mask;
+	}
+
+	@:noCompletion private function get_metaData():Dynamic
+	{
+		return __metaData;
+	}
+
+	@:noCompletion private function set_metaData(value:Dynamic):Dynamic
+	{
+		return __metaData = value;
 	}
 
 	@:noCompletion private function get_clippingLayer():DisplayObject

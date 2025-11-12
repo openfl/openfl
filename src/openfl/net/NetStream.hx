@@ -1208,7 +1208,7 @@ class NetStream extends EventDispatcher
 		__video.addEventListener("timeupdate", video_onTimeUpdate, false);
 		__video.addEventListener("loadstart", video_onLoadStart, false);
 		__video.addEventListener("stalled", video_onStalled, false);
-		__video.addEventListener("durationchanged", video_onDurationChanged, false);
+		__video.addEventListener("durationchange", video_onDurationChange, false);
 		__video.addEventListener("canplay", video_onCanPlay, false);
 		__video.addEventListener("canplaythrough", video_onCanPlayThrough, false);
 		__video.addEventListener("loadedmetadata", video_onLoadMetaData, false);
@@ -2129,9 +2129,9 @@ class NetStream extends EventDispatcher
 		__playStatus("NetStream.Play.canplaythrough");
 	}
 
-	@:noCompletion private function video_onDurationChanged(event:Dynamic):Void
+	@:noCompletion private function video_onDurationChange(event:Dynamic):Void
 	{
-		__playStatus("NetStream.Play.durationchanged");
+		__playStatus("NetStream.Play.durationchange");
 	}
 
 	@:noCompletion private function video_onEnd(event:Dynamic):Void

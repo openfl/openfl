@@ -82,7 +82,7 @@ class AMF3Reader
 			header = readObjectHeader();
 		}
 
-		var ret = null;
+		var ret:AMF3Value = null;
 
 		switch (header)
 		{
@@ -150,7 +150,7 @@ class AMF3Reader
 		{
 			// object traits
 			var isDynamic = ((n >> 3) & 0x01) == 1;
-			var sealedMemberNames = [];
+			var sealedMemberNames:Array<String> = [];
 			var count = n >> 4; // the rest of the header is the count of sealed members
 
 			var traits:Traits = {
@@ -296,7 +296,7 @@ class AMF3Reader
 
 		complexObjectsTable.push(ret);
 
-		var header = null;
+		var header:AMF3ObjectHeader = null;
 
 		for (r in 0...len)
 		{

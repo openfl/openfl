@@ -143,7 +143,7 @@ jobs:
 
       - uses: joshtynjala/setup-adobe-air-action@v2
         with:
-          air-version: "33.1"
+          air-version: "51.2"
           accept-license: true
 
       - name: Set HAXEPATH
@@ -221,7 +221,7 @@ jobs:
 
       - uses: joshtynjala/setup-adobe-air-action@v2
         with:
-          air-version: "33.1"
+          air-version: "51.2"
           accept-license: true
 
       - name: Set HAXEPATH
