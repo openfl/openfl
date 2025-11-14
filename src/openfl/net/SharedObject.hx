@@ -642,8 +642,6 @@ class SharedObject extends EventDispatcher
 		var illegalValues = [" ", "~", "%", "&", "\\", ";", ":", "\"", "'", ",", "<", ">", "?", "#"];
 		var allowed = true;
 
-		var delimiter:String = forceDelimiter;
-
 		if (name == null || name == "")
 		{
 			allowed = false;
@@ -678,7 +676,10 @@ class SharedObject extends EventDispatcher
 			#end
 		}
 
-		var id = localPath + "/" + name;
+		var delimiter:String = forceDelimiter;
+
+		if (forceDelimiter == null) delimiter = "/";
+		var id = localPath + delimiter + name;
 
 		if (!__sharedObjects.exists(id))
 		{
@@ -701,7 +702,7 @@ class SharedObject extends EventDispatcher
 					localPath = Browser.window.location.pathname;
 				}
 
-				if (delimiter == null) delimiter = ":";
+				if (forceDelimiter == null) delimiter = ":";
 
 				if (storage != null && encodedData == null)
 				{
