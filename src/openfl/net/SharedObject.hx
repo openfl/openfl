@@ -637,10 +637,12 @@ class SharedObject extends EventDispatcher
 					  Storage Settings panel of the Settings Manager, located at
 					  [http://www.adobe.com/support/documentation/en/flashplayer/help/settings_manager03.html](http://www.adobe.com/support/documentation/en/flashplayer/help/settings_manager03.html).
 	**/
-	public static function getLocal(name:String, localPath:String = null, secure:Bool = false /* note: unsupported**/):SharedObject
+	public static function getLocal(name:String, localPath:String = null, secure:Bool = false /* note: unsupported**/, forceDelimiter:String = null):SharedObject
 	{
 		var illegalValues = [" ", "~", "%", "&", "\\", ";", ":", "\"", "'", ",", "<", ">", "?", "#"];
 		var allowed = true;
+
+		var delimiter:String = forceDelimiter;
 
 		if (name == null || name == "")
 		{
@@ -699,9 +701,11 @@ class SharedObject extends EventDispatcher
 					localPath = Browser.window.location.pathname;
 				}
 
+				if (delimiter == null) delimiter = ":";
+
 				if (storage != null && encodedData == null)
 				{
-					encodedData = storage.getItem(localPath + ":" + name);
+					encodedData = storage.getItem(localPath + delimiter + name);
 				}
 				#else
 				if (localPath == null) localPath = "";
