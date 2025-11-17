@@ -3,6 +3,7 @@ package openfl.net;
 #if (!flash && !html5)
 import haxe.io.Bytes;
 import haxe.io.Error;
+import openfl.errors.Error as OFLError;
 import openfl.errors.ArgumentError;
 import openfl.errors.IOError;
 import openfl.errors.IllegalOperationError;
@@ -261,8 +262,6 @@ class DatagramSocket extends EventDispatcher
 		is sent to the specified address and port and you must supply valid values for address and port. If the bind()
 		method has not been called, the socket is automatically bound to the default local address and port.
 
-		Note: Sending data to a broadcast address is not supported.
-
 		@param bytes A ByteArray containing the packet data.
 		@param offset The zero-based offset into the bytes ByteArray object at which the packet begins.
 		@param length The number of bytes in the packet. The default value of 0 causes the entire ByteArray to be sent,
@@ -328,6 +327,81 @@ class DatagramSocket extends EventDispatcher
 		{
 			throw new IOError("Operation attempted on invalid socket.");
 		}
+	}
+
+	/**
+		Broadcast a message on the local network.
+
+		Currently broadcast is only possible with a few caveats:
+		- Only supported for cpp and Neko targets.
+		- Defaults to broadcast address "255.255.255.255".  Subnet specific broadcasts (eg: "192.168.1.255") are not supported.
+		- A local IP address must be supplied to bind to.
+
+		@param bytes A ByteArray containing the packet data. Cannot be null.
+		@param offset The zero-based offset into the bytes ByteArray object at which the packet begins.
+		@param length The number of bytes in the packet. The default value of 0 causes the entire ByteArray to be sent,
+		starting at the value specified by the offset parameter.
+		@param port The port number on the remote machine.
+		@param localAddress The local IP address to bind to and broadcast from.
+		@throws ArgumentError The bytes parameter is null.
+		@throws IOError Broadcasting is not supported on this platform, or the packet could not be sent.
+		@throws RangeError The port is not between 1 and 65535, inclusive,
+			or the offset or length are outside the bounds of the bytes array.
+	**/
+	public static inline function broadcast(socket:DatagramSocket = null, bytes:ByteArray, offset:UInt = 0, length:UInt = 0, address:String = "255.255.255.255", port:Int = 0):Void
+	{
+        #if (cpp || neko)
+		if (bytes == null)
+		{
+			throw new ArgumentError("Parameter bytes must be non-null");
+		}
+
+		if (port < 0 || port > 65535)
+		{
+			throw new RangeError("Port must be between 1 and 65535, inclusive");
+		}
+
+		if (offset < 0 || offset >= bytes.length)
+		{
+			throw new RangeError("Offset out of bounds");
+		}
+
+		if (length < 0 || (length > 0 && offset + length > bytes.length))
+		{
+			throw new RangeError("Length out of bounds");
+		}
+
+		var actualLength = (length == 0) ? bytes.length - offset : length;
+
+		try
+		{
+			var isEphemeral:Bool = socket == null;
+			
+			if(isEphemeral){
+				socket = new DatagramSocket();
+				socket.bind(address);
+			}
+			
+			socket.__udpSocket.setBroadcast(true);			
+
+			//TODO: allow reuse if not ephemeral
+			var broadcastAddress = new Address();
+			broadcastAddress.host = new Host(address).ip;
+			broadcastAddress.port = port;
+
+			socket.__udpSocket.sendTo(cast bytes, offset, actualLength, broadcastAddress);
+			
+			if(isEphemeral) {
+				socket.close();
+			}
+		}
+		catch (e:Dynamic)
+		{
+			throw new IOError("Failed to broadcast datagram: " + e);
+		}
+		#else
+		throw new OFLError("Broadcast not supported on this platform");
+		#end
 	}
 
 	override public function addEventListener<T>(type:EventType<T>, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0,

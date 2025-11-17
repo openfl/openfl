@@ -1,6 +1,9 @@
 package;
 
 import openfl.events.DatagramSocketDataEvent;
+import openfl.errors.ArgumentError;
+import openfl.errors.IOError;
+import openfl.errors.RangeError;
 import openfl.net.DatagramSocket;
 #if (sys || air)
 	import openfl.utils.ByteArray;
@@ -114,6 +117,96 @@ class DatagramSocketTest extends Test
 
 		sockA.send(aBytes, 0, 0, sockB.localAddress, sockB.localPort);
 		sockB.send(bBytes, 0, 0, sockA.localAddress, sockA.localPort);
+	}
+
+	/* ---------- broadcast supported/unsupported target ---------- */
+
+	public function test_broadcast()
+	{
+		#if (cpp || neko)
+		var data = new ByteArray(10);
+		for (i in 0...10) {
+			data.writeByte(i);
+		}
+		data.position = 0;
+
+		try {
+			// Test with invalid port (should throw regardless of network)
+			DatagramSocket.broadcast(data, 0, 10, 0, "127.0.0.1");
+			Assert.fail("Broadcast should throw RangeError for port=0");
+		} catch (e:RangeError) {
+			Assert.pass("Correctly threw RangeError for invalid port");
+		} catch (e:Dynamic) {
+			Assert.fail("Wrong error type thrown: " + e);
+		}
+
+		#else
+		// On unsupported platforms, should throw IOError
+		var data = new ByteArray(10);
+		try {
+			DatagramSocket.broadcast(data, 0, 10, 54321, "127.0.0.1");
+			Assert.fail("Broadcast should throw IOError on unsupported platform");
+		} catch (e:IOError) {
+			Assert.pass("Correctly threw IOError on unsupported platform");
+		} catch (e:Dynamic) {
+			Assert.fail("Wrong error type thrown: " + e);
+		}
+		#end
+	}
+
+	/* ---------- broadcast validations ---------- */
+
+	public function test_broadcast_validation()
+	{
+		// Test null bytes parameter
+		try {
+			DatagramSocket.broadcast(null, 0, 0, 54321, "127.0.0.1");
+			Assert.fail("Broadcast should throw ArgumentError for null bytes");
+		} catch (e:ArgumentError) {
+			Assert.pass("Correctly threw ArgumentError for null bytes");
+		} catch (e:Dynamic) {
+			Assert.fail("Wrong error type thrown: " + e);
+		}
+
+		// Test invalid port range
+		var data = new ByteArray(10);
+		try {
+			DatagramSocket.broadcast(data, 0, 10, 0, "127.0.0.1");
+			Assert.fail("Broadcast should throw RangeError for port=0");
+		} catch (e:RangeError) {
+			Assert.pass("Correctly threw RangeError for port=0");
+		} catch (e:Dynamic) {
+			Assert.fail("Wrong error type thrown: " + e);
+		}
+
+		try {
+			DatagramSocket.broadcast(data, 0, 10, 65536, "127.0.0.1");
+			Assert.fail("Broadcast should throw RangeError for port=65536");
+		} catch (e:RangeError) {
+			Assert.pass("Correctly threw RangeError for port=65536");
+		} catch (e:Dynamic) {
+			Assert.fail("Wrong error type thrown: " + e);
+		}
+
+		// Test invalid offset
+		try {
+			DatagramSocket.broadcast(data, 20, 10, 54321, "127.0.0.1");
+			Assert.fail("Broadcast should throw RangeError for offset outside bounds");
+		} catch (e:RangeError) {
+			Assert.pass("Correctly threw RangeError for invalid offset");
+		} catch (e:Dynamic) {
+			Assert.fail("Wrong error type thrown: " + e);
+		}
+
+		// Test invalid length
+		try {
+			DatagramSocket.broadcast(data, 5, 10, 54321, "127.0.0.1");
+			Assert.fail("Broadcast should throw RangeError for length exceeding bounds");
+		} catch (e:RangeError) {
+			Assert.pass("Correctly threw RangeError for invalid length");
+		} catch (e:Dynamic) {
+			Assert.fail("Wrong error type thrown: " + e);
+		}
 	}
 
 	#else
