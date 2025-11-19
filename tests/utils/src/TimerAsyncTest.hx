@@ -19,6 +19,10 @@ class TimerAsyncTest extends Test
 
 		HaxeTimer.delay(function()
 		{
+			if (async.timedOut)
+			{
+				return;
+			}
 			Assert.isFalse(timer.running);
 			Assert.equals(2, timer.currentCount);
 			async.done();
@@ -33,6 +37,10 @@ class TimerAsyncTest extends Test
 
 		HaxeTimer.delay(function()
 		{
+			if (async.timedOut)
+			{
+				return;
+			}
 			Assert.isTrue(timer.running);
 			Assert.isTrue(timer.currentCount == 1 || timer.currentCount == 2 || timer.currentCount == 3); // TODO: timer resolution?
 			async.done();
@@ -49,6 +57,11 @@ class TimerAsyncTest extends Test
 
 		HaxeTimer.delay(function():Void
 		{
+			if (async.timedOut)
+			{
+				return;
+			}
+
 			timer.repeatCount = 1;
 
 			Assert.isFalse(timer.running);
