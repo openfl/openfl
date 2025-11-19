@@ -3162,38 +3162,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 		}
 
+		var newMouseOverTarget:InteractiveObject = null;
 		if (target != __mouseOverTarget)
 		{
-			if (target != null)
-			{
-				var event:MouseEvent = null;
-
-				#if openfl_pool_events
-				event = MouseEvent.__pool.get();
-				event.type = MouseEvent.MOUSE_OVER;
-				event.stageX = __mouseX;
-				event.stageY = __mouseY;
-				var local = target.__globalToLocal(targetPoint, localPoint);
-				event.localX = local.x;
-				event.localY = local.y;
-				event.target = target;
-				event.clickCount = 0;
-				#else
-				event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), cast target);
-				#end
-
-				__dispatchStack(event, stack);
-
-				if (event.__updateAfterEventFlag)
-				{
-					__renderAfterEvent();
-				}
-
-				#if openfl_pool_events
-				MouseEvent.__pool.release(event);
-				#end
-			}
-
+			newMouseOverTarget = target;
 			__mouseOverTarget = target;
 			__mouseOutStack = stack;
 		}
@@ -3240,6 +3212,38 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				// we have a listener here
 				__rollOutStack.push(item);
 			}
+		}
+
+		if (newMouseOverTarget != null)
+		{
+			var event:MouseEvent = null;
+
+			#if openfl_pool_events
+			event = MouseEvent.__pool.get();
+			// MOUSE_OVER should be dispatched after ROLL_OVER
+			event.type = MouseEvent.MOUSE_OVER;
+			event.stageX = __mouseX;
+			event.stageY = __mouseY;
+			var local = newMouseOverTarget.__globalToLocal(targetPoint, localPoint);
+			event.localX = local.x;
+			event.localY = local.y;
+			event.target = newMouseOverTarget;
+			event.clickCount = 0;
+			#else
+			event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, 0, __mouseX, __mouseY, newMouseOverTarget.__globalToLocal(targetPoint, localPoint),
+				cast newMouseOverTarget);
+			#end
+
+			__dispatchStack(event, stack);
+
+			if (event.__updateAfterEventFlag)
+			{
+				__renderAfterEvent();
+			}
+
+			#if openfl_pool_events
+			MouseEvent.__pool.release(event);
+			#end
 		}
 
 		if (__dragObject != null)

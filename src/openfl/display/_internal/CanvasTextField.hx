@@ -96,6 +96,14 @@ class CanvasTextField
 		var pixelRatio = renderer.__pixelRatio;
 		#end
 
+		if (graphics.__bitmapScaleX != pixelRatio || graphics.__bitmapScaleY != pixelRatio)
+		{
+			// the TextField might have rendered in a context that requires a
+			// different pixel ratio than normal, such as when drawing to
+			// BitmapData.
+			graphics.__softwareDirty = true;
+		}
+
 		graphics.__update(renderer.__worldTransform, pixelRatio);
 
 		if (textField.__dirty || graphics.__softwareDirty)
