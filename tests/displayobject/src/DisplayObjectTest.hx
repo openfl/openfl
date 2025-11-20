@@ -344,12 +344,19 @@ class DisplayObjectTest extends Test
 
 	public function test_mask()
 	{
-		// TODO: Confirm functionality
+		var sprite1 = new Sprite();
+		Assert.isNull(sprite1.mask);
 
-		var sprite = new Sprite();
-		var exists = sprite.mask;
+		var theMask = new Sprite();
+		sprite1.mask = theMask;
+		Assert.notNull(sprite1.mask);
 
-		Assert.isNull(exists);
+		var sprite2 = new Sprite();
+		sprite2.mask = theMask;
+		Assert.notNull(sprite2.mask);
+
+		// must remove mask from previous owner
+		Assert.isNull(sprite1.mask);
 	}
 
 	#if !integration

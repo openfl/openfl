@@ -6,6 +6,8 @@ import openfl.permissions.PermissionStatus;
 /**
 	This event is dispatched when permission status changes for certain
 	operations.
+
+	_OpenFL target support:_ Not currently supported, except when targeting AIR.
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

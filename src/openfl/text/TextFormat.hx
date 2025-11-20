@@ -19,8 +19,8 @@ package openfl.text;
 	formatting BEFORE you add text to the `TextField`, and the
 	`setTextFormat()` method to add formatting AFTER you add text to the
 	`TextField`. The TextFormat properties are `null` by default because if
-	you don't provide values for the properties, Flash Player uses its own
-	default formatting. The default formatting that Flash Player uses for each
+	you don't provide values for the properties, OpenFL uses its own
+	default formatting. The default formatting that OpenFL uses for each
 	property (if property's value is `null`) is as follows:
 
 	| | |
@@ -42,6 +42,7 @@ package openfl.text;
 	| tabStops = [] (empty array) | |
 	| target = "" (empty string) | |
 	| underline = false | |
+	| strikethrough = false | |
 	| url = "" (empty string) | |
 
 	The default formatting for each property is also described in each
@@ -81,7 +82,7 @@ class TextFormat
 		`null`, which means no boldface is used. If the value is
 		`true`, then the text is boldface.
 	**/
-	public var bold:Null<Bool>;
+	public var bold(default, set):Null<Bool>;
 
 	/**
 		Indicates that the text is part of a bulleted list. In a bulleted list,
@@ -106,7 +107,7 @@ class TextFormat
 		default value is `null`, which means that Flash Player uses
 		Times New Roman font for the text.
 	**/
-	public var font:String;
+	public var font(default, set):String;
 
 	/**
 		Indicates the indentation from the left margin to the first character in
@@ -119,7 +120,7 @@ class TextFormat
 		Indicates whether text in this text format is italicized. The default
 		value is `null`, which means no italics are used.
 	**/
-	public var italic:Null<Bool>;
+	public var italic(default, set):Null<Bool>;
 
 	/**
 		A Boolean value that indicates whether kerning is enabled
@@ -137,7 +138,7 @@ class TextFormat
 	public var kerning:Null<Bool>;
 
 	/**
-		An integer representing the amount of vertical space(called
+		An integer representing the amount of vertical space (called
 		_leading_) between lines. The default value is `null`,
 		which indicates that the amount of leading used is 0.
 	**/
@@ -168,7 +169,17 @@ class TextFormat
 		The size in pixels of text in this text format. The default value is
 		`null`, which means that a size of 12 is used.
 	**/
-	public var size:Null<Int>;
+	public var size(default, set):Null<Int>;
+
+	/**
+		Indicates whether the text that uses this text format is striked out
+		(`true`) or not (`false`). This underlining is similar to that produced
+		by the `<S>` tag. The default value is `null`, which indicates that
+		strikethrough is not used.
+
+		The `strikethrough` property is ignored in Flash Player and AIR targets.
+	**/
+	public var strikethrough:Null<Bool>;
 
 	/**
 		Specifies custom tab stops as an array of non-negative integers. Each tab
@@ -291,6 +302,8 @@ class TextFormat
 		newFormat.letterSpacing = letterSpacing;
 		newFormat.tabStops = tabStops;
 
+		newFormat.strikethrough = strikethrough;
+
 		newFormat.__ascent = __ascent;
 		newFormat.__descent = __descent;
 
@@ -320,6 +333,8 @@ class TextFormat
 		if (format.letterSpacing != null) letterSpacing = format.letterSpacing;
 		if (format.tabStops != null) tabStops = format.tabStops;
 
+		if (format.strikethrough != null) strikethrough = format.strikethrough;
+
 		if (format.__ascent != null) __ascent = format.__ascent;
 		if (format.__descent != null) __descent = format.__descent;
 
@@ -329,6 +344,46 @@ class TextFormat
 	@:noCompletion private function __toCacheKey():String
 	{
 		return __cacheKey = '$font$size$bold$italic';
+	}
+
+	@:noCompletion private function set_font(value:String):String
+	{
+		if (font != value)
+		{
+			font = value;
+			__toCacheKey();
+		}
+		return font;
+	}
+
+	@:noCompletion private function set_size(value:Null<Int>):Null<Int>
+	{
+		if (size != value)
+		{
+			size = value;
+			__toCacheKey();
+		}
+		return size;
+	}
+
+	@:noCompletion private function set_bold(value:Null<Bool>):Null<Bool>
+	{
+		if (bold != value)
+		{
+			bold = value;
+			__toCacheKey();
+		}
+		return bold;
+	}
+
+	@:noCompletion private function set_italic(value:Null<Bool>):Null<Bool>
+	{
+		if (italic != value)
+		{
+			italic = value;
+			__toCacheKey();
+		}
+		return italic;
 	}
 }
 #else

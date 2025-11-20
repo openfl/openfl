@@ -35,11 +35,7 @@ import sys.io.FileInput;
 import sys.io.FileOutput;
 import sys.io.FileSeek;
 import sys.thread.Mutex;
-#if (lime >= "8.2.0")
-import lime.system.ThreadPool;
-#else
 import lime.system.BackgroundWorker;
-#end
 
 @:noCompletion private typedef HaxeFile = sys.io.File;
 
@@ -82,8 +78,7 @@ import lime.system.BackgroundWorker;
 @:access(openfl.utils.ByteArrayData)
 @:access(openfl.filesystem.File)
 #if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
+@:fileXml('tags="haxe,release"') @:noDebug
 #end
 class FileStream extends EventDispatcher implements IDataInput implements IDataOutput
 {
@@ -167,7 +162,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	@:noCompletion private var __output:FileOutput;
 	@:noCompletion private var __fileMode:FileMode;
 	@:noCompletion private var __file:File;
-	@:noCompletion private var __fileStreamWorker:#if (lime >= "8.2.0") ThreadPool #else BackgroundWorker #end;
+	@:noCompletion private var __fileStreamWorker:BackgroundWorker;
 	@:noCompletion private var __isOpen:Bool;
 	@:noCompletion private var __isWrite:Bool;
 	@:noCompletion private var __isAsync:Bool;
@@ -275,8 +270,8 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	}
 
 	/**
-		 Opens the FileStream object synchronously, pointing to the file specified by the
-		 file parameter.
+		Opens the FileStream object synchronously, pointing to the file specified by the
+		file parameter.
 
 		If the FileStream object is already open, calling the method closes the file before
 		opening and no further events (including close) are delivered for the previously opened
@@ -287,18 +282,19 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		Once you are done performing operations on the file, call the close() method of the
 		FileStream object. Some operating systems limit the number of concurrently open files.
-		@param 		file The File object specifying the file to open.
-		@param 		 A string from the FileMode class that defines the capabilities of the
-		FileStream, such as the ability to read from or write to the file.
-		@throws 	IOError The file does not exist; you do not have adequate permissions to
-		open the file; you are opening a file for read access, and you do not have read
-		permissions; or you are opening a file for write access, and you do not have write
-		permissions.
-		@throws 	SecurityError The file location is in the application directory, and the
-		fileMode parameter is set to "append", "update", or "write" mode.
 
-		@see [Initializing a FileStream object, and opening and closing files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/initializing-a-filestream-object-and-opening-and-closing-files.html)
-		@see [FileStream open modes](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/filestream-open-modes.html)
+		@param 		file The File object specifying the file to open.
+		@param 		fileMode A string from the FileMode class that defines the capabilities of the
+					FileStream, such as the ability to read from or write to the file.
+		@throws 	IOError The file does not exist; you do not have adequate permissions to
+					open the file; you are opening a file for read access, and you do not have read
+					permissions; or you are opening a file for write access, and you do not have write
+					permissions.
+		@throws 	SecurityError The file location is in the application directory, and the
+					fileMode parameter is set to "append", "update", or "write" mode.
+
+		@see https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/initializing-a-filestream-object-and-opening-and-closing-files.html
+		@see https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/filestream-open-modes.html
 	 */
 	public function open(file:File, fileMode:FileMode):Void
 	{
@@ -315,9 +311,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			return;
 		}
 		__fileStreamWorker.cancel();
-		#if (lime < "8.2.0")
 		__fileStreamWorker.doWork.cancel();
-		#end
 		__fileStreamWorker.onProgress.cancel();
 		__fileStreamWorker.onComplete.cancel();
 		__fileStreamWorker = null;
@@ -342,16 +336,16 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		@param 		file The File object specifying the file to open.
 		@param 		 A string from the FileMode class that defines the capabilities of the
-		FileStream, such as the ability to read from or write to the file.
+					FileStream, such as the ability to read from or write to the file.
 		@event 		ioError The file does not exist; you do not have adequate permissions to open the
-		file; you are opening a file for read access, and you do not have read permissions; or you are
-		opening a file for write access, and you do not have write permissions.
+					file; you are opening a file for read access, and you do not have read permissions; or you are
+					opening a file for write access, and you do not have write permissions.
 		@event 		progress Dispatched as data is read to the input buffer. (The file must be opened
-		with the fileMode parameter set to FileMode.READ or FileMode.UPDATE.)
+					with the fileMode parameter set to FileMode.READ or FileMode.UPDATE.)
 		@event		complete The file data has been read to the input buffer. (The file must be opened
-		with the fileMode parameter set to FileMode.READ or FileMode.UPDATE.)
+					with the fileMode parameter set to FileMode.READ or FileMode.UPDATE.)
 		@throws 	SecurityError The file location is in the application directory, and the
-		fileMode parameter is set to "append", "update", or "write" mode.
+					fileMode parameter is set to "append", "update", or "write" mode.
 
 		@see [Initializing a FileStream object, and opening and closing files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/initializing-a-filestream-object-and-opening-and-closing-files.html)
 		@see [FileStream open modes](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/filestream-open-modes.html)
@@ -362,7 +356,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		__fileStreamMutex = new Mutex();
 
-		__fileStreamWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
+		__fileStreamWorker = new BackgroundWorker();
 
 		__fileStreamWorker.onProgress.add(function(e:Event)
 		{
@@ -390,14 +384,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		if (fileMode == READ)
 		{
 			__buffer = new ByteArray(Std.int(file.size));
-
-			#if (lime >= "8.2.0")
-			// This is a silly break in an API
-			__fileStreamWorker.run(
-			#else
-			__fileStreamWorker.doWork.add(
-			#end
-			function(m:Dynamic)
+			__fileStreamWorker.doWork.add(function(m:Dynamic)
 			{
 				var inputBytesAvailable:Int = 0;
 				var tempPos:Int = 0;
@@ -450,13 +437,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		{
 			__buffer = new ByteArray();
 
-			#if (lime >= "8.2.0")
-			// This is a silly break in an API
-			__fileStreamWorker.run(
-			#else
-			__fileStreamWorker.doWork.add(
-			#end
-			function(m:Dynamic)
+			__fileStreamWorker.doWork.add(function(m:Dynamic)
 			{
 				var bytesLoaded:Int = 0;
 
@@ -502,9 +483,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			});
 		}
 
-		#if (lime < "8.2.0")
 		__fileStreamWorker.run();
-		#end
 	}
 
 	/**
@@ -899,10 +878,11 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	}
 
 	/**
-		*  Reads a UTF-8 string from the file stream, byte stream, or byte array. The string is assumed to be
+		* Reads a UTF-8 string from the file stream, byte stream, or byte array. The string is assumed to be
 		* prefixed with an unsigned short indicating the length in bytes.
 
-				This method is similar to the readUTF() method in the Java® IDataInput interface.
+		This method is similar to the readUTF() method in the Java® IDataInput interface.
+
 		* @return A UTF-8 string produced by the byte representation of characters.
 		* @event 		ioError The file cannot be read or the file is not open. This event is dispatched only
 		* for files opened for asynchronous operations (by using the openAsync() method).

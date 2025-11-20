@@ -1,6 +1,171 @@
 Changelog
 =========
 
+9.5.0 (11/11/2025)
+------------------
+
+* Added new, more accurate `scale9Grid` implementation for `Graphics`. Set the new `openfl_legacy_scale9grid` define to restore legacy behavior.
+* Added `orientation`, `deviceOrientation`, `supportedOrientations`, `supportsOrientationChange` and `autoOrients` properties, `setOrientation()` method, and `StageOrientationEvent.ORIENTATION_CHANGE` event to `Stage`. You must check the value of `supportsOrientationChange` to determine if they may be used on the current target.
+* Added `safeArea` property to `Screen` to get the region of the screen without cutouts or rounded corners.
+* Added `BevelFilter` implementation.
+* Added `passwordChar` property to `TextField` to allow customizing the password mask character.
+* Added `strikethrough` property to `TextFormat` to allow rendering a line striking out the text.
+* Added `getFileBytes()`, `getFileText()`, `saveBytes()`, and `saveText()` static helper methods to `File` class.
+* Added implementation of AGAL2 opcodes `ddx`, `ddy,` `ife`, `ine`, `ifg`, `ifl`, `els`, and `eif` to Stage 3D.
+* Added `IDisplayObjectLoader` interface for loading custom `openfl.display.Loader` content.
+* Added `LARGE_HXSF` and `LARGE_JSON` to `ObjectEncoding` to support reading and writing larger objects with `ByteArray`.
+* Added support for rendering more than 16384 tiles in `Tilemap`.
+* Added `Event.CLOSING` event to `NativeWindow`, which may be cancelled.
+* Added readable `type` property to `NativeWindow`, but it cannot yet be customized in `NativeWindowInitOptions`.
+* Added static `ofValues()` helper function to `Vector` as an alternative to `ofArray()` that accepts a `...rest` argument instead of an array.
+* Added support for `drawEllipse()`, `drawCircle()`, and `drawRoundRect()` with basic fills (but no strokes) when `Graphics` is forced to be rendered in hardware.
+* Added bitmap and shader fills when using `drawRect()` and `Graphics` is forced to be rendered in hardware.
+* Added solid color fills when using `drawTriangles()` and `drawQuads()` and `Graphics` is forced to be rendered in hardware.
+* Added setter for `url` property on `File` class.
+* Added `...rest` argument to the `push()` method of `Vector` when the Haxe version is 4.2 or newer.
+* Added internal `clippingLayer` property to `DisplayObject` for use with SWF library to support shared masks.
+* Added `metaData` property to `DisplayObject` for potential future use by SWF library.
+* Added support for externalizable traits in AMF `ByteArray` data.
+* Added support for vectors in AMF `ByteArray` data.
+* Fixed missing final `ProgressEvent.PROGRESS` before `Event.COMPLETE` on `Sound` load.
+* Fixed missing detection of new mouse target after mouse events or transformation, including dispatch of appropriate over/out events.
+* Fixed values of `setSelection()` getting lost while dragging selection in `TextField` when it has not scrolled.
+* Fixed default caret and selection indices on `TextField` to be `0`.
+* Fixed missing exceptions when calling `getLineText()` and `getLineOffset()` with negative line numbers.
+* Fixed `openfl.utils.Object` incorrectly returning a function unbound to `this` when resolving with member access on HTML5 target.
+* Fixed passing `null` for `uvtData` parameter when calling `drawTriangles()` on `Graphics`.
+* Fixed gradient fill not getting cleared when forcing hardware rendering of `Graphics`.
+* Fixed incorrect `align` behavior on `Stage` when `scaleMode` is `NO_BORDER` or `SHOW_ALL`.
+* Fixed `BitmapData` with `disposeImage()` recreating shaders too frequently to improve performance.
+* Fixed `DisplayObject` failing to dispose some of its `cacheAsBitmap` internal `BitmapData` objects to improve memory usage.
+* Fixed `Graphics` rendering not clearing an internal flag in some situations, leading to rendering every frame unnecessarily.
+* Fixed `loaderInfo.width` and `loaderInfo.height` not being initialized with the dimensions of the first window.
+* Fixed `opaqueBackground` on `DisplayObject` not rendering correctly.
+* Fixed `fillRect()` on `BitmapData` when backed by a hardware texture.
+* Fixed using incorrect underline position and thickness on native targets that use Cairo, when available.
+* Fixed compatibility with Haxe 5 `IMap` interface on `Dictionary`.
+* Fixed `durationchanged` event listener type on video to `durationchange` in `NetStream` on HTML5 target.
+* Fixed many variables that defaulted to `Dynamic` because they did not declare a type and were not initialized.
+* Fixed use of newer `setTransform()` overload on HTML5 target to use older overload for wider browser compatibility.
+* Changed `URLVariables` to remove support for `;` as a delimiter for better compatibility with Flash, which uses only the `&` character.
+* Changed _index.html_ template to use `mobile-web-app-capable` instead of deprecated `apple-mobile-web-app-capable`.
+* Changed `Graphics` and `TextField` on the HTML5 target to reuse `BitmapData` to improve performance and to properly dispose texture to improve memory usage.
+* Changed `TextField` on the HTML5 target to remove an implicit `moveTo()` on its internal `Graphics`, to improve performance and fix issues after implementing `scale9Grid`.
+* Changed `Assets.getMusic()` to fall back to `getSound()` if music isn't a Vorbis file.
+
+9.4.2 (10/01/2025)
+------------------
+
+* Fixed wrong mouse positions used by calculations on `TextField` double- and triple-click.
+* Fixed `TextField` double-click word selection when caret is immediately after the last character in a word.
+* Fixed `TextField` double-click selecting word on different line when caret is at beginning or end of line.
+* Fixed `Tilemap` being unable to render more than 16384 tiles.
+* Fixed `Graphics` incorrectly clearing the line style on `endFill()`.
+* Fixed `readGraphicsData()` forcing alpha to `1` for `BEGIN_FILL` command.
+* Fixed Stage 3D getting positioned too close to top-left of Stage on HiDPI screens.
+* Fixed `mask` not getting cleared from `DisplayObject` if it set on a new `DisplayObject` instead.
+* Fixed negative width and height on `scrollRect` not getting clamped to `0.0`.
+* Fixed `File` path canonicalization to better handle exceptions, remove `.` and `..`, and further improve compatibility.
+* Fixed `File` failing to copy directory when calling `copyTo()` in some situations.
+* Fixed missing default fonts for `_sans`, `_serif`, and `_typewriter` on iOS and iPadOS.
+* Fixed incorrect shape cache key in `TextFormat` after certain properties are changed.
+* Fixed exception when drawing to `Graphics` and `graphics.__cairo` is `null`.
+* Fixed crash when drawing `Graphics` to `BitmapData` and only `clear()` and `lineStyle()` were called.
+* Fixed expansion of environment variables on Windows in `File` paths.
+* Fixed scissor rect size when using `openfl_dpi_aware` define.
+* Fixed exception in `File` when specifying root path (`/`) or a child of root.
+* Fixed invalid characters in `url` value of `File`.
+* Fixed broken rendering of `scale9Grid` when a region's width or height is `0.0`.
+* Fixed detection of char code when Caps Lock is enabled.
+* Fixed `ColorMatrixFilter` not returning a copy from `matrix` getter.
+* Fixed double slash when listing content of root path (`/`) on non-Windows platforms.
+* Fixed exception in `File` when attempting to get parent of root path (`/`).
+* Fixed UTF-16 versus UTF-8 code paths in `TextLayout` for cppia and other targets.
+* Fixed setting `x`, `y`, or `alpha` in `DisplayObject` to `NaN`, which should convert to `0.0` instead.
+* Fixed `ctrlKey` and `controlKey` values on `MouseEvent` that weren't consistent with `KeyboardEvent`.
+* Fixed unnecessary matrix clone in `transform` setter of `DisplayObject`.
+* Fixed `null` default blend mode in `DisplayObjectRenderer`, which should have been `NORMAL`.
+* Fixed missing `typeReference()` on `Vector` externs for `flash` target.
+* Fixed memory leak in WebKit by clearing and resetting Canvas context on disposal.
+* Fixed case where `ENTER_FRAME` event failed to properly register in `DatagramSocket`.
+* Fixed `DatagramSocket` sometimes returning `null` for `localAddress` when using wildcards.
+* Fixed `DatagramSocket` value for `localAddress` when binding to `0.0.0.0`.
+* Fixed exception in `SimpleButton` when parent uses `cacheAsBitmap` and `downState` is `null`.
+* Fixed `setTextInputRect` not working on macOS because it was called before setting `window.textInputEnabled` to `true`.
+* Fixed `TextField` not respecting changes to `antiAliasType` and `sharpness` on native targets.
+* Fixed `BlurFilter` sometimes cutting off parts of the blur effect.
+* Fixed `ShaderFilter` cache not getting cleared on transformation changes.
+* Fixed value of `bubbles` property on `Event` when using `openfl_pool_events`.
+* Fixed text updates not getting batched in `FPS` when using `gl_stats`.
+* Fixed uninitialized `$global.$haxeUID` in openfl-js library.
+
+9.4.1 (12/19/2024)
+------------------
+
+* Fixed some broken gradient rendering caused by the new implemention of `SpreadMethod` in 9.4.0
+* Fixed incorrect drawing positions after calling `graphics.curveTo()` or `graphics.cubicCurveTo()`
+* Fixed incorrect `scrollRect` clipping at extreme scaling levels
+* Fixed crash when using hardware-only bitmaps with `beginShaderFill()` to use a solid black fallback color instead
+* Fixed `ServerSocket` returning value of `0.0.0.0` for `localAddress` if that value was passed to `bind()`
+* Fixed incorrect hit testing when graphics contains a mix of line styles
+* Fixed conditional in `TextLayout` to allow cppia target compilation
+
+9.4.0 (10/21/2024)
+------------------
+
+* Added `openfl_enable_experimental_update_queue` define, which enables an optimized update queue to improve rendering performance
+* Added `url` property to `openfl.filesystem.File` class
+* Added `workingDirectory` static property to `openfl.filesystem.File` class
+* Added dispatch of `Event.CUT`, `Event.COPY`, `Event.PASTE`, and `Event.SELECT_ALL` events to focused display object when keyboard shortcuts are used
+* Added `upload()` implementation to `FileReference` for HTML5 (it already existed for native)
+* Added `app:` URI scheme for files that translates to `File.applicationDirectory`
+* Added `app-storage:` URI scheme for files that translates to `File.applicationStorageDirectory`
+* Added support for `dataFormat = VARIABLES`, which sets `data` property to a new `URLVariables` object
+* Added `encodeURIComponent()` and `decodeURIComponent()` to `openfl.Lib`
+* Added `describeType()` to `openfl.Lib`
+* Added word selection to `TextField` by double-clicking and dragging
+* Added dispatch of `Event.OPEN` and `ProgressEvent.PROGRESS` events to `openfl.media.Sound`
+* Added support for `SpreadMethod.REPEAT` and `SpreadMethod.REFLECT` for gradients in `openfl.display.Graphics` when targeting HTML5
+* Added uncaught error events for exceptions thrown in functions called by `dispatchEvent()`, `Lib.setInterval()` and `Lib.setTimeout()`
+* Added `openfl.display.ScreenMode` implementation
+* Added `mode`, `modes`, and `visibleBounds` properties to `openfl.display.Screen`
+* Added `withCredentials` property to `URLRequest` to be used on HTML5 target for cross-origin requests
+* Added dispatch of `Event.CLOSE` to `openfl.net.DatagramSocket` class if bind fails
+* Added `readInt64()` and `writeInt64()` to `ByteArray`
+* Added `addToOutput()`, `interpolateToOutput()`, `polarToOutput()` and `subtractToOutput()` to `openfl.geom.Point`
+* Added `intersectionToOutput()` and `unionToOutput()` to `openfl.geom.Rectangle`
+* Added `deltaTransformPointToOutput()` and `transformPointToOutput()` to `openfl.geom.Matrix`
+* Added `getRelativeMatrix3DToOutput()` to `openfl.geom.Transform`
+* Added `decomposeToOutput()`, `deltaTransformVectorToOutput()`, `interpolateToOutput()`, and `transformVectorToOutput()` to `openfl.geom.Matrix3D`
+* Added `addToOutput()`, `crossProductToOutput()`, and `subtractToOutput()` to `openfl.geom.Vector3D`
+* Added `toMatrix3DToOutput()` to `openfl.geom.PerspectiveProjection`
+* Added `projectVectorToOutput()` to `openfl.geom.Utils3D`
+* Added `totalMemoryNumber` to `openfl.system.System`
+* Fixed support for reading and writing classes that implement `IExternalizable` interface to `ByteArray`
+* Fixed support for reading and writing `openfl.Vector` to `ByteArray`
+* Fixed `rotation` property on display objects not being clamped to the range between `-180.0` and `180.0`
+* Fixed `Capabilities.playerType` value on `sys` targets, which should return "Desktop" instead of "StandAlone"
+* Fixed utest library breaking the default HTML5 template, and added `openfl_enable_utest_legacy_mode` define to restore old behavior, if desired
+* Fixed `AsyncErrorEvent` not being able to accept other types besides `haxe.io.Error`
+* Fixed bad calculation of `TextField` bounds that sometimes accounted for the "gutter" twice
+* Fixed incorrect letter spacing after changing the font size on `TextField` on native targets
+* Fixed missing `TypeError` when setting `text` or `htmlText` to `null`
+* Fixed using hardware-only `BitmapData` with `beginBitmapFill()` and `drawTriangles()` on `Graphics`
+* Fixed types of many local variables that defaulted to `Dynamic` because they didn't define a type and weren't initialized for type inference
+* Fixed `Lib.getDefinitionByName()` support for `::` between package and base name
+* Fixed missing error handling in `FileReference.load()` for HTML5 target
+* Fixed passing another `ByteArray` to `ByteArray.writeObject()`
+* Fixed behavior of `openfl_enable_handle_error` and `openfl_disable_handle_error` defines
+* Fixed `openfl.net.Socket` incorrectly attempting to connect if `host` is `null`
+* Fixed null exception in `openfl.net.Socket` when trying to get addresses or ports and the socket is not connected
+* Fixed value of `localPort` on `openfl.net.Socket` class when the system selects the next available port
+* Fixed null exception sometimes thrown from calling `close()` on `openfl.media.Sound` class
+* Fixed certain `ByteArray` values that weren't defaulting to `BIG_ENDIAN` when reading or writing AMF data
+* Fixed `deleteDirectory()` on `openfl.filesystem.File` class failing to delete sub-directories when `deleteDirectoryContents` parameter is `true`
+* Fixed crash on calling `listen()` on `openfl.net.Socket` when `backlog` parameter is `0` and targeting Neko
+* Fixed `NativeWindow` dispatch of `Event.ACTIVATE` and `Event.DEACTIVATE` on mobile
+* Fixed `connected` property on `Socket` returning `null` instead of `false` by default
+
 9.3.4 (07/22/2024)
 ------------------
 

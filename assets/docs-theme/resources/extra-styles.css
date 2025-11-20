@@ -4,3 +4,13 @@ body .navbar .brand:first-of-type {
 	padding-left: 240px;
 	margin: 0.5em 0;
 }
+
+@media (min-resolution: 1.5x) {
+	body .navbar .brand:first-of-type {
+		background-image: url(./images/logo@2x.png);
+	}
+}
+
+table td {
+	vertical-align: top;
+}

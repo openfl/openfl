@@ -2,7 +2,6 @@ package flash.desktop;
 
 #if flash
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract ClipboardFormats(String) from String to String
-
 {
 	public var HTML_FORMAT = "air:html";
 	public var RICH_TEXT_FORMAT = "air:rtf";

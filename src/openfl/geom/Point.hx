@@ -11,7 +11,7 @@ import lime.math.Vector2;
 	system, where _x_ represents the horizontal axis and _y_
 	represents the vertical axis.
 
-	The following code creates a point at(0,0):
+	The following code creates a point at (0,0):
 
 	Methods and properties of the following classes use Point objects:
 
@@ -43,7 +43,7 @@ class Point
 	#end
 
 	/**
-		The length of the line segment from(0,0) to this point.
+		The length of the line segment from (0,0) to this point.
 	**/
 	public var length(get, never):Float;
 
@@ -68,7 +68,7 @@ class Point
 
 	/**
 		Creates a new point. If you pass no parameters to this method, a point is
-		created at(0,0).
+		created at (0,0).
 
 		@param x The horizontal coordinate.
 		@param y The vertical coordinate.
@@ -164,9 +164,9 @@ class Point
 		relative to the two end points specified by parameters `pt1`
 		and `pt2`. The closer the value of the parameter `f`
 		is to `1.0`, the closer the interpolated point is to the first
-		point(parameter `pt1`). The closer the value of the parameter
+		point (parameter `pt1`). The closer the value of the parameter
 		`f` is to 0, the closer the interpolated point is to the second
-		point(parameter `pt2`).
+		point (parameter `pt2`).
 
 		@param pt1 The first point.
 		@param pt2 The second point.
@@ -189,9 +189,9 @@ class Point
 		relative to the two end points specified by parameters `pt1`
 		and `pt2`. The closer the value of the parameter `f`
 		is to `1.0`, the closer the interpolated point is to the first
-		point(parameter `pt1`). The closer the value of the parameter
+		point (parameter `pt1`). The closer the value of the parameter
 		`f` is to 0, the closer the interpolated point is to the second
-		point(parameter `pt2`).
+		point (parameter `pt2`).
 
 		@param pt1 The first point.
 		@param pt2 The second point.
@@ -214,12 +214,12 @@ class Point
 	}
 
 	/**
-		Scales the line segment between(0,0) and the current point to a set
+		Scales the line segment between (0,0) and the current point to a set
 		length.
 
 		@param thickness The scaling value. For example, if the current point is
-						(0,5), and you normalize it to 1, the point returned is
-						 at(0,1).
+						 (0,5), and you normalize it to 1, the point returned is
+						 at (0,1).
 		@return The normalized point.
 	**/
 	public function normalize(thickness:Float):Void

@@ -10,6 +10,7 @@ import openfl.display.Shader;
 	The ShaderFilter class applies a filter by executing a shader on the
 	object being filtered. The filtered object is used as an input to the
 	shader, and the shader output becomes the filter result.
+
 	To create a new filter, use the constructor `new ShaderFilter()`. The use
 	of filters depends on the object to which you apply the filter:
 
@@ -48,6 +49,9 @@ import openfl.display.Shader;
 	To allow the shader output to extend beyond the bounds of the filtered
 	object, use the `leftExtension`, `rightExtension`, `topExtension`, and
 	`bottomExtension` properties.
+
+	@see `openfl.display.DisplayObject.filters`
+	@see `openfl.display.BitmapData.applyFilter`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

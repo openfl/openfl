@@ -61,6 +61,14 @@ class Application #if lime extends LimeApplication #end
 	{
 		var window = new Window(this, attributes);
 
+		#if (!flash && !macro)
+		if (Lib.current.__loaderInfo.width == -1)
+		{
+			Lib.current.__loaderInfo.width = window.width;
+			Lib.current.__loaderInfo.height = window.height;
+		}
+		#end
+
 		__windows.push(window);
 		__windowByID.set(window.id, window);
 

@@ -13,6 +13,61 @@ class CanvasShape
 {
 	public static inline function render(shape:DisplayObject, renderer:CanvasRenderer):Void
 	{
+		#if (openfl_legacy_scale9grid && !canvas)
+		legacyScale9Render(shape, renderer);
+		#else
+		#if (js && html5)
+		if (!shape.__renderable) return;
+
+		var alpha = renderer.__getAlpha(shape.__worldAlpha);
+		if (alpha <= 0) return;
+
+		var graphics = shape.__graphics;
+
+		if (graphics != null)
+		{
+			CanvasGraphics.render(graphics, renderer);
+
+			var width = graphics.__width;
+			var height = graphics.__height;
+			var canvas = graphics.__canvas;
+
+			if (canvas != null && graphics.__visible && width >= 1 && height >= 1)
+			{
+				var transform = graphics.__worldTransform;
+				var context = renderer.context;
+				var scrollRect = shape.__scrollRect;
+
+				// TODO: Render for scroll rect?
+
+				if (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0))
+				{
+					renderer.__setBlendMode(shape.__worldBlendMode);
+					renderer.__pushMaskObject(shape);
+
+					context.globalAlpha = alpha;
+
+					var renderTransform = Matrix.__pool.get();
+					renderTransform.scale(1 / graphics.__bitmapScaleX, 1 / graphics.__bitmapScaleY);
+					renderTransform.concat(transform);
+
+					renderer.setTransform(renderTransform, context);
+
+					context.drawImage(canvas, 0, 0, width, height);
+
+					Matrix.__pool.release(renderTransform);
+
+					renderer.__popMaskObject(shape);
+				}
+			}
+		}
+		#end
+		#end
+	}
+
+	#if (openfl_legacy_scale9grid && !canvas)
+	private static inline function legacyScale9Render(shape:DisplayObject, renderer:CanvasRenderer):Void
+	{
 		#if (js && html5)
 		if (!shape.__renderable) return;
 
@@ -62,8 +117,8 @@ class CanvasShape
 
 						var bounds = graphics.__bounds;
 
-						var scaleX = graphics.__renderTransform.a / graphics.__bitmapScale;
-						var scaleY = graphics.__renderTransform.d / graphics.__bitmapScale;
+						var scaleX = graphics.__renderTransform.a / graphics.__bitmapScaleX;
+						var scaleY = graphics.__renderTransform.d / graphics.__bitmapScaleY;
 						var renderScaleX = (scaleX * transform.a);
 						var renderScaleY = (scaleY * transform.d);
 
@@ -125,7 +180,7 @@ class CanvasShape
 					else
 					{
 						// var matrix = Matrix.__pool.get();
-						// matrix.scale(1 / graphics.__bitmapScale, 1 / graphics.__bitmapScale);
+						// matrix.scale(1 / graphics.__bitmapScaleX, 1 / graphics.__bitmapScaleY);
 						// matrix.concat(transform);
 
 						renderer.setTransform(transform, context);
@@ -141,5 +196,6 @@ class CanvasShape
 		}
 		#end
 	}
+	#end
 }
 #end

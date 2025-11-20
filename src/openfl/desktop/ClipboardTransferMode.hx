@@ -10,7 +10,6 @@ package openfl.desktop;
 	copy when accessing an object contained on a clipboard.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract ClipboardTransferMode(Null<Int>)
-
 {
 	/**
 		The Clipboard object should only return a copy.
@@ -57,9 +56,7 @@ package openfl.desktop;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract ClipboardTransferMode(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract ClipboardTransferMode(String) from String to String
 {
 	public var CLONE_ONLY = "cloneOnly";
 	public var CLONE_PREFERRED = "clonePreferred";

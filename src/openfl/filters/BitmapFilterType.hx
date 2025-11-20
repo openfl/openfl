@@ -7,7 +7,6 @@ package openfl.filters;
 	BitmapFilter.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract BitmapFilterType(Null<Int>)
-
 {
 	/**
 		Defines the setting that applies a filter to the entire area of an object.
@@ -47,9 +46,7 @@ package openfl.filters;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract BitmapFilterType(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract BitmapFilterType(String) from String to String
 {
 	public var FULL = "full";
 	public var INNER = "inner";

@@ -97,6 +97,14 @@ class CairoTextField
 		var pixelRatio = renderer.__pixelRatio;
 		#end
 
+		if (graphics.__bitmapScaleX != pixelRatio || graphics.__bitmapScaleY != pixelRatio)
+		{
+			// the TextField might have rendered in a context that requires a
+			// different pixel ratio than normal, such as when drawing to
+			// BitmapData.
+			graphics.__softwareDirty = true;
+		}
+
 		graphics.__update(renderer.__worldTransform, pixelRatio);
 
 		var width = Math.round(graphics.__width * pixelRatio);
@@ -155,26 +163,8 @@ class CairoTextField
 			graphics.__managed = true;
 
 			graphics.__bitmap = bitmap;
-			graphics.__bitmapScale = pixelRatio;
 
 			cairo = graphics.__cairo;
-
-			var options = new CairoFontOptions();
-
-			if (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400)
-			{
-				options.hintStyle = CairoHintStyle.NONE;
-				options.hintMetrics = CairoHintMetrics.OFF;
-				options.antialias = CairoAntialias.NONE;
-			}
-			else
-			{
-				options.hintStyle = CairoHintStyle.SLIGHT;
-				options.hintMetrics = CairoHintMetrics.OFF;
-				options.antialias = CairoAntialias.GOOD;
-			}
-
-			cairo.fontOptions = options;
 		}
 		else
 		{
@@ -185,6 +175,26 @@ class CairoTextField
 			cairo.paint();
 			cairo.setOperator(OVER);
 		}
+
+		graphics.__bitmapScaleX = pixelRatio;
+		graphics.__bitmapScaleY = pixelRatio;
+
+		var options = new CairoFontOptions();
+
+		if (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400)
+		{
+			options.hintStyle = CairoHintStyle.NONE;
+			options.hintMetrics = CairoHintMetrics.OFF;
+			options.antialias = CairoAntialias.NONE;
+		}
+		else
+		{
+			options.hintStyle = CairoHintStyle.SLIGHT;
+			options.hintMetrics = CairoHintMetrics.OFF;
+			options.antialias = CairoAntialias.GOOD;
+		}
+
+		cairo.fontOptions = options;
 
 		var matrix = Matrix.__pool.get();
 		matrix.copyFrom(graphics.__renderTransform);
@@ -410,13 +420,66 @@ class CairoTextField
 
 					if (group.format.underline)
 					{
-						// TODO: Use font underlinePosition/underlineThickness
+						var underlineThickness:Float;
+						if (font != null && font.underlineThickness != 0.0)
+						{
+							underlineThickness = (font.underlineThickness / font.unitsPerEM) * group.format.size;
+						}
+						else
+						{
+							underlineThickness = Math.max(1.0, 0.05 * group.format.size);
+						}
+
+						var underlinePosition:Float;
+						if (font != null && font.underlinePosition != 0.0)
+						{
+							underlinePosition = -(font.underlinePosition / font.unitsPerEM) * group.format.size;
+						}
+						else
+						{
+							underlinePosition = Math.floor(group.ascent * 0.185) + 0.5;
+						}
 
 						cairo.newPath();
-						cairo.lineWidth = 1;
-						var descent = Math.floor(group.ascent * 0.185);
+						cairo.lineWidth = underlineThickness;
 						var x = group.offsetX + scrollX - bounds.x;
-						var y = Math.ceil(group.offsetY + scrollY + group.ascent - bounds.y) + descent + 0.5;
+						var y = group.offsetY + scrollY + group.ascent - bounds.y + underlinePosition;
+						cairo.moveTo(x, y);
+						cairo.lineTo(x + group.width, y);
+						cairo.stroke();
+						cairo.closePath();
+					}
+
+					if (group.format.strikethrough)
+					{
+						#if (lime >= "8.3.0")
+						var strikethroughThickness:Float;
+						if (font != null && font.strikethroughThickness != 0.0)
+						{
+							strikethroughThickness = (font.strikethroughThickness / font.unitsPerEM) * group.format.size;
+						}
+						else
+						{
+							strikethroughThickness = Math.max(1.0, 0.05 * group.format.size);
+						}
+						var strikethroughPosition:Float;
+						if (font != null && font.strikethroughPosition != 0.0)
+						{
+							strikethroughPosition = -(font.strikethroughPosition / font.unitsPerEM) * group.format.size;
+						}
+						else
+						{
+							strikethroughPosition = -group.ascent / 3.0;
+						}
+						#else
+						var strikethroughThickness = Math.max(1.0, 0.05 * group.format.size);
+						var strikethroughPosition = -group.ascent / 3.0;
+						#end
+
+						cairo.newPath();
+						cairo.lineWidth = strikethroughThickness;
+						var x = group.offsetX + scrollX - bounds.x;
+						var y = group.offsetY + scrollY + group.ascent - bounds.y + strikethroughPosition;
 						cairo.moveTo(x, y);
 						cairo.lineTo(x + group.width, y);
 						cairo.stroke();

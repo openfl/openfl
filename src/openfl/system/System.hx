@@ -80,7 +80,20 @@ import hl.Gc;
 	**/
 	public static var totalMemory(get, never):Int;
 
-	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var totalMemoryNumber (default, null):Float;
+	/**
+		The amount of memory (in bytes) currently in use that has been directly
+		allocated by Flash Player or AIR.
+
+		This property is expressed as a Float, which allows higher values than the
+		`System.totalMemory` property, which is of type Int.
+
+		This property does not return _all_ memory used by an OpenFL
+		application or by the application (such as a browser) containing Flash
+		Player content. The browser or operating system may consume other memory.
+		The `System.privateMemory` property reflects _all_ memory
+		used by an application.
+	**/
+	public static var totalMemoryNumber(get, never):Float;
 
 	/**
 		A Boolean value that determines which code page to use to interpret
@@ -241,7 +254,7 @@ import hl.Gc;
 	/**
 		Replaces the contents of the Clipboard with a specified text string. This
 		method works from any security context when called as a result of a user
-		event(such as a keyboard or input device event handler).
+		event (such as a keyboard or input device event handler).
 
 		This method is provided for SWF content running in Flash Player 9. It
 		allows only adding String content to the Clipboard.
@@ -274,6 +287,17 @@ import hl.Gc;
 		return Std.int(Gc.stats().currentMemory);
 		#else
 		return 0;
+		#end
+	}
+
+	@:noCompletion private static function get_totalMemoryNumber():Float
+	{
+		#if cpp
+		return Gc.memInfo64(cpp.vm.Gc.MEM_INFO_USAGE);
+		#elseif hl
+		return Gc.stats().currentMemory;
+		#else
+		return System.totalMemory;
 		#end
 	}
 

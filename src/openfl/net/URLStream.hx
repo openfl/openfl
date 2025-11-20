@@ -61,6 +61,7 @@ import openfl.utils.Endian;
 							  security sandbox.
 
 	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see [Web service requests](https://books.openfl.org/openfl-developers-guide/http-communications/web-service-requests.html)
 	@see `openfl.net.URLRequest`
 	@see `openfl.net.URLStream`
 **/
@@ -193,9 +194,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		security limitations.
 
 		For more information related to security, see The Flash Player
-		Developer Center Topic: <a
-		href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
+		Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 
 		In AIR, a URLRequest object can register for the `httpResponse` status
 		event. Unlike the `httpStatus` event, the `httpResponseStatus` event

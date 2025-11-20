@@ -10,6 +10,8 @@ import openfl.net.dns.ResourceRecord;
 	Use the DNSResolver `lookup()` method to initiate a DNS query. Resource
 	records returned by the query are placed in the `resourceRecords` array of
 	this DNSResolverEvent object.
+
+	_OpenFL target support:_ Not currently supported, except when targeting AIR.
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

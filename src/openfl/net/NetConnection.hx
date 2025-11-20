@@ -448,8 +448,7 @@ class NetConnection extends EventDispatcher
 		these security limitations.
 
 		For more information about security, see the Adobe Flash Player
-		Developer Center: <a href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
+		Developer Center: [Security](http://www.adobe.com/go/devnet_security_en).
 
 		@param command Use one of the following values for the `command`
 					   parameter:

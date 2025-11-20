@@ -4,8 +4,8 @@ import haxe.PosInfos;
 import openfl.utils._internal.Log;
 #if !openfl_unit_testing
 import openfl.display.Application;
-import openfl.display.MovieClip;
 #end
+import openfl.display.MovieClip;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -15,7 +15,7 @@ import openfl.display.MovieClip;
 class Lib
 {
 	public static var application:#if !openfl_unit_testing Application #else Dynamic #end;
-	public static var current:#if !openfl_unit_testing MovieClip #else Dynamic #end#if flash = flash.Lib.current #end;
+	public static var current:MovieClip #if flash = flash.Lib.current #end;
 	@:noCompletion private static var __sentWarnings:Map<String, Bool> = new Map();
 
 	@SuppressWarnings("checkstyle:NullableParameter")

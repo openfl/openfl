@@ -9,9 +9,7 @@ import openfl.utils._internal.NullUtils;
 /**
 	Defines the values to use for specifying vertex buffers.
 **/
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DVertexBufferFormat(Null<Int>)
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DVertexBufferFormat(Null<Int>)
 {
 	public var BYTES_4 = 0;
 	public var FLOAT_1 = 1;
@@ -60,9 +58,7 @@ import openfl.utils._internal.NullUtils;
 	#end
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DVertexBufferFormat(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DVertexBufferFormat(String) from String to String
 {
 	public var BYTES_4 = "bytes4";
 	public var FLOAT_1 = "float1";

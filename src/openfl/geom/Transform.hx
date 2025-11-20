@@ -104,7 +104,7 @@ class Transform
 		If the `matrix` property is set to a value (not
 		`null`), the `matrix3D` property is
 		`null`. And if the `matrix3D` property is set to a
-		value(not `null`), the `matrix` property is
+		value (not `null`), the `matrix` property is
 		`null`.
 
 		@throws TypeError The matrix is null when being set
@@ -119,10 +119,10 @@ class Transform
 		determines the display object's position and orientation. A Matrix3D
 		object can also perform perspective projection.
 
-		If the `matrix` property is set to a value(not
+		If the `matrix` property is set to a value (not
 		`null`), the `matrix3D` property is
 		`null`. And if the `matrix3D` property is set to a
-		value(not `null`), the `matrix` property is
+		value (not `null`), the `matrix` property is
 		`null`.
 	**/
 	public var matrix3D(get, set):Matrix3D;
@@ -265,7 +265,22 @@ class Transform
 		{
 			var matrix = __displayObject.__transform;
 			return new Matrix3D(new Vector<Float>([
-				matrix.a, matrix.b, 0.0, 0.0, matrix.c, matrix.d, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, matrix.tx, matrix.ty, 0.0, 1.0
+				matrix.a,
+				matrix.b,
+				0.0,
+				0.0,
+				matrix.c,
+				matrix.d,
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				1.0,
+				0.0,
+				matrix.tx,
+				matrix.ty,
+				0.0,
+				1.0
 			]));
 		}
 

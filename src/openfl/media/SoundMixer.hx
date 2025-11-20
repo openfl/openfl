@@ -163,9 +163,7 @@ package openfl.media;
 		these security limitations.
 
 		For more information related to security, see the Flash Player
-		Developer Center Topic: <a
-		href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
+		Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 
 	**/
 	public static function stopAll():Void
@@ -173,8 +171,8 @@ package openfl.media;
 		var i = __soundChannels.length;
 		while (i > 0)
 		{
-			__soundChannels[i].stop();
 			i--;
+			__soundChannels[i].stop();
 		}
 	}
 
@@ -200,12 +198,12 @@ package openfl.media;
 		var i = __soundChannels.length;
 		while (i > 0)
 		{
+			i--;
 			var channel = __soundChannels[i];
 			if (channel.__audioSource.buffer == buffer)
 			{
 				channel.stop();
 			}
-			i--;
 		}
 	}
 	#end

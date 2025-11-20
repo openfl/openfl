@@ -7,6 +7,7 @@ import openfl.display.DisplayObject;
 import openfl.display.Tilemap;
 import openfl.events.EventDispatcher;
 import openfl.events.RenderEvent;
+import openfl.filters.ShaderFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -65,6 +66,7 @@ class DisplayObjectRenderer extends EventDispatcher
 		__pixelRatio = 1;
 		__tempColorTransform = new ColorTransform();
 		__worldAlpha = 1;
+		__blendMode = NORMAL;
 	}
 
 	@:noCompletion private function __clear():Void {}
@@ -248,10 +250,10 @@ class DisplayObjectRenderer extends EventDispatcher
 		if (renderer.__worldColorTransform != null) colorTransform.__combine(renderer.__worldColorTransform);
 		var updated = false;
 
-		// TODO: Do not force cacheAsBitmap on OpenGL once Scale-9 is properly supported in Context3DShape
 		if (displayObject.cacheAsBitmap
-			|| (renderer.__type != OPENGL && !colorTransform.__isDefault(true) #if openfl_force_gl_cacheasbitmap_for_scale9grid
-				|| (renderer.__type == OPENGL && displayObject.scale9Grid != null) #end))
+			|| (renderer.__type != OPENGL
+				&& !colorTransform.__isDefault(true) #if (openfl_legacy_scale9grid && openfl_force_gl_cacheasbitmap_for_scale9grid)
+					|| (renderer.__type == OPENGL && displayObject.scale9Grid != null) #end))
 		{
 			var rect:Rectangle = null;
 
@@ -297,10 +299,19 @@ class DisplayObjectRenderer extends EventDispatcher
 
 			if (hasFilters && !needRender)
 			{
+				var affineChanged:Bool = updateTransform
+					&& __affineChanged(displayObject.__cacheBitmap.__worldTransform, displayObject.__worldTransform);
+
 				for (filter in displayObject.__filters)
 				{
 					if (filter.__renderDirty)
 					{
+						needRender = true;
+						break;
+					}
+					if (affineChanged && __isShaderFilter(filter))
+					{
+						displayObject.__cacheBitmapData = null;
 						needRender = true;
 						break;
 					}
@@ -493,7 +504,10 @@ class DisplayObjectRenderer extends EventDispatcher
 			displayObject.__cacheBitmap.__worldShader = displayObject.__worldShader;
 			// displayObject.__cacheBitmap.__scrollRect = displayObject.__scrollRect;
 			// displayObject.__cacheBitmap.filters = displayObject.filters;
-			displayObject.__cacheBitmap.mask = displayObject.__mask;
+
+			// the cache bitmap should not take ownership of the mask, so take
+			// advantage of the fact that clipping layers can be shared
+			displayObject.__cacheBitmap.clippingLayer = displayObject.__mask;
 
 			if (needRender)
 			{
@@ -860,6 +874,19 @@ class DisplayObjectRenderer extends EventDispatcher
 		return false;
 		#end
 	}
+
+	@:noCompletion private inline function __affineChanged(a:Matrix, b:Matrix, eps = 1e-4):Bool
+	{
+		return (Math.abs(a.a - b.a) > eps) || (Math.abs(a.b - b.b) > eps) || (Math.abs(a.c - b.c) > eps) || (Math.abs(a.d - b.d) > eps);
+	}
+
+	#if (haxe_ver >= 4.2)
+	@:noCompletion private inline function __isShaderFilter(f:Dynamic):Bool
+		return Std.isOfType(f, ShaderFilter);
+	#else
+	@:noCompletion private inline function __isShaderFilter(f:Dynamic):Bool
+		return Std.is(f, ShaderFilter);
+	#end
 }
 #else
 typedef DisplayObjectRenderer = Dynamic;

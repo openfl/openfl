@@ -28,4 +28,8 @@ package flash;
 	{
 		return untyped __vector__(v);
 	}
+	public inline static function typeReference<T>():Class<Vector<T>>
+	{
+		return untyped __vector__();
+	}
 }

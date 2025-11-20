@@ -44,7 +44,7 @@ import lime.math.ColorMatrix;
 	ColorTransform object.
 
 	Color transformations do not apply to the background color of a movie
-	clip(such as a loaded SWF object). They apply only to graphics and symbols
+	clip (such as a loaded SWF object). They apply only to graphics and symbols
 	that are attached to the movie clip.
 
 	@see [Adjusting display object colors](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/adjusting-displayobject-colors.html)

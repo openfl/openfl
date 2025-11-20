@@ -212,6 +212,18 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		return __blurShader;
 	}
 
+	@:noCompletion inline function __padFor(value:Float):Int
+	{
+		if (value <= 0) return 0;
+		var passes = (__quality > 0 ? __quality : 1);
+		#if lime
+		var reach = value * passes * 3.0;
+		#else
+		var reach = value;
+		#end
+		return Std.int(Math.ceil(reach)) + 2; 
+	}
+
 	// Get & Set Methods
 	@:noCompletion private function get_blurX():Float
 	{
@@ -224,8 +236,10 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		{
 			__blurX = value;
 			__renderDirty = true;
-			__leftExtension = (value > 0 ? Math.ceil(value) : 0);
-			__rightExtension = __leftExtension;
+
+			var p = __padFor(value);
+			__leftExtension = p;
+			__rightExtension = p;
 		}
 		return value;
 	}
@@ -241,8 +255,10 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		{
 			__blurY = value;
 			__renderDirty = true;
-			__topExtension = (value > 0 ? Math.ceil(value) : 0);
-			__bottomExtension = __topExtension;
+
+			var p = __padFor(value);
+			__topExtension = p;
+			__bottomExtension = p;
 		}
 		return value;
 	}
@@ -262,7 +278,10 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		__numShaderPasses = __horizontalPasses + __verticalPasses;
 
 		if (value != __quality) __renderDirty = true;
-		return __quality = value;
+		__quality = value;
+		set_blurX(__blurX);
+		set_blurY(__blurY);
+		return __quality;
 	}
 }
 

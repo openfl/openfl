@@ -230,7 +230,7 @@ class CSSParser
 		  rules => [[directive =>"", value =>""], [directive =>"", value =>""], ...]
 		  selector => "SOMESELECTOR"
 		]
-			  returns the changed(new,removed,updated) values on css1 parameter, on same structure
+			  returns the changed (new,removed,updated) values on css1 parameter, on same structure
 			  if two css objects are the same, then returns false
 		if a css directive exists in css1 and     css2, and its value is different, it is included in diff
 		if a css directive exists in css1 and not css2, it is then included in diff

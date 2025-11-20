@@ -66,8 +66,7 @@ import openfl.utils.ByteArray;
 	security limitations.
 
 	For more information related to security, see the Flash Player Developer
-	Center Topic: <a href="http://www.adobe.com/go/devnet_security_en"
-	scope="external">Security</a>.
+	Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 
 	@event close         Dispatched when the server closes the socket
 						 connection. The `close` event is dispatched only when
@@ -179,9 +178,7 @@ class XMLSocket extends EventDispatcher
 		`allowNetworking` parameter of the the `object` and `embed` tags in
 		the HTML page that contains the SWF content.
 
-		For more information, see the Flash Player Developer Center Topic: <a
-		href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
+		For more information, see the Flash Player Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 
 		@param host A fully qualified DNS domain name or an IP address in the
 					form _111.222.333.444_. You can also specify `null` to

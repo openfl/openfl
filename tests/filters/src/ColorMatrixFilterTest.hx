@@ -61,14 +61,10 @@ class ColorMatrixFilterTest extends Test
 
 		var result = cast(color_clone, ColorMatrixFilter).matrix;
 
-		#if flash
 		for (i in 0...matrix.length)
 		{
 			Assert.equals(matrix[i], result[i]);
 		}
-		#else
-		Assert.equals(matrix, result);
-		#end
 	}
 
 	public function test_matrix()
@@ -77,7 +73,7 @@ class ColorMatrixFilterTest extends Test
 		var matrix = [5.0, 1.0, 3.0];
 
 		var color = new ColorMatrixFilter();
-		var color_matrix = null;
+		var color_matrix:Array<Float> = null;
 
 		#if !flash
 		color.matrix = null;

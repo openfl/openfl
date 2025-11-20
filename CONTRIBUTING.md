@@ -85,3 +85,26 @@ Below are some general guidelines we ask contributors to keep in mind in order t
  * Once your PR is merged, please look for any outstanding issue reports which may be related and follow up to see if the issue is resolved.
 
  * At each official release, all merged PR branches which were included in the release should be purged, keeping the repo tidy. If your bugfix/feature branch was not removed, please notify the team.
+
+## Versioning and Branching Guidelines (see also: [Release Policy](https://github.com/openfl/openfl/blob/develop/RELEASE_POLICY.md))
+
+We follow Semantic Versioning (semver): MAJOR.MINOR.PATCH.
+
+### Patch Updates (x.x.x)
+
+All bug fixes should be submitted to the current stable development branch (e.g., develop).
+
+These changes are released as patch versions (e.g., 9.4.2 → 9.4.3).
+
+### Minor Updates (x.x.0)
+
+All new features (non-breaking) should be submitted to the next minor development branch, named x.x.x-dev.
+
+For example, if the current version is 9.4.1, features targeting 9.5.0 should go into 9.5.0-dev.
+
+### Major Updates (x.0.0)
+
+Any breaking changes or major version updates must be submitted to the next major development branch, named x.0.0-dev.
+
+For example, breaking changes intended for 10.0.0 go into 10.0.0-dev.
+

@@ -141,6 +141,7 @@ class NativeWindow extends EventDispatcher
 	@:noCompletion private var __pendingWidth:Int = 400;
 	@:noCompletion private var __pendingHeight:Int = 228;
 	#end
+	@:noCompletion private var __type:NativeWindowType = NORMAL;
 	@:noCompletion private var __closed:Bool = false;
 	@:noCompletion private var __previousX:Int;
 	@:noCompletion private var __previousY:Int;
@@ -149,6 +150,7 @@ class NativeWindow extends EventDispatcher
 	@:noCompletion private var __previousDisplayState:NativeWindowDisplayState;
 	@:noCompletion private var __active:Bool = false;
 	@:noCompletion private var __ownedWindows:Vector<NativeWindow> = new Vector();
+	@:noCompletion private var __skipClosingEvent:Bool = false;
 
 	/**
 		Creates a new NativeWindow instance and a corresponding operating system
@@ -215,6 +217,8 @@ class NativeWindow extends EventDispatcher
 		__previousDisplayState = NORMAL;
 		__window.stage.nativeWindow = this;
 		NativeApplication.nativeApplication.__openedWindows.push(this);
+		__window.onActivate.add(window_onActivate);
+		__window.onDeactivate.add(window_onDeactivate);
 		__window.onFocusIn.add(window_onFocusIn);
 		__window.onFocusOut.add(window_onFocusOut);
 		__window.onMove.add(window_onMove);
@@ -223,6 +227,25 @@ class NativeWindow extends EventDispatcher
 		__window.onMaximize.add(window_onMaximize);
 		__window.onRestore.add(window_onRestore);
 		__window.onClose.add(window_onClose);
+	}
+
+	/**
+		 Reports the window `type` setting used to create this window.
+
+		The values returned by `NativeWindow.type` will be one of the constants
+		defined in the `NativeWindowType` class.
+
+		The `type` setting cannot be changed after a window is created.
+	**/
+	public var type(get, never):NativeWindowType;
+
+	@:noCompletion private function get_type():NativeWindowType
+	{
+		if (__closed)
+		{
+			throw new Error(ERROR_CLOSED, 3200);
+		}
+		return __type;
 	}
 
 	/**
@@ -573,7 +596,8 @@ class NativeWindow extends EventDispatcher
 		#if (lime < "8.1.0")
 		return __opened;
 		#else
-		return __window.visible;
+		// visible may be null instead of false in some versions of Lime
+		return __window.visible == true;
 		#end
 	}
 
@@ -968,6 +992,7 @@ class NativeWindow extends EventDispatcher
 		{
 			throw new Error(ERROR_CLOSED, 3200);
 		}
+		__skipClosingEvent = true;
 		__window.close();
 	}
 
@@ -1093,8 +1118,29 @@ class NativeWindow extends EventDispatcher
 		return __ownedWindows.copy();
 	}
 
+	@:noCompletion private function window_onActivate():Void
+	{
+		if (!__active)
+		{
+			window_onFocusIn();
+		}
+	}
+
+	@:noCompletion private function window_onDeactivate():Void
+	{
+		if (__active)
+		{
+			window_onFocusOut();
+		}
+	}
+
 	@:noCompletion private function window_onFocusIn():Void
 	{
+		if (__active)
+		{
+			return;
+		}
+
 		__active = true;
 		NativeApplication.nativeApplication.__activeWindow = this;
 		dispatchEvent(new Event(Event.ACTIVATE, false, false));
@@ -1105,6 +1151,11 @@ class NativeWindow extends EventDispatcher
 
 	@:noCompletion private function window_onFocusOut():Void
 	{
+		if (!__active)
+		{
+			return;
+		}
+
 		__active = false;
 		if (NativeApplication.nativeApplication.__activeWindow == this)
 		{
@@ -1163,7 +1214,18 @@ class NativeWindow extends EventDispatcher
 
 	@:noCompletion private function window_onClose():Void
 	{
+		if (!__skipClosingEvent)
+		{
+			var result = dispatchEvent(new Event(Event.CLOSING, false, true));
+			if (!result)
+			{
+				__window.onClose.cancel();
+				return;
+			}
+		}
+
 		// all child windows are closed when their owner is closed
+		// the child windows do not dispatch Event.CLOSING
 		while (__ownedWindows.length > 0)
 		{
 			var childWindow = __ownedWindows.pop();

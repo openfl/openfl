@@ -7,7 +7,6 @@ package openfl.text;
 	setting the `type` property of the TextField class.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextFieldType(Null<Int>)
-
 {
 	/**
 		Used to specify a `dynamic` TextField.
@@ -42,9 +41,7 @@ package openfl.text;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextFieldType(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextFieldType(String) from String to String
 {
 	public var DYNAMIC = "dynamic";
 	public var INPUT = "input";
