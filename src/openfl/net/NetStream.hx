@@ -25,7 +25,7 @@ import js.Browser;
 	* Call `NetStream.appendBytes()` to pass ByteArray data into the
 	NetStream.
 
-	**Note:**You cannot play and publish a stream over the same NetStream
+	**Note:** You cannot play and publish a stream over the same NetStream
 	object.
 
 	Adobe AIR and Flash Player 9.0.115.0 and later versions support files
@@ -509,8 +509,7 @@ import js.Browser;
 **/
 @:access(openfl.media.SoundMixer)
 #if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
+@:fileXml('tags="haxe,release"') @:noDebug
 #end
 class NetStream extends EventDispatcher
 {
@@ -781,9 +780,7 @@ class NetStream extends EventDispatcher
 
 		For more information on policy files, see "Website controls (policy
 		files)" in the _OpenFL Developer's Guide_ and the Flash
-		Player Developer Center Topic: <a
-		href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
+		Player Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	**/
 	public var checkPolicyFile:Bool;
 
@@ -1211,7 +1208,7 @@ class NetStream extends EventDispatcher
 		__video.addEventListener("timeupdate", video_onTimeUpdate, false);
 		__video.addEventListener("loadstart", video_onLoadStart, false);
 		__video.addEventListener("stalled", video_onStalled, false);
-		__video.addEventListener("durationchanged", video_onDurationChanged, false);
+		__video.addEventListener("durationchange", video_onDurationChange, false);
 		__video.addEventListener("canplay", video_onCanPlay, false);
 		__video.addEventListener("canplaythrough", video_onCanPlayThrough, false);
 		__video.addEventListener("loadedmetadata", video_onLoadMetaData, false);
@@ -1553,7 +1550,7 @@ class NetStream extends EventDispatcher
 		To play a recorded file, pass the file name.
 		6. Call `addChild()` and pass the Video object to display the video.
 
-		**Note:**To see sample code, scroll to the example at the bottom of
+		**Note:** To see sample code, scroll to the example at the bottom of
 		this page.
 
 		**Enable Data Generation Mode**
@@ -1580,8 +1577,7 @@ class NetStream extends EventDispatcher
 		setting the `allowNetworking` parameter of the the `object` and
 		`embed` tags in the HTML page that contains the SWF content. For more
 		information related to security, see the Flash Player Developer Center
-		Topic: <a href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
+		Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 
 		@throws ArgumentError At least one parameter must be specified.
 		@throws Error         The NetStream Object is invalid. This may be due
@@ -1676,7 +1672,7 @@ class NetStream extends EventDispatcher
 		href="http://www.adobe.com/go/fms_tools"
 		scope="external">www.adobe.com/go/fms_tools</a>.
 
-		**Note:**Do not use this method to play a stream. To play a stream,
+		**Note:** Do not use this method to play a stream. To play a stream,
 		call the `NetStream.play()` method.
 
 		Workflow for publishing a stream
@@ -2133,9 +2129,9 @@ class NetStream extends EventDispatcher
 		__playStatus("NetStream.Play.canplaythrough");
 	}
 
-	@:noCompletion private function video_onDurationChanged(event:Dynamic):Void
+	@:noCompletion private function video_onDurationChange(event:Dynamic):Void
 	{
-		__playStatus("NetStream.Play.durationchanged");
+		__playStatus("NetStream.Play.durationchange");
 	}
 
 	@:noCompletion private function video_onEnd(event:Dynamic):Void

@@ -32,7 +32,7 @@ import openfl.events.MouseEvent;
 	stop the playhead in any child MovieClip objects of that MovieClip
 	object.
 
-	**Note:**Flash Lite 4 supports the MovieClip.opaqueBackground
+	**Note:** Flash Lite 4 supports the MovieClip.opaqueBackground
 	property only if FEATURE_BITMAPCACHE is defined. The default configuration
 	of Flash Lite 4 does not define FEATURE_BITMAPCACHE. To enable the
 	MovieClip.opaqueBackground property for a suitable device, define
@@ -95,7 +95,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		default value of `enabled` is `true`. If
 		`enabled` is set to `false`, the movie clip's Over,
 		Down, and Up frames are disabled. The movie clip continues to receive
-		events(for example, `mouseDown`, `mouseUp`,
+		events (for example, `mouseDown`, `mouseUp`,
 		`keyDown`, and `keyUp`).
 
 		The `enabled` property governs only the button-like

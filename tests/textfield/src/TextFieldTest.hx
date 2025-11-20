@@ -1,10 +1,12 @@
 package;
 
 import openfl.events.Event;
+import openfl.errors.RangeError;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
+import openfl.Lib;
 import utest.Assert;
 import utest.Test;
 
@@ -200,9 +202,27 @@ class TextFieldTest extends Test
 		// TODO: Confirm functionality
 
 		var textField = new TextField();
-		var exists = textField.htmlText;
 
-		Assert.notNull(exists);
+		Assert.equals("", textField.htmlText);
+
+		textField.htmlText = "<b>Hello</b> <i>World</i>";
+
+		// the HTML may not be exactly the same, so just confirm that it's not
+		// any empty string anymore
+		Assert.notEquals("", textField.htmlText);
+
+		Assert.equals("Hello World", textField.text);
+
+		textField.text = "";
+
+		Assert.equals("", textField.htmlText);
+
+		#if flash
+		textField.text = "<b>Hello</b> <i>World</i>";
+		Assert.isTrue(textField.htmlText.indexOf("&lt;b&gt;Hello&lt;/b&gt; &lt;i&gt;World&lt;/i&gt;") != -1);
+		#else
+		// TODO: fix me
+		#end
 	}
 
 	public function test_maxChars()
@@ -212,12 +232,14 @@ class TextFieldTest extends Test
 		var textField = new TextField();
 		var exists = textField.maxChars;
 
-		Assert.notNull(exists);
+		Assert.equals(0, exists);
 	}
 
 	public function test_maxScrollH()
 	{
 		var textField = new TextField();
+		Assert.equals(0, textField.maxScrollH);
+
 		textField.text = "Hello";
 
 		Assert.equals(0, textField.maxScrollH);
@@ -419,12 +441,13 @@ class TextFieldTest extends Test
 
 	public function test_selectable()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.selectable;
 
-		Assert.isTrue(exists);
+		Assert.isTrue(textField.selectable);
+
+		textField.selectable = false;
+
+		Assert.isFalse(textField.selectable);
 	}
 
 	public function test_sharpness()
@@ -459,52 +482,62 @@ class TextFieldTest extends Test
 
 	public function test_text()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.text;
 
-		Assert.notNull(exists);
+		Assert.equals("", textField.text);
+
+		textField.text = "Hello";
+
+		Assert.equals("Hello", textField.text);
 	}
 
 	public function test_textColor()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.textColor;
 
-		Assert.notNull(exists);
+		Assert.equals(0x000000, textField.textColor);
+
+		textField.textColor = 0xff00ff;
+
+		Assert.equals(0xff00ff, textField.textColor);
+
+		textField.defaultTextFormat = new TextFormat("_sans", 12, 0x00ff00);
+
+		Assert.equals(0x00ff00, textField.textColor);
 	}
 
 	public function test_textHeight()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.textHeight;
 
-		Assert.notNull(exists);
+		Assert.equals(0.0, textField.textHeight);
+
+		textField.text = "Hello";
+
+		Assert.isTrue(textField.textHeight > 0.0);
 	}
 
 	public function test_textWidth()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.textWidth;
 
-		Assert.notNull(exists);
+		Assert.equals(0.0, textField.textWidth);
+
+		textField.text = "Hello";
+
+		#if (lime && tools)
+		// TODO: the hxp version doesn't measure correctly
+		Assert.isTrue(textField.textWidth > 0.0);
+		#end
 	}
 
 	public function test_type()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.type;
+		Assert.equals(TextFieldType.DYNAMIC, textField.type);
 
-		Assert.notNull(exists);
+		textField.type = TextFieldType.INPUT;
+		Assert.equals(TextFieldType.INPUT, textField.type);
 	}
 
 	public function test_wordWrap()
@@ -527,12 +560,17 @@ class TextFieldTest extends Test
 
 	public function test_appendText()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.appendText;
 
-		Assert.notNull(exists);
+		Assert.equals("", textField.text);
+
+		textField.appendText("Hello");
+
+		Assert.equals("Hello", textField.text);
+
+		textField.appendText(" World");
+
+		Assert.equals("Hello World", textField.text);
 	}
 
 	public function test_getLineMetrics()
@@ -547,28 +585,130 @@ class TextFieldTest extends Test
 
 	public function test_getLineOffset()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.getLineOffset;
 
-		Assert.notNull(exists);
+		Assert.equals(0, textField.getLineOffset(0));
+		#if flash
+		Assert.raises(function():Void
+		{
+			textField.getLineOffset(1);
+		}, RangeError);
+		#else
+		Assert.equals(-1, textField.getLineOffset(1));
+		#end
+		Assert.raises(function():Void
+		{
+			textField.getLineOffset(-1);
+		}, RangeError);
+
+		textField.text = "Hello";
+
+		Assert.equals(0, textField.getLineOffset(0));
+		#if flash
+		Assert.raises(function():Void
+		{
+			textField.getLineOffset(1);
+		}, RangeError);
+		#else
+		Assert.equals(-1, textField.getLineOffset(1));
+		#end
+
+		textField.text = "Hello\n";
+
+		#if flash
+		Assert.equals(0, textField.getLineOffset(0));
+		Assert.equals(6, textField.getLineOffset(1));
+		Assert.raises(function():Void
+		{
+			textField.getLineOffset(2);
+		}, RangeError);
+		#else
+		Assert.equals(0, textField.getLineOffset(0));
+		// TODO: line index 1 should be an empty string, like flash
+		Assert.equals(-1, textField.getLineOffset(1));
+		Assert.equals(-1, textField.getLineOffset(2));
+		#end
+
+		textField.text = "Hello\nWorld";
+
+		#if flash
+		Assert.equals(0, textField.getLineOffset(0));
+		Assert.equals(6, textField.getLineOffset(1));
+		Assert.raises(function():Void
+		{
+			textField.getLineOffset(2);
+		}, RangeError);
+		#else
+		Assert.equals(0, textField.getLineOffset(0));
+		Assert.equals(6, textField.getLineOffset(1));
+		Assert.equals(-1, textField.getLineOffset(2));
+		#end
 	}
 
 	public function test_getLineText()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.getLineText;
 
-		Assert.notNull(exists);
+		Assert.equals("", textField.getLineText(0));
+		#if flash
+		Assert.raises(function():Void
+		{
+			textField.getLineText(1);
+		}, RangeError);
+		#else
+		Assert.isNull(textField.getLineText(1));
+		#end
+		Assert.raises(function():Void
+		{
+			textField.getLineText(-1);
+		}, RangeError);
+
+		textField.text = "Hello";
+
+		Assert.equals("Hello", textField.getLineText(0));
+		#if flash
+		Assert.raises(function():Void
+		{
+			textField.getLineText(1);
+		}, RangeError);
+		#else
+		Assert.isNull(textField.getLineText(1));
+		#end
+
+		textField.text = "Hello\n";
+
+		#if flash
+		Assert.equals("Hello\r", textField.getLineText(0));
+		Assert.equals("", textField.getLineText(1));
+		Assert.raises(function():Void
+		{
+			textField.getLineText(2);
+		}, RangeError);
+		#else
+		Assert.equals("Hello\n", textField.getLineText(0));
+		// TODO: line index 1 should be an empty string, like flash
+		Assert.isNull(textField.getLineText(1));
+		Assert.isNull(textField.getLineText(2));
+		#end
+
+		textField.text = "Hello\nWorld";
+
+		#if flash
+		Assert.equals("Hello\r", textField.getLineText(0));
+		Assert.equals("World", textField.getLineText(1));
+		Assert.raises(function():Void
+		{
+			textField.getLineText(2);
+		}, RangeError);
+		#else
+		Assert.equals("Hello\n", textField.getLineText(0));
+		Assert.equals("World", textField.getLineText(1));
+		Assert.isNull(textField.getLineText(2));
+		#end
 	}
 
 	public function test_getTextFormat()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
 		var textFormat = textField.getTextFormat();
 
@@ -613,12 +753,30 @@ class TextFieldTest extends Test
 
 	public function test_setSelection()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.setSelection;
 
-		Assert.notNull(exists);
+		Assert.equals(0, textField.selectionBeginIndex);
+		Assert.equals(0, textField.selectionEndIndex);
+
+		textField.text = "Hello";
+
+		Assert.equals(0, textField.selectionBeginIndex);
+		Assert.equals(0, textField.selectionEndIndex);
+
+		textField.setSelection(1, 3);
+
+		Assert.equals(1, textField.selectionBeginIndex);
+		Assert.equals(3, textField.selectionEndIndex);
+
+		textField.setSelection(4, 2);
+
+		Assert.equals(2, textField.selectionBeginIndex);
+		Assert.equals(4, textField.selectionEndIndex);
+
+		textField.text = "";
+
+		Assert.equals(0, textField.selectionBeginIndex);
+		Assert.equals(0, textField.selectionEndIndex);
 	}
 
 	public function test_setTextFormat()
@@ -726,4 +884,178 @@ class TextFieldTest extends Test
 		Assert.equals(5, textField.selectionBeginIndex);
 		Assert.equals(5, textField.selectionEndIndex);
 	}
+
+	#if lime_tools
+	public function test_autoSizeWithChangedFontSize()
+	{
+		var tf = new TextField();
+		tf.autoSize = LEFT;
+		tf.defaultTextFormat = new TextFormat("_sans", 18, 0xff0000);
+		tf.text = "hello";
+		var originalWidth = tf.width;
+		var originalHeight = tf.height;
+		tf.defaultTextFormat = new TextFormat("_sans", 24, 0xff0000);
+		tf.text = "hello";
+		var largerWidth = tf.width;
+		var largerHeight = tf.height;
+		// the font size increased, so the width and height should too
+		Assert.isTrue(largerWidth > originalWidth);
+		Assert.isTrue(largerHeight > originalHeight);
+		tf.defaultTextFormat = new TextFormat("_sans", 12, 0xff0000);
+		tf.text = "hello";
+		var smallerWidth = tf.width;
+		var smallerHeight = tf.height;
+		// the font size decreased, so the width and height should too
+		Assert.isTrue(smallerWidth < originalWidth);
+		Assert.isTrue(smallerHeight < originalHeight);
+	}
+
+	public function test_autoSizeLeft()
+	{
+		var textField = new TextField();
+		textField.text = "Hello";
+	#end
+
+	#if !flash
+	public function test_mouseDownAndMouseUpEventAtSamePosition()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping TextField mouseDown/mouseUp test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var tf = new TextField();
+		tf.autoSize = TextFieldAutoSize.LEFT;
+		tf.text = "Hello";
+		tf.x = 20.0;
+		tf.y = 30.0;
+		Lib.current.addChild(tf);
+
+		Assert.equals(0, tf.selectionBeginIndex);
+		Assert.equals(0, tf.selectionEndIndex);
+
+		stage.window.onMouseDown.dispatch(tf.x + tf.width / 2.0, tf.y + tf.height / 2.0, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(tf.selectionBeginIndex > 0);
+		Assert.equals(tf.selectionBeginIndex, tf.selectionEndIndex);
+
+		stage.window.onMouseUp.dispatch(tf.x + tf.width / 2.0, tf.y + tf.height / 2.0, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(tf.selectionBeginIndex > 0);
+		Assert.equals(tf.selectionBeginIndex, tf.selectionEndIndex);
+
+		tf.parent.removeChild(tf);
+	}
+
+	public function test_mouseDownMouseMoveAndMouseUpEvent()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping TextField mouseDown/mouseMove/mouseUp test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var tf = new TextField();
+		tf.autoSize = TextFieldAutoSize.LEFT;
+		tf.text = "Hello";
+		tf.x = 20.0;
+		tf.y = 30.0;
+		Lib.current.addChild(tf);
+
+		Assert.equals(0, tf.selectionBeginIndex);
+		Assert.equals(0, tf.selectionEndIndex);
+
+		var xPos = tf.x + tf.width / 2.0;
+		var yPos = tf.y + tf.height / 2.0;
+
+		stage.window.onMouseDown.dispatch(xPos, yPos, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(tf.selectionBeginIndex > 0);
+		Assert.equals(tf.selectionBeginIndex, tf.selectionEndIndex);
+
+		var prevSelectionBeginIndex = tf.selectionBeginIndex;
+		var prevSelectionEndIndex = tf.selectionEndIndex;
+
+		xPos += 100.0;
+		stage.window.onMouseMove.dispatch(xPos, yPos);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.equals(prevSelectionBeginIndex, tf.selectionBeginIndex);
+		Assert.isTrue(tf.selectionEndIndex > prevSelectionEndIndex);
+
+		prevSelectionBeginIndex = tf.selectionBeginIndex;
+		prevSelectionEndIndex = tf.selectionEndIndex;
+
+		stage.window.onMouseUp.dispatch(xPos, yPos, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		// mouse hasn't moved again, so no change
+		Assert.equals(prevSelectionBeginIndex, tf.selectionBeginIndex);
+		Assert.equals(prevSelectionEndIndex, tf.selectionEndIndex);
+
+		tf.parent.removeChild(tf);
+	}
+
+	public function test_setSelectionBetweenMouseDownAndMouseUp()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping TextField setSelection between mouseDown/mouseUp test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var tf = new TextField();
+		tf.autoSize = LEFT;
+		tf.text = "Hello";
+		tf.x = 20.0;
+		tf.y = 30.0;
+		Lib.current.addChild(tf);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess tf.stage.__renderAfterEvent();
+
+		Assert.equals(0, tf.selectionBeginIndex);
+		Assert.equals(0, tf.selectionEndIndex);
+
+		var xPos = tf.x + tf.width / 2.0;
+		var yPos = tf.y + tf.height / 2.0;
+
+		stage.window.onMouseDown.dispatch(xPos, yPos, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(tf.selectionBeginIndex > 0);
+		Assert.equals(tf.selectionBeginIndex, tf.selectionEndIndex);
+
+		tf.setSelection(0, tf.text.length);
+
+		Assert.equals(0, tf.selectionBeginIndex);
+		Assert.equals(tf.text.length, tf.selectionEndIndex);
+
+		stage.window.onMouseUp.dispatch(xPos, yPos, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		// mouse hasn't moved again, so no change
+		Assert.equals(0, tf.selectionBeginIndex);
+		Assert.equals(tf.text.length, tf.selectionEndIndex);
+
+		tf.parent.removeChild(tf);
+	}
+	#end
 }

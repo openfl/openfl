@@ -15,8 +15,20 @@ import openfl.utils.Assets;
 class BlendModeTest1 extends FunctionalTest
 {
 	private static var blendModes = [
-		BlendMode.NORMAL, BlendMode.LAYER, BlendMode.MULTIPLY, BlendMode.SCREEN, BlendMode.LIGHTEN, BlendMode.DARKEN, BlendMode.DIFFERENCE, BlendMode.ADD,
-		BlendMode.SUBTRACT, BlendMode.INVERT, BlendMode.ALPHA, BlendMode.ERASE, BlendMode.OVERLAY, BlendMode.HARDLIGHT
+		BlendMode.NORMAL,
+		BlendMode.LAYER,
+		BlendMode.MULTIPLY,
+		BlendMode.SCREEN,
+		BlendMode.LIGHTEN,
+		BlendMode.DARKEN,
+		BlendMode.DIFFERENCE,
+		BlendMode.ADD,
+		BlendMode.SUBTRACT,
+		BlendMode.INVERT,
+		BlendMode.ALPHA,
+		BlendMode.ERASE,
+		BlendMode.OVERLAY,
+		BlendMode.HARDLIGHT
 	];
 
 	public function new()
@@ -58,8 +70,8 @@ class BlendModeTest1 extends FunctionalTest
 		content.graphics.drawRect(0, 0, contentWidth, contentHeight);
 
 		// Compute the size of the grid needed to show all blend modes
-		var rows = 1;
-		var columns;
+		var rows:Int = 1;
+		var columns:Int;
 
 		// Assume a 16:9 aspect ratio of the window
 		while (true)

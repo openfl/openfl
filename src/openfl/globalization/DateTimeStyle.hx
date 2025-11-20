@@ -14,7 +14,6 @@ package openfl.globalization;
 **/
 #if !openfljs
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeStyle(Null<Int>)
-
 {
 	/**
 		Specifies that a custom pattern string is used to specify the date or
@@ -79,9 +78,7 @@ package openfl.globalization;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeStyle(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeStyle(String) from String to String
 {
 	public var CUSTOM = "custom";
 	public var LONG = "long";

@@ -9,7 +9,6 @@ package openfl.text;
 	@see `openfl.text.StageText.clearButtonMode`
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageTextClearButtonMode(Null<Int>)
-
 {
 	/**
 		The StageText clear button is always shown.
@@ -56,9 +55,7 @@ package openfl.text;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageTextClearButtonMode(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageTextClearButtonMode(String) from String to String
 {
 	public var ALWAYS = "default";
 	public var NEVER = "done";

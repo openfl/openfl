@@ -19,6 +19,7 @@ extern class TextFormat
 	public var letterSpacing:Null<Float>;
 	public var rightMargin:Null<Int>;
 	public var size:Null<Int>;
+	public var strikethrough:Null<Bool>;
 	public var tabStops:Array<Int>;
 	public var target:String;
 	public var underline:Null<Bool>;
@@ -39,6 +40,7 @@ extern class TextFormat
 	@:flash.property var letterSpacing(get, set):Null<Float>;
 	@:flash.property var rightMargin(get, set):Null<Int>;
 	@:flash.property var size(get, set):Null<Int>;
+	@:flash.property var strikethrough(get, set):Null<Bool>;
 	@:flash.property var tabStops(get, set):Array<Int>;
 	@:flash.property var target(get, set):String;
 	@:flash.property var underline(get, set):Null<Bool>;
@@ -65,6 +67,7 @@ extern class TextFormat
 	private function get_letterSpacing():Null<Float>;
 	private function get_rightMargin():Null<Int>;
 	private function get_size():Null<Int>;
+	private function get_strikethrough():Null<Bool>;
 	private function get_tabStops():Array<Int>;
 	private function get_target():String;
 	private function get_underline():Null<Bool>;
@@ -84,6 +87,7 @@ extern class TextFormat
 	private function set_letterSpacing(value:Null<Float>):Null<Float>;
 	private function set_rightMargin(value:Null<Int>):Null<Int>;
 	private function set_size(value:Null<Int>):Null<Int>;
+	private function set_strikethrough(value:Null<Bool>):Null<Bool>;
 	private function set_tabStops(value:Array<Int>):Array<Int>;
 	private function set_target(value:String):String;
 	private function set_underline(value:Null<Bool>):Null<Bool>;

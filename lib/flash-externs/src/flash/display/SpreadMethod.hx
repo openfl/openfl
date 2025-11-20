@@ -2,7 +2,6 @@ package flash.display;
 
 #if flash
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract SpreadMethod(String) from String to String
-
 {
 	public var PAD = "pad";
 	public var REFLECT = "reflect";

@@ -11,7 +11,6 @@ package openfl.display;
 	@see [Creating gradient lines and fills](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/creating-gradient-lines-and-fills.html)
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract GradientType(Null<Int>)
-
 {
 	/**
 		Value used to specify a linear gradient fill.
@@ -54,9 +53,7 @@ package openfl.display;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract GradientType(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract GradientType(String) from String to String
 {
 	public var LINEAR = "linear";
 	public var RADIAL = "radial";

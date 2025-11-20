@@ -116,7 +116,22 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 			var child = container.getChildByName(key);
 			if (child != null) return child;
 		}
+		#if (js && html5)
+		var result = Reflect.getProperty(this, key);
+		if (Reflect.isFunction(result))
+		{
+			// in JS, assigning a method to a variable makes the method lose
+			// its "this" value. we can use the Function.prototype.bind() method
+			// to restore the original "this" value before returning the
+			// function.
+			// Note: We don't need to do the same for Reflect.field() above
+			// because Reflect.hasField() returns false for methods.
+			result = untyped #if haxe4 js.Syntax.code #else __js__ #end ("Function.prototype.bind.call")(result, this);
+		}
+		return result;
+		#else
 		return Reflect.getProperty(this, key);
+		#end
 	}
 
 	@SuppressWarnings("checkstyle:FieldDocComment")

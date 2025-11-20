@@ -16,7 +16,6 @@ package openfl.display;
 	@see `flash.display.BitmapData.draw()`
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract BlendMode(Null<Int>)
-
 {
 	/**
 		Adds the values of the constituent colors of the display object to the
@@ -238,9 +237,7 @@ package openfl.display;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract BlendMode(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract BlendMode(String) from String to String
 {
 	public var ADD = "add";
 	public var ALPHA = "alpha";

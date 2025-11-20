@@ -153,3 +153,12 @@ To return to release builds:
     haxelib dev openfl
 
 You may also need a development build of Lime installed.
+
+
+Join the Community
+==================
+
+Have a question? Want a new place to hang out?
+
+ * [Forums](https://community.openfl.org)
+ * [Discord](https://discordapp.com/invite/tDgq8EE)

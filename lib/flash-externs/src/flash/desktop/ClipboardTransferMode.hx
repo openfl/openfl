@@ -2,7 +2,6 @@ package flash.desktop;
 
 #if flash
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract ClipboardTransferMode(String) from String to String
-
 {
 	public var CLONE_ONLY = "cloneOnly";
 	public var CLONE_PREFERRED = "clonePreferred";

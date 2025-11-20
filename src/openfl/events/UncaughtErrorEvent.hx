@@ -198,6 +198,8 @@ class UncaughtErrorEvent extends ErrorEvent
 	@:noCompletion private override function __init():Void
 	{
 		super.__init();
+		bubbles = true;
+		cancelable = true;
 		error = null;
 	}
 }

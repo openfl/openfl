@@ -98,7 +98,8 @@ import js.html.CanvasRenderingContext2D;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
 	#end
 	@:noCompletion private var __bitmap:BitmapData;
-	@:noCompletion private var __bitmapScale:Float;
+	@:noCompletion private var __bitmapScaleX:Float;
+	@:noCompletion private var __bitmapScaleY:Float;
 
 	@:noCompletion private function new(owner:DisplayObject)
 	{
@@ -114,7 +115,8 @@ import js.html.CanvasRenderingContext2D;
 		__width = 0;
 		__height = 0;
 
-		__bitmapScale = 1;
+		__bitmapScaleX = 1;
+		__bitmapScaleY = 1;
 
 		__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
 
@@ -140,10 +142,10 @@ import js.html.CanvasRenderingContext2D;
 					  example, you can use the following matrix to rotate a bitmap
 					  by 45 degrees(pi/4 radians):
 
-		```haxe
-		matrix = new openfl.geom.Matrix();
-			 	matrix.rotate(Math.PI / 4);
-			 	```
+					  ```haxe
+					  matrix = new openfl.geom.Matrix();
+					  matrix.rotate(Math.PI / 4);
+					  ```
 
 		@param repeat If `true`, the bitmap image repeats in a tiled
 					  pattern. If `false`, the bitmap image does not
@@ -181,7 +183,7 @@ import js.html.CanvasRenderingContext2D;
 
 	/**
 		Specifies a simple one-color fill that subsequent calls to other Graphics
-		methods(such as `lineTo()` or `drawCircle()`) use
+		methods (such as `lineTo()` or `drawCircle()`) use
 		when drawing. The fill remains in effect until you call the
 		`beginFill()`, `beginBitmapFill()`,
 		`beginGradientFill()`, or `beginShaderFill()`
@@ -190,8 +192,8 @@ import js.html.CanvasRenderingContext2D;
 		The application renders the fill whenever three or more points are
 		drawn, or when the `endFill()` method is called.
 
-		@param color The color of the fill(0xRRGGBB).
-		@param alpha The alpha value of the fill(0.0 to 1.0).
+		@param color The color of the fill (0xRRGGBB).
+		@param alpha The alpha value of the fill (0.0 to 1.0).
 	**/
 	public function beginFill(color:Int = 0, alpha:Float = 1):Void
 	{
@@ -202,7 +204,7 @@ import js.html.CanvasRenderingContext2D;
 
 	/**
 		Specifies a gradient fill used by subsequent calls to other Graphics
-		methods(such as `lineTo()` or `drawCircle()`) for
+		methods (such as `lineTo()` or `drawCircle()`) for
 		the object. The fill remains in effect until you call the
 		`beginFill()`, `beginBitmapFill()`,
 		`beginGradientFill()`, or `beginShaderFill()`
@@ -378,7 +380,7 @@ import js.html.CanvasRenderingContext2D;
 							  `pixel3` or `pixel4` output).
 		@throws ArgumentError When the shader specifies an image input that
 							  isn't provided.
-		@throws ArgumentError When a ByteArray or Vector.<Number> instance is
+		@throws ArgumentError When a ByteArray or Vector<Float> instance is
 							  used as an input and the `width` and `height`
 							  properties aren't specified for the ShaderInput,
 							  or the specified values don't match the amount
@@ -605,7 +607,7 @@ import js.html.CanvasRenderingContext2D;
 	/**
 		Draws an ellipse. Set the line style, fill, or both before you call the
 		`drawEllipse()` method, by calling the
-		`linestyle()`, `lineGradientStyle()`,
+		`lineStyle()`, `lineGradientStyle()`,
 		`beginFill()`, `beginGradientFill()`, or
 		`beginBitmapFill()` method.
 
@@ -943,7 +945,7 @@ import js.html.CanvasRenderingContext2D;
 
 	/**
 		Draws a rectangle. Set the line style, fill, or both before you call the
-		`drawRect()` method, by calling the `linestyle()`,
+		`drawRect()` method, by calling the `lineStyle()`,
 		`lineGradientStyle()`, `beginFill()`,
 		`beginGradientFill()`, or `beginBitmapFill()`
 		method.
@@ -956,7 +958,7 @@ import js.html.CanvasRenderingContext2D;
 		@param height The height of the rectangle (in pixels).
 		@throws ArgumentError If the `width` or `height`
 							  parameters are not a number
-							 (`Number.NaN`).
+							  (`Number.NaN`).
 
 		@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
 	**/
@@ -978,28 +980,28 @@ import js.html.CanvasRenderingContext2D;
 	/**
 		Draws a rounded rectangle. Set the line style, fill, or both before you
 		call the `drawRoundRect()` method, by calling the
-		`linestyle()`, `lineGradientStyle()`,
+		`lineStyle()`, `lineGradientStyle()`,
 		`beginFill()`, `beginGradientFill()`, or
 		`beginBitmapFill()` method.
 
 		@param x             A number indicating the horizontal position relative
 							 to the registration point of the parent display
-							 object(in pixels).
+							 object (in pixels).
 		@param y             A number indicating the vertical position relative to
 							 the registration point of the parent display object
-							(in pixels).
+							 (in pixels).
 		@param width         The width of the round rectangle (in pixels).
 		@param height        The height of the round rectangle (in pixels).
 		@param ellipseWidth  The width of the ellipse used to draw the rounded
-							 corners(in pixels).
+							 corners (in pixels).
 		@param ellipseHeight The height of the ellipse used to draw the rounded
-							 corners(in pixels). Optional; if no value is
+							 corners (in pixels). Optional; if no value is
 							 specified, the default value matches that provided
 							 for the `ellipseWidth` parameter.
 		@throws ArgumentError If the `width`, `height`,
 							  `ellipseWidth` or
 							  `ellipseHeight` parameters are not a
-							  number(`Number.NaN`).
+							  number (`Number.NaN`).
 
 		@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
 	**/
@@ -1072,7 +1074,7 @@ import js.html.CanvasRenderingContext2D;
 		Renders a set of triangles, typically to distort bitmaps and give them a
 		three-dimensional appearance. The `drawTriangles()` method maps
 		either the current fill, or a bitmap fill, to the triangle faces using a
-		set of(u,v) coordinates.
+		set of (u,v) coordinates.
 
 		 Any type of fill can be used, but if the fill has a transform matrix
 		that transform matrix is ignored.
@@ -1341,7 +1343,7 @@ import js.html.CanvasRenderingContext2D;
 		@param color        A hexadecimal color value of the line; for example,
 							red is 0xFF0000, blue is 0x0000FF, and so on. If a
 							value is not indicated, the default is 0x000000
-						   (black). Optional.
+							(black). Optional.
 		@param alpha        A number that indicates the alpha value of the color
 							of the line; valid values are 0 to 1. If a value is
 							not indicated, the default is 1 (solid). If the value
@@ -1360,7 +1362,7 @@ import js.html.CanvasRenderingContext2D;
 							rectangles that are identical, except that the
 							`pixelHinting` parameter used in the
 							`lineStyle()` method is set differently
-						   (the images are scaled by 200%, to emphasize the
+							(the images are scaled by 200%, to emphasize the
 							difference):
 
 							![pixelHinting false and pixelHinting true](/images/lineStyle_pixelHinting.jpg)
@@ -1373,7 +1375,7 @@ import js.html.CanvasRenderingContext2D;
 
 							 *  `LineScaleMode.NORMAL` - Always
 							scale the line thickness when the object is scaled
-						   (the default).
+							(the default).
 							 *  `LineScaleMode.NONE` - Never scale
 							the line thickness.
 							 *  `LineScaleMode.VERTICAL` - Do not
@@ -1660,8 +1662,18 @@ import js.html.CanvasRenderingContext2D;
 		__bitmap = null;
 
 		#if (js && html5)
-		__canvas = null;
-		__context = null;
+		if (__canvas != null)
+		{
+			__canvas.width = 0;
+			__canvas.height = 0;
+			__canvas = null;
+		}
+
+		if (__context != null)
+		{
+			__context.clearRect(0, 0, 0, 0);
+			__context = null;
+		}
 		#else
 		__cairo = null;
 		#end
@@ -1877,7 +1889,7 @@ import js.html.CanvasRenderingContext2D;
 
 				case BEGIN_FILL:
 					var c = data.readBeginFill();
-					graphicsData.push(new GraphicsSolidFill(c.color, 1));
+					graphicsData.push(new GraphicsSolidFill(c.color, c.alpha));
 
 				case BEGIN_GRADIENT_FILL:
 					var c = data.readBeginGradientFill();
@@ -1899,14 +1911,27 @@ import js.html.CanvasRenderingContext2D;
 
 	@:noCompletion private function __update(displayMatrix:Matrix, pixelRatio:Float):Void
 	{
-		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
+		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0)
+		{
+			if (__width >= 1 || __height >= 1) __dirty = true;
+			__width = 0;
+			__height = 0;
+			return;
+		}
 
 		var parentTransform = __owner.__renderTransform;
 		if (parentTransform == null) return;
 
 		var scaleX = pixelRatio, scaleY = pixelRatio;
 
-		if (__owner.__worldScale9Grid == null)
+		#if (openfl_legacy_scale9grid && lime_cairo && !cairo && !openfl_force_hw_graphics && !force_hw_graphics)
+		var calculateScale = __owner.__worldScale9Grid == null;
+		#elseif (openfl_legacy_scale9grid && lime_canvas && !canvas && !openfl_force_hw_graphics && !force_hw_graphics)
+		var calculateScale = __owner.__worldScale9Grid == null;
+		#else
+		var calculateScale = true;
+		#end
+		if (calculateScale)
 		{
 			if (parentTransform.b == 0)
 			{
@@ -1946,15 +1971,18 @@ import js.html.CanvasRenderingContext2D;
 					scaleY *= Math.sqrt(displayMatrix.c * displayMatrix.c + displayMatrix.d * displayMatrix.d);
 				}
 			}
-
-			#if openfl_disable_graphics_upscaling
-			if (scaleX > 1) scaleX = 1;
-			if (scaleY > 1) scaleY = 1;
-			#end
 		}
 
-		var width = __bounds.width * scaleX;
-		var height = __bounds.height * scaleY;
+		#if openfl_disable_graphics_upscaling
+		if (__owner.__worldScale9Grid == null)
+		{
+			if (scaleX > 1) scaleX = 1;
+			if (scaleY > 1) scaleY = 1;
+		}
+		#end
+
+		var width = Math.abs(__bounds.width * scaleX);
+		var height = Math.abs(__bounds.height * scaleY);
 
 		if (width < 1 || height < 1)
 		{

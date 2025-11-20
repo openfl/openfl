@@ -160,6 +160,7 @@ class AMF3Writer
 
 		for (r in 0...v.length)
 		{
+			// TODO: Properly write each object, omitting the class type for each
 			write(v[r]);
 		}
 	}
@@ -200,7 +201,7 @@ class AMF3Writer
 		var traitsCount = 0;
 		writeUInt(3 | (isExternal ? 4 : 0) | (isDynamic ? 8 : 0) | (traitsCount << 4));
 		var cls = Type.getClass(external);
-		var className = null;
+		var className:String = null;
 		if (Lib.__registeredClasses.exists(cls))
 		{
 			className = Lib.__registeredClasses[cls];

@@ -13,7 +13,6 @@ package openfl.globalization;
 **/
 #if !openfljs
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeNameContext(Null<Int>)
-
 {
 	/**
 		Indicates that the date element name is used within a date format.
@@ -58,9 +57,7 @@ package openfl.globalization;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeNameContext(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeNameContext(String) from String to String
 {
 	public var FORMAT = "format";
 	public var STANDALONE = "standalone";

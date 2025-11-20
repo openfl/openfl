@@ -30,6 +30,7 @@ class FPS extends TextField
 	@:noCompletion private var cacheCount:Int;
 	@:noCompletion private var currentTime:Float;
 	@:noCompletion private var times:Array<Float>;
+	@:noCompletion private var lastText:String = null;
 
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000)
 	{
@@ -72,16 +73,20 @@ class FPS extends TextField
 		var currentCount = times.length;
 		currentFPS = Math.round((currentCount + cacheCount) / 2);
 
-		if (currentCount != cacheCount /*&& visible*/)
-		{
-			text = "FPS: " + currentFPS;
+		if (currentCount != cacheCount /*&& visible*/) {
+		var newText = "FPS: " + currentFPS;
 
-			#if (gl_stats && !disable_cffi && (!html5 || !canvas))
-			text += "\ntotalDC: " + Context3DStats.totalDrawCalls();
-			text += "\nstageDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE);
-			text += "\nstage3DDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE3D);
-			#end
+		#if (gl_stats && !disable_cffi && (!html5 || !canvas))
+		newText += "\ntotalDC: " + Context3DStats.totalDrawCalls();
+		newText += "\nstageDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE);
+		newText += "\nstage3DDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE3D);
+		#end
+
+		if (newText != lastText) {
+			text = newText;
+			lastText = newText;
 		}
+	}
 
 		cacheCount = currentCount;
 	}

@@ -162,7 +162,7 @@ class KeyboardEvent extends Event
 								activated. On Mac, indicates whether either the
 								Ctrl key or the Command key is activated.
 		@param altKeyValue      Indicates whether the Alt key modifier is
-								activated(Windows only).
+								activated (Windows only).
 		@param shiftKeyValue    Indicates whether the Shift key modifier is
 								activated.
 		@param commandKeyValue  Indicates whether the Command key modifier is

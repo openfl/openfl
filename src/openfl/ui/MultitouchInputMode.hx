@@ -9,7 +9,6 @@ package openfl.ui;
 	user interacts with a touch-enabled device.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract MultitouchInputMode(Null<Int>)
-
 {
 	/**
 		Specifies that TransformGestureEvent, PressAndTapGestureEvent, and
@@ -54,9 +53,7 @@ package openfl.ui;
 	}
 }
 #else
-@SuppressWarnings("checkstyle:FieldDocComment")
-#if (haxe_ver >= 4.0) enum #else @:enum #end abstract MultitouchInputMode(String) from String to String
-
+@SuppressWarnings("checkstyle:FieldDocComment") #if (haxe_ver >= 4.0) enum #else @:enum #end abstract MultitouchInputMode(String) from String to String
 {
 	public var GESTURE = "gesture";
 	public var NONE = "none";

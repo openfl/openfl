@@ -334,39 +334,94 @@ class TextEngine
 			#elseif (mac || ios || tvos)
 			var sans = processFontList([
 				systemFontDirectory + "/Arial.ttf",
-				systemFontDirectory + "/Helvetica.ttf",
 				systemFontDirectory + "/Cache/Arial.ttf",
-				systemFontDirectory + "/Cache/Helvetica.ttf",
 				systemFontDirectory + "/Core/Arial.ttf",
-				systemFontDirectory + "/Core/Helvetica.ttf",
 				systemFontDirectory + "/CoreAddition/Arial.ttf",
+				systemFontDirectory + "/WebFonts/Arial.ttf",
+				"/System/Library/Fonts/Supplemental/Arial.ttf",
+				// tries to fall back to helvetica, if arial is missing
+				systemFontDirectory + "/Helvetica.ttf",
+				systemFontDirectory + "/Cache/Helvetica.ttf",
+				systemFontDirectory + "/Core/Helvetica.ttf",
 				systemFontDirectory + "/CoreAddition/Helvetica.ttf",
-				"/System/Library/Fonts/Supplemental/Arial.ttf"
 			]);
-			var sansBold = findFont("/System/Library/Fonts/Supplemental/Arial Bold.ttf");
-			var sansItalic = findFont("/System/Library/Fonts/Supplemental/Arial Italic.ttf");
-			var sansBoldItalic = findFont("/System/Library/Fonts/Supplemental/Arial Bold Italic.ttf");
+
+			var sansBold = processFontList([
+				systemFontDirectory + "/CoreAddition/ArialBold.ttf",
+				systemFontDirectory + "/WebFonts/ArialBold.ttf",
+				"/System/Library/Fonts/Supplemental/Arial Bold.ttf"
+			]);
+			var sansItalic = processFontList([
+				systemFontDirectory + "/CoreAddition/ArialItalic.ttf",
+				systemFontDirectory + "/WebFonts/ArialItalic.ttf",
+				"/System/Library/Fonts/Supplemental/Arial Italic.ttf"
+			]);
+			var sansBoldItalic = processFontList([
+				systemFontDirectory + "/CoreAddition/ArialBoldItalic.ttf",
+				systemFontDirectory + "/WebFonts/ArialBoldItalic.ttf",
+				"/System/Library/Fonts/Supplemental/Arial Bold Italic.ttf"
+			]);
 
 			__defaultFonts.set("_sans", new DefaultFontSet(sans, sansBold, sansItalic, sansBoldItalic));
 
-			var serif = processFontList([
+			var georgia = processFontList([
 				systemFontDirectory + "/Georgia.ttf",
-				systemFontDirectory + "/Times.ttf",
-				systemFontDirectory + "/Times New Roman.ttf",
 				systemFontDirectory + "/Cache/Georgia.ttf",
-				systemFontDirectory + "/Cache/Times.ttf",
-				systemFontDirectory + "/Cache/Times New Roman.ttf",
 				systemFontDirectory + "/Core/Georgia.ttf",
-				systemFontDirectory + "/Core/Times.ttf",
-				systemFontDirectory + "/Core/Times New Roman.ttf",
 				systemFontDirectory + "/CoreAddition/Georgia.ttf",
-				systemFontDirectory + "/CoreAddition/Times.ttf",
-				systemFontDirectory + "/CoreAddition/Times New Roman.ttf",
-				"/System/Library/Fonts/Supplemental/Times New Roman.ttf"
+				"/System/Library/Fonts/Supplemental/Georgia.ttf",
 			]);
-			var serifBold = findFont("/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf");
-			var serifItalic = findFont("/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf");
-			var serifBoldItalic = findFont("/System/Library/Fonts/Supplemental/Times New Roman Bold Italic.ttf");
+			var georgiaBold = processFontList([
+				systemFontDirectory + "/Core/GeorgiaBold.ttf",
+				"/System/Library/Fonts/Supplemental/Georgia Bold.ttf",
+			]);
+			var georgiaItalic = processFontList([
+				systemFontDirectory + "/Core/GeorgiaItalic.ttf",
+				"/System/Library/Fonts/Supplemental/Georgia Italic.ttf",
+			]);
+			var georgiaBoldItalic = processFontList([
+				systemFontDirectory + "/Core/GeorgiaBoldItalic.ttf",
+				"/System/Library/Fonts/Supplemental/Georgia Bold Italic.ttf",
+			]);
+
+			var times = processFontList([
+				systemFontDirectory + "/Times New Roman.ttf",
+				systemFontDirectory + "/Cache/Times New Roman.ttf",
+				systemFontDirectory + "/Core/Times New Roman.ttf",
+				systemFontDirectory + "/Core/TimesNewRoman.ttf",
+				systemFontDirectory + "/CoreAddition/Times New Roman.ttf",
+				"/System/Library/Fonts/Supplemental/Times New Roman.ttf",
+				// tries to fall back to times, if times new roman is missing
+				systemFontDirectory + "/Times.ttf",
+				systemFontDirectory + "/Cache/Times.ttf",
+				systemFontDirectory + "/Core/Times.ttf",
+				systemFontDirectory + "/CoreAddition/Times.ttf",
+			]);
+			var timesBold = processFontList([
+				systemFontDirectory + "/Core/TimesNewRomanBold.ttf",
+				"/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf"
+			]);
+			var timesItalic = processFontList([
+				systemFontDirectory + "/Core/TimesNewRomanItalic.ttf",
+				"/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf"
+			]);
+			var timesBoldItalic = processFontList([
+				systemFontDirectory + "/Core/TimesNewRomanBoldItalic.ttf",
+				"/System/Library/Fonts/Supplemental/Times New Roman Bold Italic.ttf"
+			]);
+
+			var serif = georgia;
+			var serifBold = georgiaBold;
+			var serifItalic = georgiaItalic;
+			var serifBoldItalic = georgiaBoldItalic;
+			// prefer georgia over times, but only if there is a full set of styles
+			if (times != null && (serif == null || serifBold == null || serifItalic == null || serifBoldItalic == null))
+			{
+				serif = times;
+				serifBold = timesBold;
+				serifItalic = timesItalic;
+				serifBoldItalic = timesBoldItalic;
+			}
 
 			__defaultFonts.set("_serif", new DefaultFontSet(serif, serifBold, serifItalic, serifBoldItalic));
 
@@ -376,14 +431,24 @@ class TextEngine
 				systemFontDirectory + "/Cache/Courier New.ttf",
 				systemFontDirectory + "/Cache/Courier.ttf",
 				systemFontDirectory + "/Core/Courier New.ttf",
+				systemFontDirectory + "/Core/CourierNew.ttf",
 				systemFontDirectory + "/Core/Courier.ttf",
 				systemFontDirectory + "/CoreAddition/Courier New.ttf",
 				systemFontDirectory + "/CoreAddition/Courier.ttf",
 				"/System/Library/Fonts/Supplemental/Courier New.ttf"
 			]);
-			var typewriterBold = findFont("/System/Library/Fonts/Supplemental/Courier New Bold.ttf");
-			var typewriterItalic = findFont("/System/Library/Fonts/Supplemental/Courier New Italic.ttf");
-			var typewriterBoldItalic = findFont("/System/Library/Fonts/Supplemental/Courier New Bold Italic.ttf");
+			var typewriterBold = processFontList([
+				systemFontDirectory + "/Core/CourierNewBold.ttf",
+				"/System/Library/Fonts/Supplemental/Courier New Bold.ttf"
+			]);
+			var typewriterItalic = processFontList([
+				systemFontDirectory + "/Core/CourierNewItalic.ttf",
+				"/System/Library/Fonts/Supplemental/Courier New Italic.ttf"
+			]);
+			var typewriterBoldItalic = processFontList([
+				systemFontDirectory + "/Core/CourierNewBoldItalic.ttf",
+				"/System/Library/Fonts/Supplemental/Courier New Bold Italic.ttf"
+			]);
 
 			__defaultFonts.set("_typewriter", new DefaultFontSet(typewriter, typewriterBold, typewriterItalic, typewriterBoldItalic));
 			#elseif linux

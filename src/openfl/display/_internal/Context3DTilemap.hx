@@ -129,7 +129,7 @@ class Context3DTilemap
 		var tiles = group.__tiles;
 		var length = group.__length;
 
-		if (isTopLevel)
+        if (isTopLevel)
 		{
 			#if openfl_experimental_multitexture
 			var topBitmapData:BitmapData = tilemap.tileset != null ? tilemap.tileset.bitmapData : null;
@@ -508,15 +508,15 @@ class Context3DTilemap
 		lastUsedShader = currentShader;
 	}
 
-	private static function update(tilemap:Tilemap, _group:TileContainer#if openfl_experimental_multitexture , bitmapData:BitmapData, defaultShader:Shader = null #end):Void
-	{
-		#if openfl_experimental_multitexture
+    private static function update(tilemap:Tilemap, _group:TileContainer#if openfl_experimental_multitexture , bitmapData:BitmapData, defaultShader:Shader = null #end):Void
+    {
+        #if openfl_experimental_multitexture
 		var shader:Shader = null;
 		#end
-		var _tiles = _group.__tiles;
-		for (tile in _tiles)
-		{
-			#if openfl_experimental_multitexture
+        var _tiles = _group.__tiles;
+        for (tile in _tiles)
+        {
+            #if openfl_experimental_multitexture
 			if(multiTextureEnabled)
 			{
 				tile.multiTextureId = 0;
@@ -542,20 +542,20 @@ class Context3DTilemap
 			}
 			#end
 
-			if (tile.__length > 0)
-			{
-				#if openfl_experimental_multitexture
+            if (tile.__length > 0)
+            {
+                #if openfl_experimental_multitexture
 				update(tilemap, cast tile, bitmapData, shader);
 				#else
-				update(tilemap, cast tile);
-				#end
-			}
-			else
-			{
-				numTiles++;
-			}
-		}
-	}
+                update(tilemap, cast tile);
+                #end
+            }
+            else
+            {
+                numTiles++;
+            }
+        }
+    }
 
 	public static function render(tilemap:Tilemap, renderer:OpenGLRenderer):Void
 	{
@@ -592,6 +592,22 @@ class Context3DTilemap
 		renderTileContainer(tilemap, renderer, tilemap.__group, cast tilemap.__worldShader, tilemap.__tileset, tilemap.__worldAlpha,
 			tilemap.tileBlendModeEnabled, currentBlendMode, null);
 		flush(tilemap, renderer, currentBlendMode);
+
+		#if openfl_experimental_multitexture
+		if(multiTextureEnabled)
+		{
+			// Clear shader inputs for the next render.
+			for(shader in multiTextureShaders)
+			{
+				for(samplerIndex in 0...multiTextureSize)
+				{
+					var bitmapDataInput:ShaderInput<BitmapData> = cast Reflect.getProperty(@:privateAccess shader.__data, "uSampler" + samplerIndex);
+					bitmapDataInput.input = null;
+					bitmapDataInput.filter = null;
+				}
+			}
+		}
+		#end
 
 		// renderer.filterManager.popObject (tilemap);
 		renderer.__popMaskRect();
@@ -697,15 +713,19 @@ class Context3DTilemap
 					if (tileData == null) continue;
 				}
 
+                var numBuffer:Int = bufferPosition - lastFlushedPosition;
+                var forceFlush:Bool = numBuffer >= 16383;
+
 				#if openfl_experimental_multitexture
 				if(Std.isOfType(shader, MultiTextureShader))
 				{
-					if ((shader != currentShader) || (currentBlendMode != blendMode))
+					if ((forceFlush) || (shader != currentShader) || (currentBlendMode != blendMode))
 					{
 						flush(tilemap, renderer, currentBlendMode, tile.multiTextureId);
 					}
 				}else #end {
-					if ((shader != currentShader)
+					if ((forceFlush)
+                    || (shader != currentShader)
 					|| (bitmapData != currentBitmapData && currentBitmapData != null)
 					|| (currentBlendMode != blendMode))
 					{

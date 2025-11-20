@@ -41,7 +41,7 @@ class Context3DDisplayObject
 
 			#if lime
 			var color:ARGB = (displayObject.opaqueBackground : ARGB);
-			context.clear(color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1, 0, 0, Context3DClearMask.COLOR);
+			context.__clear(true, color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1, 0, 0, Context3DClearMask.COLOR);
 			#end
 
 			renderer.__popMaskRect();

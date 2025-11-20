@@ -338,7 +338,7 @@ class Stage3D extends EventDispatcher
 		{
 			var stage3D:Stage3D = stage.stage3Ds[0];
 			stage3D.addEventListener( Event.CONTEXT3D_CREATE, myContext3DHandler );
-			stage3D.requestContext3DMatchingProfiles(Vector.<string>([Context3DProfile.BASELINE, Context3DProfile.BASELINE_EXTENDED]));
+			stage3D.requestContext3DMatchingProfiles(Vector.ofValues(Context3DProfile.BASELINE, Context3DProfile.BASELINE_EXTENDED));
 		}
 
 		function myContext3DHandler ( event : Event ) : Void
@@ -529,8 +529,9 @@ class Stage3D extends EventDispatcher
 				1.0
 			]));
 
+			var pixelRatio = __stage.window.scale;
 			__renderTransform.identity();
-			__renderTransform.appendTranslation(__x, __y, 0);
+			__renderTransform.appendTranslation(__x * pixelRatio, __y * pixelRatio, 0);
 			__renderTransform.append(__projectionTransform);
 
 			__width = width;
@@ -553,8 +554,9 @@ class Stage3D extends EventDispatcher
 	{
 		if (__x == value) return value;
 		__x = value;
+		var pixelRatio = __stage.window.scale;
 		__renderTransform.identity();
-		__renderTransform.appendTranslation(__x, __y, 0);
+		__renderTransform.appendTranslation(__x * pixelRatio, __y * pixelRatio, 0);
 		__renderTransform.append(__projectionTransform);
 		return value;
 	}
@@ -568,8 +570,9 @@ class Stage3D extends EventDispatcher
 	{
 		if (__y == value) return value;
 		__y = value;
+		var pixelRatio = __stage.window.scale;
 		__renderTransform.identity();
-		__renderTransform.appendTranslation(__x, __y, 0);
+		__renderTransform.appendTranslation(__x * pixelRatio, __y * pixelRatio, 0);
 		__renderTransform.append(__projectionTransform);
 		return value;
 	}

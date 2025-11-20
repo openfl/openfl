@@ -76,7 +76,7 @@ class WebSocket extends Socket
 		var __webHost = urlReg.matched(2);
 		var __webPath = urlReg.matched(3);
 
-		__webSocket = new crossbyte._internal.websocket.WebSocket(schema + "://" + __webHost + ":" + port + "/" + __webPath);
+		__webSocket = new openfl.net._internal.websocket.WebSocket(schema + "://" + __webHost + ":" + port + "/" + __webPath);
 		__init();
 	}
 

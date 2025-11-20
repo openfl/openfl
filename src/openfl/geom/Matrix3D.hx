@@ -603,7 +603,22 @@ class Matrix3D
 		var sz = 1.0 / (zFar - zNear);
 
 		return new Matrix3D(new Vector<Float>([
-			2.0 * sx, 0, 0, 0, 0, 2.0 * sy, 0, 0, 0, 0, -2.0 * sz, 0, -(x0 + x1) * sx, -(y0 + y1) * sy, -(zNear + zFar) * sz, 1
+			2.0 * sx,
+			0,
+			0,
+			0,
+			0,
+			2.0 * sy,
+			0,
+			0,
+			0,
+			0,
+			-2.0 * sz,
+			0,
+			-(x0 + x1) * sx,
+			-(y0 + y1) * sy,
+			-(zNear + zFar) * sz,
+			1
 		]));
 	}
 

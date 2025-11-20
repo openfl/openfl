@@ -51,7 +51,7 @@ import openfl.Vector;
 		Identifies the multi-touch mode for touch and gesture event handling. Use
 		this property to manage whether or not events are dispatched as touch
 		events with multiple points of contact and specific events for different
-		gestures(such as rotation and pan), or only a single point of contact
+		gestures (such as rotation and pan), or only a single point of contact
 		(such as tap), or none at all (contact is handled as a mouse event). To
 		set this property, use values from the openfl.ui.MultitouchInputMode class.
 

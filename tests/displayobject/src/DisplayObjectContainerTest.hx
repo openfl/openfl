@@ -393,7 +393,7 @@ class DisplayObjectContainerTest extends Test
 
 	public function test_numChildren()
 	{
-		var sprites = [];
+		var sprites:Array<Sprite> = [];
 
 		for (i in 0...4)
 		{

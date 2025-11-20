@@ -26,6 +26,9 @@ class CairoShape
 
 	public static function render(shape:DisplayObject, renderer:CairoRenderer):Void
 	{
+		#if (openfl_legacy_scale9grid && !cairo)
+		legacyScale9Render(shape, renderer);
+		#else
 		#if lime_cairo
 		if (!shape.__renderable) return;
 
@@ -43,6 +46,58 @@ class CairoShape
 			var cairo = renderer.cairo;
 
 			if (cairo != null && graphics.__visible && width >= 1 && height >= 1)
+			{
+				var transform = graphics.__worldTransform;
+
+				renderer.__setBlendMode(shape.__worldBlendMode);
+				renderer.__pushMaskObject(shape);
+
+				var renderTransform = Matrix.__pool.get();
+				renderTransform.scale(1 / graphics.__bitmapScaleX, 1 / graphics.__bitmapScaleY);
+				renderTransform.concat(transform);
+
+				renderer.applyMatrix(renderTransform, cairo);
+
+				cairo.setSourceSurface(graphics.__cairo.target, 0, 0);
+
+				if (alpha >= 1)
+				{
+					cairo.paint();
+				}
+				else
+				{
+					cairo.paintWithAlpha(alpha);
+				}
+
+				Matrix.__pool.release(renderTransform);
+
+				renderer.__popMaskObject(shape);
+			}
+		}
+		#end
+		#end
+	}
+
+	#if (openfl_legacy_scale9grid && !cairo)
+	private static inline function legacyScale9Render(shape:DisplayObject, renderer:CairoRenderer):Void
+	{
+		#if lime_cairo
+		if (!shape.__renderable) return;
+
+		var alpha = renderer.__getAlpha(shape.__worldAlpha);
+		if (alpha <= 0) return;
+
+		var graphics = shape.__graphics;
+
+		if (graphics != null)
+		{
+			CairoGraphics.render(graphics, renderer);
+
+			var width = graphics.__width;
+			var height = graphics.__height;
+			var cairo = renderer.cairo;
+
+			if (cairo != null && graphics.__cairo != null && graphics.__visible && width >= 1 && height >= 1)
 			{
 				var transform = graphics.__worldTransform;
 				var scale9Grid = shape.__worldScale9Grid;
@@ -69,8 +124,8 @@ class CairoShape
 
 					var renderTransform = Matrix.__pool.get();
 
-					var scaleX = graphics.__renderTransform.a / graphics.__bitmapScale;
-					var scaleY = graphics.__renderTransform.d / graphics.__bitmapScale;
+					var scaleX = graphics.__renderTransform.a / graphics.__bitmapScaleX;
+					var scaleY = graphics.__renderTransform.d / graphics.__bitmapScaleY;
 					var renderScaleX = (scaleX * transform.a);
 					var renderScaleY = (scaleY * transform.d);
 
@@ -95,6 +150,12 @@ class CairoShape
 
 					function drawImage(sx:Float, sy:Float, sWidth:Float, sHeight:Float, dx:Float, dy:Float, dWidth:Float, dHeight:Float):Void
 					{
+						if (dWidth == 0.0 || dHeight == 0.0)
+						{
+							// nothing to draw
+							return;
+						}
+
 						renderTransform.a = (dWidth / sWidth);
 						renderTransform.d = (dHeight / sHeight);
 						renderTransform.tx = transform.tx + dx;
@@ -162,7 +223,7 @@ class CairoShape
 				else
 				{
 					var renderTransform = Matrix.__pool.get();
-					renderTransform.scale(1 / graphics.__bitmapScale, 1 / graphics.__bitmapScale);
+					renderTransform.scale(1 / graphics.__bitmapScaleX, 1 / graphics.__bitmapScaleY);
 					renderTransform.concat(transform);
 
 					renderer.applyMatrix(renderTransform, cairo);
@@ -186,6 +247,7 @@ class CairoShape
 		}
 		#end
 	}
+	#end
 
 	public static inline function renderDrawable(shape:Shape, renderer:CairoRenderer):Void
 	{
