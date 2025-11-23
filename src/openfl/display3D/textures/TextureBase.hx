@@ -103,6 +103,7 @@ class TextureBase extends EventDispatcher
 			#if (js && html5)
 			var dxtExtension = gl.getExtension("WEBGL_compressed_texture_s3tc");
 			var etc1Extension = gl.getExtension("WEBGL_compressed_texture_etc1");
+			var etc2Extension = gl.getExtension("WEBGL_compressed_texture_etc");
 			// WEBGL_compressed_texture_pvrtc is not available on iOS Safari
 			var pvrtcExtension = gl.getExtension("WEBKIT_WEBGL_compressed_texture_pvrtc");
 			#else
@@ -127,6 +128,26 @@ class TextureBase extends EventDispatcher
 				__compressedFormatsAlpha[ATFGPUFormat.ETC1] = etc1Extension.ETC1_RGB8_OES;
 				#end
 			}
+
+			#if (js && html5)
+			if (etc2Extension != null)
+			{
+				if ((etc2Extension : Dynamic).COMPRESSED_RGB8_ETC2 != null) __compressedFormats[ATFGPUFormat.ETC2] = (etc2Extension : Dynamic)
+					.COMPRESSED_RGB8_ETC2;
+				else if ((gl : Dynamic).COMPRESSED_RGB8_ETC2 != null) __compressedFormats[ATFGPUFormat.ETC2] = (gl : Dynamic).COMPRESSED_RGB8_ETC2;
+
+				if ((etc2Extension : Dynamic).COMPRESSED_RGBA8_ETC2_EAC != null) __compressedFormatsAlpha[ATFGPUFormat.ETC2] = (etc2Extension : Dynamic)
+					.COMPRESSED_RGBA8_ETC2_EAC;
+				else if ((gl : Dynamic).COMPRESSED_RGBA8_ETC2_EAC != null) __compressedFormatsAlpha[ATFGPUFormat.ETC2] = (gl : Dynamic)
+					.COMPRESSED_RGBA8_ETC2_EAC;
+			}
+			else
+			{
+				// Fallback: WebGL2 ETC2 may not use an extension object
+				if ((gl : Dynamic).COMPRESSED_RGB8_ETC2 != null) __compressedFormats[ATFGPUFormat.ETC2] = (gl : Dynamic).COMPRESSED_RGB8_ETC2;
+				if ((gl : Dynamic).COMPRESSED_RGBA8_ETC2_EAC != null) __compressedFormatsAlpha[ATFGPUFormat.ETC2] = (gl : Dynamic).COMPRESSED_RGBA8_ETC2_EAC;
+			}
+			#end
 
 			if (pvrtcExtension != null)
 			{
