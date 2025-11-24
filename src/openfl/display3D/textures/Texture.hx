@@ -6,11 +6,13 @@ import haxe.Timer;
 import openfl.utils._internal.ArrayBufferView;
 import openfl.utils._internal.UInt8Array;
 import openfl.display3D._internal.ATFReader;
-import openfl.display3D._internal.KTX1Reader;
 import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.Event;
 import openfl.utils.ByteArray;
+#if !(flash || air)
+import openfl.display3D._internal.KTX1Reader;
+#end
 
 /**
 	The Texture class represents a 2-dimensional texture uploaded to a rendering context.
@@ -299,6 +301,7 @@ import openfl.utils.ByteArray;
 
 	@:noCompletion private function __uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
+		#if !(flash || air)
 		// Detect and handle KTX v1 data.
 		if (KTX1Reader.isKTX1(data, byteArrayOffset))
 		{
@@ -331,6 +334,7 @@ import openfl.utils.ByteArray;
 			__context.__bindGLTexture2D(null);
 			return; // Done, skip ATF
 		}
+		#end
 
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader(__width, __height, false);
