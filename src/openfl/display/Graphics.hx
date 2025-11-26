@@ -119,10 +119,6 @@ import js.html.CanvasRenderingContext2D;
 		__bitmapScaleY = 1;
 
 		__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
-
-		#if (js && html5)
-		moveTo(0, 0);
-		#end
 	}
 
 	/**

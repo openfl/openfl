@@ -139,7 +139,7 @@ class Scale9GridBounds
 
 	public function calculateBitmapMatrix(bitmapWidth:Float, bitmapHeight:Float, bitmapMatrix:Matrix, outputMatrix:Matrix):Matrix
 	{
-		tempMatrix.setTo(getScaleX(), 0, 0, 1, calculateTranslateX(bitmapWidth), calculateTranslateY(bitmapHeight));
+		tempMatrix.setTo(getScaleX(), 0, 0, getScaleY(), calculateTranslateX(bitmapWidth), calculateTranslateY(bitmapHeight));
 		tempMatrix.concat(bitmapMatrix);
 		outputMatrix.copyFrom(tempMatrix);
 		return outputMatrix;
