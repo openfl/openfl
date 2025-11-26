@@ -21,8 +21,6 @@ class Scale9GridBounds
 	private var unscaledMaxX:Null<Float> = null;
 	private var unscaledMaxY:Null<Float> = null;
 
-	private static var tempMatrix:Matrix = new Matrix();
-
 	public function new() {}
 
 	public function getScaleX():Float
@@ -139,9 +137,11 @@ class Scale9GridBounds
 
 	public function calculateBitmapMatrix(bitmapWidth:Float, bitmapHeight:Float, bitmapMatrix:Matrix, outputMatrix:Matrix):Matrix
 	{
-		tempMatrix.setTo(getScaleX(), 0, 0, getScaleY(), calculateTranslateX(bitmapWidth), calculateTranslateY(bitmapHeight));
-		tempMatrix.concat(bitmapMatrix);
-		outputMatrix.copyFrom(tempMatrix);
+		outputMatrix.setTo(getScaleX(), 0, 0, getScaleY(), calculateTranslateX(bitmapWidth), calculateTranslateY(bitmapHeight));
+		if (bitmapMatrix != null)
+		{
+			outputMatrix.concat(bitmapMatrix);
+		}
 		return outputMatrix;
 	}
 }

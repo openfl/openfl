@@ -1262,11 +1262,11 @@ class CairoGraphics
 
 					if (uvt != null && uvt.length != v.length)
 					{
-						uvt = Graphics.normalizeUVT(uvt, tempUvtVector);
+						uvt = Graphics.__normalizeUVT(uvt, tempUvtVector);
 					}
 					else if (!stroke && uvt == null && bitmapFill != null)
 					{
-						uvt = Graphics.generateUVT(v, bitmapFill.width, bitmapFill.height, fillMatrix, tempUvtVector);
+						uvt = Graphics.__generateUVT(v, bitmapFill.width, bitmapFill.height, fillMatrix, tempUvtVector);
 					}
 
 					var i = 0;
@@ -1379,9 +1379,9 @@ class CairoGraphics
 							}
 						}
 
-						abKey = Graphics.edgeKey(ind[a_], ind[b_]);
-						bcKey = Graphics.edgeKey(ind[b_], ind[c_]);
-						caKey = Graphics.edgeKey(ind[c_], ind[a_]);
+						abKey = Graphics.__edgeKey(ind[a_], ind[b_]);
+						bcKey = Graphics.__edgeKey(ind[b_], ind[c_]);
+						caKey = Graphics.__edgeKey(ind[c_], ind[a_]);
 
 						abShared = seenEdgeMap.exists(abKey);
 						bcShared = seenEdgeMap.exists(bcKey);
@@ -1434,7 +1434,7 @@ class CairoGraphics
 							if (bitmapFill != null && !stroke)
 							{
 								var oldFillPatternMatrix = fillPatternMatrix;
-								fillPatternMatrix = Graphics.calculatePatternMatrixFromTri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3,
+								fillPatternMatrix = Graphics.__calculatePatternMatrixFromTri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3,
 									(minX - offsetX) * 2, (minY - offsetY) * 2, bitmapFill.width, bitmapFill.height, tempPatternMatrix);
 								applyFill();
 								fillPatternMatrix = oldFillPatternMatrix;

@@ -63,6 +63,7 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;
 
 	@:noCompletion private var __bounds:Rectangle;
+	@:noCompletion private var __boundsExStroke:Rectangle;
 	@:noCompletion private var __commands:DrawCommandBuffer;
 	@:noCompletion private var __dirty(default, set):Bool = true;
 	@:noCompletion private var __hardwareDirty:Bool;
@@ -421,6 +422,7 @@ import js.html.CanvasRenderingContext2D;
 			__dirty = true;
 			__transformDirty = true;
 			__bounds = null;
+			__boundsExStroke = null;
 		}
 
 		__visible = false;
@@ -497,8 +499,8 @@ import js.html.CanvasRenderingContext2D;
 		var xs = __findExtrema(__positionX, controlX1, controlX2, anchorX);
 		var ys = __findExtrema(__positionY, controlY1, controlY2, anchorY);
 
-		__inflateBounds(xs.min - __strokePadding, ys.min - __strokePadding);
-		__inflateBounds(xs.max + __strokePadding, ys.max + __strokePadding);
+		__inflateBounds(xs.min, ys.min);
+		__inflateBounds(xs.max, ys.max);
 
 		__positionX = anchorX;
 		__positionY = anchorY;
@@ -544,8 +546,7 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function curveTo(controlX:Float, controlY:Float, anchorX:Float, anchorY:Float):Void
 	{
-		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
-		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
+		__inflateBounds(__positionX, __positionY);
 
 		var ix:Float;
 		var iy:Float;
@@ -570,14 +571,12 @@ import js.html.CanvasRenderingContext2D;
 			iy = __calculateBezierQuadPoint(ty, __positionY, controlY, anchorY);
 		}
 
-		__inflateBounds(ix - __strokePadding, iy - __strokePadding);
-		__inflateBounds(ix + __strokePadding, iy + __strokePadding);
+		__inflateBounds(ix, iy);
 
 		__positionX = anchorX;
 		__positionY = anchorY;
 
-		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
-		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
+		__inflateBounds(__positionX, __positionY);
 
 		__commands.curveTo(controlX, controlY, anchorX, anchorY);
 
@@ -592,8 +591,8 @@ import js.html.CanvasRenderingContext2D;
 	{
 		if (radius <= 0) return;
 
-		__inflateBounds(x - radius - __strokePadding, y - radius - __strokePadding);
-		__inflateBounds(x + radius + __strokePadding, y + radius + __strokePadding);
+		__inflateBounds(x - radius, y - radius);
+		__inflateBounds(x + radius, y + radius);
 
 		__commands.drawCircle(x, y, radius);
 
@@ -622,8 +621,8 @@ import js.html.CanvasRenderingContext2D;
 	{
 		if (width <= 0 || height <= 0) return;
 
-		__inflateBounds(x - __strokePadding, y - __strokePadding);
-		__inflateBounds(x + width + __strokePadding, y + height + __strokePadding);
+		__inflateBounds(x, y);
+		__inflateBounds(x + width, y + height);
 
 		__commands.drawEllipse(x, y, width, height);
 
@@ -962,11 +961,12 @@ import js.html.CanvasRenderingContext2D;
 	{
 		if (width == 0 && height == 0) return;
 
-		var xSign = width < 0 ? -1 : 1;
-		var ySign = height < 0 ? -1 : 1;
-
-		__inflateBounds(x - __strokePadding * xSign, y - __strokePadding * ySign);
-		__inflateBounds(x + width + __strokePadding * xSign, y + height + __strokePadding * ySign);
+		var minX = Math.min(x, x + width);
+		var minY = Math.min(y, y + height);
+		var maxX = Math.max(x, x + width);
+		var maxY = Math.max(y, y + height);
+		__inflateBounds(minX, minY);
+		__inflateBounds(maxX, maxY);
 
 		__commands.drawRect(x, y, width, height);
 
@@ -1005,11 +1005,13 @@ import js.html.CanvasRenderingContext2D;
 	{
 		if (width == 0 && height == 0) return;
 
-		var xSign = width < 0 ? -1 : 1;
-		var ySign = height < 0 ? -1 : 1;
+		var minX = Math.min(x, x + width);
+		var minY = Math.min(y, y + height);
+		var maxX = Math.max(x, x + width);
+		var maxY = Math.max(y, y + height);
 
-		__inflateBounds(x - __strokePadding * xSign, y - __strokePadding * ySign);
-		__inflateBounds(x + width + __strokePadding * xSign, y + height + __strokePadding * ySign);
+		__inflateBounds(minX, minY);
+		__inflateBounds(maxX, maxY);
 
 		__commands.drawRoundRect(x, y, width, height, ellipseWidth, ellipseHeight);
 
@@ -1024,8 +1026,8 @@ import js.html.CanvasRenderingContext2D;
 	{
 		if (width <= 0 || height <= 0) return;
 
-		__inflateBounds(x - __strokePadding, y - __strokePadding);
-		__inflateBounds(x + width + __strokePadding, y + height + __strokePadding);
+		__inflateBounds(x, y);
+		__inflateBounds(x + width, y + height);
 
 		var xw = x + width;
 		var yh = y + height;
@@ -1133,8 +1135,8 @@ import js.html.CanvasRenderingContext2D;
 			if (maxY < y) maxY = y;
 		}
 
-		__inflateBounds(minX - __strokePadding, minY - __strokePadding);
-		__inflateBounds(maxX + __strokePadding, maxY + __strokePadding);
+		__inflateBounds(minX, minY);
+		__inflateBounds(maxX, maxY);
 
 		__commands.drawTriangles(vertices, indices, uvtData, culling);
 
@@ -1484,16 +1486,13 @@ import js.html.CanvasRenderingContext2D;
 			joints = JointStyle.ROUND;
 		}
 
-		if (thickness != null)
+		if (thickness == null)
 		{
-			if (joints == JointStyle.MITER)
-			{
-				if (thickness > __strokePadding) __strokePadding = Math.ceil(thickness);
-			}
-			else
-			{
-				if (thickness / 2 > __strokePadding) __strokePadding = Math.ceil(thickness / 2);
-			}
+			__strokePadding = 0;
+		}
+		else
+		{
+			__strokePadding = Math.ceil(thickness / 2);
 		}
 
 		__commands.lineStyle(thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
@@ -1528,14 +1527,12 @@ import js.html.CanvasRenderingContext2D;
 
 		// TODO: Should we consider the origin instead, instead of inflating in all directions?
 
-		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
-		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
+		__inflateBounds(__positionX, __positionY);
 
 		__positionX = x;
 		__positionY = y;
 
-		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
-		__inflateBounds(__positionX + __strokePadding * 2, __positionY + __strokePadding);
+		__inflateBounds(__positionX, __positionY);
 
 		__commands.lineTo(x, y);
 
@@ -1675,12 +1672,19 @@ import js.html.CanvasRenderingContext2D;
 		#end
 	}
 
-	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void
+	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix, exStroke:Bool = false):Void
 	{
 		if (__bounds == null) return;
 
 		var bounds = Rectangle.__pool.get();
-		__bounds.__transform(bounds, matrix);
+		if (exStroke && __boundsExStroke != null)
+		{
+			__boundsExStroke.__transform(bounds, matrix);
+		}
+		else
+		{
+			__bounds.__transform(bounds, matrix);
+		}
 		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
 		Rectangle.__pool.release(bounds);
 	}
@@ -1764,33 +1768,43 @@ import js.html.CanvasRenderingContext2D;
 	{
 		if (__bounds == null)
 		{
-			__bounds = new Rectangle(x, y, 0, 0);
+			__bounds = new Rectangle(x - __strokePadding, y - __strokePadding, __strokePadding * 2, __strokePadding * 2);
+			__boundsExStroke = new Rectangle(x, y, 0, 0);
 			__transformDirty = true;
 			return;
 		}
 
-		if (x < __bounds.x)
+		__inflate(__bounds, x, y, __strokePadding);
+		__inflate(__boundsExStroke, x, y, 0.0);
+	}
+
+	@:noCompletion private inline function __inflate(rect:Rectangle, x:Float, y:Float, padding:Float = 0.0):Void
+	{
+		var pl = x - padding;
+		var pr = x + padding;
+		var pt = y - padding;
+		var pb = y + padding;
+
+		// Expand to include padded point
+		if (pl < rect.x)
 		{
-			__bounds.width += __bounds.x - x;
-			__bounds.x = x;
+			rect.x = pl;
 			__transformDirty = true;
 		}
-
-		if (y < __bounds.y)
+		if (pt < rect.y)
 		{
-			__bounds.height += __bounds.y - y;
-			__bounds.y = y;
+			rect.y = pt;
 			__transformDirty = true;
 		}
-
-		if (x > __bounds.x + __bounds.width)
+		if (pr > rect.x + rect.width)
 		{
-			__bounds.width = x - __bounds.x;
+			rect.width = pr - rect.x;
+			__transformDirty = true;
 		}
-
-		if (y > __bounds.y + __bounds.height)
+		if (pb > rect.y + rect.height)
 		{
-			__bounds.height = y - __bounds.y;
+			rect.height = pb - rect.y;
+			__transformDirty = true;
 		}
 	}
 
@@ -2074,7 +2088,7 @@ import js.html.CanvasRenderingContext2D;
 		__height = newHeight;
 	}
 
-	private static function generateUVT(vertices:Vector<Float>, textureWidth:Float, textureHeight:Float, matrix:Matrix, result:Vector<Float>):Vector<Float>
+	private static function __generateUVT(vertices:Vector<Float>, textureWidth:Float, textureHeight:Float, matrix:Matrix, result:Vector<Float>):Vector<Float>
 	{
 		var length = vertices.length;
 		var x:Float, y:Float;
@@ -2092,13 +2106,13 @@ import js.html.CanvasRenderingContext2D;
 		return result;
 	}
 
-	private static inline function edgeKey(a:Int, b:Int):Int
+	private static inline function __edgeKey(a:Int, b:Int):Int
 	{
 		// Make an unordered unique 32-bit key
 		return (a < b) ? (a << 16) | b : (b << 16) | a;
 	}
 
-	private static function normalizeUVT(uvt:Vector<Float>, result:Vector<Float>):Vector<Float>
+	private static function __normalizeUVT(uvt:Vector<Float>, result:Vector<Float>):Vector<Float>
 	{
 		var len = uvt.length;
 		for (t in 1...len + 1)
@@ -2114,7 +2128,7 @@ import js.html.CanvasRenderingContext2D;
 		return result;
 	}
 
-	private static inline function calculatePatternMatrixFromTri(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, u1:Float, v1:Float, u2:Float,
+	private static inline function __calculatePatternMatrixFromTri(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, u1:Float, v1:Float, u2:Float,
 			v2:Float, u3:Float, v3:Float, offsetX:Float, offsetY:Float, texWidth:Int, texHeight:Int, matrix:Matrix):Matrix
 	{
 		u1 *= texWidth;

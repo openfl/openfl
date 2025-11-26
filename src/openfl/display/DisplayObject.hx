@@ -1212,6 +1212,27 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		return __dispatchWithCapture(event);
 	}
 
+	@:noCompletion private function __getTargetCoordinateSpaceMatrix(targetCoordinateSpace:DisplayObject, matrix:Matrix):Void
+	{
+		if (targetCoordinateSpace != null && targetCoordinateSpace != this)
+		{
+			matrix.copyFrom(__getWorldTransform());
+
+			var targetMatrix = Matrix.__pool.get();
+
+			targetMatrix.copyFrom(targetCoordinateSpace.__getWorldTransform());
+			targetMatrix.invert();
+
+			matrix.concat(targetMatrix);
+
+			Matrix.__pool.release(targetMatrix);
+		}
+		else
+		{
+			matrix.identity();
+		}
+	}
+
 	/**
 		Returns a rectangle that defines the area of the display object relative
 		to the coordinate system of the `targetCoordinateSpace` object.
@@ -1240,23 +1261,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		var matrix = Matrix.__pool.get();
 
-		if (targetCoordinateSpace != null && targetCoordinateSpace != this)
-		{
-			matrix.copyFrom(__getWorldTransform());
-
-			var targetMatrix = Matrix.__pool.get();
-
-			targetMatrix.copyFrom(targetCoordinateSpace.__getWorldTransform());
-			targetMatrix.invert();
-
-			matrix.concat(targetMatrix);
-
-			Matrix.__pool.release(targetMatrix);
-		}
-		else
-		{
-			matrix.identity();
-		}
+		__getTargetCoordinateSpaceMatrix(targetCoordinateSpace, matrix);
 
 		var bounds = new Rectangle();
 		__getBounds(bounds, matrix);
@@ -1286,8 +1291,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	public function getRect(targetCoordinateSpace:DisplayObject):Rectangle
 	{
-		// should not account for stroke widths, but is that possible?
-		return getBounds(targetCoordinateSpace);
+		var matrix = Matrix.__pool.get();
+
+		__getTargetCoordinateSpaceMatrix(targetCoordinateSpace, matrix);
+
+		var bounds = new Rectangle();
+		__getBounds(bounds, matrix, true);
+
+		Matrix.__pool.release(matrix);
+
+		return bounds;
 	}
 
 	/**
@@ -1579,11 +1592,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __enterFrame(deltaTime:Int):Void {}
 
-	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void
+	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix, exStroke:Bool = false):Void
 	{
 		if (__graphics != null)
 		{
-			__graphics.__getBounds(rect, matrix);
+			__graphics.__getBounds(rect, matrix, exStroke);
 		}
 	}
 

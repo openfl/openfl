@@ -756,17 +756,9 @@ class CanvasGraphics
 	{
 		#if (js && html5)
 		var matrix = Matrix.__pool.get();
-		if (bitmapMatrix != null)
-		{
-			matrix.copyFrom(bitmapMatrix);
-		}
-		else
-		{
-			matrix.identity();
-		}
 		if (scale9Bounds != null && bitmap != null)
 		{
-			scale9Bounds.calculateBitmapMatrix(bitmap.width, bitmap.height, matrix, matrix);
+			scale9Bounds.calculateBitmapMatrix(bitmap.width, bitmap.height, bitmapMatrix, matrix);
 		}
 		pattern.setTransform(cast toDOMMatrix(matrix));
 		Matrix.__pool.release(matrix);
@@ -1403,11 +1395,11 @@ class CanvasGraphics
 
 					if (uvt != null && uvt.length != v.length)
 					{
-						uvt = Graphics.normalizeUVT(uvt, tempUvtVector);
+						uvt = Graphics.__normalizeUVT(uvt, tempUvtVector);
 					}
 					else if (!stroke && uvt == null && fillBitmap != null)
 					{
-						uvt = Graphics.generateUVT(v, fillBitmap.width, fillBitmap.height, fillPatternMatrix, tempUvtVector);
+						uvt = Graphics.__generateUVT(v, fillBitmap.width, fillBitmap.height, fillPatternMatrix, tempUvtVector);
 					}
 
 					var i = 0;
@@ -1518,9 +1510,9 @@ class CanvasGraphics
 							}
 						}
 
-						abKey = Graphics.edgeKey(ind[a_], ind[b_]);
-						bcKey = Graphics.edgeKey(ind[b_], ind[c_]);
-						caKey = Graphics.edgeKey(ind[c_], ind[a_]);
+						abKey = Graphics.__edgeKey(ind[a_], ind[b_]);
+						bcKey = Graphics.__edgeKey(ind[b_], ind[c_]);
+						caKey = Graphics.__edgeKey(ind[c_], ind[a_]);
 
 						abShared = seenEdgeMap.exists(abKey);
 						bcShared = seenEdgeMap.exists(bcKey);
@@ -1573,7 +1565,7 @@ class CanvasGraphics
 							if (fillBitmap != null && !stroke)
 							{
 								var oldFillPatternMatrix = fillPatternMatrix;
-								fillPatternMatrix = Graphics.calculatePatternMatrixFromTri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3,
+								fillPatternMatrix = Graphics.__calculatePatternMatrixFromTri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3,
 									(minX - offsetX) * 2, (minY - offsetY) * 2, fillBitmap.width, fillBitmap.height, tempUVPatternMatrix);
 								applyFill();
 								fillPatternMatrix = oldFillPatternMatrix;
