@@ -12,6 +12,7 @@ import openfl.utils._internal.Log;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
 import openfl.utils.ByteArray;
+import openfl.Lib;
 
 /**
 	// TODO: Document GLSL Shaders
@@ -119,6 +120,8 @@ import openfl.utils.ByteArray;
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
+@:access(openfl.display.Stage)
+@:access(openfl.events.UncaughtErrorEvents)
 // #if (!display && !macro)
 #if !macro
 @:autoBuild(openfl.utils._internal.ShaderMacro.build())
@@ -511,7 +514,20 @@ class Shader
 
 				// TODO
 				// program.uploadSources (vertex, fragment);
-				program.__glProgram = __createGLProgram(vertex, fragment);
+
+				if (Lib.current.stage.__uncaughtErrorEvents.__enabled)
+				{
+					try
+					{
+						program.__glProgram = __createGLProgram(vertex, fragment);
+					}
+					catch (e:Dynamic)
+					{
+						Lib.current.stage.__handleError(e);
+					}
+				}
+				else
+					program.__glProgram = __createGLProgram(vertex, fragment);
 
 				__context.__programs.set(id, program);
 			}
@@ -613,7 +629,15 @@ class Shader
 				}
 
 				Reflect.setField(__data, name, input);
-				if (__isGenerated) Reflect.setField(this, name, input);
+
+				try
+				{
+					if (__isGenerated) Reflect.setField(this, name, input);
+				}
+				catch (e:Dynamic)
+				{
+					Log.debug('Failed to set field $name: $e');
+				}
 			}
 			else if (!Reflect.hasField(__data, name) || Reflect.field(__data, name) == null)
 			{
@@ -679,7 +703,15 @@ class Shader
 						}
 
 						Reflect.setField(__data, name, parameter);
-						if (__isGenerated) Reflect.setField(this, name, parameter);
+
+						try
+						{
+							if (__isGenerated) Reflect.setField(this, name, parameter);
+						}
+						catch (e:Dynamic)
+						{
+							Log.debug('Failed to set field $name: $e');
+						}
 
 					case INT, INT2, INT3, INT4:
 						var parameter = new ShaderParameter<Int>();
@@ -690,9 +722,17 @@ class Shader
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;
 						__paramInt.push(parameter);
-						Reflect.setField(__data, name, parameter);
-						if (__isGenerated) Reflect.setField(this, name, parameter);
 
+						Reflect.setField(__data, name, parameter);
+
+						try
+						{
+							if (__isGenerated) Reflect.setField(this, name, parameter);
+						}
+						catch (e:Dynamic)
+						{
+							Log.debug('Failed to set field $name: $e');
+						}
 					default:
 						var parameter = new ShaderParameter<Float>();
 						parameter.name = name;
@@ -722,7 +762,15 @@ class Shader
 						}
 
 						Reflect.setField(__data, name, parameter);
-						if (__isGenerated) Reflect.setField(this, name, parameter);
+
+						try
+						{
+							if (__isGenerated) Reflect.setField(this, name, parameter);
+						}
+						catch (e:Dynamic)
+						{
+							Log.debug('Failed to set field $name: $e');
+						}
 				}
 			}
 
