@@ -2844,11 +2844,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function get_htmlText():String
 	{
-		// #if (js && html5)
 		return __isHTML ? __htmlText : __text;
-		// #else
-		// return __text;
-		// #end
 	}
 
 	@:noCompletion private function set_htmlText(value:String):String
