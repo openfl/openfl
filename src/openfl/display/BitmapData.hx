@@ -156,8 +156,6 @@ class BitmapData implements IBitmapDrawable
 	@SuppressWarnings("checkstyle:Dynamic")
 	public var image(default, null):#if lime Image #else Dynamic #end;
 
-	// #if !flash_doc_gen
-
 	/**
 		Defines whether the bitmap image is readable. Hardware-only bitmap images
 		do not support `getPixels`, `setPixels` and other
@@ -173,8 +171,6 @@ class BitmapData implements IBitmapDrawable
 		will need to be recreated if the current hardware rendering context is lost.
 	**/
 	@:beta public var readable(default, null):Bool;
-
-	// #end
 
 	/**
 		The rectangle that defines the size and location of the bitmap image. The
@@ -2401,12 +2397,10 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (!readable) return false;
 
-		// #if !openfljs
 		if ((secondObject is Bitmap))
 		{
 			secondObject = cast(secondObject, Bitmap).__bitmapData;
 		}
-		// #end
 
 		if ((secondObject is Point))
 		{
