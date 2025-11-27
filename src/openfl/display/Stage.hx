@@ -1687,10 +1687,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (!event.__preventDefault)
 		{
-			// #if mobile
 			Log.println(CallStack.toString(CallStack.exceptionStack()));
 			Log.println(Std.string(e));
-			// #end
 
 			#if (cpp && !cppia)
 			untyped __cpp__("throw e");
@@ -3822,13 +3820,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 				if (updateChildren)
 				{
-					// #if dom
 					if (DisplayObject.__supportDOM)
 					{
 						__wasDirty = true;
 					}
-
-					// #end
 
 					// __dirty = false;
 				}
