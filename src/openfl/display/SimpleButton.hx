@@ -459,7 +459,6 @@ class SimpleButton extends InteractiveObject
 			value.parent.removeChild(value);
 		}
 
-		// #if (js && html5 && dom)
 		#if (js && html5)
 		if (DisplayObject.__supportDOM && __previousStates == null)
 		{
@@ -469,7 +468,6 @@ class SimpleButton extends InteractiveObject
 
 		if (value != __currentState)
 		{
-			// #if (js && html5 && dom)
 			#if (js && html5)
 			if (DisplayObject.__supportDOM)
 			{
