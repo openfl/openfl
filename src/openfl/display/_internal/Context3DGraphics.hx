@@ -48,7 +48,6 @@ class Context3DGraphics
 		var triangleIndexBufferPosition = 0;
 		var vertexBufferPosition = 0;
 		var vertexBufferPositionUVT = 0;
-		var bounds = graphics.__bounds;
 
 		var data = new DrawCommandReader(graphics.__commands);
 
@@ -94,7 +93,7 @@ class Context3DGraphics
 			if (bitmap != null && uvtData == null)
 			{
 				uvtData = tempUvtVector;
-				Graphics.generateUVT(vertices, bitmap.width, bitmap.height, bitmapMatrix, uvtData);
+				Graphics.__generateUV(vertices, bitmap.width, bitmap.height, bitmapMatrix, uvtData);
 			}
 
 			var hasIndices = (indices != null);
@@ -626,7 +625,7 @@ class Context3DGraphics
 			var pixelRatio = renderer.__pixelRatio;
 			#end
 
-			Scale9Grid.setTo(graphics);
+			Scale9Grid.graphics = graphics;
 
 			graphics.__update(renderer.__worldTransform, pixelRatio);
 
@@ -635,7 +634,7 @@ class Context3DGraphics
 			var width = graphics.__width;
 			var height = graphics.__height;
 
-			if (bounds != null && width >= 1 && height >= 1)
+			if (!bounds.isEmpty() && width >= 1 && height >= 1)
 			{
 				if (graphics.__hardwareDirty
 					|| (graphics.__quadBuffer == null && graphics.__vertexBuffer == null && graphics.__vertexBufferUVT == null))

@@ -284,7 +284,7 @@ class Video extends DisplayObject
 		#end
 	}
 
-	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
+	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix, exStroke:Bool = false):Void
 	{
 		var bounds = Rectangle.__pool.get();
 		bounds.setTo(0, 0, __width, __height);

@@ -1870,7 +1870,7 @@ class TextField extends InteractiveObject
 		#end
 	}
 
-	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
+	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix, exStroke:Bool = false):Void
 	{
 		__updateLayout();
 

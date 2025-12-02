@@ -3,12 +3,15 @@ package openfl.display._internal;
 #if !flash
 import openfl.display.CanvasRenderer;
 import openfl.display.DisplayObject;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 #if lime
 import lime.math.ARGB;
 #end
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasDisplayObject
 {
@@ -33,9 +36,12 @@ class CanvasDisplayObject
 
 			renderer.setTransform(displayObject.__renderTransform, context);
 
+			var rect = Rectangle.__pool.get();
+			displayObject.__getRenderBounds(rect, Matrix.__identity);
 			var color:ARGB = (displayObject.opaqueBackground : ARGB);
 			context.fillStyle = 'rgb(${color.r},${color.g},${color.b})';
-			context.fillRect(0, 0, displayObject.width, displayObject.height);
+			context.fillRect(rect.x, rect.y, rect.width, rect.height);
+			Rectangle.__pool.release(rect);
 
 			renderer.__popMaskObject(displayObject);
 		}

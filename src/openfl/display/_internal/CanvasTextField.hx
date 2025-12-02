@@ -44,11 +44,6 @@ class CanvasTextField
 		{
 			textField.__updateLayout();
 
-			if (graphics.__bounds == null)
-			{
-				graphics.__bounds = new Rectangle();
-			}
-
 			// There might be a better way of handling this!
 			if (textField.text.length == 0)
 			{

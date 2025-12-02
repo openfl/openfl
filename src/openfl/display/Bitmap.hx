@@ -142,7 +142,7 @@ class Bitmap extends DisplayObject
 		}
 	}
 
-	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
+	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix, exStroke:Bool = false):Void
 	{
 		var bounds = Rectangle.__pool.get();
 		if (__bitmapData != null)

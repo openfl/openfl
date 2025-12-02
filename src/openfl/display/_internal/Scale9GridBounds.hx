@@ -9,15 +9,13 @@ import openfl.geom.Matrix;
 #end
 class Scale9GridBounds
 {
-	public var scale9MinX(default, null):Null<Float> = null;
-	public var scale9MinY(default, null):Null<Float> = null;
+	private var scaledMinX:Null<Float> = null;
+	private var scaledMinY:Null<Float> = null;
+	private var scaledMaxX:Null<Float> = null;
+	private var scaledMaxY:Null<Float> = null;
 
-	private var scale9MaxX:Null<Float> = null;
-	private var scale9MaxY:Null<Float> = null;
-
-	public var unscaledMinX(default, null):Null<Float> = null;
-	public var unscaledMinY(default, null):Null<Float> = null;
-
+	private var unscaledMinX:Null<Float> = null;
+	private var unscaledMinY:Null<Float> = null;
 	private var unscaledMaxX:Null<Float> = null;
 	private var unscaledMaxY:Null<Float> = null;
 
@@ -25,7 +23,7 @@ class Scale9GridBounds
 
 	public function getScaleX():Float
 	{
-		if (scale9MaxX == null || unscaledMaxX == null)
+		if (scaledMaxX == null || unscaledMaxX == null)
 		{
 			return 1.0;
 		}
@@ -34,12 +32,12 @@ class Scale9GridBounds
 		{
 			return 1.0;
 		}
-		return (scale9MaxX - scale9MinX) / unscaledWidth;
+		return (scaledMaxX - scaledMinX) / unscaledWidth;
 	}
 
 	public function getScaleY():Float
 	{
-		if (scale9MaxY == null || unscaledMaxY == null)
+		if (scaledMaxY == null || unscaledMaxY == null)
 		{
 			return 1.0;
 		}
@@ -48,7 +46,7 @@ class Scale9GridBounds
 		{
 			return 1.0;
 		}
-		return (scale9MaxY - scale9MinY) / unscaledHeight;
+		return (scaledMaxY - scaledMinY) / unscaledHeight;
 	}
 
 	private function calculateTranslateX(width:Float):Float
@@ -57,7 +55,7 @@ class Scale9GridBounds
 		if (scaleX > 0.0)
 		{
 			var remX = unscaledMinX % width;
-			var adjustedRemX = (scale9MinX % (width * scaleX)) / scaleX;
+			var adjustedRemX = (scaledMinX % (width * scaleX)) / scaleX;
 			return adjustedRemX - remX;
 		}
 		return 0;
@@ -69,7 +67,7 @@ class Scale9GridBounds
 		if (scaleY > 0.0)
 		{
 			var remY = unscaledMinY % height;
-			var adjustedRemY = (scale9MinY % (height * scaleY)) / scaleY;
+			var adjustedRemY = (scaledMinY % (height * scaleY)) / scaleY;
 			return adjustedRemY - remY;
 		}
 		return 0;
@@ -81,57 +79,50 @@ class Scale9GridBounds
 		unscaledMaxX = null;
 		unscaledMinY = null;
 		unscaledMaxY = null;
-		scale9MinX = null;
-		scale9MaxX = null;
-		scale9MinY = null;
-		scale9MaxY = null;
+
+		scaledMinX = null;
+		scaledMaxX = null;
+		scaledMinY = null;
+		scaledMaxY = null;
 	}
 
-	public function applyUnscaledX(value:Float):Void
+	public function applyUnscaled(x:Float, y:Float):Void
 	{
-		if (unscaledMinX == null || unscaledMinX > value)
+		if (unscaledMinX == null || unscaledMinX > x)
 		{
-			unscaledMinX = value;
+			unscaledMinX = x;
 		}
-		if (unscaledMaxX == null || unscaledMaxX < value)
+		if (unscaledMaxX == null || unscaledMaxX < x)
 		{
-			unscaledMaxX = value;
+			unscaledMaxX = x;
 		}
-	}
-
-	public function applyUnscaledY(value:Float):Void
-	{
-		if (unscaledMinY == null || unscaledMinY > value)
+		if (unscaledMinY == null || unscaledMinY > y)
 		{
-			unscaledMinY = value;
+			unscaledMinY = y;
 		}
-		if (unscaledMaxY == null || unscaledMaxY < value)
+		if (unscaledMaxY == null || unscaledMaxY < y)
 		{
-			unscaledMaxY = value;
+			unscaledMaxY = y;
 		}
 	}
 
-	public function applyScaledX(value:Float):Void
+	public function applyScaled(x:Float, y:Float):Void
 	{
-		if (scale9MinX == null || scale9MinX > value)
+		if (scaledMinX == null || scaledMinX > x)
 		{
-			scale9MinX = value;
+			scaledMinX = x;
 		}
-		if (scale9MaxX == null || scale9MaxX < value)
+		if (scaledMaxX == null || scaledMaxX < x)
 		{
-			scale9MaxX = value;
+			scaledMaxX = x;
 		}
-	}
-
-	public function applyScaledY(value:Float):Void
-	{
-		if (scale9MinY == null || scale9MinY > value)
+		if (scaledMinY == null || scaledMinY > y)
 		{
-			scale9MinY = value;
+			scaledMinY = y;
 		}
-		if (scale9MaxY == null || scale9MaxY < value)
+		if (scaledMaxY == null || scaledMaxY < y)
 		{
-			scale9MaxY = value;
+			scaledMaxY = y;
 		}
 	}
 

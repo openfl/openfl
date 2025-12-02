@@ -45,7 +45,6 @@ class CanvasGraphics
 	private static inline var GRADIENT_TRANSFORM_THRESHOLD:Float = 0.0001;
 	private static var allowSmoothing:Bool;
 	private static var bitmapRepeat:Bool;
-	private static var bounds:Rectangle;
 	private static var graphics:Graphics;
 	private static var hitTesting:Bool;
 	private static var hasStroke:Bool;
@@ -55,13 +54,14 @@ class CanvasGraphics
 	private static var strokeBitmap:BitmapData;
 	private static var fillBitmap:BitmapData;
 	private static var strokePattern:#if (js && html5) CanvasPattern #else Dynamic #end;
-	private static var strokePatternMatrix:Matrix;
+	private static var strokePatternMatrix:Matrix = new Matrix();
 	private static var fillPattern:#if (js && html5) CanvasPattern #else Dynamic #end;
-	private static var fillPatternMatrix:Matrix;
+	private static var fillPatternMatrix:Matrix = new Matrix();
 	private static var strokeGradient:#if (js && html5) CanvasGradient #else Dynamic #end;
-	private static var strokeGradientMatrix:Matrix;
+	private static var strokeGradientMatrix:Matrix = new Matrix();
 	private static var fillGradient:#if (js && html5) CanvasGradient #else Dynamic #end;
-	private static var fillGradientMatrix:Matrix;
+	private static var fillGradientMatrix:Matrix = new Matrix();
+	private static var fillGradientInverseMatrix:Matrix = new Matrix();
 	@SuppressWarnings("checkstyle:Dynamic") private static var windingRule:#if (js && html5) CanvasWindingRule #else Dynamic #end;
 	private static var worldAlpha:Float;
 	#if (js && html5)
@@ -81,7 +81,7 @@ class CanvasGraphics
 	}
 	#end
 
-	private static function closePathAndApplyStroke(strokeBefore:Bool = false):Void
+	private static function closePath(strokeBefore:Bool = false):Void
 	{
 		#if (js && html5)
 		if (!strokeBefore)
@@ -100,7 +100,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static inline function applyStroke()
+	private static function applyStroke()
 	{
 		#if (js && html5)
 		if (hitTesting || context.strokeStyle == null)
@@ -112,35 +112,15 @@ class CanvasGraphics
 		{
 			applyPatternMatrix(strokeBitmap, strokePatternMatrix, Scale9Grid.valid ? Scale9Grid.strokeBounds : null, strokePattern);
 		}
-		else if (strokeGradient != null && strokeGradientMatrix != null)
+		else if (strokeGradient != null)
 		{
+			// TODO:
 			// This is the hard case -- the Canvas API provides no good way to transform gradients,
 			// and the inverse-transform trick used above for gradient fills can't be used here
 			// because it will distort the stroke geometry.
-			// Another possibility is to avoid the Path2D API, instead drawing using explicit path
-			// commands (`context.lineTo`), then push the gradient transform, and finally stroke
-			// the path using `stroke()`. But this will be tons of JS calls if there are many strokes.
-			// So let's settle for allocating a new canvas gradient that is a best-effort match of the
-			// the desired transform. This will not match Flash exactly, but should be relatively rare.
-			// TODO:
-			context.transform(strokeGradientMatrix.a, strokeGradientMatrix.b, strokeGradientMatrix.c, strokeGradientMatrix.d, strokeGradientMatrix.tx,
-				strokeGradientMatrix.ty);
 		}
 
 		context.stroke();
-
-		if (strokeBitmap != null)
-		{
-			//
-		}
-		else if (strokeGradient != null && strokeGradientMatrix != null)
-		{
-			var inverse = Matrix.__pool.get();
-			inverse.copyFrom(strokeGradientMatrix);
-			inverse.invert();
-			context.transform(inverse.a, inverse.b, inverse.c, inverse.d, inverse.tx, inverse.ty);
-			Matrix.__pool.release(inverse);
-		}
 		#end
 	}
 
@@ -153,7 +133,7 @@ class CanvasGraphics
 		{
 			applyPatternMatrix(fillBitmap, fillPatternMatrix, Scale9Grid.valid ? Scale9Grid.fillBounds : null, fillPattern);
 		}
-		else if (fillGradient != null && fillGradientMatrix != null)
+		else if (fillGradient != null)
 		{
 			context.transform(fillGradientMatrix.a, fillGradientMatrix.b, fillGradientMatrix.c, fillGradientMatrix.d, fillGradientMatrix.tx,
 				fillGradientMatrix.ty);
@@ -165,13 +145,10 @@ class CanvasGraphics
 		{
 			//
 		}
-		else if (fillGradient != null && fillGradientMatrix != null)
+		else if (fillGradient != null)
 		{
-			var inverse = Matrix.__pool.get();
-			inverse.copyFrom(fillGradientMatrix);
-			inverse.invert();
-			context.transform(inverse.a, inverse.b, inverse.c, inverse.d, inverse.tx, inverse.ty);
-			Matrix.__pool.release(inverse);
+			context.transform(fillGradientInverseMatrix.a, fillGradientInverseMatrix.b, fillGradientInverseMatrix.c, fillGradientInverseMatrix.d,
+				fillGradientInverseMatrix.tx, fillGradientInverseMatrix.ty);
 		}
 		#end
 	}
@@ -200,56 +177,14 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function reverseGradientBox(m:Matrix):Matrix
-	{
-		// var a = m.a * 1638.4;
-		// var b = m.b * 1638.4;
-		// var c = m.c * 1638.4;
-		// var d = m.d * 1638.4;
-		// // var width = Math.sqrt(a * a + c * c);
-		// // var height = Math.sqrt(b * b + d * d);
-		// var tx = m.tx - a / 2;
-		// var ty = m.ty - d / 2;
-		// m.setTo(a, b, c, d, -50, -50);
-		// return m;
-		var a = m.a;
-		var b = m.b;
-		var c = m.c;
-		var d = m.d;
-		var tx = m.tx;
-		var ty = m.ty;
-
-		// Recover scale
-		var scaleX = Math.sqrt(a * a + c * c);
-		var scaleY = Math.sqrt(b * b + d * d);
-
-		// Original width/height
-		var width = scaleX * 1638.4;
-		var height = scaleY * 1638.4;
-
-		// Rotation
-		// var rotation = Math.atan2(b, d);
-
-		// Original translation
-		var origTx = tx - width / 2;
-		var origTy = ty - height / 2;
-
-		// m.setTo(width, b, c, height, origTx, origTy);
-		m.createBox(width, height, 0, origTx, origTy);
-		return m;
-	}
-
 	@SuppressWarnings("checkstyle:Dynamic")
-	private static function createGradient(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
+	private static function createCanvasGradient(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
 			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float,
 			stroke:Bool = false):#if (js && html5) CanvasGradient #else Void #end
 	{
 		#if (js && html5)
 		var pattern:CanvasGradient = null;
-		if (matrix == null)
-		{
-			matrix = new Matrix();
-		}
+		matrix = matrix ?? Matrix.__identity;
 		var transformed = false;
 		if (type == GradientType.RADIAL)
 		{
@@ -264,7 +199,7 @@ class CanvasGraphics
 
 		// When we are rendering a complex gradient, the gradient transform is handled later by
 		// transforming the path before rendering; so use the identity matrix here.
-		var transform = transformed ? new Matrix(1, 0, 0, 1, 0, 0) : matrix;
+		var transform = transformed ? Matrix.__identity : matrix;
 
 		var numRepeats = 25.0;
 		var gradientScale = spreadMethod == SpreadMethod.PAD ? 1.0 : numRepeats;
@@ -292,6 +227,17 @@ class CanvasGraphics
 				var cy = transform.__transformY(0, 0);
 				var ex = transform.__transformX(819.2, 0);
 				var ey = transform.__transformY(819.2, 0);
+
+				if (Scale9Grid.valid)
+				{
+					fcx = Scale9Grid.toPositionX(fcx);
+					fcy = Scale9Grid.toPositionY(fcy);
+					cx = Scale9Grid.toPositionX(cx);
+					cy = Scale9Grid.toPositionY(cy);
+					ex = Scale9Grid.toPositionX(ex);
+					ey = Scale9Grid.toPositionY(ey);
+				}
+
 				var dx = ex - cx;
 				var dy = ey - cy;
 				var radius = Math.sqrt(dx * dx + dy * dy);
@@ -304,6 +250,15 @@ class CanvasGraphics
 				var y0 = transform.__transformY(-819.2, 0);
 				var x1 = transform.__transformX(819.2, 0);
 				var y2 = transform.__transformY(819.2, 0);
+
+				if (Scale9Grid.valid)
+				{
+					x0 = Scale9Grid.toPositionX(x0);
+					y0 = Scale9Grid.toPositionY(y0);
+					x1 = Scale9Grid.toPositionX(x1);
+					y2 = Scale9Grid.toPositionY(y2);
+				}
+
 				// If we have to scale the gradient due to spread mode, scale the endpoints away from the center.
 				var dx = x1 - x0;
 				var dy = y2 - y0;
@@ -374,11 +329,13 @@ class CanvasGraphics
 
 		if (stroke)
 		{
-			strokeGradientMatrix = transformed ? matrix : null;
+			strokeGradientMatrix.copyFrom(transformed ? matrix : Matrix.__identity);
 		}
 		else
 		{
-			fillGradientMatrix = transformed ? matrix : null;
+			fillGradientMatrix.copyFrom(transformed ? matrix : Matrix.__identity);
+			fillGradientInverseMatrix.copyFrom(fillGradientMatrix);
+			fillGradientInverseMatrix.invert();
 		}
 		return gradient;
 		#end
@@ -393,24 +350,6 @@ class CanvasGraphics
 		return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
 	}
 
-	private static function getDimensions(matrix:Matrix):Dynamic
-	{
-		var angle:Float = Math.atan2(matrix.c, matrix.a);
-		var cos:Float = Math.cos(angle);
-
-		var w:Float = (matrix.a / cos) * 1638.4;
-		var h:Float = (matrix.d / cos) * 1638.4;
-
-		if (w == 0 && h == 0)
-		{
-			w = h = 819.2;
-		}
-		return {
-			width: w,
-			height: h
-		};
-	}
-
 	private static function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>):Void
 	{
 		#if (js && html5)
@@ -422,29 +361,27 @@ class CanvasGraphics
 		ellipseWidth *= 0.5;
 		ellipseHeight *= 0.5;
 
+		var left = x;
+		var top = y;
 		var right = x + width;
 		var bottom = y + height;
 
 		if (Scale9Grid.valid)
 		{
-			var scaledLeft = Scale9Grid.toPositionX(x);
-			var scaledTop = Scale9Grid.toPositionY(y);
-			var scaledRight = Scale9Grid.toPositionX(x + width);
-			var scaledBottom = Scale9Grid.toPositionY(y + height);
+			Scale9Grid.applyUnscaled(left, top);
+			Scale9Grid.applyUnscaled(right, bottom);
 
-			Scale9Grid.applyUnscaledX(x);
-			Scale9Grid.applyUnscaledY(y);
-			Scale9Grid.applyUnscaledX(x + width);
-			Scale9Grid.applyUnscaledY(y + height);
-			Scale9Grid.applyScaledX(scaledLeft);
-			Scale9Grid.applyScaledY(scaledTop);
-			Scale9Grid.applyScaledX(scaledRight);
-			Scale9Grid.applyScaledY(scaledBottom);
+			var scaledLeft = Scale9Grid.toPositionX(left);
+			var scaledTop = Scale9Grid.toPositionY(top);
+			var scaledRight = Scale9Grid.toPositionX(right);
+			var scaledBottom = Scale9Grid.toPositionY(bottom);
+			Scale9Grid.applyScaled(scaledLeft, scaledTop);
+			Scale9Grid.applyScaled(scaledRight, scaledBottom);
 
-			var scaledLeftX = Scale9Grid.toPositionX(x + ellipseWidth);
-			var scaledTopY = Scale9Grid.toPositionY(y + ellipseHeight);
-			var scaledRightX = Scale9Grid.toPositionX(x + width - ellipseWidth);
-			var scaledBottomY = Scale9Grid.toPositionY(y + height - ellipseHeight);
+			var scaledLeftX = Scale9Grid.toPositionX(left + ellipseWidth);
+			var scaledTopY = Scale9Grid.toPositionY(top + ellipseHeight);
+			var scaledRightX = Scale9Grid.toPositionX(right - ellipseWidth);
+			var scaledBottomY = Scale9Grid.toPositionY(bottom - ellipseHeight);
 
 			var scaledEWLeft = scaledLeftX - scaledLeft;
 			var scaledEWRight = scaledRight - scaledRightX;
@@ -488,16 +425,192 @@ class CanvasGraphics
 			context.moveTo(right, bottom - ellipseHeight);
 			context.quadraticCurveTo(right, bottom + cy2, right + cx1, bottom + cy1);
 			context.quadraticCurveTo(right + cx2, bottom, right - ellipseWidth, bottom);
-			context.lineTo(x + ellipseWidth, bottom);
-			context.quadraticCurveTo(x - cx2, bottom, x - cx1, bottom + cy1);
-			context.quadraticCurveTo(x, bottom + cy2, x, bottom - ellipseHeight);
-			context.lineTo(x, y + ellipseHeight);
-			context.quadraticCurveTo(x, y - cy2, x - cx1, y - cy1);
-			context.quadraticCurveTo(x - cx2, y, x + ellipseWidth, y);
-			context.lineTo(right - ellipseWidth, y);
-			context.quadraticCurveTo(right + cx2, y, right + cx1, y - cy1);
-			context.quadraticCurveTo(right, y - cy2, right, y + ellipseHeight);
+			context.lineTo(left + ellipseWidth, bottom);
+			context.quadraticCurveTo(left - cx2, bottom, left - cx1, bottom + cy1);
+			context.quadraticCurveTo(left, bottom + cy2, left, bottom - ellipseHeight);
+			context.lineTo(left, top + ellipseHeight);
+			context.quadraticCurveTo(left, top - cy2, left - cx1, top - cy1);
+			context.quadraticCurveTo(left - cx2, top, left + ellipseWidth, top);
+			context.lineTo(right - ellipseWidth, top);
+			context.quadraticCurveTo(right + cx2, top, right + cx1, top - cy1);
+			context.quadraticCurveTo(right, top - cy2, right, top + ellipseHeight);
 			context.lineTo(right, bottom - ellipseHeight);
+		}
+		#end
+	}
+
+	private static function drawTriangles(v:Vector<Float>, ind:Vector<Int>, uvt:Vector<Float>, culling:TriangleCulling, offsetX:Float, offsetY:Float,
+			stroke:Bool):Void
+	{
+		#if (js && html5)
+		seenEdgeMap.clear();
+
+		if (!stroke && uvt == null && fillBitmap != null)
+		{
+			uvt = tempUvtVector;
+			Graphics.__generateUV(v, fillBitmap.width, fillBitmap.height, fillPatternMatrix, uvt);
+		}
+
+		var i = 0;
+		var l = ind.length;
+		var vertLength = Std.int(v.length / 2);
+		var uvtStep = (uvt != null && uvt.length != v.length) ? 3 : 2;
+
+		var ia:Int, ib:Int, ic:Int;
+		var x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float;
+		var u1:Float, u2:Float, u3:Float, v1:Float, v2:Float, v3:Float;
+		var abKey:Int, bcKey:Int, caKey:Int;
+		var abShared:Bool = false;
+		var bcShared:Bool = false;
+		var caShared:Bool = false;
+
+		var x:Float;
+		var y:Float;
+		var minX = Math.POSITIVE_INFINITY;
+		var minY = Math.POSITIVE_INFINITY;
+		var maxX = Math.NEGATIVE_INFINITY;
+		var maxY = Math.NEGATIVE_INFINITY;
+
+		for (i in 0...vertLength)
+		{
+			x = v[i * 2];
+			y = v[i * 2 + 1];
+
+			if (minX > x) minX = x;
+			if (minY > y) minY = y;
+			if (maxX < x) maxX = x;
+			if (maxY < y) maxY = y;
+		}
+
+		if (!hitTesting)
+		{
+			context.beginPath();
+		}
+
+		while (i < l)
+		{
+			ia = i;
+			ib = i + 1;
+			ic = i + 2;
+
+			x1 = v[ind[ia] * 2];
+			y1 = v[ind[ia] * 2 + 1];
+			x2 = v[ind[ib] * 2];
+			y2 = v[ind[ib] * 2 + 1];
+			x3 = v[ind[ic] * 2];
+			y3 = v[ind[ic] * 2 + 1];
+
+			if (Scale9Grid.valid)
+			{
+				var scaledX1 = Scale9Grid.toPositionX(x1);
+				var scaledY1 = Scale9Grid.toPositionY(y1);
+				var scaledX2 = Scale9Grid.toPositionX(x2);
+				var scaledY2 = Scale9Grid.toPositionY(y2);
+				var scaledX3 = Scale9Grid.toPositionX(x3);
+				var scaledY3 = Scale9Grid.toPositionY(y3);
+
+				if (Scale9Grid.valid)
+				{
+					Scale9Grid.applyUnscaled(x1, y1);
+					Scale9Grid.applyUnscaled(x2, y2);
+					Scale9Grid.applyUnscaled(x3, y3);
+					Scale9Grid.applyScaled(scaledX1, scaledY1);
+					Scale9Grid.applyScaled(scaledX2, scaledY2);
+					Scale9Grid.applyScaled(scaledX3, scaledY3);
+				}
+
+				x1 = scaledX1 - offsetX;
+				y1 = scaledY1 - offsetY;
+				x2 = scaledX2 - offsetX;
+				y2 = scaledY2 - offsetY;
+				x3 = scaledX3 - offsetX;
+				y3 = scaledY3 - offsetY;
+			}
+			else
+			{
+				x1 -= offsetX;
+				y1 -= offsetY;
+				x2 -= offsetX;
+				y2 -= offsetY;
+				x3 -= offsetX;
+				y3 -= offsetY;
+			}
+
+			if (!stroke)
+			{
+				var ccw = isCCW(x1, y1, x2, y2, x3, y3);
+
+				if ((culling == POSITIVE && !ccw) || (culling == NEGATIVE && ccw))
+				{
+					i += 3;
+					continue;
+				}
+			}
+
+			abKey = edgeKey(ind[ia], ind[ib]);
+			bcKey = edgeKey(ind[ib], ind[ic]);
+			caKey = edgeKey(ind[ic], ind[ia]);
+
+			abShared = seenEdgeMap.exists(abKey);
+			bcShared = seenEdgeMap.exists(bcKey);
+			caShared = seenEdgeMap.exists(caKey);
+			seenEdgeMap.set(abKey, true);
+			seenEdgeMap.set(bcKey, true);
+			seenEdgeMap.set(caKey, true);
+
+			if (stroke)
+			{
+				if (!abShared)
+				{
+					context.moveTo(x1, y1);
+					context.lineTo(x2, y2);
+				}
+				if (!bcShared)
+				{
+					context.moveTo(x2, y2);
+					context.lineTo(x3, y3);
+				}
+				if (!caShared)
+				{
+					context.moveTo(x3, y3);
+					context.lineTo(x1, y1);
+				}
+
+				i += 3;
+				continue;
+			}
+
+			context.moveTo(x1, y1);
+			context.lineTo(x2, y2);
+			context.lineTo(x3, y3);
+			context.closePath();
+
+			if (!hitTesting)
+			{
+				if (fillBitmap != null && !stroke)
+				{
+					var oldFillPatternMatrix = fillPatternMatrix;
+					fillPatternMatrix = tempUVPatternMatrix;
+					u1 = uvt[ind[ia] * uvtStep];
+					v1 = uvt[ind[ia] * uvtStep + 1];
+					u2 = uvt[ind[ib] * uvtStep];
+					v2 = uvt[ind[ib] * uvtStep + 1];
+					u3 = uvt[ind[ic] * uvtStep];
+					v3 = uvt[ind[ic] * uvtStep + 1];
+					calculatePatternMatrixFromTri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3, (minX - offsetX) * 2, (minY - offsetY) * 2,
+						fillBitmap.width, fillBitmap.height, fillPatternMatrix);
+					applyFill();
+					fillPatternMatrix = oldFillPatternMatrix;
+				}
+
+				// if (abShared) fixTriangleGap(x1, y1, x2, y2);
+				// if (bcShared) fixTriangleGap(x2, y2, x3, y3);
+				// if (caShared) fixTriangleGap(x3, y3, x1, y1);
+
+				context.beginPath();
+			}
+
+			i += 3;
 		}
 		#end
 	}
@@ -530,217 +643,210 @@ class CanvasGraphics
 	public static function hitTest(graphics:Graphics, x:Float, y:Float):Bool
 	{
 		#if (js && html5)
-		bounds = graphics.__bounds;
+		var bounds = graphics.__bounds;
 		CanvasGraphics.graphics = graphics;
 
-		if (graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0)
+		if (graphics.__commands.length == 0 || bounds.isEmpty())
 		{
 			CanvasGraphics.graphics = null;
 			return false;
 		}
-		else
+
+		hitTesting = true;
+
+		var transform = graphics.__renderTransform;
+
+		x = transform.__transformX(x - bounds.x, y - bounds.y);
+		y = transform.__transformY(x - bounds.x, y - bounds.y);
+
+		#if (!openfl_legacy_scale9grid || canvas)
+		Scale9Grid.graphics = graphics;
+		#end
+
+		if (Scale9Grid.valid)
 		{
-			hitTesting = true;
+			x *= graphics.__owner.scaleX;
+			y *= graphics.__owner.scaleY;
+		}
 
-			var transform = graphics.__renderTransform;
+		var cacheCanvas = graphics.__canvas;
+		var cacheContext = graphics.__context;
+		graphics.__canvas = hitTestCanvas;
+		graphics.__context = hitTestContext;
 
-			var px = transform.__transformX(x - bounds.x, y - bounds.y);
-			var py = transform.__transformY(x - bounds.x, y - bounds.y);
+		context = graphics.__context;
+		context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 
-			x = px;
-			y = py;
+		reset();
 
-			#if (!openfl_legacy_scale9grid || canvas)
-			Scale9Grid.setTo(graphics);
-			#end
+		var hasPath = false;
 
-			if (Scale9Grid.valid)
+		windingRule = CanvasWindingRule.EVENODD;
+
+		var data = new DrawCommandReader(graphics.__commands);
+
+		inline function cleanUp()
+		{
+			data.destroy();
+			graphics.__canvas = cacheCanvas;
+			graphics.__context = cacheContext;
+			CanvasGraphics.graphics = null;
+		}
+
+		inline function endFillHitTest():Bool
+		{
+			endFill();
+
+			if (hasFill && hasPath && context.isPointInPath(x, y, windingRule))
 			{
-				x *= graphics.__owner.scaleX;
-				y *= graphics.__owner.scaleY;
+				cleanUp();
+				return true;
 			}
-
-			var cacheCanvas = graphics.__canvas;
-			var cacheContext = graphics.__context;
-			graphics.__canvas = hitTestCanvas;
-			graphics.__context = hitTestContext;
-
-			context = graphics.__context;
-			context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-
-			reset();
-
-			var hasPath = false;
-
-			windingRule = CanvasWindingRule.EVENODD;
-
-			var data = new DrawCommandReader(graphics.__commands);
-
-			inline function cleanUp()
-			{
-				data.destroy();
-				graphics.__canvas = cacheCanvas;
-				graphics.__context = cacheContext;
-				CanvasGraphics.graphics = null;
-			}
-
-			inline function endFillHitTest():Bool
-			{
-				endFill();
-
-				if (hasFill && hasPath && context.isPointInPath(x, y, windingRule))
-				{
-					cleanUp();
-					return true;
-				}
-				return false;
-			}
-
-			inline function endStrokeHitTest():Bool
-			{
-				endStroke();
-
-				if (hasStroke && hasPath && context.isPointInStroke(x, y))
-				{
-					cleanUp();
-					return true;
-				}
-				return false;
-			}
-
-			for (type in graphics.__commands.types)
-			{
-				switch (type)
-				{
-					case CUBIC_CURVE_TO:
-						var c = data.readCubicCurveTo();
-						hasPath = true;
-						fillCommands.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-						strokeCommands.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-
-					case CURVE_TO:
-						var c = data.readCurveTo();
-						hasPath = true;
-						fillCommands.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
-						strokeCommands.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
-
-					case LINE_TO:
-						var c = data.readLineTo();
-						hasPath = true;
-						fillCommands.lineTo(c.x, c.y);
-						strokeCommands.lineTo(c.x, c.y);
-
-					case MOVE_TO:
-						var c = data.readMoveTo();
-						fillCommands.moveTo(c.x, c.y);
-						strokeCommands.moveTo(c.x, c.y);
-
-					case LINE_STYLE:
-						if (endStrokeHitTest()) return true;
-
-						var c = data.readLineStyle();
-						strokeCommands.lineStyle(c.thickness, c.color, 1, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-
-						hasPath = false;
-						hasStroke = (c.thickness != null);
-
-					case LINE_GRADIENT_STYLE:
-						var c = data.readLineGradientStyle();
-						strokeCommands.lineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-							c.focalPointRatio);
-
-					case LINE_BITMAP_STYLE:
-						var c = data.readLineBitmapStyle();
-						strokeCommands.lineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
-
-					case END_FILL:
-						if (endFillHitTest()) return true;
-						if (endStrokeHitTest()) return true;
-
-						hasPath = false;
-						hasFill = false;
-
-					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
-						if (endFillHitTest()) return true;
-						if (endStrokeHitTest()) return true;
-
-						if (type == BEGIN_BITMAP_FILL)
-						{
-							var c = data.readBeginBitmapFill();
-							fillCommands.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
-							strokeCommands.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
-						}
-						else if (type == BEGIN_GRADIENT_FILL)
-						{
-							var c = data.readBeginGradientFill();
-							fillCommands.beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-								c.focalPointRatio);
-							strokeCommands.beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-								c.focalPointRatio);
-						}
-						else if (type == BEGIN_SHADER_FILL)
-						{
-							var c = data.readBeginShaderFill();
-							fillCommands.beginShaderFill(c.shaderBuffer);
-							strokeCommands.beginShaderFill(c.shaderBuffer);
-						}
-						else
-						{
-							var c = data.readBeginFill();
-							fillCommands.beginFill(c.color, 1);
-							strokeCommands.beginFill(c.color, 1);
-						}
-
-						hasPath = false;
-						hasFill = true;
-
-					case DRAW_CIRCLE:
-						var c = data.readDrawCircle();
-						hasPath = true;
-						fillCommands.drawCircle(c.x, c.y, c.radius);
-						strokeCommands.drawCircle(c.x, c.y, c.radius);
-
-					case DRAW_ELLIPSE:
-						var c = data.readDrawEllipse();
-						hasPath = true;
-						fillCommands.drawEllipse(c.x, c.y, c.width, c.height);
-						strokeCommands.drawEllipse(c.x, c.y, c.width, c.height);
-
-					case DRAW_TRIANGLES:
-						var c = data.readDrawTriangles();
-						hasPath = true;
-						fillCommands.drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
-						strokeCommands.drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
-
-					case DRAW_RECT:
-						var c = data.readDrawRect();
-						hasPath = true;
-						fillCommands.drawRect(c.x, c.y, c.width, c.height);
-						strokeCommands.drawRect(c.x, c.y, c.width, c.height);
-
-					case DRAW_ROUND_RECT:
-						var c = data.readDrawRoundRect();
-						hasPath = true;
-						fillCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-						strokeCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-
-					case WINDING_EVEN_ODD:
-						windingRule = CanvasWindingRule.EVENODD;
-
-					case WINDING_NON_ZERO:
-						windingRule = CanvasWindingRule.NONZERO;
-
-					default:
-						data.skip(type);
-				}
-			}
-
-			if (endFillHitTest()) return true;
-			if (endStrokeHitTest()) return true;
-
-			cleanUp();
 			return false;
 		}
+
+		inline function endStrokeHitTest():Bool
+		{
+			endStroke();
+
+			if (hasStroke && hasPath && context.isPointInStroke(x, y))
+			{
+				cleanUp();
+				return true;
+			}
+			return false;
+		}
+
+		for (type in graphics.__commands.types)
+		{
+			switch (type)
+			{
+				case CUBIC_CURVE_TO:
+					var c = data.readCubicCurveTo();
+					hasPath = true;
+					fillCommands.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+					strokeCommands.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+
+				case CURVE_TO:
+					var c = data.readCurveTo();
+					hasPath = true;
+					fillCommands.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
+					strokeCommands.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
+
+				case LINE_TO:
+					var c = data.readLineTo();
+					hasPath = true;
+					fillCommands.lineTo(c.x, c.y);
+					strokeCommands.lineTo(c.x, c.y);
+
+				case MOVE_TO:
+					var c = data.readMoveTo();
+					fillCommands.moveTo(c.x, c.y);
+					strokeCommands.moveTo(c.x, c.y);
+
+				case LINE_STYLE:
+					if (endStrokeHitTest()) return true;
+
+					var c = data.readLineStyle();
+					strokeCommands.lineStyle(c.thickness, c.color, 1, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+
+					hasPath = false;
+					hasStroke = (c.thickness != null);
+
+				case LINE_GRADIENT_STYLE:
+					var c = data.readLineGradientStyle();
+					strokeCommands.lineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+
+				case LINE_BITMAP_STYLE:
+					var c = data.readLineBitmapStyle();
+					strokeCommands.lineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
+
+				case END_FILL:
+					if (endFillHitTest()) return true;
+					if (endStrokeHitTest()) return true;
+
+					hasPath = false;
+					hasFill = false;
+
+				case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
+					if (endFillHitTest()) return true;
+					if (endStrokeHitTest()) return true;
+
+					if (type == BEGIN_BITMAP_FILL)
+					{
+						var c = data.readBeginBitmapFill();
+						fillCommands.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
+						strokeCommands.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
+					}
+					else if (type == BEGIN_GRADIENT_FILL)
+					{
+						var c = data.readBeginGradientFill();
+						fillCommands.beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+							c.focalPointRatio);
+						strokeCommands.beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+							c.focalPointRatio);
+					}
+					else if (type == BEGIN_SHADER_FILL)
+					{
+						var c = data.readBeginShaderFill();
+						fillCommands.beginShaderFill(c.shaderBuffer);
+						strokeCommands.beginShaderFill(c.shaderBuffer);
+					}
+					else
+					{
+						var c = data.readBeginFill();
+						fillCommands.beginFill(c.color, 1);
+						strokeCommands.beginFill(c.color, 1);
+					}
+
+					hasPath = false;
+					hasFill = true;
+
+				case DRAW_CIRCLE:
+					var c = data.readDrawCircle();
+					hasPath = true;
+					fillCommands.drawCircle(c.x, c.y, c.radius);
+					strokeCommands.drawCircle(c.x, c.y, c.radius);
+
+				case DRAW_ELLIPSE:
+					var c = data.readDrawEllipse();
+					hasPath = true;
+					fillCommands.drawEllipse(c.x, c.y, c.width, c.height);
+					strokeCommands.drawEllipse(c.x, c.y, c.width, c.height);
+
+				case DRAW_TRIANGLES:
+					var c = data.readDrawTriangles();
+					hasPath = true;
+					fillCommands.drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
+					strokeCommands.drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
+
+				case DRAW_RECT:
+					var c = data.readDrawRect();
+					hasPath = true;
+					fillCommands.drawRect(c.x, c.y, c.width, c.height);
+					strokeCommands.drawRect(c.x, c.y, c.width, c.height);
+
+				case DRAW_ROUND_RECT:
+					var c = data.readDrawRoundRect();
+					hasPath = true;
+					fillCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+					strokeCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+
+				case WINDING_EVEN_ODD:
+					windingRule = CanvasWindingRule.EVENODD;
+
+				case WINDING_NON_ZERO:
+					windingRule = CanvasWindingRule.NONZERO;
+
+				default:
+					data.skip(type);
+			}
+		}
+
+		if (endFillHitTest()) return true;
+		if (endStrokeHitTest()) return true;
+
+		cleanUp();
 		#end
 
 		return false;
@@ -760,6 +866,10 @@ class CanvasGraphics
 		{
 			scale9Bounds.calculateBitmapMatrix(bitmap.width, bitmap.height, bitmapMatrix, matrix);
 		}
+		else
+		{
+			matrix.copyFrom(bitmapMatrix);
+		}
 		pattern.setTransform(cast toDOMMatrix(matrix));
 		Matrix.__pool.release(matrix);
 		#end
@@ -768,7 +878,7 @@ class CanvasGraphics
 	private static function playCommands(commands:DrawCommandBuffer, stroke:Bool = false):Void
 	{
 		#if (js && html5)
-		bounds = graphics.__bounds;
+		var bounds = graphics.__bounds;
 
 		var offsetX = bounds.x;
 		var offsetY = bounds.y;
@@ -807,7 +917,7 @@ class CanvasGraphics
 		var sb:Float;
 		var sl:Float;
 
-		context.moveTo(0, 0);
+		context.moveTo(-offsetX, -offsetY);
 
 		for (type in commands.types)
 		{
@@ -826,10 +936,8 @@ class CanvasGraphics
 						var scaledAnchorX = Scale9Grid.toPositionX(c.anchorX);
 						var scaledAnchorY = Scale9Grid.toPositionY(c.anchorY);
 
-						Scale9Grid.applyUnscaledX(c.anchorX);
-						Scale9Grid.applyUnscaledY(c.anchorY);
-						Scale9Grid.applyScaledX(scaledAnchorX);
-						Scale9Grid.applyScaledY(scaledAnchorY);
+						Scale9Grid.applyUnscaled(c.anchorX, c.anchorY);
+						Scale9Grid.applyScaled(scaledAnchorX, scaledAnchorY);
 
 						context.bezierCurveTo(scaledControlX1
 							- offsetX, scaledControlY1
@@ -869,10 +977,8 @@ class CanvasGraphics
 						var scaledAnchorX = Scale9Grid.toPositionX(c.anchorX);
 						var scaledAnchorY = Scale9Grid.toPositionY(c.anchorY);
 
-						Scale9Grid.applyUnscaledX(c.anchorX);
-						Scale9Grid.applyUnscaledY(c.anchorY);
-						Scale9Grid.applyScaledX(scaledAnchorX);
-						Scale9Grid.applyScaledY(scaledAnchorY);
+						Scale9Grid.applyUnscaled(c.anchorX, c.anchorY);
+						Scale9Grid.applyScaled(scaledAnchorX, scaledAnchorY);
 
 						context.quadraticCurveTo(scaledControlX - offsetX, scaledControlY - offsetY, scaledAnchorX - offsetX, scaledAnchorY - offsetY);
 
@@ -898,14 +1004,10 @@ class CanvasGraphics
 						var scaledRight = Scale9Grid.toPositionX(c.x + c.radius);
 						var scaledBottom = Scale9Grid.toPositionY(c.y + c.radius);
 
-						Scale9Grid.applyUnscaledX(c.x - c.radius);
-						Scale9Grid.applyUnscaledY(c.y - c.radius);
-						Scale9Grid.applyUnscaledX(c.x + c.radius);
-						Scale9Grid.applyUnscaledY(c.y + c.radius);
-						Scale9Grid.applyScaledX(scaledLeft);
-						Scale9Grid.applyScaledY(scaledTop);
-						Scale9Grid.applyScaledX(scaledRight);
-						Scale9Grid.applyScaledY(scaledBottom);
+						Scale9Grid.applyUnscaled(c.x - c.radius, c.y - c.radius);
+						Scale9Grid.applyUnscaled(c.x + c.radius, c.y + c.radius);
+						Scale9Grid.applyScaled(scaledLeft, scaledTop);
+						Scale9Grid.applyScaled(scaledRight, scaledBottom);
 
 						x = scaledLeft - offsetX;
 						y = scaledTop - offsetY;
@@ -950,14 +1052,10 @@ class CanvasGraphics
 
 						if (Scale9Grid.valid)
 						{
-							Scale9Grid.applyUnscaledX(c.x);
-							Scale9Grid.applyUnscaledY(c.y);
-							Scale9Grid.applyUnscaledX(c.x + c.width);
-							Scale9Grid.applyUnscaledY(c.y + c.height);
-							Scale9Grid.applyScaledX(scaledLeft);
-							Scale9Grid.applyScaledY(scaledTop);
-							Scale9Grid.applyScaledX(scaledRight);
-							Scale9Grid.applyScaledY(scaledBottom);
+							Scale9Grid.applyUnscaled(c.x, c.y);
+							Scale9Grid.applyUnscaled(c.x + c.width, c.y + c.height);
+							Scale9Grid.applyScaled(scaledLeft, scaledTop);
+							Scale9Grid.applyScaled(scaledRight, scaledBottom);
 						}
 
 						x = scaledLeft;
@@ -1010,10 +1108,8 @@ class CanvasGraphics
 
 						if (Scale9Grid.valid)
 						{
-							Scale9Grid.applyUnscaledX(c.x);
-							Scale9Grid.applyUnscaledY(c.y);
-							Scale9Grid.applyScaledX(scaledX);
-							Scale9Grid.applyScaledY(scaledY);
+							Scale9Grid.applyUnscaled(c.x, c.y);
+							Scale9Grid.applyScaled(scaledX, scaledY);
 						}
 
 						if (positionX != scaledX || positionY != scaledY)
@@ -1040,6 +1136,8 @@ class CanvasGraphics
 				case MOVE_TO:
 					var c = data.readMoveTo();
 
+					closePath(true);
+
 					if (Scale9Grid.valid)
 					{
 						var scaledX = Scale9Grid.toPositionX(c.x);
@@ -1047,10 +1145,8 @@ class CanvasGraphics
 
 						if (Scale9Grid.valid)
 						{
-							Scale9Grid.applyUnscaledX(c.x);
-							Scale9Grid.applyUnscaledY(c.y);
-							Scale9Grid.applyScaledX(scaledX);
-							Scale9Grid.applyScaledY(scaledY);
+							Scale9Grid.applyUnscaled(c.x, c.y);
+							Scale9Grid.applyScaled(scaledX, scaledY);
 						}
 
 						context.moveTo(scaledX - offsetX, scaledY - offsetY);
@@ -1071,10 +1167,8 @@ class CanvasGraphics
 
 				case LINE_STYLE:
 					var c = data.readLineStyle();
-					if (stroke && hasStroke)
-					{
-						closePathAndApplyStroke(true);
-					}
+
+					closePath(true);
 
 					context.moveTo(positionX - offsetX, positionY - offsetY);
 
@@ -1115,20 +1209,16 @@ class CanvasGraphics
 
 					strokePattern = null;
 					strokeBitmap = null;
-					strokePatternMatrix = null;
 					strokeGradient = null;
-					strokeGradientMatrix = null;
 
 				case LINE_GRADIENT_STYLE:
 					var c = data.readLineGradientStyle();
-					if (stroke && hasStroke)
-					{
-						closePathAndApplyStroke(true);
-					}
+
+					closePath(true);
 
 					context.moveTo(positionX - offsetX, positionY - offsetY);
-					strokeGradient = createGradient(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio,
-						true);
+					strokeGradient = createCanvasGradient(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+						c.focalPointRatio, true);
 					context.strokeStyle = strokePattern;
 
 					setSmoothing(true);
@@ -1136,14 +1226,11 @@ class CanvasGraphics
 
 					strokeBitmap = null;
 					strokePattern = null;
-					strokePatternMatrix = null;
 
 				case LINE_BITMAP_STYLE:
 					var c = data.readLineBitmapStyle();
-					if (stroke && hasStroke)
-					{
-						closePathAndApplyStroke(true);
-					}
+
+					closePath(true);
 
 					context.moveTo(positionX - offsetX, positionY - offsetY);
 					if (c.bitmap.readable)
@@ -1151,7 +1238,7 @@ class CanvasGraphics
 						strokePattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						context.strokeStyle = strokePattern;
 						strokeBitmap = c.bitmap;
-						strokePatternMatrix = c.matrix;
+						strokePatternMatrix.copyFrom(c.matrix ?? Matrix.__identity);
 					}
 					else
 					{
@@ -1161,13 +1248,11 @@ class CanvasGraphics
 						context.strokeStyle = "#" + StringTools.hex(0, 6);
 						strokePattern = null;
 						strokeBitmap = null;
-						strokePatternMatrix = null;
 					}
 
 					if (Scale9Grid.valid) Scale9Grid.strokeBounds.clear();
 
 					strokeGradient = null;
-					strokeGradientMatrix = null;
 					hasStroke = true;
 
 				case BEGIN_BITMAP_FILL:
@@ -1177,6 +1262,7 @@ class CanvasGraphics
 						fillPattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						context.fillStyle = fillPattern;
 						fillBitmap = c.bitmap;
+						fillPatternMatrix.copyFrom(c.matrix ?? Matrix.__identity);
 					}
 					else
 					{
@@ -1191,7 +1277,6 @@ class CanvasGraphics
 					bitmapRepeat = c.repeat;
 
 					hasFill = true;
-					fillPatternMatrix = c.matrix;
 
 					if (Scale9Grid.valid)
 					{
@@ -1234,8 +1319,8 @@ class CanvasGraphics
 
 				case BEGIN_GRADIENT_FILL:
 					var c = data.readBeginGradientFill();
-					fillGradient = context.fillStyle = createGradient(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-						c.focalPointRatio, false);
+					fillGradient = context.fillStyle = createCanvasGradient(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod,
+						c.interpolationMethod, c.focalPointRatio, false);
 
 					hasFill = true;
 					fillBitmap = null;
@@ -1307,7 +1392,7 @@ class CanvasGraphics
 
 					var transform = graphics.__renderTransform;
 					// var roundPixels = renderer.__roundPixels;
-					var alpha = CanvasGraphics.worldAlpha;
+					var alpha = worldAlpha;
 
 					var ri:Int;
 					var ti:Int;
@@ -1380,204 +1465,9 @@ class CanvasGraphics
 					context.restore();
 
 				case DRAW_TRIANGLES:
-					if (stroke && !hasStroke || !stroke && !hasFill)
-					{
-						continue;
-					}
-
 					var c = data.readDrawTriangles();
-					var v = c.vertices;
-					var ind = c.indices;
-					var uvt = c.uvtData;
 					hasPath = true;
-
-					seenEdgeMap.clear();
-
-					if (uvt != null && uvt.length != v.length)
-					{
-						uvt = Graphics.__normalizeUVT(uvt, tempUvtVector);
-					}
-					else if (!stroke && uvt == null && fillBitmap != null)
-					{
-						uvt = Graphics.__generateUVT(v, fillBitmap.width, fillBitmap.height, fillPatternMatrix, tempUvtVector);
-					}
-
-					var i = 0;
-					var l = ind.length;
-					var vertLength = Std.int(v.length / 2);
-
-					var a_:Int, b_:Int, c_:Int;
-					var iax:Int, iay:Int, ibx:Int, iby:Int, icx:Int, icy:Int;
-					var x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float;
-					var u1:Float, u2:Float, u3:Float, v1:Float, v2:Float, v3:Float;
-					var abKey:Int, bcKey:Int, caKey:Int;
-					var abShared:Bool = false,
-						bcShared:Bool = false,
-						caShared:Bool = false;
-
-					var x:Float;
-					var y:Float;
-					var minX = Math.POSITIVE_INFINITY;
-					var minY = Math.POSITIVE_INFINITY;
-					var maxX = Math.NEGATIVE_INFINITY;
-					var maxY = Math.NEGATIVE_INFINITY;
-
-					for (i in 0...vertLength)
-					{
-						x = v[i * 2];
-						y = v[i * 2 + 1];
-
-						if (minX > x) minX = x;
-						if (minY > y) minY = y;
-						if (maxX < x) maxX = x;
-						if (maxY < y) maxY = y;
-					}
-
-					while (i < l)
-					{
-						a_ = i;
-						b_ = i + 1;
-						c_ = i + 2;
-
-						iax = ind[a_] * 2;
-						iay = ind[a_] * 2 + 1;
-						ibx = ind[b_] * 2;
-						iby = ind[b_] * 2 + 1;
-						icx = ind[c_] * 2;
-						icy = ind[c_] * 2 + 1;
-
-						if (Scale9Grid.valid)
-						{
-							var scaledX1 = Scale9Grid.toPositionX(v[iax]);
-							var scaledY1 = Scale9Grid.toPositionY(v[iay]);
-							var scaledX2 = Scale9Grid.toPositionX(v[ibx]);
-							var scaledY2 = Scale9Grid.toPositionY(v[iby]);
-							var scaledX3 = Scale9Grid.toPositionX(v[icx]);
-							var scaledY3 = Scale9Grid.toPositionY(v[icy]);
-
-							if (Scale9Grid.valid)
-							{
-								Scale9Grid.applyUnscaledX(v[iax]);
-								Scale9Grid.applyUnscaledY(v[iay]);
-								Scale9Grid.applyUnscaledX(v[ibx]);
-								Scale9Grid.applyUnscaledY(v[iby]);
-								Scale9Grid.applyUnscaledX(v[icx]);
-								Scale9Grid.applyUnscaledY(v[icy]);
-								Scale9Grid.applyScaledX(scaledX1);
-								Scale9Grid.applyScaledY(scaledY1);
-								Scale9Grid.applyScaledX(scaledX2);
-								Scale9Grid.applyScaledY(scaledY2);
-								Scale9Grid.applyScaledX(scaledX3);
-								Scale9Grid.applyScaledY(scaledY3);
-							}
-
-							x1 = scaledX1 - offsetX;
-							y1 = scaledY1 - offsetY;
-							x2 = scaledX2 - offsetX;
-							y2 = scaledY2 - offsetY;
-							x3 = scaledX3 - offsetX;
-							y3 = scaledY3 - offsetY;
-						}
-						else
-						{
-							x1 = v[iax] - offsetX;
-							y1 = v[iay] - offsetY;
-							x2 = v[ibx] - offsetX;
-							y2 = v[iby] - offsetY;
-							x3 = v[icx] - offsetX;
-							y3 = v[icy] - offsetY;
-						}
-
-						if (!stroke)
-						{
-							switch (c.culling)
-							{
-								case POSITIVE:
-									if (!isCCW(x1, y1, x2, y2, x3, y3))
-									{
-										i += 3;
-										continue;
-									}
-
-								case NEGATIVE:
-									if (isCCW(x1, y1, x2, y2, x3, y3))
-									{
-										i += 3;
-										continue;
-									}
-
-								default:
-							}
-						}
-
-						abKey = Graphics.__edgeKey(ind[a_], ind[b_]);
-						bcKey = Graphics.__edgeKey(ind[b_], ind[c_]);
-						caKey = Graphics.__edgeKey(ind[c_], ind[a_]);
-
-						abShared = seenEdgeMap.exists(abKey);
-						bcShared = seenEdgeMap.exists(bcKey);
-						caShared = seenEdgeMap.exists(caKey);
-						seenEdgeMap.set(abKey, true);
-						seenEdgeMap.set(bcKey, true);
-						seenEdgeMap.set(caKey, true);
-
-						if (stroke)
-						{
-							if (!abShared)
-							{
-								context.moveTo(x1, y1);
-								context.lineTo(x2, y2);
-							}
-							if (!bcShared)
-							{
-								context.moveTo(x2, y2);
-								context.lineTo(x3, y3);
-							}
-							if (!caShared)
-							{
-								context.moveTo(x3, y3);
-								context.lineTo(x1, y1);
-							}
-
-							i += 3;
-							continue;
-						}
-
-						u1 = uvt[iax];
-						u2 = uvt[ibx];
-						u3 = uvt[icx];
-						v1 = uvt[iay];
-						v2 = uvt[iby];
-						v3 = uvt[icy];
-
-						if (!hitTesting)
-						{
-							context.beginPath();
-						}
-
-						context.moveTo(x1, y1);
-						context.lineTo(x2, y2);
-						context.lineTo(x3, y3);
-						context.closePath();
-
-						if (!hitTesting)
-						{
-							if (fillBitmap != null && !stroke)
-							{
-								var oldFillPatternMatrix = fillPatternMatrix;
-								fillPatternMatrix = Graphics.__calculatePatternMatrixFromTri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3,
-									(minX - offsetX) * 2, (minY - offsetY) * 2, fillBitmap.width, fillBitmap.height, tempUVPatternMatrix);
-								applyFill();
-								fillPatternMatrix = oldFillPatternMatrix;
-							}
-
-							// if (abShared) fixTriangleGap(x1, y1, x2, y2);
-							// if (bcShared) fixTriangleGap(x2, y2, x3, y3);
-							// if (caShared) fixTriangleGap(x3, y3, x1, y1);
-						}
-
-						i += 3;
-					}
+					drawTriangles(c.vertices, c.indices, c.uvtData, c.culling, offsetX, offsetY, stroke);
 
 				case DRAW_RECT:
 					var c = data.readDrawRect();
@@ -1592,29 +1482,19 @@ class CanvasGraphics
 
 						canOptimizeMatrix = true;
 
-						if (fillPatternMatrix != null)
+						if (fillPatternMatrix.b != 0 || fillPatternMatrix.c != 0)
 						{
-							if (fillPatternMatrix.b != 0 || fillPatternMatrix.c != 0)
-							{
-								canOptimizeMatrix = false;
-							}
-							else
-							{
-								sl = fillPatternMatrix.__transformInverseX(c.x, c.y);
-								st = fillPatternMatrix.__transformInverseY(c.x, c.y);
-								sr = fillPatternMatrix.__transformInverseX(c.x + c.width, c.y + c.height);
-								sb = fillPatternMatrix.__transformInverseY(c.x + c.width, c.y + c.height);
-							}
+							canOptimizeMatrix = false;
 						}
 						else
 						{
-							st = c.y;
-							sl = c.x;
-							sb = c.y + c.height;
-							sr = c.x + c.width;
+							sl = fillPatternMatrix.__transformInverseX(c.x, c.y);
+							st = fillPatternMatrix.__transformInverseY(c.x, c.y);
+							sr = fillPatternMatrix.__transformInverseX(c.x + c.width, c.y + c.height);
+							sb = fillPatternMatrix.__transformInverseY(c.x + c.width, c.y + c.height);
 						}
 
-						if (!hitTesting && canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= fillBitmap.width && sb <= fillBitmap.height)
+						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= fillBitmap.width && sb <= fillBitmap.height)
 						{
 							optimizationUsed = true;
 							context.drawImage(fillBitmap.image.src, sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width, c.height);
@@ -1632,14 +1512,10 @@ class CanvasGraphics
 
 							if (Scale9Grid.valid)
 							{
-								Scale9Grid.applyUnscaledX(c.x);
-								Scale9Grid.applyUnscaledY(c.y);
-								Scale9Grid.applyUnscaledX(c.x + c.width);
-								Scale9Grid.applyUnscaledY(c.y + c.height);
-								Scale9Grid.applyScaledX(scaledLeft);
-								Scale9Grid.applyScaledY(scaledTop);
-								Scale9Grid.applyScaledX(scaledRight);
-								Scale9Grid.applyScaledY(scaledBottom);
+								Scale9Grid.applyUnscaled(c.x, c.y);
+								Scale9Grid.applyUnscaled(c.x + c.width, c.y + c.height);
+								Scale9Grid.applyScaled(scaledLeft, scaledTop);
+								Scale9Grid.applyScaled(scaledRight, scaledBottom);
 							}
 
 							var scaledWidth = scaledRight - scaledLeft;
@@ -1680,19 +1556,20 @@ class CanvasGraphics
 				positionX = startX;
 				positionY = startY;
 			}
+
 			if (!hitTesting)
 			{
 				if (!stroke && hasFill)
 				{
-					context.translate(-bounds.x, -bounds.y);
+					context.translate(-offsetX, -offsetY);
 
 					applyFill();
 
-					context.translate(bounds.x, bounds.y);
+					context.translate(offsetX, offsetY);
 				}
 				if (stroke && hasStroke)
 				{
-					closePathAndApplyStroke(true);
+					closePath(!hasFill && (startX != positionX || startY != positionY));
 				}
 			}
 		}
@@ -1702,6 +1579,10 @@ class CanvasGraphics
 	public static function render(graphics:Graphics, renderer:CanvasRenderer):Void
 	{
 		#if (js && html5)
+		CanvasGraphics.graphics = graphics;
+		allowSmoothing = renderer.__allowSmoothing;
+		worldAlpha = renderer.__getAlpha(graphics.__owner.__worldAlpha);
+
 		#if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
 		var pixelRatio = 1;
 		#else
@@ -1709,7 +1590,7 @@ class CanvasGraphics
 		#end
 
 		#if (!openfl_legacy_scale9grid || canvas)
-		Scale9Grid.setTo(graphics);
+		Scale9Grid.graphics = graphics;
 		#end
 
 		if (Scale9Grid.valid)
@@ -1725,327 +1606,330 @@ class CanvasGraphics
 
 		graphics.__update(renderer.__worldTransform, pixelRatio);
 
-		if (graphics.__softwareDirty)
+		if (!graphics.__softwareDirty)
+		{
+			CanvasGraphics.graphics = null;
+			return;
+		}
+
+		var bounds = graphics.__bounds;
+
+		var width = graphics.__width;
+		var height = graphics.__height;
+
+		if (!graphics.__visible || graphics.__commands.length == 0 || bounds.isEmpty() || width < 1 || height < 1)
+		{
+			graphics.__canvas = null;
+			graphics.__context = null;
+			graphics.__bitmap = null;
+		}
+		else
 		{
 			hitTesting = false;
 
-			CanvasGraphics.graphics = graphics;
-			CanvasGraphics.allowSmoothing = renderer.__allowSmoothing;
-			CanvasGraphics.worldAlpha = renderer.__getAlpha(graphics.__owner.__worldAlpha);
-			bounds = graphics.__bounds;
-
-			var width = graphics.__width;
-			var height = graphics.__height;
-
-			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1)
+			if (graphics.__canvas == null)
 			{
-				graphics.__canvas = null;
-				graphics.__context = null;
-				graphics.__bitmap = null;
+				graphics.__canvas = cast Browser.document.createElement("canvas");
+				graphics.__context = graphics.__canvas.getContext("2d");
+			}
+
+			context = graphics.__context;
+			var transform = graphics.__renderTransform;
+			var canvas = graphics.__canvas;
+
+			var scale = renderer.__pixelRatio;
+			var scaledWidth = Std.int(width * scale);
+			var scaledHeight = Std.int(height * scale);
+
+			renderer.__setBlendModeContext(context, NORMAL);
+
+			if (renderer.__isDOM)
+			{
+				if (canvas.width == scaledWidth && canvas.height == scaledHeight)
+				{
+					context.clearRect(0, 0, scaledWidth, scaledHeight);
+				}
+				else
+				{
+					canvas.width = scaledWidth;
+					canvas.height = scaledHeight;
+					canvas.style.width = width + "px";
+					canvas.style.height = height + "px";
+				}
+
+				context.setTransform(transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale,
+					transform.ty * scale);
 			}
 			else
 			{
-				if (graphics.__canvas == null)
+				if (canvas.width == scaledWidth && canvas.height == scaledHeight)
 				{
-					graphics.__canvas = cast Browser.document.createElement("canvas");
-					graphics.__context = graphics.__canvas.getContext("2d");
-				}
-
-				context = graphics.__context;
-				var transform = graphics.__renderTransform;
-				var canvas = graphics.__canvas;
-
-				var scale = renderer.__pixelRatio;
-				var scaledWidth = Std.int(width * scale);
-				var scaledHeight = Std.int(height * scale);
-
-				renderer.__setBlendModeContext(context, NORMAL);
-
-				if (renderer.__isDOM)
-				{
-					if (canvas.width == scaledWidth && canvas.height == scaledHeight)
-					{
-						context.clearRect(0, 0, scaledWidth, scaledHeight);
-					}
-					else
-					{
-						canvas.width = scaledWidth;
-						canvas.height = scaledHeight;
-						canvas.style.width = width + "px";
-						canvas.style.height = height + "px";
-					}
-
-					context.setTransform(transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale,
-						transform.ty * scale);
+					context.closePath();
+					context.setTransform(1, 0, 0, 1, 0, 0);
+					context.clearRect(0, 0, scaledWidth, scaledHeight);
 				}
 				else
 				{
-					if (canvas.width == scaledWidth && canvas.height == scaledHeight)
-					{
-						context.closePath();
-						context.setTransform(1, 0, 0, 1, 0, 0);
-						context.clearRect(0, 0, scaledWidth, scaledHeight);
-					}
-					else
-					{
-						canvas.width = width;
-						canvas.height = height;
-					}
-
-					context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+					canvas.width = width;
+					canvas.height = height;
 				}
 
-				reset();
+				context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+			}
 
-				var hasLineStyle = false;
-				var initStrokeX = 0.0;
-				var initStrokeY = 0.0;
+			reset();
 
-				windingRule = CanvasWindingRule.EVENODD;
+			var hasLineStyle = false;
+			var initStrokeX = 0.0;
+			var initStrokeY = 0.0;
 
-				var data = new DrawCommandReader(graphics.__commands);
+			windingRule = CanvasWindingRule.EVENODD;
 
-				for (type in graphics.__commands.types)
+			var data = new DrawCommandReader(graphics.__commands);
+
+			for (type in graphics.__commands.types)
+			{
+				switch (type)
 				{
-					switch (type)
-					{
-						case CUBIC_CURVE_TO:
-							var c = data.readCubicCurveTo();
-							fillCommands.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+					case CUBIC_CURVE_TO:
+						var c = data.readCubicCurveTo();
+						fillCommands.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
 
-							if (hasLineStyle)
-							{
-								strokeCommands.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-							}
-							else
-							{
-								initStrokeX = c.anchorX;
-								initStrokeY = c.anchorY;
-							}
+						if (hasLineStyle)
+						{
+							strokeCommands.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+						}
+						else
+						{
+							initStrokeX = c.anchorX;
+							initStrokeY = c.anchorY;
+						}
 
-						case CURVE_TO:
-							var c = data.readCurveTo();
-							fillCommands.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
+					case CURVE_TO:
+						var c = data.readCurveTo();
+						fillCommands.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
 
-							if (hasLineStyle)
-							{
-								strokeCommands.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
-							}
-							else
-							{
-								initStrokeX = c.anchorX;
-								initStrokeY = c.anchorY;
-							}
+						if (hasLineStyle)
+						{
+							strokeCommands.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
+						}
+						else
+						{
+							initStrokeX = c.anchorX;
+							initStrokeY = c.anchorY;
+						}
 
-						case LINE_TO:
-							var c = data.readLineTo();
-							fillCommands.lineTo(c.x, c.y);
+					case LINE_TO:
+						var c = data.readLineTo();
+						fillCommands.lineTo(c.x, c.y);
 
-							if (hasLineStyle)
-							{
-								strokeCommands.lineTo(c.x, c.y);
-							}
-							else
-							{
-								initStrokeX = c.x;
-								initStrokeY = c.y;
-							}
+						if (hasLineStyle)
+						{
+							strokeCommands.lineTo(c.x, c.y);
+						}
+						else
+						{
+							initStrokeX = c.x;
+							initStrokeY = c.y;
+						}
 
-						case MOVE_TO:
-							var c = data.readMoveTo();
-							fillCommands.moveTo(c.x, c.y);
+					case MOVE_TO:
+						var c = data.readMoveTo();
+						endFill();
+						endStroke();
+						fillCommands.moveTo(c.x, c.y);
 
-							if (hasLineStyle)
-							{
-								strokeCommands.moveTo(c.x, c.y);
-							}
-							else
-							{
-								initStrokeX = c.x;
-								initStrokeY = c.y;
-							}
+						if (hasLineStyle)
+						{
+							strokeCommands.moveTo(c.x, c.y);
+						}
+						else
+						{
+							initStrokeX = c.x;
+							initStrokeY = c.y;
+						}
 
-						case END_FILL:
-							data.readEndFill();
-							endFill();
-							endStroke();
-							hasFill = false;
-							fillBitmap = null;
+					case END_FILL:
+						data.readEndFill();
+						endFill();
+						endStroke();
+						hasFill = false;
+						fillBitmap = null;
+						initStrokeX = 0;
+						initStrokeY = 0;
+
+					case LINE_GRADIENT_STYLE:
+						var c = data.readLineGradientStyle();
+
+						if (!hasLineStyle && (initStrokeX != 0 || initStrokeY != 0))
+						{
+							strokeCommands.moveTo(initStrokeX, initStrokeY);
 							initStrokeX = 0;
 							initStrokeY = 0;
+						}
 
-						case LINE_GRADIENT_STYLE:
-							var c = data.readLineGradientStyle();
+						hasLineStyle = true;
+						strokeCommands.lineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+							c.focalPointRatio);
 
-							if (!hasLineStyle && (initStrokeX != 0 || initStrokeY != 0))
+					case LINE_BITMAP_STYLE:
+						var c = data.readLineBitmapStyle();
+
+						if (!hasLineStyle && (initStrokeX != 0 || initStrokeY != 0))
+						{
+							strokeCommands.moveTo(initStrokeX, initStrokeY);
+							initStrokeX = 0;
+							initStrokeY = 0;
+						}
+
+						hasLineStyle = true;
+						strokeCommands.lineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
+
+					case LINE_STYLE:
+						var c = data.readLineStyle();
+						endStroke();
+
+						if (!hasLineStyle && c.thickness != null)
+						{
+							if (initStrokeX != 0 || initStrokeY != 0)
 							{
 								strokeCommands.moveTo(initStrokeX, initStrokeY);
 								initStrokeX = 0;
 								initStrokeY = 0;
 							}
+						}
 
-							hasLineStyle = true;
-							strokeCommands.lineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+						hasLineStyle = c.thickness != null;
+						strokeCommands.lineStyle(c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+
+					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
+						endFill();
+						endStroke();
+
+						if (type == BEGIN_BITMAP_FILL)
+						{
+							var c = data.readBeginBitmapFill();
+							fillCommands.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
+							strokeCommands.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
+						}
+						else if (type == BEGIN_GRADIENT_FILL)
+						{
+							var c = data.readBeginGradientFill();
+							fillCommands.beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
 								c.focalPointRatio);
+							strokeCommands.beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+								c.focalPointRatio);
+						}
+						else if (type == BEGIN_SHADER_FILL)
+						{
+							var c = data.readBeginShaderFill();
+							fillCommands.beginShaderFill(c.shaderBuffer);
+							strokeCommands.beginShaderFill(c.shaderBuffer);
+						}
+						else
+						{
+							var c = data.readBeginFill();
+							fillCommands.beginFill(c.color, c.alpha);
+							strokeCommands.beginFill(c.color, c.alpha);
+						}
 
-						case LINE_BITMAP_STYLE:
-							var c = data.readLineBitmapStyle();
+					case DRAW_CIRCLE:
+						var c = data.readDrawCircle();
+						fillCommands.drawCircle(c.x, c.y, c.radius);
 
-							if (!hasLineStyle && (initStrokeX != 0 || initStrokeY != 0))
-							{
-								strokeCommands.moveTo(initStrokeX, initStrokeY);
-								initStrokeX = 0;
-								initStrokeY = 0;
-							}
+						if (hasLineStyle)
+						{
+							strokeCommands.drawCircle(c.x, c.y, c.radius);
+						}
 
-							hasLineStyle = true;
-							strokeCommands.lineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
+					case DRAW_ELLIPSE:
+						var c = data.readDrawEllipse();
+						fillCommands.drawEllipse(c.x, c.y, c.width, c.height);
 
-						case LINE_STYLE:
-							var c = data.readLineStyle();
+						if (hasLineStyle)
+						{
+							strokeCommands.drawEllipse(c.x, c.y, c.width, c.height);
+						}
 
-							if (!hasLineStyle && c.thickness != null)
-							{
-								if (initStrokeX != 0 || initStrokeY != 0)
-								{
-									strokeCommands.moveTo(initStrokeX, initStrokeY);
-									initStrokeX = 0;
-									initStrokeY = 0;
-								}
-							}
+					case DRAW_RECT:
+						var c = data.readDrawRect();
+						fillCommands.drawRect(c.x, c.y, c.width, c.height);
 
-							hasLineStyle = c.thickness != null;
-							strokeCommands.lineStyle(c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+						if (hasLineStyle)
+						{
+							strokeCommands.drawRect(c.x, c.y, c.width, c.height);
+						}
 
-						case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
-							endFill();
-							endStroke();
+					case DRAW_ROUND_RECT:
+						var c = data.readDrawRoundRect();
+						fillCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 
-							if (type == BEGIN_BITMAP_FILL)
-							{
-								var c = data.readBeginBitmapFill();
-								fillCommands.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
-								strokeCommands.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
-							}
-							else if (type == BEGIN_GRADIENT_FILL)
-							{
-								var c = data.readBeginGradientFill();
-								fillCommands.beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-									c.focalPointRatio);
-								strokeCommands.beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-									c.focalPointRatio);
-							}
-							else if (type == BEGIN_SHADER_FILL)
-							{
-								var c = data.readBeginShaderFill();
-								fillCommands.beginShaderFill(c.shaderBuffer);
-								strokeCommands.beginShaderFill(c.shaderBuffer);
-							}
-							else
-							{
-								var c = data.readBeginFill();
-								fillCommands.beginFill(c.color, c.alpha);
-								strokeCommands.beginFill(c.color, c.alpha);
-							}
+						if (hasLineStyle)
+						{
+							strokeCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+						}
 
-						case DRAW_CIRCLE:
-							var c = data.readDrawCircle();
-							fillCommands.drawCircle(c.x, c.y, c.radius);
+					case DRAW_QUADS:
+						var c = data.readDrawQuads();
+						fillCommands.drawQuads(c.rects, c.indices, c.transforms);
 
-							if (hasLineStyle)
-							{
-								strokeCommands.drawCircle(c.x, c.y, c.radius);
-							}
+					case DRAW_TRIANGLES:
+						var c = data.readDrawTriangles();
+						fillCommands.drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
 
-						case DRAW_ELLIPSE:
-							var c = data.readDrawEllipse();
-							fillCommands.drawEllipse(c.x, c.y, c.width, c.height);
+						if (hasLineStyle)
+						{
+							strokeCommands.drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
+						}
 
-							if (hasLineStyle)
-							{
-								strokeCommands.drawEllipse(c.x, c.y, c.width, c.height);
-							}
+					case OVERRIDE_BLEND_MODE:
+						var c = data.readOverrideBlendMode();
+						renderer.__setBlendModeContext(context, c.blendMode);
 
-						case DRAW_RECT:
-							var c = data.readDrawRect();
-							fillCommands.drawRect(c.x, c.y, c.width, c.height);
+					case WINDING_EVEN_ODD:
+						data.readWindingEvenOdd();
+						fillCommands.windingEvenOdd();
+						windingRule = CanvasWindingRule.EVENODD;
 
-							if (hasLineStyle)
-							{
-								strokeCommands.drawRect(c.x, c.y, c.width, c.height);
-							}
+					case WINDING_NON_ZERO:
+						data.readWindingNonZero();
+						fillCommands.windingNonZero();
+						windingRule = CanvasWindingRule.NONZERO;
 
-						case DRAW_ROUND_RECT:
-							var c = data.readDrawRoundRect();
-							fillCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-
-							if (hasLineStyle)
-							{
-								strokeCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-							}
-
-						case DRAW_QUADS:
-							var c = data.readDrawQuads();
-							fillCommands.drawQuads(c.rects, c.indices, c.transforms);
-
-						case DRAW_TRIANGLES:
-							var c = data.readDrawTriangles();
-							fillCommands.drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
-
-							if (hasLineStyle)
-							{
-								strokeCommands.drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
-							}
-
-						case OVERRIDE_BLEND_MODE:
-							var c = data.readOverrideBlendMode();
-							renderer.__setBlendModeContext(context, c.blendMode);
-
-						case WINDING_EVEN_ODD:
-							data.readWindingEvenOdd();
-							fillCommands.windingEvenOdd();
-							windingRule = CanvasWindingRule.EVENODD;
-
-						case WINDING_NON_ZERO:
-							data.readWindingNonZero();
-							fillCommands.windingNonZero();
-							windingRule = CanvasWindingRule.NONZERO;
-
-						default:
-							data.skip(type);
-					}
-				}
-
-				endFill();
-				endStroke();
-
-				data.destroy();
-
-				if (graphics.__bitmap == null)
-				{
-					graphics.__bitmap = BitmapData.fromCanvas(graphics.__canvas);
-				}
-				else if (graphics.__bitmap.width != graphics.__canvas.width || graphics.__bitmap.height != graphics.__canvas.height)
-				{
-					var texture = graphics.__bitmap.__texture;
-					if (texture != null)
-					{
-						texture.dispose();
-					}
-					graphics.__bitmap = BitmapData.fromCanvas(graphics.__canvas);
-				}
-				else
-				{
-					// optimization: if the size of the canvas hasn't changed,
-					// we can re-use the same BitmapData.
-					graphics.__bitmap.image.version++;
+					default:
+						data.skip(type);
 				}
 			}
 
-			graphics.__softwareDirty = false;
-			graphics.__dirty = false;
-			CanvasGraphics.graphics = null;
+			endFill();
+			endStroke();
+
+			data.destroy();
+
+			if (graphics.__bitmap == null)
+			{
+				graphics.__bitmap = BitmapData.fromCanvas(graphics.__canvas);
+			}
+			else if (graphics.__bitmap.width != graphics.__canvas.width || graphics.__bitmap.height != graphics.__canvas.height)
+			{
+				var texture = graphics.__bitmap.__texture;
+				if (texture != null)
+				{
+					texture.dispose();
+				}
+				graphics.__bitmap = BitmapData.fromCanvas(graphics.__canvas);
+			}
+			else
+			{
+				// optimization: if the size of the canvas hasn't changed,
+				// we can re-use the same BitmapData.
+				graphics.__bitmap.image.version++;
+			}
 		}
+
+		graphics.__softwareDirty = false;
+		graphics.__dirty = false;
+		CanvasGraphics.graphics = null;
 		#end
 	}
 
@@ -2189,14 +2073,67 @@ class CanvasGraphics
 
 		fillBitmap = null;
 		bitmapRepeat = false;
-		fillPatternMatrix = null;
 		fillPattern = null;
 		fillGradient = null;
-		fillGradientMatrix = null;
 		strokePattern = null;
-		strokePatternMatrix = null;
 		strokeGradient = null;
-		strokeGradientMatrix = null;
+		#end
+	}
+
+	private static inline function edgeKey(a:Int, b:Int):Int
+	{
+		// Make an unordered unique 32-bit key
+		return (a < b) ? (a << 16) | b : (b << 16) | a;
+	}
+
+	private static inline function normalizeUVT(uvt:Vector<Float>):#if (js && html5) Vector<Float> #else Void #end
+	{
+		#if (js && html5)
+		var result = new Vector<Float>();
+		var len = uvt.length;
+		for (t in 1...len + 1)
+		{
+			if (t % 3 == 0)
+			{
+				continue;
+			}
+
+			result.push(uvt[t - 1]);
+		}
+		return result;
+		#end
+	}
+
+	private static inline function calculatePatternMatrixFromTri(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, u1:Float, v1:Float, u2:Float,
+			v2:Float, u3:Float, v3:Float, offsetX:Float, offsetY:Float, texWidth:Int, texHeight:Int, matrix:Matrix):Void
+	{
+		#if (js && html5)
+		u1 *= texWidth;
+		u2 *= texWidth;
+		u3 *= texWidth;
+		v1 *= texHeight;
+		v2 *= texHeight;
+		v3 *= texHeight;
+
+		var denom = (u1 * (v3 - v2) + u2 * (v1 - v3) + u3 * (v2 - v1));
+		if (Math.abs(denom) < 1e-8)
+		{
+			matrix.identity();
+		}
+		else
+		{
+			var a = -(x1 * (v2 - v3) + x2 * (v3 - v1) + x3 * (v1 - v2)) / denom;
+			var b = -(y1 * (v2 - v3) + y2 * (v3 - v1) + y3 * (v1 - v2)) / denom;
+			var c = -(x1 * (u3 - u2) + x2 * (u1 - u3) + x3 * (u2 - u1)) / denom;
+			var d = -(y1 * (u3 - u2) + y2 * (u1 - u3) + y3 * (u2 - u1)) / denom;
+			var e = (x1 * (u2 * v3 - u3 * v2) + x2 * (u3 * v1 - u1 * v3) + x3 * (u1 * v2 - u2 * v1)) / denom;
+			var f = (y1 * (u2 * v3 - u3 * v2) + y2 * (u3 * v1 - u1 * v3) + y3 * (u1 * v2 - u2 * v1)) / denom;
+
+			e += offsetX;
+			f += offsetY;
+
+			matrix.setTo(a, b, c, d, e, f);
+		}
 		#end
 	}
 

@@ -736,9 +736,9 @@ class DisplayObjectContainer extends InteractiveObject
 		}
 	}
 
-	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
+	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix, exStroke:Bool = false):Void
 	{
-		super.__getBounds(rect, matrix);
+		super.__getBounds(rect, matrix, exStroke);
 
 		if (__children.length == 0) return;
 
@@ -750,7 +750,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 			DisplayObject.__calculateAbsoluteTransform(child.__transform, matrix, childWorldTransform);
 
-			child.__getBounds(rect, childWorldTransform);
+			child.__getBounds(rect, childWorldTransform, exStroke);
 		}
 
 		Matrix.__pool.release(childWorldTransform);

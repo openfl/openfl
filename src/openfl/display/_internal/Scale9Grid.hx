@@ -1,6 +1,7 @@
 package openfl.display._internal;
 
 import openfl.display.DisplayObject;
+import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
@@ -13,9 +14,10 @@ import openfl.geom.Rectangle;
 @:access(openfl.display.Graphics)
 class Scale9Grid
 {
-	private static var bounds:Rectangle;
-	private static var owner:DisplayObject;
-	private static var scale9Grid:Rectangle;
+	public static var graphics(default, set):Graphics;
+
+	private static var __owner:DisplayObject;
+	private static var __scale9Grid:Rectangle;
 
 	public static var x(default, null):Float;
 	public static var y(default, null):Float;
@@ -26,33 +28,42 @@ class Scale9Grid
 	public static var strokeBounds(default, null) = new Scale9GridBounds();
 	public static var valid(default, null):Bool = false;
 
-	public static function setTo(graphics:Graphics)
+	public static function set_graphics(graphics:Graphics):Graphics
 	{
-		valid = false;
-		if (graphics.__owner.scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0)
+		if (graphics.__owner.__scale9Grid != null
+			&& !graphics.__owner.__isMask
+			&& graphics.__worldTransform.b == 0
+			&& graphics.__worldTransform.c == 0)
 		{
 			// TODO: Check if scroll9Grid is smaller than bounds x, if so then validX = false. Same for y.
 			valid = true;
-			owner = graphics.__owner;
-			scale9Grid = graphics.__owner.__scale9Grid;
-			x = scale9Grid.x;
-			y = scale9Grid.y;
-			width = scale9Grid.width;
-			height = scale9Grid.height;
-			bounds = graphics.__bounds;
+			__owner = graphics.__owner;
+			__scale9Grid = graphics.__owner.__scale9Grid;
+
+			x = __scale9Grid.x;
+			y = __scale9Grid.y;
+			width = __scale9Grid.width;
+			height = __scale9Grid.height;
 			fillBounds.clear();
 			strokeBounds.clear();
 		}
+		else
+		{
+			valid = false;
+			__owner = null;
+			__scale9Grid = null;
+		}
+		return Scale9Grid.graphics = graphics;
 	}
 
 	public static function toPositionX(pos:Float):Float
 	{
-		return __toPosition(pos, scale9Grid.x, scale9Grid.width, bounds.width, owner.scaleX);
+		return __toPosition(pos, __scale9Grid.x, __scale9Grid.width, graphics.__bounds.width, __owner.scaleX);
 	}
 
 	public static function toPositionY(pos:Float):Float
 	{
-		return __toPosition(pos, scale9Grid.y, scale9Grid.height, bounds.height, owner.scaleY);
+		return __toPosition(pos, __scale9Grid.y, __scale9Grid.height, graphics.__bounds.height, __owner.scaleY);
 	}
 
 	private static inline function __toPosition(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
@@ -91,28 +102,16 @@ class Scale9Grid
 		return scale9Start + center * (pos - scale9Start) / scale9Center;
 	}
 
-	public static function applyUnscaledX(x:Float):Void
+	public static function applyUnscaled(x:Float, y:Float):Void
 	{
-		fillBounds.applyUnscaledX(x);
-		strokeBounds.applyUnscaledX(x);
+		fillBounds.applyUnscaled(x, y);
+		strokeBounds.applyUnscaled(x, y);
 	}
 
-	public static function applyUnscaledY(y:Float):Void
+	public static function applyScaled(x:Float, y:Float):Void
 	{
-		fillBounds.applyUnscaledY(y);
-		strokeBounds.applyUnscaledY(y);
-	}
-
-	public static function applyScaledX(x:Float):Void
-	{
-		fillBounds.applyScaledX(x);
-		strokeBounds.applyScaledX(x);
-	}
-
-	public static function applyScaledY(y:Float):Void
-	{
-		fillBounds.applyScaledY(y);
-		strokeBounds.applyScaledY(y);
+		fillBounds.applyScaled(x, y);
+		strokeBounds.applyScaled(x, y);
 	}
 }
 #end

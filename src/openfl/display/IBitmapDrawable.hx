@@ -26,7 +26,7 @@ interface IBitmapDrawable
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
-	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void;
+	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix, exStroke:Bool = false):Void;
 	@:noCompletion private function __update(transformOnly:Bool, updateChildren:Bool):Void;
 	@:noCompletion private function __updateTransforms(overrideTransform:Matrix = null):Void;
 	@:noCompletion private var __mask:DisplayObject;

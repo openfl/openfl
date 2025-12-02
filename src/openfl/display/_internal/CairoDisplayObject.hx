@@ -3,6 +3,8 @@ package openfl.display._internal;
 #if !flash
 import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 #if lime
 import lime.math.ARGB;
 #end
@@ -13,6 +15,7 @@ import lime.math.ARGB;
 #end
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CairoDisplayObject
 {
@@ -37,10 +40,13 @@ class CairoDisplayObject
 
 			renderer.applyMatrix(displayObject.__renderTransform, cairo);
 
+			var rect = Rectangle.__pool.get();
+			displayObject.__getRenderBounds(rect, Matrix.__identity);
 			var color:ARGB = (displayObject.opaqueBackground : ARGB);
 			cairo.setSourceRGB(color.r / 0xFF, color.g / 0xFF, color.b / 0xFF);
-			cairo.rectangle(0, 0, displayObject.width, displayObject.height);
+			cairo.rectangle(rect.x, rect.y, rect.width, rect.height);
 			cairo.fill();
+			Rectangle.__pool.release(rect);
 
 			renderer.__popMaskObject(displayObject);
 		}

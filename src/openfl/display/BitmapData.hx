@@ -3325,7 +3325,7 @@ class BitmapData implements IBitmapDrawable
 		#end
 	}
 
-	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void
+	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix, exStroke:Bool = false):Void
 	{
 		var bounds = Rectangle.__pool.get();
 		this.rect.__transform(bounds, matrix);
