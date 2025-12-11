@@ -107,7 +107,7 @@ class CairoGraphics
 			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float, stroke:Bool):CairoPattern
 	{
 		var pattern:CairoPattern = null;
-		matrix = matrix ?? Matrix.__identity;
+		matrix = matrix != null ? matrix : Matrix.__identity;
 		var transformed = false;
 		if (type == GradientType.RADIAL)
 		{
@@ -996,7 +996,7 @@ class CairoGraphics
 					{
 						strokePattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						strokeBitmap = c.bitmap;
-						strokePatternMatrix.copyFrom(c.matrix ?? Matrix.__identity);
+						strokePatternMatrix.copyFrom(c.matrix != null ? c.matrix : Matrix.__identity);
 					}
 					else
 					{
@@ -1015,7 +1015,7 @@ class CairoGraphics
 					{
 						fillPattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						fillBitmap = c.bitmap;
-						fillPatternMatrix.copyFrom(c.matrix ?? Matrix.__identity);
+						fillPatternMatrix.copyFrom(c.matrix != null ? c.matrix : Matrix.__identity);
 					}
 					else
 					{
@@ -1072,7 +1072,7 @@ class CairoGraphics
 							// pixels to work with
 							fillPattern = CairoPattern.createRGB(0, 0, 0);
 						}
-						fillPatternMatrix.copyFrom(c.matrix ?? Matrix.__identity);
+						fillPatternMatrix.copyFrom(c.matrix != null ? c.matrix : Matrix.__identity);
 						bitmapRepeat = false;
 						hasFill = true;
 					}

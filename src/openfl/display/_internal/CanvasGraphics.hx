@@ -166,7 +166,7 @@ class CanvasGraphics
 	{
 		#if (js && html5)
 		var pattern:CanvasGradient = null;
-		matrix = matrix ?? Matrix.__identity;
+		matrix = matrix != null ? matrix : Matrix.__identity;
 		var transformed = false;
 		if (type == GradientType.RADIAL)
 		{
@@ -1142,7 +1142,7 @@ class CanvasGraphics
 						strokePattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						context.strokeStyle = strokePattern;
 						strokeBitmap = c.bitmap;
-						strokePatternMatrix.copyFrom(c.matrix ?? Matrix.__identity);
+						strokePatternMatrix.copyFrom(c.matrix != null ? c.matrix : Matrix.__identity);
 					}
 					else
 					{
@@ -1164,7 +1164,7 @@ class CanvasGraphics
 						fillPattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						context.fillStyle = fillPattern;
 						fillBitmap = c.bitmap;
-						fillPatternMatrix.copyFrom(c.matrix ?? Matrix.__identity);
+						fillPatternMatrix.copyFrom(c.matrix != null ? c.matrix : Matrix.__identity);
 					}
 					else
 					{
@@ -1236,7 +1236,7 @@ class CanvasGraphics
 							// pixels to work with
 							context.fillStyle = "#" + StringTools.hex(0, 6);
 						}
-						fillPatternMatrix.copyFrom(c.matrix ?? Matrix.__identity);
+						fillPatternMatrix.copyFrom(c.matrix != null ? c.matrix : Matrix.__identity);
 						bitmapRepeat = false;
 						hasFill = true;
 					}
