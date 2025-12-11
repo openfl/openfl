@@ -18,38 +18,12 @@ class CanvasDisplayObject
 	public static inline function render(displayObject:DisplayObject, renderer:CanvasRenderer):Void
 	{
 		#if (js && html5)
-		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
-		if (!displayObject.__renderable) return;
+		if (displayObject.__graphics == null || !displayObject.__renderable) return;
 
 		var alpha = renderer.__getAlpha(displayObject.__worldAlpha);
 		if (alpha <= 0) return;
 
-		if (displayObject.opaqueBackground != null
-			&& !displayObject.__isCacheBitmapRender
-			&& displayObject.width > 0
-			&& displayObject.height > 0)
-		{
-			renderer.__setBlendMode(displayObject.__worldBlendMode);
-			renderer.__pushMaskObject(displayObject);
-
-			var context = renderer.context;
-
-			renderer.setTransform(displayObject.__renderTransform, context);
-
-			var rect = Rectangle.__pool.get();
-			displayObject.__getRenderBounds(rect, Matrix.__identity);
-			var color:ARGB = (displayObject.opaqueBackground : ARGB);
-			context.fillStyle = 'rgb(${color.r},${color.g},${color.b})';
-			context.fillRect(rect.x, rect.y, rect.width, rect.height);
-			Rectangle.__pool.release(rect);
-
-			renderer.__popMaskObject(displayObject);
-		}
-
-		if (displayObject.__graphics != null)
-		{
-			CanvasShape.render(displayObject, renderer);
-		}
+		CanvasShape.render(displayObject, renderer);
 		#end
 	}
 
@@ -58,6 +32,34 @@ class CanvasDisplayObject
 		if (displayObject.mask == null || (displayObject.mask.width > 0 && displayObject.mask.height > 0))
 		{
 			renderer.__updateCacheBitmap(displayObject, /*!__worldColorTransform.__isDefault ()*/ false);
+
+			if (displayObject.opaqueBackground != null && displayObject.__renderable)
+			{
+				var alpha = renderer.__getAlpha(displayObject.__worldAlpha);
+
+				if (alpha > 0
+					&& displayObject.opaqueBackground != null
+					&& !displayObject.__isCacheBitmapRender
+					&& displayObject.width > 0
+					&& displayObject.height > 0)
+				{
+					renderer.__setBlendMode(displayObject.__worldBlendMode);
+					renderer.__pushMaskObject(displayObject);
+
+					var context = renderer.context;
+
+					renderer.setTransform(displayObject.__renderTransform, context);
+
+					var rect = Rectangle.__pool.get();
+					displayObject.__getRenderBounds(rect, Matrix.__identity);
+					var color:ARGB = (displayObject.opaqueBackground : ARGB);
+					context.fillStyle = 'rgb(${color.r},${color.g},${color.b})';
+					context.fillRect(rect.x, rect.y, rect.width, rect.height);
+					Rectangle.__pool.release(rect);
+
+					renderer.__popMaskObject(displayObject);
+				}
+			}
 
 			if (displayObject.__cacheBitmap != null && !displayObject.__isCacheBitmapRender)
 			{

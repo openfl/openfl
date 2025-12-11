@@ -22,46 +22,47 @@ class CairoDisplayObject
 	public static function render(displayObject:DisplayObject, renderer:CairoRenderer):Void
 	{
 		#if lime_cairo
-		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
-		if (!displayObject.__renderable) return;
+		if (displayObject.__graphics == null || !displayObject.__renderable) return;
 
 		var alpha = renderer.__getAlpha(displayObject.__worldAlpha);
 		if (alpha <= 0) return;
 
-		if (displayObject.opaqueBackground != null
-			&& !displayObject.__isCacheBitmapRender
-			&& displayObject.width > 0
-			&& displayObject.height > 0)
-		{
-			var cairo = renderer.cairo;
-
-			renderer.__setBlendMode(displayObject.__worldBlendMode);
-			renderer.__pushMaskObject(displayObject);
-
-			renderer.applyMatrix(displayObject.__renderTransform, cairo);
-
-			var rect = Rectangle.__pool.get();
-			displayObject.__getRenderBounds(rect, Matrix.__identity);
-			var color:ARGB = (displayObject.opaqueBackground : ARGB);
-			cairo.setSourceRGB(color.r / 0xFF, color.g / 0xFF, color.b / 0xFF);
-			cairo.rectangle(rect.x, rect.y, rect.width, rect.height);
-			cairo.fill();
-			Rectangle.__pool.release(rect);
-
-			renderer.__popMaskObject(displayObject);
-		}
-
-		if (displayObject.__graphics != null)
-		{
-			CairoShape.render(displayObject, renderer);
-		}
+		CairoShape.render(displayObject, renderer);
 		#end
 	}
 
-	public static inline function renderDrawable(displayObject:DisplayObject, renderer:CairoRenderer):Void
+	public static function renderDrawable(displayObject:DisplayObject, renderer:CairoRenderer):Void
 	{
 		#if lime_cairo
 		renderer.__updateCacheBitmap(displayObject, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (displayObject.opaqueBackground != null && displayObject.__renderable)
+		{
+			var alpha = renderer.__getAlpha(displayObject.__worldAlpha);
+
+			if (alpha > 0
+				&& displayObject.opaqueBackground != null
+				&& !displayObject.__isCacheBitmapRender
+				&& displayObject.width > 0
+				&& displayObject.height > 0)
+			{
+				var cairo = renderer.cairo;
+				renderer.__setBlendMode(displayObject.__worldBlendMode);
+				renderer.__pushMaskObject(displayObject);
+
+				renderer.applyMatrix(displayObject.__renderTransform, cairo);
+
+				var rect = Rectangle.__pool.get();
+				displayObject.__getRenderBounds(rect, Matrix.__identity);
+				var color:ARGB = (displayObject.opaqueBackground : ARGB);
+				cairo.setSourceRGB(color.r / 0xFF, color.g / 0xFF, color.b / 0xFF);
+				cairo.rectangle(rect.x, rect.y, rect.width, rect.height);
+				cairo.fill();
+				Rectangle.__pool.release(rect);
+
+				renderer.__popMaskObject(displayObject);
+			}
+		}
 
 		if (displayObject.__cacheBitmap != null && !displayObject.__isCacheBitmapRender)
 		{

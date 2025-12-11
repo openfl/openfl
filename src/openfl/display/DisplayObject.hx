@@ -628,7 +628,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		@see [Setting an opaque background](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/setting-an-opaque-background.html)
 	**/
-	public var opaqueBackground:Null<Int>;
+	public var opaqueBackground(get, set):Null<Int>;
 
 	/**
 		Indicates the DisplayObjectContainer object that contains this display
@@ -967,7 +967,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __cacheAsBitmap:Bool;
 	@:noCompletion private var __cacheAsBitmapMatrix:Matrix;
 	@:noCompletion private var __cacheBitmap:Bitmap;
-	@:noCompletion private var __cacheBitmapBackground:Null<Int>;
 	@:noCompletion private var __cacheBitmapColorTransform:ColorTransform;
 	@:noCompletion private var __cacheBitmapData:BitmapData;
 	@:noCompletion private var __cacheBitmapData2:BitmapData;
@@ -990,6 +989,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __metaData:Dynamic;
 	@:noCompletion private var __name:String;
 	@:noCompletion private var __objectTransform:Transform;
+	@:noCompletion private var __opaqueBackground:Null<Int>;
 	@:noCompletion private var __renderable:Bool;
 	@:noCompletion private var __renderDirty:Bool;
 	@:noCompletion private var __renderParent:DisplayObject;
@@ -1075,6 +1075,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			"name": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_name (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_name (v); }")
+			},
+			"opaqueBackground": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_opaqueBackground (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_opaqueBackground (v); }")
 			},
 			"root": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_root (); }")
@@ -1825,6 +1829,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 			__setWorldTransformInvalid();
 			__setParentRenderDirty();
+
+			if (__scale9Grid != null && __graphics != null)
+			{
+				__graphics.__dirty = true;
+			}
 		}
 		#if (openfl_enable_experimental_update_queue && !dom)
 		__setUpdateQueueFlag();
@@ -2248,6 +2257,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		return __name = value;
 	}
 
+	@:noCompletion private function get_opaqueBackground():Null<Int>
+	{
+		return __opaqueBackground;
+	}
+
+	@:noCompletion private function set_opaqueBackground(value:Null<Int>):Null<Int>
+	{
+		if (__opaqueBackground != value) __setRenderDirty();
+		return __opaqueBackground = value;
+	}
+
 	@:noCompletion private function get_root():DisplayObject
 	{
 		if (stage != null)
@@ -2318,7 +2338,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__scale9Grid = null;
 		}
 
-		__setRenderDirty();
+		if (__graphics != null)
+		{
+			__graphics.__dirty = true;
+		}
 
 		return value;
 	}

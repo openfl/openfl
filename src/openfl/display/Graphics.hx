@@ -72,6 +72,8 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __managed:Bool;
 	@:noCompletion private var __quadBuffer:Context3DBuffer;
 	@:noCompletion private var __renderTransform:Matrix;
+	@:noCompletion private var __offsetX:Float;
+	@:noCompletion private var __offsetY:Float;
 	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __softwareDirty:Bool;
 	@:noCompletion private var __transformDirty:Bool;
@@ -99,6 +101,7 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __bitmap:BitmapData;
 	@:noCompletion private var __bitmapScaleX:Float;
 	@:noCompletion private var __bitmapScaleY:Float;
+	@:noCompletion private var __useScale9Grid(get, never):Bool;
 
 	@:noCompletion private function new(owner:DisplayObject)
 	{
@@ -113,6 +116,8 @@ import js.html.CanvasRenderingContext2D;
 
 		__width = 0;
 		__height = 0;
+		__offsetX = 0.0;
+		__offsetY = 0.0;
 
 		__bitmapScaleX = 1;
 		__bitmapScaleY = 1;
@@ -392,7 +397,7 @@ import js.html.CanvasRenderingContext2D;
 			__usedShaderBuffers.add(shaderBuffer);
 			shaderBuffer.update(cast shader);
 
-			__commands.beginShaderFill(shaderBuffer);
+			__commands.beginShaderFill(shaderBuffer, matrix);
 			#end
 		}
 	}
@@ -1515,7 +1520,7 @@ import js.html.CanvasRenderingContext2D;
 	{
 		var data = new DrawCommandReader(__commands);
 		var path:GraphicsPath = null;
-		var stroke:GraphicsStroke;
+		var stroke:GraphicsStroke = null;
 
 		for (type in __commands.types)
 		{
@@ -1570,21 +1575,23 @@ import js.html.CanvasRenderingContext2D;
 					path.__drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
 
 				case LINE_GRADIENT_STYLE:
-					// TODO
-
 					var c = data.readLineGradientStyle();
-				// stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-				// stroke.fill = new GraphicsGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-				// graphicsData.push (stroke);
+					if (stroke != null)
+					{
+						stroke = new GraphicsStroke(stroke.thickness, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+						stroke.fill = new GraphicsGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+							c.focalPointRatio);
+						graphicsData.push(stroke);
+					}
 
 				case LINE_BITMAP_STYLE:
-					// TODO
-
 					var c = data.readLineBitmapStyle();
-					path = null;
-				// stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-				// stroke.fill = new GraphicsBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
-				// graphicsData.push (stroke);
+					if (stroke != null)
+					{
+						stroke = new GraphicsStroke(stroke.thickness, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+						stroke.fill = new GraphicsBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
+						graphicsData.push(stroke);
+					}
 
 				case LINE_STYLE:
 					var c = data.readLineStyle();
@@ -1611,6 +1618,7 @@ import js.html.CanvasRenderingContext2D;
 
 				case BEGIN_SHADER_FILL:
 					var c = data.readBeginShaderFill();
+					graphicsData.push(new GraphicsShaderFill(c.shaderBuffer.shader, c.matrix));
 
 				default:
 					data.skip(type);
@@ -1643,10 +1651,12 @@ import js.html.CanvasRenderingContext2D;
 		if (parentTransform == null) return;
 		var scaleX = pixelRatio, scaleY = pixelRatio;
 
+		var useScale9Grid = __useScale9Grid;
+
 		#if (openfl_legacy_scale9grid && lime_cairo && !cairo && !openfl_force_hw_graphics && !force_hw_graphics)
-		var calculateScale = __owner.__worldScale9Grid == null;
+		var calculateScale = !useScale9Grid;
 		#elseif (openfl_legacy_scale9grid && lime_canvas && !canvas && !openfl_force_hw_graphics && !force_hw_graphics)
-		var calculateScale = __owner.__worldScale9Grid == null;
+		var calculateScale = !useScale9Grid;
 		#else
 		var calculateScale = true;
 		#end
@@ -1690,14 +1700,15 @@ import js.html.CanvasRenderingContext2D;
 			}
 		}
 		#if openfl_disable_graphics_upscaling
-		if (__owner.__worldScale9Grid == null)
+		if (!useScale9Grid)
 		{
 			if (scaleX > 1) scaleX = 1;
 			if (scaleY > 1) scaleY = 1;
 		}
 		#end
-		var width = __bounds.width * scaleX;
-		var height = __bounds.height * scaleY;
+
+		var width = Math.abs(__bounds.width * scaleX);
+		var height = Math.abs(__bounds.height * scaleY);
 
 		if (width < 1 || height < 1)
 		{
@@ -1719,7 +1730,7 @@ import js.html.CanvasRenderingContext2D;
 		var inverseA:Float;
 		var inverseD:Float;
 
-		if (__owner.__worldScale9Grid != null)
+		if (useScale9Grid)
 		{
 			__renderTransform.a = pixelRatio;
 			__renderTransform.d = pixelRatio;
@@ -1768,6 +1779,21 @@ import js.html.CanvasRenderingContext2D;
 		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
 		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
 		#end
+
+		if (useScale9Grid)
+		{
+			// Accounts for stroke thickness + scale
+			var px = __boundsExStroke.x + (__bounds.x - __boundsExStroke.x) * __owner.scaleX;
+			var py = __boundsExStroke.y + (__bounds.y - __boundsExStroke.y) * __owner.scaleY;
+			__offsetX = __renderTransform.__transformX(px, py);
+			__offsetY = __renderTransform.__transformY(px, py);
+		}
+		else
+		{
+			__offsetX = __bounds.x;
+			__offsetY = __bounds.y;
+		}
+
 		// Calculate the size to contain the graphics and an extra subpixel
 		// We used to add tx and ty from __renderTransform instead of 1.0
 		// but it improves performance if we keep the size consistent when the
@@ -1785,8 +1811,7 @@ import js.html.CanvasRenderingContext2D;
 		__height = newHeight;
 	}
 
-	@:noCompletion private static inline function __generateUV(vertices:Vector<Float>, textureWidth:Float, textureHeight:Float, matrix:Matrix,
-			result:Vector<Float>):Void
+	@:noCompletion private function __generateUV(vertices:Vector<Float>, textureWidth:Float, textureHeight:Float, matrix:Matrix, result:Vector<Float>):Void
 	{
 		var length = vertices.length;
 		var x:Float, y:Float;
@@ -1800,6 +1825,63 @@ import js.html.CanvasRenderingContext2D;
 			result[i + 1] = y / textureHeight;
 			i += 2;
 		}
+	}
+
+	@:noCompletion private function __getScale9GridPositionX(pos:Float):Float
+	{
+		return __getScale9GridPosition(pos, __owner.__scale9Grid.x, __owner.__scale9Grid.width, __boundsExStroke.width, __owner.scaleX);
+	}
+
+	@:noCompletion private function __getScale9GridPositionY(pos:Float):Float
+	{
+		return __getScale9GridPosition(pos, __owner.__scale9Grid.y, __owner.__scale9Grid.height, __boundsExStroke.height, __owner.scaleY);
+	}
+
+	private inline function __getScale9GridPosition(pos:Float, startSize:Float, centerSize:Float, unscaledSize:Float, scale:Float):Float
+	{
+		if (scale <= 0.0) return 0.0;
+
+		var endSize = unscaledSize - centerSize - startSize;
+		var scaledSize = unscaledSize * scale;
+		var centerScaledSize = scaledSize - startSize - endSize;
+
+		// center collapses (scaled too small)
+		if (centerScaledSize < 0.0)
+		{
+			var base = startSize + endSize;
+			var compression = scaledSize / base;
+
+			if (pos <= startSize)
+			{
+				// start region
+				return pos * compression;
+			}
+
+			if (pos >= startSize + centerSize)
+			{
+				// end region (anchored to far side)
+				return scaledSize - (unscaledSize - pos) * compression;
+			}
+
+			// center region collapses to boundary
+			return startSize * compression;
+		}
+
+		// Center region stretches
+		if (pos <= startSize)
+		{
+			// Start region not scaled
+			return pos;
+		}
+
+		if (pos >= startSize + centerSize)
+		{
+			// End region shifted by centerScaledSize
+			return startSize + centerScaledSize + (pos - startSize - centerSize);
+		}
+
+		// Center region scaled proportionally
+		return startSize + centerScaledSize * (pos - startSize) / centerSize;
 	}
 
 	// Get & Set Methods
@@ -1819,37 +1901,48 @@ import js.html.CanvasRenderingContext2D;
 
 		return __dirty = value;
 	}
+
+	@:noCompletion private function get___useScale9Grid():Bool
+	{
+		var transform = __owner.__getWorldTransform();
+		return __owner.__scale9Grid != null && !__owner.__isMask && transform.a >= 0 && transform.b == 0 && transform.c == 0 && transform.d >= 0;
+	}
 }
 
+@:access(openfl.display.DisplayObject)
+@:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
-@:access(openfl.display.Graphics)
 class GraphicsBoundsHelper
 {
 	private static var graphics:Graphics;
 	private static var bounds:Rectangle = new Rectangle();
 	private static var boundsExStroke:Rectangle = new Rectangle();
-	private static var strokePadding:Float;
+	private static var strokePaddingX:Float;
+	private static var strokePaddingY:Float;
 	private static var hasFill:Bool;
 	private static var miterLimit:Float;
 	private static var path:Array<PathPoint>;
 	private static var capsStyle:CapsStyle;
 	private static var jointStyle:JointStyle;
+	private static var useScale9Grid:Bool;
 
 	private static inline var EPSILON = 1e-8;
 
-	@:noCompletion private static function inflateBounds(x:Float, y:Float, strokePadding:Float = 0.0):Void
+	@:noCompletion private static function inflateBounds(x:Float, y:Float, stroke:Bool):Void
 	{
-		inflate(bounds, x, y, strokePadding);
-		inflate(boundsExStroke, x, y, 0.0);
+		inflate(bounds, x, y, stroke);
+		inflate(boundsExStroke, x, y, false);
 	}
 
-	@:noCompletion private static inline function inflate(rect:Rectangle, x:Float, y:Float, padding:Float = 0.0):Void
+	@:noCompletion private static inline function inflate(rect:Rectangle, x:Float, y:Float, stroke:Bool):Void
 	{
-		var left = x - padding;
-		var top = y - padding;
-		var right = x + padding;
-		var bottom = y + padding;
+		var strokePaddingX = stroke ? GraphicsBoundsHelper.strokePaddingX : 0.0;
+		var strokePaddingY = stroke ? GraphicsBoundsHelper.strokePaddingY : 0.0;
+		var left = x - strokePaddingX;
+		var top = y - strokePaddingY;
+		var right = x + strokePaddingX;
+		var bottom = y + strokePaddingY;
 
 		if (Math.isNaN(rect.width) && Math.isNaN(rect.height))
 		{
@@ -1920,11 +2013,11 @@ class GraphicsBoundsHelper
 
 	@:noCompletion private static function jointBounds(x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float):Void
 	{
-		if (strokePadding < EPSILON) return;
+		if (strokePaddingX < EPSILON && strokePaddingY < EPSILON) return;
 
 		if (jointStyle == JointStyle.ROUND)
 		{
-			inflate(bounds, x1, y1, strokePadding);
+			inflate(bounds, x1, y1, true);
 			return;
 		}
 
@@ -1937,7 +2030,7 @@ class GraphicsBoundsHelper
 		if (Math.abs(cross) < EPSILON)
 		{
 			// Degenerate joint (straight line, both segments are colinear)
-			inflate(bounds, x1, y1, strokePadding);
+			inflate(bounds, x1, y1, true);
 		}
 		else if (cross > 0)
 		{
@@ -1959,11 +2052,11 @@ class GraphicsBoundsHelper
 		dx2 /= len2;
 		dy2 /= len2;
 
-		var nx1 = -dy1 * strokePadding;
-		var ny1 = dx1 * strokePadding;
+		var nx1 = -dy1 * strokePaddingX;
+		var ny1 = dx1 * strokePaddingY;
 
-		var nx2 = -dy2 * strokePadding;
-		var ny2 = dx2 * strokePadding;
+		var nx2 = -dy2 * strokePaddingX;
+		var ny2 = dx2 * strokePaddingY;
 
 		if (jointStyle == JointStyle.MITER)
 		{
@@ -1973,8 +2066,8 @@ class GraphicsBoundsHelper
 
 			if (theta <= miterLimit)
 			{
-				var p0x = x1 - dx1 * strokePadding + nx1;
-				var p0y = y1 - dy1 * strokePadding + ny1;
+				var p0x = x1 - dx1 * strokePaddingX + nx1;
+				var p0y = y1 - dy1 * strokePaddingY + ny1;
 
 				var p1x = x1 + nx1;
 				var p1y = y1 + ny1;
@@ -1982,8 +2075,8 @@ class GraphicsBoundsHelper
 				var p2x = x1 + nx2;
 				var p2y = y1 + ny2;
 
-				var p3x = x1 + dx2 * strokePadding + nx2;
-				var p3y = y1 + dy2 * strokePadding + ny2;
+				var p3x = x1 + dx2 * strokePaddingX + nx2;
+				var p3y = y1 + dy2 * strokePaddingY + ny2;
 
 				var denom = (p1x - p0x) * (p3y - p2y) - (p1y - p0y) * (p3x - p2x);
 				if (Math.abs(denom) > EPSILON)
@@ -1991,15 +2084,15 @@ class GraphicsBoundsHelper
 					var t = ((p2x - p0x) * (p3y - p2y) - (p2y - p0y) * (p3x - p2x)) / denom;
 					var mx = p0x + (p1x - p0x) * t;
 					var my = p0y + (p1y - p0y) * t;
-					inflate(bounds, mx, my);
+					inflate(bounds, mx, my, false);
 					return;
 				}
 			}
 		}
 
 		// bevel joints
-		inflate(bounds, x1 + nx1, y1 + ny1);
-		inflate(bounds, x1 + nx2, y1 + ny2);
+		inflate(bounds, x1 + nx1, y1 + ny1, false);
+		inflate(bounds, x1 + nx2, y1 + ny2, false);
 	}
 
 	@:noCompletion private static function capBounds(from:PathPoint, to:PathPoint, atStart:Bool):Void
@@ -2016,43 +2109,41 @@ class GraphicsBoundsHelper
 		var pxu = -uy;
 		var pyu = ux;
 
-		var r = strokePadding;
-
 		switch capsStyle
 		{
-			case CapsStyle.NONE:
-				var x0 = px + pxu * r;
-				var y0 = py + pyu * r;
-				var x1 = px - pxu * r;
-				var y1 = py - pyu * r;
-				inflate(bounds, x0, y0);
-				inflate(bounds, x1, y1);
-
 			case CapsStyle.ROUND:
-				inflate(bounds, px, py, r);
+				inflate(bounds, px, py, true);
 
 			case CapsStyle.SQUARE:
-				var sx = px + (atStart ? -ux * r : ux * r);
-				var sy = py + (atStart ? -uy * r : uy * r);
-				var x0 = sx + pxu * r;
-				var y0 = sy + pyu * r;
-				var x1 = sx - pxu * r;
-				var y1 = sy - pyu * r;
-				inflate(bounds, x0, y0);
-				inflate(bounds, x1, y1);
+				var sx = px + (atStart ? -ux * strokePaddingX : ux * strokePaddingX);
+				var sy = py + (atStart ? -uy * strokePaddingY : uy * strokePaddingY);
+				var x0 = sx + pxu * strokePaddingX;
+				var y0 = sy + pyu * strokePaddingY;
+				var x1 = sx - pxu * strokePaddingX;
+				var y1 = sy - pyu * strokePaddingY;
+				inflate(bounds, x0, y0, false);
+				inflate(bounds, x1, y1, false);
+
+			case CapsStyle.NONE:
+				var x0 = px + pxu * strokePaddingX;
+				var y0 = py + pyu * strokePaddingY;
+				var x1 = px - pxu * strokePaddingX;
+				var y1 = py - pyu * strokePaddingY;
+				inflate(bounds, x0, y0, false);
+				inflate(bounds, x1, y1, false);
 		}
 	}
 
 	@:noCompletion private static inline function curveBounds(a:PathPoint, b:PathPoint):Void
 	{
-		inflateBounds(b.x, b.y, 0.0);
+		inflateBounds(b.x, b.y, false);
 
 		if (b.cx2 != null)
 		{
 			var xs = cubicExtrema(a.x, b.cx1, b.cx2, b.x);
 			var ys = cubicExtrema(a.y, b.cy1, b.cy2, b.y);
-			inflateBounds(xs.min, ys.min, strokePadding);
-			inflateBounds(xs.max, ys.max, strokePadding);
+			inflateBounds(xs.min, ys.min, true);
+			inflateBounds(xs.max, ys.max, true);
 		}
 		else if (b.cx1 != null)
 		{
@@ -2062,13 +2153,13 @@ class GraphicsBoundsHelper
 			{
 				var px = quad(a.x, b.cx1, b.x, tx);
 				var py = quad(a.y, b.cy1, b.y, tx);
-				inflateBounds(px, py, strokePadding);
+				inflateBounds(px, py, true);
 			}
 			if (ty > 0 && ty < 1)
 			{
 				var px = quad(a.x, b.cx1, b.x, ty);
 				var py = quad(a.y, b.cy1, b.y, ty);
-				inflateBounds(px, py, strokePadding);
+				inflateBounds(px, py, true);
 			}
 		}
 	}
@@ -2142,7 +2233,7 @@ class GraphicsBoundsHelper
 		return (1 - t) * (1 - t) * a + 2 * (1 - t) * t * b + t * t * c;
 	}
 
-	@:noCompletion private static function closePath():Void
+	@:noCompletion private static function endPath():Void
 	{
 		if (path.length > 1)
 		{
@@ -2172,7 +2263,7 @@ class GraphicsBoundsHelper
 				}
 				else
 				{
-					inflateBounds(curr.x, curr.y, 0.0);
+					inflateBounds(curr.x, curr.y, false);
 				}
 
 				if (prev != null && next != null)
@@ -2217,7 +2308,10 @@ class GraphicsBoundsHelper
 	public static function update(graphics:Graphics):Void
 	{
 		GraphicsBoundsHelper.graphics = graphics;
-		strokePadding = 0.0;
+		useScale9Grid = graphics.__useScale9Grid;
+
+		strokePaddingX = 0.0;
+		strokePaddingY = 0.0;
 		hasFill = false;
 		capsStyle = CapsStyle.ROUND;
 		jointStyle = JointStyle.ROUND;
@@ -2226,8 +2320,6 @@ class GraphicsBoundsHelper
 
 		bounds.setTo(0.0, 0.0, Math.NaN, Math.NaN);
 		boundsExStroke.setTo(0.0, 0.0, Math.NaN, Math.NaN);
-
-		// TODO: scale9Grid handle strokePadding scaling when width < scale9Grid.width / height < scale9Grid.height
 
 		var data = new DrawCommandReader(graphics.__commands);
 		for (type in graphics.__commands.types)
@@ -2251,26 +2343,29 @@ class GraphicsBoundsHelper
 
 				case MOVE_TO:
 					var c = data.readMoveTo();
-					closePath();
+					endPath();
 					appendToPath(c.x, c.y);
 
 				case DRAW_CIRCLE:
+					endPath();
 					var c = data.readDrawCircle();
 					if (c.radius != 0)
 					{
-						inflateBounds(c.x - c.radius, c.y - c.radius, strokePadding);
-						inflateBounds(c.x + c.radius, c.y + c.radius, strokePadding);
+						inflateBounds(c.x - c.radius, c.y - c.radius, true);
+						inflateBounds(c.x + c.radius, c.y + c.radius, true);
 					}
 
 				case DRAW_ELLIPSE:
+					endPath();
 					var c = data.readDrawEllipse();
 					if (c.width != 0 && c.height != 0)
 					{
-						inflateBounds(c.x, c.y, strokePadding);
-						inflateBounds(c.x + c.width, c.y + c.height, strokePadding);
+						inflateBounds(c.x, c.y, true);
+						inflateBounds(c.x + c.width, c.y + c.height, true);
 					}
 
 				case DRAW_RECT:
+					endPath();
 					var c = data.readDrawRect();
 					if (c.width != 0 && c.height != 0)
 					{
@@ -2278,11 +2373,12 @@ class GraphicsBoundsHelper
 						var minY = Math.min(c.y, c.y + c.height);
 						var maxX = Math.max(c.x, c.x + c.width);
 						var maxY = Math.max(c.y, c.y + c.height);
-						inflateBounds(minX, minY, strokePadding);
-						inflateBounds(maxX, maxY, strokePadding);
+						inflateBounds(minX, minY, true);
+						inflateBounds(maxX, maxY, true);
 					}
 
 				case DRAW_ROUND_RECT:
+					endPath();
 					var c = data.readDrawRoundRect();
 					if (c.width != 0 && c.height != 0)
 					{
@@ -2290,11 +2386,12 @@ class GraphicsBoundsHelper
 						var minY = Math.min(c.y, c.y + c.height);
 						var maxX = Math.max(c.x, c.x + c.width);
 						var maxY = Math.max(c.y, c.y + c.height);
-						inflateBounds(minX, minY, strokePadding);
-						inflateBounds(maxX, maxY, strokePadding);
+						inflateBounds(minX, minY, true);
+						inflateBounds(maxX, maxY, true);
 					}
 
 				case DRAW_QUADS:
+					endPath();
 					var c = data.readDrawQuads();
 					var rects = c.rects;
 					var indices = c.indices;
@@ -2373,13 +2470,14 @@ class GraphicsBoundsHelper
 						if (maxY < tileRect.bottom) maxY = tileRect.bottom;
 					}
 
-					inflateBounds(minX, minY, strokePadding);
-					inflateBounds(maxX, maxY, strokePadding);
+					inflateBounds(minX, minY, true);
+					inflateBounds(maxX, maxY, true);
 
 					Rectangle.__pool.release(tileRect);
 					Matrix.__pool.release(tileTransform);
 
 				case DRAW_TRIANGLES:
+					endPath();
 					var c = data.readDrawTriangles();
 					var x:Float;
 					var y:Float;
@@ -2401,45 +2499,54 @@ class GraphicsBoundsHelper
 						if (maxY < y) maxY = y;
 					}
 
-					inflateBounds(minX, minY, strokePadding);
-					inflateBounds(maxX, maxY, strokePadding);
+					inflateBounds(minX, minY, true);
+					inflateBounds(maxX, maxY, true);
 
-				case LINE_GRADIENT_STYLE:
-					var c = data.readLineGradientStyle();
-
-				case LINE_BITMAP_STYLE:
-					var c = data.readLineBitmapStyle();
+				case LINE_GRADIENT_STYLE, LINE_BITMAP_STYLE:
+					endPath();
+					data.skip(type);
 
 				case LINE_STYLE:
+					endPath();
 					var c = data.readLineStyle();
-					strokePadding = c.thickness == null ? 0.0 : c.thickness * 0.5;
+					var strokePadding = c.thickness == null ? 0.0 : c.thickness * 0.5;
 					jointStyle = c.joints;
 					capsStyle = c.caps;
 					miterLimit = c.miterLimit;
+					var scaleX = Math.abs(graphics.__owner.__worldTransform.a);
+					var scaleY = Math.abs(graphics.__owner.__worldTransform.d);
+
+					if (useScale9Grid)
+					{
+						strokePaddingX = strokePadding / scaleX;
+						strokePaddingY = strokePadding / scaleY;
+					}
+					else
+					{
+						var scale = 1.0;
+						switch (c.scaleMode)
+						{
+							case LineScaleMode.NONE:
+								scale = Math.max(scaleX, scaleY);
+							case LineScaleMode.VERTICAL:
+								scale = scaleX;
+							case LineScaleMode.HORIZONTAL:
+								scale = scaleY;
+							default:
+						}
+						if (scale < 1.0) scale = 1.0;
+						strokePaddingX = strokePadding / scale;
+						strokePaddingY = strokePadding / scale;
+					}
 
 				case END_FILL:
-					closePath();
-					var c = data.readEndFill();
+					endPath();
+					data.skip(type);
 					hasFill = false;
 
-				case BEGIN_BITMAP_FILL:
-					closePath();
-					var c = data.readBeginBitmapFill();
-					hasFill = true;
-
-				case BEGIN_FILL:
-					closePath();
-					var c = data.readBeginFill();
-					hasFill = true;
-
-				case BEGIN_GRADIENT_FILL:
-					closePath();
-					var c = data.readBeginGradientFill();
-					hasFill = true;
-
-				case BEGIN_SHADER_FILL:
-					closePath();
-					var c = data.readBeginShaderFill();
+				case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
+					endPath();
+					data.skip(type);
 					hasFill = true;
 
 				default:
@@ -2447,13 +2554,12 @@ class GraphicsBoundsHelper
 			}
 		}
 
-		closePath();
+		endPath();
 
 		if (Math.isNaN(bounds.width) || Math.isNaN(bounds.height))
 		{
 			bounds.setEmpty();
 		}
-
 		if (Math.isNaN(boundsExStroke.width) || Math.isNaN(boundsExStroke.height))
 		{
 			boundsExStroke.setEmpty();

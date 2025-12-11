@@ -41,6 +41,7 @@ class Context3DGraphics
 	private static var tempIndicesVector:Vector<Int> = new Vector<Int>();
 	private static var tempUvtVector:Vector<Float> = new Vector<Float>();
 	private static var tempScale9VerticesVector:Vector<Float>;
+	private static var useScale9Grid:Bool;
 
 	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
@@ -61,7 +62,7 @@ class Context3DGraphics
 
 		inline function buildDrawTrianglesBuffer(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void
 		{
-			if (Scale9Grid.valid)
+			if (useScale9Grid)
 			{
 				if (tempScale9VerticesVector == null)
 				{
@@ -78,11 +79,11 @@ class Context3DGraphics
 				{
 					if (isX)
 					{
-						tempScale9VerticesVector[i] = Scale9Grid.toPositionX(vertices[i]) / graphics.__owner.scaleX;
+						tempScale9VerticesVector[i] = graphics.__getScale9GridPositionX(vertices[i]) / graphics.__owner.scaleX;
 					}
 					else
 					{
-						tempScale9VerticesVector[i] = Scale9Grid.toPositionY(vertices[i]) / graphics.__owner.scaleY;
+						tempScale9VerticesVector[i] = graphics.__getScale9GridPositionY(vertices[i]) / graphics.__owner.scaleY;
 					}
 					i++;
 					isX = !isX;
@@ -93,7 +94,7 @@ class Context3DGraphics
 			if (bitmap != null && uvtData == null)
 			{
 				uvtData = tempUvtVector;
-				Graphics.__generateUV(vertices, bitmap.width, bitmap.height, bitmapMatrix, uvtData);
+				graphics.__generateUV(vertices, bitmap.width, bitmap.height, bitmapMatrix, uvtData);
 			}
 
 			var hasIndices = (indices != null);
@@ -182,7 +183,7 @@ class Context3DGraphics
 					var shaderBuffer = c.shaderBuffer;
 
 					bitmap = null;
-					bitmapMatrix = null;
+					bitmapMatrix = c.matrix;
 
 					if (shaderBuffer != null)
 					{
@@ -402,13 +403,21 @@ class Context3DGraphics
 					var height = c.height;
 					var radiusX = c.ellipseWidth / 2.0;
 					var radiusY = (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth) / 2.0;
+					var scaleX = graphics.__owner.scaleX;
+					var scaleY = graphics.__owner.scaleY;
 
-					var scaleX = (Scale9Grid.valid
-						&& c.x + radiusX <= Scale9Grid.x
-						&& c.x + c.width - radiusX >= Scale9Grid.x + Scale9Grid.width) ? 1.0 : graphics.__owner.scaleX;
-					var scaleY = (Scale9Grid.valid
-						&& c.y + radiusY <= Scale9Grid.y
-						&& c.y + c.height - radiusX >= Scale9Grid.y + Scale9Grid.height) ? 1.0 : graphics.__owner.scaleY;
+					if (useScale9Grid)
+					{
+						var scale9Grid = graphics.__owner.scale9Grid;
+						if (c.x + radiusX <= scale9Grid.x && c.x + c.width - radiusX >= scale9Grid.x + scale9Grid.width)
+						{
+							scaleX = 1.0;
+						}
+						if (c.y + radiusY <= scale9Grid.y && c.y + c.height - radiusY >= scale9Grid.y + scale9Grid.height)
+						{
+							scaleY = 1.0;
+						}
+					}
 
 					PolygonFunctions.buildRoundRectVerticesAndIndices(x, y, width, height, radiusX, radiusY, scaleX, scaleY, tempVerticesVector,
 						tempIndicesVector);
@@ -625,7 +634,7 @@ class Context3DGraphics
 			var pixelRatio = renderer.__pixelRatio;
 			#end
 
-			Scale9Grid.graphics = graphics;
+			useScale9Grid = graphics.__useScale9Grid;
 
 			graphics.__update(renderer.__worldTransform, pixelRatio);
 
@@ -827,7 +836,7 @@ class Context3DGraphics
 							}
 
 							fill = null;
-							bitmapMatrix = null;
+							bitmapMatrix = c.matrix;
 
 						case DRAW_QUADS:
 							if (bitmap != null || fill != null)
@@ -943,12 +952,20 @@ class Context3DGraphics
 							var radiusX = c.ellipseWidth / 2.0;
 							var radiusY = (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth) / 2.0;
 
-							var scaleX = (Scale9Grid.valid
-								&& c.x + radiusX <= Scale9Grid.x
-								&& c.x + c.width - radiusX >= Scale9Grid.x + Scale9Grid.width) ? 1.0 : graphics.__owner.scaleX;
-							var scaleY = (Scale9Grid.valid
-								&& c.y + radiusY <= Scale9Grid.y
-								&& c.y + c.height - radiusX >= Scale9Grid.y + Scale9Grid.height) ? 1.0 : graphics.__owner.scaleY;
+							var scaleX = graphics.__owner.scaleX;
+							var scaleY = graphics.__owner.scaleY;
+							if (useScale9Grid)
+							{
+								var scale9Grid = graphics.__owner.scale9Grid;
+								if (c.x + radiusX <= scale9Grid.x && c.x + c.width - radiusX >= scale9Grid.x + scale9Grid.width)
+								{
+									scaleX = 1.0;
+								}
+								if (c.y + radiusY <= scale9Grid.y && c.y + c.height - radiusY >= scale9Grid.y + scale9Grid.height)
+								{
+									scaleY = 1.0;
+								}
+							}
 
 							var numVertices = PolygonFunctions.getRoundRectNumVertices(radiusX * scaleX, radiusY * scaleY);
 							renderDrawTriangles(numVertices * 2, (numVertices - 2) * 3, 0, NONE);
@@ -967,12 +984,12 @@ class Context3DGraphics
 								var width = c.width;
 								var height = c.height;
 
-								if (Scale9Grid.valid)
+								if (useScale9Grid)
 								{
-									var scaledLeft = Scale9Grid.toPositionX(c.x);
-									var scaledTop = Scale9Grid.toPositionY(c.y);
-									var scaledRight = Scale9Grid.toPositionX(c.x + c.width);
-									var scaledBottom = Scale9Grid.toPositionY(c.y + c.height);
+									var scaledLeft = graphics.__getScale9GridPositionX(c.x);
+									var scaledTop = graphics.__getScale9GridPositionY(c.y);
+									var scaledRight = graphics.__getScale9GridPositionX(c.x + c.width);
+									var scaledBottom = graphics.__getScale9GridPositionY(c.y + c.height);
 
 									x = scaledLeft / graphics.__owner.scaleX;
 									y = scaledTop / graphics.__owner.scaleY;
