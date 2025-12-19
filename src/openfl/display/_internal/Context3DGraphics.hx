@@ -1223,7 +1223,7 @@ class Context3DGraphics
 {
 	public static inline function getEllipseNumVertices(radiusX:Float, radiusY:Float):Int
 	{
-		var numVertices = Std.int(Math.PI * (radiusX + radiusY) / 4.0);
+		var numVertices = Std.int(Math.PI * (Math.abs(radiusX) + Math.abs(radiusY)) / 4.0);
 		if (numVertices < 6)
 		{
 			numVertices = 6;
@@ -1260,7 +1260,7 @@ class Context3DGraphics
 
 	public static inline function getRoundRectNumVertices(radiusX:Float, radiusY:Float):Int
 	{
-		var numVerticesPerCorner = Math.ceil(Math.PI * (radiusX + radiusY) / 8.0);
+		var numVerticesPerCorner = Math.ceil(Math.PI * (Math.abs(radiusX) + Math.abs(radiusY)) / 8.0);
 		if (numVerticesPerCorner < 3)
 		{
 			numVerticesPerCorner = 3;
