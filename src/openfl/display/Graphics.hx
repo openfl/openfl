@@ -11,6 +11,7 @@ import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
 import openfl.geom.Matrix;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils._internal.Float32Array;
 import openfl.utils._internal.UInt16Array;
@@ -72,8 +73,6 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __managed:Bool;
 	@:noCompletion private var __quadBuffer:Context3DBuffer;
 	@:noCompletion private var __renderTransform:Matrix;
-	@:noCompletion private var __offsetX:Float;
-	@:noCompletion private var __offsetY:Float;
 	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __softwareDirty:Bool;
 	@:noCompletion private var __transformDirty:Bool;
@@ -116,8 +115,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__width = 0;
 		__height = 0;
-		__offsetX = 0.0;
-		__offsetY = 0.0;
 
 		__bitmapScaleX = 1;
 		__bitmapScaleY = 1;
@@ -1780,20 +1777,6 @@ import js.html.CanvasRenderingContext2D;
 		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
 		#end
 
-		if (useScale9Grid)
-		{
-			// Accounts for stroke thickness + scale
-			var px = __boundsExStroke.x + (__bounds.x - __boundsExStroke.x) * __owner.scaleX;
-			var py = __boundsExStroke.y + (__bounds.y - __boundsExStroke.y) * __owner.scaleY;
-			__offsetX = __renderTransform.__transformX(px, py);
-			__offsetY = __renderTransform.__transformY(px, py);
-		}
-		else
-		{
-			__offsetX = __bounds.x;
-			__offsetY = __bounds.y;
-		}
-
 		// Calculate the size to contain the graphics and an extra subpixel
 		// We used to add tx and ty from __renderTransform instead of 1.0
 		// but it improves performance if we keep the size consistent when the
@@ -1809,6 +1792,25 @@ import js.html.CanvasRenderingContext2D;
 		}
 		__width = newWidth;
 		__height = newHeight;
+	}
+
+	@:noCompletion private function __calculateOffset(result:Point):Void
+	{
+		// Accounts for stroke thickness + scale
+		var scaleX = 1.0;
+		var scaleY = 1.0;
+		var startX = __boundsExStroke.x;
+		var startY = __boundsExStroke.y;
+		var strokePaddingX = (__bounds.x - __boundsExStroke.x);
+		var strokePaddingY = (__bounds.y - __boundsExStroke.y);
+		if (__useScale9Grid)
+		{
+			startX = __getScale9GridPositionX(startX);
+			startY = __getScale9GridPositionY(startY);
+			scaleX = __owner.scaleX;
+			scaleY = __owner.scaleY;
+		}
+		result.setTo(startX + (strokePaddingX * scaleX) + __renderTransform.tx, startY + (strokePaddingY * scaleY) + __renderTransform.ty);
 	}
 
 	@:noCompletion private function __generateUV(vertices:Vector<Float>, textureWidth:Float, textureHeight:Float, matrix:Matrix, result:Vector<Float>):Void
@@ -1837,7 +1839,14 @@ import js.html.CanvasRenderingContext2D;
 		return __getScale9GridPosition(pos, __owner.__scale9Grid.y, __owner.__scale9Grid.height, __boundsExStroke.height, __owner.scaleY);
 	}
 
-	private inline function __getScale9GridPosition(pos:Float, startSize:Float, centerSize:Float, unscaledSize:Float, scale:Float):Float
+	@:noCompletion private function __calculateScale9GridMinScale(scale:Point):Void
+	{
+		var scaleX = (__boundsExStroke.width - __owner.__scale9Grid.width) / __boundsExStroke.width;
+		var scaleY = (__boundsExStroke.height - __owner.__scale9Grid.height) / __boundsExStroke.height;
+		scale.setTo(scaleX, scaleY);
+	}
+
+	@:noCompletion private inline function __getScale9GridPosition(pos:Float, startSize:Float, centerSize:Float, unscaledSize:Float, scale:Float):Float
 	{
 		if (scale <= 0.0) return 0.0;
 
