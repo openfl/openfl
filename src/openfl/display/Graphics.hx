@@ -102,6 +102,9 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __bitmapScaleY:Float;
 	@:noCompletion private var __useScale9Grid(get, never):Bool;
 
+	// @:noCompletion private var __scaleX(get, never):Float;
+	// @:noCompletion private var __scaleY(get, never):Float;
+
 	@:noCompletion private function new(owner:DisplayObject)
 	{
 		__owner = owner;
@@ -1916,6 +1919,17 @@ import js.html.CanvasRenderingContext2D;
 		var transform = __owner.__getWorldTransform();
 		return __owner.__scale9Grid != null && !__owner.__isMask && transform.a >= 0 && transform.b == 0 && transform.c == 0 && transform.d >= 0;
 	}
+
+	// @:noCompletion private function get___scaleX():Float
+	// {
+	// 	return __useScale9Grid ? Math.min(1.0,
+	// 		__owner.scaleX / ((__boundsExStroke.width - __owner.__scale9Grid.width) / __boundsExStroke.width)) : __owner.scaleX;
+	// }
+	// @:noCompletion private function get___scaleY():Float
+	// {
+	// 	return __useScale9Grid ? Math.min(1.0,
+	// 		__owner.scaleY / ((__boundsExStroke.height - __owner.__scale9Grid.height) / __boundsExStroke.height)) : __owner.scaleY;
+	// }
 }
 
 @:access(openfl.display.DisplayObject)
