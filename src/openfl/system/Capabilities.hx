@@ -43,44 +43,43 @@ import sys.io.Process;
 	`GET` or `POST` HTTP method. The following example shows a server string
 	for a computer that has MP3 support and 1600 x 1200 pixel resolution and
 	that is running Windows XP with an input method editor (IME) installed:
-	<pre
-	xml:space="preserve">A=t&SA=t&SV=t&EV=t&MP3=t&AE=t&VE=t&ACC=f&PR=t&SP=t&
+
+	<pre xml:space="preserve">A=t&SA=t&SV=t&EV=t&MP3=t&AE=t&VE=t&ACC=f&PR=t&SP=t&
 	SB=f&DEB=t&V=WIN%209%2C0%2C0%2C0&M=Adobe%20Windows&
 	R=1600x1200&DP=72&COL=color&AR=1.0&OS=Windows%20XP&
 	L=en&PT=External&AVD=f&LFD=f&WD=f&IME=t</pre>
-	The following table lists the properties of the Capabilities class and
-	corresponding server strings: <adobetable><tgroup
-	<row><entry align="left">Capabilities class
-	property</entry><entry align="left">Server
-	string |
-		|`avHardwareDisable` | `AVD` |
-		|`hasAccessibility` | `ACC` |
-		|`hasAudio` | `A` |
-		|`hasAudioEncoder` | `AE` |
-		|`hasEmbeddedVideo` | `EV` |
-		|`hasIME` | `IME` |
-		|`hasMP3` | `MP3` |
-		|`hasPrinting` | `PR` |
-		|`hasScreenBroadcast` | `SB` |
-		|`hasScreenPlayback` | `SP` |
-		|`hasStreamingAudio` | `SA` |
-		|`hasStreamingVideo` | `SV` |
-		|`hasTLS` | `TLS` |
-		|`hasVideoEncoder` | `VE` |
-		|`isDebugger` | `DEB` |
-		|`language` | `L` |
-		|`localFileReadDisable` | `LFD` |
-		|`manufacturer` | `M` |
-		|`maxLevelIDC` | `ML` |
-		|`os` | `OS` |
-		|`pixelAspectRatio` | `AR` |
-		|`playerType` | `PT` |
-		|`screenColor` | `COL` |
-		|`screenDPI` | `DP` |
-		|`screenResolutionX` | `R` |
-		|`screenResolutionY` | `R` |
-		|`version` | `V` |
 
+	The following table lists the properties of the Capabilities class and
+	corresponding server strings:
+
+	| Capabilities class property | Server string |
+	|`avHardwareDisable` | `AVD` |
+	|`hasAccessibility` | `ACC` |
+	|`hasAudio` | `A` |
+	|`hasAudioEncoder` | `AE` |
+	|`hasEmbeddedVideo` | `EV` |
+	|`hasIME` | `IME` |
+	|`hasMP3` | `MP3` |
+	|`hasPrinting` | `PR` |
+	|`hasScreenBroadcast` | `SB` |
+	|`hasScreenPlayback` | `SP` |
+	|`hasStreamingAudio` | `SA` |
+	|`hasStreamingVideo` | `SV` |
+	|`hasTLS` | `TLS` |
+	|`hasVideoEncoder` | `VE` |
+	|`isDebugger` | `DEB` |
+	|`language` | `L` |
+	|`localFileReadDisable` | `LFD` |
+	|`manufacturer` | `M` |
+	|`maxLevelIDC` | `ML` |
+	|`os` | `OS` |
+	|`pixelAspectRatio` | `AR` |
+	|`playerType` | `PT` |
+	|`screenColor` | `COL` |
+	|`screenDPI` | `DP` |
+	|`screenResolutionX` | `R` |
+	|`screenResolutionY` | `R` |
+	|`version` | `V` |
 
 	There is also a `WD` server string that specifies whether windowless mode
 	is disabled. Windowless mode can be disabled in Flash Player due to
@@ -293,9 +292,9 @@ import sys.io.Process;
 
 	/**
 		Specifies the manufacturer of the running version of OpenFL, in the
-		format "_ManufacturerName_ _OSName_". The value for `_ManufacturerName_`
+		format _`"ManufacturerName OSName"`_. The value for _`ManufacturerName`_
 		is typically "OpenFL". When targeting Adobe Flash Player or AIR, the
-		value for `_ManufacturerName_` is "Adobe". The value for `_OSName_`
+		value for _`ManufacturerName`_ is "Adobe". The value for _`OSName`_
 		could be `"Windows"`, `"Macintosh"`, `"Linux"`, or another operating
 		system name. The server string is `M`.
 
@@ -377,13 +376,16 @@ import sys.io.Process;
 		* `"Desktop"` for the Adobe AIR runtime (except for SWF
 		content loaded by an HTML page, which has
 		`Capabilities.playerType` set to `"PlugIn"`)
-		* `"External"` for the external Flash Player<ph
-		outputclass="flashonly"> or in test mode
+		* `"External"` for the external Flash Player or in test mode
 		* `"PlugIn"` for the Flash Player browser plug-in (and for
 		SWF content loaded by an HTML page in an AIR application)
 		* `"StandAlone"` for the stand-alone Flash Player
 
 		The server string is `PT`.
+
+		_OpenFL target support:_ On native targets that are considered Haxe
+		`sys` targets, returns `"Desktop"`. On the HTML5 target, returns
+		`"PlugIn"`. On all other targets, returns `"StandAlone"`.
 	**/
 	public static var playerType(default, null) = #if web "PlugIn" #elseif sys "Desktop" #else "StandAlone" #end;
 
@@ -423,10 +425,11 @@ import sys.io.Process;
 		A URL-encoded string that specifies values for each Capabilities property.
 
 		The following example shows a URL-encoded string:
-		`A=t&SA=t&SV=t&EV=t&MP3=t&AE=t&VE=t&ACC=f&PR=t&SP=t&
+
+		<pre xml:space="preserve">A=t&SA=t&SV=t&EV=t&MP3=t&AE=t&VE=t&ACC=f&PR=t&SP=t&
 		SB=f&DEB=t&V=WIN%208%2C5%2C0%2C208&M=Adobe%20Windows&
 		R=1600x1200&DP=72&COL=color&AR=1.0&OS=Windows%20XP&
-		L=en&PT=External&AVD=f&LFD=f&WD=f`
+		L=en&PT=External&AVD=f&LFD=f&WD=f</pre>
 	**/
 	public static var serverString(default, null) = ""; // TODO
 
@@ -452,12 +455,15 @@ import sys.io.Process;
 		Specifies the Flash Player or Adobe<sup>®</sup> AIR<sup>®</sup> platform
 		and version information. The format of the version number is: _platform
 		majorVersion,minorVersion,buildNumber,internalBuildNumber_. Possible
-		values for _platform_ are `"WIN"`, ` `"MAC"`,
+		values for _platform_ are `"WIN"`, `"MAC"`,
 		`"LNX"`, and `"AND"`. Here are some examples of
-		version information: `WIN 9,0,0,0 // Flash
-		Player 9 for Windows MAC 7,0,25,0 // Flash Player 7 for Macintosh LNX
-		9,0,115,0 // Flash Player 9 for Linux AND 10,2,150,0 // Flash Player 10
-		for Android`
+		version information:
+
+		| Version String | Description |
+		| `WIN 9,0,0,0` | Flash Player 9 for Windows |
+		| `MAC 7,0,25,0` | Flash Player 7 for Macintosh |
+		| `LNX 9,0,115,0` | Flash Player 9 for Linux |
+		| `AND 10,2,150,0` | Flash Player 10 for Android |
 
 		Do _not_ use `Capabilities.version` to determine a
 		capability based on the operating system if a more specific capability

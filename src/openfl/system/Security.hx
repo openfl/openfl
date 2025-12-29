@@ -80,7 +80,7 @@ class Security
 		uses exact domains for player settings. The default value for
 		`exactSettings` is `true`. If you change `exactSettings` from its
 		default value, do so before any events occur that require Flash Player
-		or AIR to choose player settings נfor example, using a camera or
+		or AIR to choose player settings — for example, using a camera or
 		microphone, or retrieving a persistent shared object.
 
 		If you previously published a version 6 SWF file and created
@@ -113,21 +113,21 @@ class Security
 		operating.
 		`Security.sandboxType` has one of the following values:
 
-		* `remote` (`Security.REMOTE`)הhis file is from an Internet URL and
+		* `remote` (`Security.REMOTE`) This file is from an Internet URL and
 		operates under domain-based sandbox rules.
-		* `localWithFile` (`Security.LOCAL_WITH_FILE`)הhis file is a local
+		* `localWithFile` (`Security.LOCAL_WITH_FILE`) This file is a local
 		file, has not been trusted by the user, and it is not a SWF file that
 		was published with a networking designation. The file may read from
 		local data sources but may not communicate with the Internet.
-		* `localWithNetwork` (`Security.LOCAL_WITH_NETWORK`)הhis SWF file
+		* `localWithNetwork` (`Security.LOCAL_WITH_NETWORK`) This SWF file
 		is a local file, has not been trusted by the user, and was published
 		with a networking designation. The SWF file can communicate with the
 		Internet but cannot read from local data sources.
-		* `localTrusted` (`Security.LOCAL_TRUSTED`)הhis file is a local
+		* `localTrusted` (`Security.LOCAL_TRUSTED`) This file is a local
 		file and has been trusted by the user, using either the Flash Player
 		Settings Manager or a FlashPlayerTrust configuration file. The file
 		can read from local data sources and communicate with the Internet.
-		* `application` (`Security.APPLICATION`)הhis file is running in an
+		* `application` (`Security.APPLICATION`) This file is running in an
 		AIR application, and it was installed with the package (AIR file) for
 		that application. By default, files in the AIR application sandbox can
 		cross-script any file from any domain (although files outside the AIR
@@ -151,14 +151,14 @@ class Security
 		sandbox can communicate with content in the application security
 		sandbox using a sandbox bridge.
 
-		If two SWF files are served from the same domain נfor example,
-		http://mysite.com/swfA.swf and http://mysite.com/swfB.swf נthen
+		If two SWF files are served from the same domain — for example,
+		http://mysite.com/swfA.swf and http://mysite.com/swfB.swf — then
 		swfA.swf can examine and modify variables, objects, properties,
 		methods, and so on in swfB.swf, and swfB.swf can do the same for
 		swfA.swf. This is called _cross-movie scripting_ or _cross-scripting_.
 
-		If two SWF files are served from different domains נfor example,
-		http://siteA.com/swfA.swf and http://siteB.com/siteB.swf נthen, by
+		If two SWF files are served from different domains — for example,
+		http://siteA.com/swfA.swf and http://siteB.com/siteB.swf — then, by
 		default, Flash Player does not allow swfA.swf to script swfB.swf, nor
 		swfB.swf to script swfA.swf. A SWF file gives permission to SWF files
 		from other domains by calling `Security.allowDomain()`. This is called
@@ -376,7 +376,7 @@ class Security
 		and your users, attempting to steal the credit card numbers that your
 		users enter into your shopping cart application. A middle party might,
 		for example, be an unscrupulous ISP used by some of your users, or a
-		malicious administrator at a user's workplace נanyone who has the
+		malicious administrator at a user's workplace — anyone who has the
 		ability to view or alter network packets transmitted over the public
 		Internet between your users and your servers. This situation is not
 		uncommon.

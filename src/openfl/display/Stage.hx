@@ -71,8 +71,8 @@ typedef Element = Dynamic;
 	The Stage object is not globally accessible. You need to access it
 	through the `stage` property of a DisplayObject instance.
 
-	The Stage class has several ancestor classes  -  DisplayObjectContainer,
-	InteractiveObject, DisplayObject, and EventDispatcher  -  from which it
+	The Stage class has several ancestor classes — DisplayObjectContainer,
+	InteractiveObject, DisplayObject, and EventDispatcher — from which it
 	inherits properties and methods. Many of these properties and methods are
 	either inapplicable to Stage objects, or require security checks when
 	called on a Stage object. The properties and methods that require security
@@ -1687,10 +1687,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (!event.__preventDefault)
 		{
-			// #if mobile
 			Log.println(CallStack.toString(CallStack.exceptionStack()));
 			Log.println(Std.string(e));
-			// #end
 
 			#if (cpp && !cppia)
 			untyped __cpp__("throw e");
@@ -3822,13 +3820,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 				if (updateChildren)
 				{
-					// #if dom
 					if (DisplayObject.__supportDOM)
 					{
 						__wasDirty = true;
 					}
-
-					// #end
 
 					// __dirty = false;
 				}

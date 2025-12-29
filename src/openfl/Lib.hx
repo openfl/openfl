@@ -375,12 +375,12 @@ class Lib
 		The following code shows how you can invoke the VIP Access and Connect Pro
 		applications on Android:
 
-		```as3
+		```haxe
 		//Invoke the VIP Access Application.
-		navigateToURL(new URLRequest("vipaccess://com.verisign.mvip.main?action=securitycode"));
+		Lib.navigateToURL(new URLRequest("vipaccess://com.verisign.mvip.main?action=securitycode"));
 
 		//Invoke the Connect Pro Application.
-		navigateToURL(new URLRequest("connectpro://"));
+		Lib.navigateToURL(new URLRequest("connectpro://"));
 		```
 
 		@param	request	A URLRequest object that specifies the URL to navigate to.
