@@ -147,7 +147,7 @@ class Loader extends DisplayObjectContainer
 
 	@:noCompletion private static function __init__()
 	{
-		Loader._registerDefaultLoaders();
+		Loader.__registerDefaultLoaders();
 	}
 
 	/**
@@ -208,7 +208,7 @@ class Loader extends DisplayObjectContainer
 		__unloaded = true;
 	}
 
-	@:noCompletion private static function _registerDefaultLoaders():Void
+	@:noCompletion private static function __registerDefaultLoaders():Void
 	{
 		var loaders = [new BitmapDataLoader(), new ScriptLoader(), new AssetManifestLoader()];
 
