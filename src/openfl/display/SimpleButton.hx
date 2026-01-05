@@ -61,13 +61,13 @@ class SimpleButton extends InteractiveObject
 		button. For a basic button, set the `hitTestState` property to
 		the same display object as the `overState` property. If you do
 		not set the `hitTestState` property, the SimpleButton is
-		inactive  -  it does not respond to user input events.
+		inactive — it does not respond to user input events.
 	**/
 	public var hitTestState(get, set):DisplayObject;
 
 	/**
 		Specifies a display object that is used as the visual object for the
-		button over state  -  the state that the button is in when the pointer is
+		button over state — the state that the button is in when the pointer is
 		positioned over the button.
 	**/
 	public var overState(get, set):DisplayObject;
@@ -96,7 +96,7 @@ class SimpleButton extends InteractiveObject
 
 	/**
 		Specifies a display object that is used as the visual object for the
-		button up state  -  the state that the button is in when the pointer is
+		button up state — the state that the button is in when the pointer is
 		not positioned over the button.
 	**/
 	public var upState(get, set):DisplayObject;
@@ -459,7 +459,6 @@ class SimpleButton extends InteractiveObject
 			value.parent.removeChild(value);
 		}
 
-		// #if (js && html5 && dom)
 		#if (js && html5)
 		if (DisplayObject.__supportDOM && __previousStates == null)
 		{
@@ -469,7 +468,6 @@ class SimpleButton extends InteractiveObject
 
 		if (value != __currentState)
 		{
-			// #if (js && html5 && dom)
 			#if (js && html5)
 			if (DisplayObject.__supportDOM)
 			{

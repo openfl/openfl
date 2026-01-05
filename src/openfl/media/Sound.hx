@@ -30,7 +30,7 @@ import lime.media.AudioSource;
 	that object, close the sound stream, and access data about the sound, such
 	as information about the number of bytes in the stream and ID3 metadata.
 	More detailed control of the sound is performed through the sound source
-	 -  the SoundChannel or Microphone object for the sound  -  and through the
+	 -  the SoundChannel or Microphone object for the sound — and through the
 	properties in the SoundTransform class that control the output of the sound
 	to the computer's speakers.
 
@@ -369,7 +369,7 @@ class Sound extends EventDispatcher
 		@param target A ByteArray object in which the extracted sound samples
 					  are placed.
 		@param length The number of sound samples to extract. A sample
-					  contains both the left and right channels נthat is,
+					  contains both the left and right channels — that is,
 					  two 32-bit floating-point values.
 		@return The number of samples written to the ByteArray specified in
 				the `target` parameter.

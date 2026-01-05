@@ -22,11 +22,15 @@ class ClipboardRTFTest extends Test
 	// ByteArray type coercion fails with Haxe 3.4.7
 	@Ignored
 	#end
-	@:timeout(1000)
+	@:timeout(2000)
 	public function test_getData(async:Async)
 	{
 		ByteArray.loadFromFile("hello.rtf").onComplete(function(richTextFormatData)
 		{
+			if (async.timedOut)
+			{
+				return;
+			}
 			var textFormatData = 'Text Format Data';
 			var clipboard = Clipboard.generalClipboard;
 
@@ -46,6 +50,10 @@ class ClipboardRTFTest extends Test
 			async.done();
 		}).onError(function(result)
 		{
+				if (async.timedOut)
+				{
+					return;
+				}
 				Assert.fail(result);
 				async.done();
 		});

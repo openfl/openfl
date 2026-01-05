@@ -92,6 +92,14 @@ class CairoTextField
 		var pixelRatio = renderer.__pixelRatio;
 		#end
 
+		if (graphics.__bitmapScaleX != pixelRatio || graphics.__bitmapScaleY != pixelRatio)
+		{
+			// the TextField might have rendered in a context that requires a
+			// different pixel ratio than normal, such as when drawing to
+			// BitmapData.
+			graphics.__softwareDirty = true;
+		}
+
 		graphics.__update(renderer.__worldTransform, pixelRatio);
 
 		var width = Math.round(graphics.__width * pixelRatio);
@@ -110,7 +118,7 @@ class CairoTextField
 				needsUpscaling = true;
 			}
 
-			if (!renderable || needsUpscaling)
+			if (!renderable || needsUpscaling || width <= 0 || height <= 0)
 			{
 				graphics.__cairo = null;
 				graphics.__bitmap = null;
@@ -150,8 +158,6 @@ class CairoTextField
 			graphics.__managed = true;
 
 			graphics.__bitmap = bitmap;
-			graphics.__bitmapScaleX = pixelRatio;
-			graphics.__bitmapScaleY = pixelRatio;
 
 			cairo = graphics.__cairo;
 		}
@@ -164,6 +170,9 @@ class CairoTextField
 			cairo.paint();
 			cairo.setOperator(OVER);
 		}
+
+		graphics.__bitmapScaleX = pixelRatio;
+		graphics.__bitmapScaleY = pixelRatio;
 
 		var options = new CairoFontOptions();
 
