@@ -262,7 +262,7 @@ class CanvasGraphics
 				var dy = y2 - y0;
 				var sdx = 0.5 * (gradientScale - 1.0) * dx;
 				var sdy = 0.5 * (gradientScale - 1.0) * dy;
-				gradient = context.createLinearGradient(x0 - sdx, y0 - sdy, x1 + sdx, y2 + sdy,);
+				gradient = context.createLinearGradient(x0 - sdx, y0 - sdy, x1 + sdx, y2 + sdy);
 		}
 
 		for (i in 0...colors.length)
