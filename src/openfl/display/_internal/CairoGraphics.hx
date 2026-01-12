@@ -1,18 +1,19 @@
 package openfl.display._internal;
 
 #if !flash
-import openfl.display._internal.DrawCommandBuffer;
-import openfl.display._internal.DrawCommandReader;
+import haxe.ds.IntMap;
+import openfl.Vector;
 import openfl.display.BitmapData;
 import openfl.display.CairoRenderer;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
 import openfl.display.SpreadMethod;
+import openfl.display._internal.DrawCommandBuffer;
+import openfl.display._internal.DrawCommandReader;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.Vector;
 #if lime
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoExtend;
@@ -70,7 +71,7 @@ class CairoGraphics
 	private static var worldAlpha:Float;
 	private static var tempMatrix = new Matrix();
 	private static var tempMatrix3 = new Matrix3();
-	private static var seenEdgeMap:Map<Int, Bool> = new Map<Int, Bool>();
+	private static var seenEdgeMap:IntMap<Bool> = new IntMap<Bool>();
 
 	private static function paintStroke():Void
 	{
