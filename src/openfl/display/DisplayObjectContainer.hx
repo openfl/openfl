@@ -940,7 +940,7 @@ class DisplayObjectContainer extends InteractiveObject
 	{
 		if (!__worldTransformInvalid)
 		{
-			__worldTransformInvalid = true;
+			super.__setWorldTransformInvalid();
 
 			if (__children != null)
 			{

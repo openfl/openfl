@@ -41,7 +41,6 @@ class Context3DGraphics
 	private static var tempIndicesVector:Vector<Int> = new Vector<Int>();
 	private static var tempUvtVector:Vector<Float> = new Vector<Float>();
 	private static var tempScale9VerticesVector:Vector<Float>;
-	private static var useScale9Grid:Bool;
 
 	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
@@ -62,7 +61,7 @@ class Context3DGraphics
 
 		inline function buildDrawTrianglesBuffer(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void
 		{
-			if (useScale9Grid)
+			if (graphics.__useScale9Grid)
 			{
 				if (tempScale9VerticesVector == null)
 				{
@@ -303,6 +302,7 @@ class Context3DGraphics
 
 						if (transformABCD && transformXY)
 						{
+							// this overrides / ignores tileRect.x & tileRect.y
 							ti = i * 6;
 							tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4],
 								transforms[ti + 5]);
@@ -406,7 +406,7 @@ class Context3DGraphics
 					var scaleX = graphics.__owner.scaleX;
 					var scaleY = graphics.__owner.scaleY;
 
-					if (useScale9Grid)
+					if (graphics.__useScale9Grid)
 					{
 						var scale9Grid = graphics.__owner.scale9Grid;
 						if (c.x + radiusX <= scale9Grid.x && c.x + c.width - radiusX >= scale9Grid.x + scale9Grid.width)
@@ -633,8 +633,6 @@ class Context3DGraphics
 			#else
 			var pixelRatio = renderer.__pixelRatio;
 			#end
-
-			useScale9Grid = graphics.__useScale9Grid;
 
 			graphics.__update(renderer.__worldTransform, pixelRatio);
 
@@ -954,7 +952,7 @@ class Context3DGraphics
 
 							var scaleX = graphics.__owner.scaleX;
 							var scaleY = graphics.__owner.scaleY;
-							if (useScale9Grid)
+							if (graphics.__useScale9Grid)
 							{
 								var scale9Grid = graphics.__owner.scale9Grid;
 								if (c.x + radiusX <= scale9Grid.x && c.x + c.width - radiusX >= scale9Grid.x + scale9Grid.width)
@@ -984,7 +982,7 @@ class Context3DGraphics
 								var width = c.width;
 								var height = c.height;
 
-								if (useScale9Grid)
+								if (graphics.__useScale9Grid)
 								{
 									var scaledLeft = graphics.__getScale9GridPositionX(c.x);
 									var scaledTop = graphics.__getScale9GridPositionY(c.y);

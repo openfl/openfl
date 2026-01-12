@@ -100,10 +100,7 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __bitmap:BitmapData;
 	@:noCompletion private var __bitmapScaleX:Float;
 	@:noCompletion private var __bitmapScaleY:Float;
-	@:noCompletion private var __useScale9Grid(get, never):Bool;
-
-	// @:noCompletion private var __scaleX(get, never):Float;
-	// @:noCompletion private var __scaleY(get, never):Float;
+	@:noCompletion private var __useScale9Grid:Bool;
 
 	@:noCompletion private function new(owner:DisplayObject)
 	{
@@ -1469,14 +1466,27 @@ import js.html.CanvasRenderingContext2D;
 		#end
 	}
 
+	@:noCompletion private function __updateBounds():Void
+	{
+		#if (!openfl_legacy_scale9grid || cairo || canvas)
+		var worldTransform = __owner.__getWorldTransform();
+		__useScale9Grid = __owner.__scale9Grid != null && !__owner.__isMask && worldTransform.a >= 0 && worldTransform.b == 0 && worldTransform.c == 0
+			&& worldTransform.d >= 0;
+		#end
+
+		if (!__boundsDirty) return;
+
+		__transformDirty = GraphicsBoundsHelper.calculateBounds(__commands, this);
+		__bounds.copyFrom(GraphicsBoundsHelper.bounds);
+		__boundsExStroke.copyFrom(GraphicsBoundsHelper.boundsExStroke);
+		__boundsDirty = false;
+	}
+
 	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix, exStroke:Bool = false):Void
 	{
-		if (__boundsDirty)
-		{
-			GraphicsBoundsHelper.update(this);
-			__boundsDirty = false;
-		}
-		var bounds:Rectangle = exStroke ? __boundsExStroke : __bounds;
+		__updateBounds();
+
+		var bounds = exStroke ? __boundsExStroke : __bounds;
 		if (bounds.isEmpty()) return;
 
 		var transformedBounds = Rectangle.__pool.get();
@@ -1487,19 +1497,14 @@ import js.html.CanvasRenderingContext2D;
 
 	@:noCompletion private function __hitTest(x:Float, y:Float, shapeFlag:Bool, matrix:Matrix):Bool
 	{
-		if (__boundsDirty)
-		{
-			GraphicsBoundsHelper.update(this);
-			__boundsDirty = false;
-		}
+		__updateBounds();
 
-		var bounds = __bounds;
-		if (bounds.isEmpty()) return false;
+		if (__bounds.isEmpty()) return false;
 
 		var px = matrix.__transformInverseX(x, y);
 		var py = matrix.__transformInverseY(x, y);
 
-		if (px > bounds.x && py > bounds.y && bounds.contains(px, py))
+		if (__bounds.contains(px, py))
 		{
 			if (shapeFlag)
 			{
@@ -1633,11 +1638,7 @@ import js.html.CanvasRenderingContext2D;
 
 	@:noCompletion private function __update(displayMatrix:Matrix, pixelRatio:Float):Void
 	{
-		if (__boundsDirty)
-		{
-			GraphicsBoundsHelper.update(this);
-			__boundsDirty = false;
-		}
+		__updateBounds();
 
 		if (__bounds.width <= 0 || __bounds.height <= 0)
 		{
@@ -1651,12 +1652,10 @@ import js.html.CanvasRenderingContext2D;
 		if (parentTransform == null) return;
 		var scaleX = pixelRatio, scaleY = pixelRatio;
 
-		var useScale9Grid = __useScale9Grid;
-
 		#if (openfl_legacy_scale9grid && lime_cairo && !cairo && !openfl_force_hw_graphics && !force_hw_graphics)
-		var calculateScale = !useScale9Grid;
+		var calculateScale = !__useScale9Grid;
 		#elseif (openfl_legacy_scale9grid && lime_canvas && !canvas && !openfl_force_hw_graphics && !force_hw_graphics)
-		var calculateScale = !useScale9Grid;
+		var calculateScale = !__useScale9Grid;
 		#else
 		var calculateScale = true;
 		#end
@@ -1700,7 +1699,7 @@ import js.html.CanvasRenderingContext2D;
 			}
 		}
 		#if openfl_disable_graphics_upscaling
-		if (!useScale9Grid)
+		if (!__useScale9Grid)
 		{
 			if (scaleX > 1) scaleX = 1;
 			if (scaleY > 1) scaleY = 1;
@@ -1730,12 +1729,12 @@ import js.html.CanvasRenderingContext2D;
 		var inverseA:Float;
 		var inverseD:Float;
 
-		if (useScale9Grid)
+		if (__useScale9Grid)
 		{
-			__renderTransform.a = pixelRatio;
-			__renderTransform.d = pixelRatio;
-			inverseA = 1 / pixelRatio;
-			inverseD = 1 / pixelRatio;
+			__renderTransform.a = 1;
+			__renderTransform.d = 1;
+			inverseA = 1;
+			inverseD = 1;
 		}
 		else
 		{
@@ -1797,7 +1796,7 @@ import js.html.CanvasRenderingContext2D;
 		__height = newHeight;
 	}
 
-	@:noCompletion private function __calculateOffset(result:Point):Void
+	@:noCompletion private function __calculateRenderOffset(result:Point):Void
 	{
 		// Accounts for stroke thickness + scale
 		var scaleX = 1.0;
@@ -1806,6 +1805,7 @@ import js.html.CanvasRenderingContext2D;
 		var startY = __boundsExStroke.y;
 		var strokePaddingX = (__bounds.x - __boundsExStroke.x);
 		var strokePaddingY = (__bounds.y - __boundsExStroke.y);
+
 		if (__useScale9Grid)
 		{
 			startX = __getScale9GridPositionX(startX);
@@ -1813,7 +1813,9 @@ import js.html.CanvasRenderingContext2D;
 			scaleX = __owner.scaleX;
 			scaleY = __owner.scaleY;
 		}
-		result.setTo(startX + (strokePaddingX * scaleX) + __renderTransform.tx, startY + (strokePaddingY * scaleY) + __renderTransform.ty);
+
+		result.setTo(startX + (strokePaddingX * scaleX), startY + (strokePaddingY * scaleY));
+		result.offset(__renderTransform.tx, __renderTransform.ty);
 	}
 
 	@:noCompletion private function __generateUV(vertices:Vector<Float>, textureWidth:Float, textureHeight:Float, matrix:Matrix, result:Vector<Float>):Void
@@ -1842,13 +1844,14 @@ import js.html.CanvasRenderingContext2D;
 		return __getScale9GridPosition(pos, __owner.__scale9Grid.y, __owner.__scale9Grid.height, __boundsExStroke.height, __owner.scaleY);
 	}
 
-	@:noCompletion private function __calculateScale9GridMinScale(scale:Point):Void
-	{
-		var scaleX = (__boundsExStroke.width - __owner.__scale9Grid.width) / __boundsExStroke.width;
-		var scaleY = (__boundsExStroke.height - __owner.__scale9Grid.height) / __boundsExStroke.height;
-		scale.setTo(scaleX, scaleY);
-	}
-
+	/*
+		@:noCompletion private function __calculateScale9GridMinScale(scale:Point):Void
+		{
+			var scaleX = (__boundsExStroke.width - __owner.__scale9Grid.width) / __boundsExStroke.width;
+			var scaleY = (__boundsExStroke.height - __owner.__scale9Grid.height) / __boundsExStroke.height;
+			scale.setTo(scaleX, scaleY);
+		}
+	 */
 	@:noCompletion private inline function __getScale9GridPosition(pos:Float, startSize:Float, centerSize:Float, unscaledSize:Float, scale:Float):Float
 	{
 		if (scale <= 0.0) return 0.0;
@@ -1896,6 +1899,38 @@ import js.html.CanvasRenderingContext2D;
 		return startSize + centerScaledSize * (pos - startSize) / centerSize;
 	}
 
+	@:noCompletion private function __calculatePatternMatrix(bitmapMatrix:Matrix, commands:DrawCommandBuffer, patternMatrix:Matrix):Void
+	{
+		patternMatrix.copyFrom(bitmapMatrix);
+
+		if (__useScale9Grid)
+		{
+			GraphicsBoundsHelper.calculateBounds(commands, this);
+			var bounds = GraphicsBoundsHelper.bounds;
+
+			var scaleX = __owner.scaleX;
+			var scaleY = __owner.scaleY;
+
+			var scaledLeft = __getScale9GridPositionX(bounds.x);
+			var scaledTop = __getScale9GridPositionY(bounds.y);
+			var scaledRight = __getScale9GridPositionX(bounds.x + bounds.width);
+			var scaledBottom = __getScale9GridPositionY(bounds.y + bounds.height);
+
+			var scaledWidth = scaledRight - scaledLeft;
+			var scaledHeight = scaledBottom - scaledTop;
+
+			var scaleX = scaledWidth / bounds.width;
+			var scaleY = scaledHeight / bounds.height;
+
+			if (Math.isNaN(scaleX) || scaleX == 0.0) scaleX = 1.0;
+			if (Math.isNaN(scaleY) || scaleY == 0.0) scaleY = 1.0;
+
+			patternMatrix.translate(-__boundsExStroke.x, -__boundsExStroke.y);
+			patternMatrix.scale(scaleX, scaleY);
+			patternMatrix.translate(scaledLeft, scaledTop);
+		}
+	}
+
 	// Get & Set Methods
 	@:noCompletion private function set___dirty(value:Bool):Bool
 	{
@@ -1913,23 +1948,6 @@ import js.html.CanvasRenderingContext2D;
 
 		return __dirty = value;
 	}
-
-	@:noCompletion private function get___useScale9Grid():Bool
-	{
-		var transform = __owner.__getWorldTransform();
-		return __owner.__scale9Grid != null && !__owner.__isMask && transform.a >= 0 && transform.b == 0 && transform.c == 0 && transform.d >= 0;
-	}
-
-	// @:noCompletion private function get___scaleX():Float
-	// {
-	// 	return __useScale9Grid ? Math.min(1.0,
-	// 		__owner.scaleX / ((__boundsExStroke.width - __owner.__scale9Grid.width) / __boundsExStroke.width)) : __owner.scaleX;
-	// }
-	// @:noCompletion private function get___scaleY():Float
-	// {
-	// 	return __useScale9Grid ? Math.min(1.0,
-	// 		__owner.scaleY / ((__boundsExStroke.height - __owner.__scale9Grid.height) / __boundsExStroke.height)) : __owner.scaleY;
-	// }
 }
 
 @:access(openfl.display.DisplayObject)
@@ -1939,8 +1957,6 @@ import js.html.CanvasRenderingContext2D;
 class GraphicsBoundsHelper
 {
 	private static var graphics:Graphics;
-	private static var bounds:Rectangle = new Rectangle();
-	private static var boundsExStroke:Rectangle = new Rectangle();
 	private static var strokePaddingX:Float;
 	private static var strokePaddingY:Float;
 	private static var hasFill:Bool;
@@ -1948,9 +1964,9 @@ class GraphicsBoundsHelper
 	private static var path:Array<PathPoint>;
 	private static var capsStyle:CapsStyle;
 	private static var jointStyle:JointStyle;
-	private static var useScale9Grid:Bool;
-
 	private static inline var EPSILON = 1e-8;
+	public static var bounds(default, never):Rectangle = new Rectangle();
+	public static var boundsExStroke(default, never):Rectangle = new Rectangle();
 
 	@:noCompletion private static function inflateBounds(x:Float, y:Float, stroke:Bool):Void
 	{
@@ -1958,14 +1974,16 @@ class GraphicsBoundsHelper
 		inflate(boundsExStroke, x, y, false);
 	}
 
-	@:noCompletion private static inline function inflate(rect:Rectangle, x:Float, y:Float, stroke:Bool):Void
+	@:noCompletion private static function inflate(rect:Rectangle, x:Float, y:Float, stroke:Bool):Void
 	{
-		var strokePaddingX = stroke ? GraphicsBoundsHelper.strokePaddingX : 0.0;
-		var strokePaddingY = stroke ? GraphicsBoundsHelper.strokePaddingY : 0.0;
-		var left = x - strokePaddingX;
-		var top = y - strokePaddingY;
-		var right = x + strokePaddingX;
-		var bottom = y + strokePaddingY;
+		if (rect == null) return;
+
+		var paddingX = stroke ? strokePaddingX : 0.0;
+		var paddingY = stroke ? strokePaddingY : 0.0;
+		var left = x - paddingX;
+		var top = y - paddingY;
+		var right = x + paddingX;
+		var bottom = y + paddingY;
 
 		if (Math.isNaN(rect.width) && Math.isNaN(rect.height))
 		{
@@ -1973,7 +1991,6 @@ class GraphicsBoundsHelper
 			rect.y = top;
 			rect.width = right - left;
 			rect.height = bottom - top;
-			graphics.__transformDirty = true;
 			return;
 		}
 
@@ -1984,23 +2001,19 @@ class GraphicsBoundsHelper
 		{
 			rect.x = left;
 			rect.width = cacheRectRight - left;
-			graphics.__transformDirty = true;
 		}
 		if (rect.y > top)
 		{
 			rect.y = top;
 			rect.height = cacheRectBottom - top;
-			graphics.__transformDirty = true;
 		}
 		if (cacheRectRight < right)
 		{
 			rect.width = right - rect.x;
-			graphics.__transformDirty = true;
 		}
 		if (cacheRectBottom < bottom)
 		{
 			rect.height = bottom - rect.y;
-			graphics.__transformDirty = true;
 		}
 	}
 
@@ -2256,7 +2269,7 @@ class GraphicsBoundsHelper
 		return (1 - t) * (1 - t) * a + 2 * (1 - t) * t * b + t * t * c;
 	}
 
-	@:noCompletion private static function endPath():Void
+	@:noCompletion private static function endPath(close:Bool):Void
 	{
 		if (path.length > 1)
 		{
@@ -2264,21 +2277,20 @@ class GraphicsBoundsHelper
 			var curr:PathPoint;
 			var next:PathPoint;
 			var n = path.length;
-			var closed = hasFill;
 
 			if (path[0].x == path[n - 1].x && path[0].y == path[n - 1].y)
 			{
 				path[0] = path[n - 1];
 				path.pop();
 				n--;
-				closed = true;
+				close = true;
 			}
 
 			for (i in 0...n)
 			{
-				prev = (closed && i == 0) ? path[n - 1] : path[i - 1];
+				prev = (close && i == 0) ? path[n - 1] : path[i - 1];
 				curr = path[i];
-				next = (closed && i == n - 1) ? path[0] : path[i + 1];
+				next = (close && i == n - 1) ? path[0] : path[i + 1];
 
 				if (prev != null)
 				{
@@ -2318,7 +2330,7 @@ class GraphicsBoundsHelper
 				}
 			}
 
-			if (!closed)
+			if (!close)
 			{
 				capBounds(path[0], path[1], true);
 				capBounds(path[n - 2], path[n - 1], false);
@@ -2328,10 +2340,12 @@ class GraphicsBoundsHelper
 		if (path.length > 0) path = [];
 	}
 
-	public static function update(graphics:Graphics):Void
+	public static function calculateBounds(commands:DrawCommandBuffer, graphics:Graphics):Bool
 	{
 		GraphicsBoundsHelper.graphics = graphics;
-		useScale9Grid = graphics.__useScale9Grid;
+
+		var originalBounds = Rectangle.__pool.get();
+		originalBounds.copyFrom(bounds);
 
 		strokePaddingX = 0.0;
 		strokePaddingY = 0.0;
@@ -2341,11 +2355,11 @@ class GraphicsBoundsHelper
 		miterLimit = 0.0;
 		path = [];
 
-		bounds.setTo(0.0, 0.0, Math.NaN, Math.NaN);
-		boundsExStroke.setTo(0.0, 0.0, Math.NaN, Math.NaN);
+		bounds.setTo(Math.NaN, Math.NaN, Math.NaN, Math.NaN);
+		boundsExStroke.setTo(Math.NaN, Math.NaN, Math.NaN, Math.NaN);
 
-		var data = new DrawCommandReader(graphics.__commands);
-		for (type in graphics.__commands.types)
+		var data = new DrawCommandReader(commands);
+		for (type in commands.types)
 		{
 			switch (type)
 			{
@@ -2366,55 +2380,43 @@ class GraphicsBoundsHelper
 
 				case MOVE_TO:
 					var c = data.readMoveTo();
-					endPath();
+					endPath(hasFill);
 					appendToPath(c.x, c.y);
 
 				case DRAW_CIRCLE:
-					endPath();
+					endPath(hasFill);
 					var c = data.readDrawCircle();
-					if (c.radius != 0)
-					{
-						inflateBounds(c.x - c.radius, c.y - c.radius, true);
-						inflateBounds(c.x + c.radius, c.y + c.radius, true);
-					}
+					inflateBounds(c.x - c.radius, c.y - c.radius, true);
+					inflateBounds(c.x + c.radius, c.y + c.radius, true);
 
 				case DRAW_ELLIPSE:
-					endPath();
+					endPath(hasFill);
 					var c = data.readDrawEllipse();
-					if (c.width != 0 && c.height != 0)
-					{
-						inflateBounds(c.x, c.y, true);
-						inflateBounds(c.x + c.width, c.y + c.height, true);
-					}
+					inflateBounds(c.x, c.y, true);
+					inflateBounds(c.x + c.width, c.y + c.height, true);
 
 				case DRAW_RECT:
-					endPath();
+					endPath(hasFill);
 					var c = data.readDrawRect();
-					if (c.width != 0 && c.height != 0)
-					{
-						var minX = Math.min(c.x, c.x + c.width);
-						var minY = Math.min(c.y, c.y + c.height);
-						var maxX = Math.max(c.x, c.x + c.width);
-						var maxY = Math.max(c.y, c.y + c.height);
-						inflateBounds(minX, minY, true);
-						inflateBounds(maxX, maxY, true);
-					}
+					var minX = Math.min(c.x, c.x + c.width);
+					var minY = Math.min(c.y, c.y + c.height);
+					var maxX = Math.max(c.x, c.x + c.width);
+					var maxY = Math.max(c.y, c.y + c.height);
+					inflateBounds(minX, minY, true);
+					inflateBounds(maxX, maxY, true);
 
 				case DRAW_ROUND_RECT:
-					endPath();
+					endPath(hasFill);
 					var c = data.readDrawRoundRect();
-					if (c.width != 0 && c.height != 0)
-					{
-						var minX = Math.min(c.x, c.x + c.width);
-						var minY = Math.min(c.y, c.y + c.height);
-						var maxX = Math.max(c.x, c.x + c.width);
-						var maxY = Math.max(c.y, c.y + c.height);
-						inflateBounds(minX, minY, true);
-						inflateBounds(maxX, maxY, true);
-					}
+					var minX = Math.min(c.x, c.x + c.width);
+					var minY = Math.min(c.y, c.y + c.height);
+					var maxX = Math.max(c.x, c.x + c.width);
+					var maxY = Math.max(c.y, c.y + c.height);
+					inflateBounds(minX, minY, true);
+					inflateBounds(maxX, maxY, true);
 
 				case DRAW_QUADS:
-					endPath();
+					endPath(hasFill);
 					var c = data.readDrawQuads();
 					var rects = c.rects;
 					var indices = c.indices;
@@ -2464,6 +2466,7 @@ class GraphicsBoundsHelper
 
 						if (transformABCD && transformXY)
 						{
+							// this overrides / ignores tileRect.x & tileRect.y
 							ti = i * 6;
 							tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4],
 								transforms[ti + 5]);
@@ -2500,7 +2503,7 @@ class GraphicsBoundsHelper
 					Matrix.__pool.release(tileTransform);
 
 				case DRAW_TRIANGLES:
-					endPath();
+					endPath(hasFill);
 					var c = data.readDrawTriangles();
 					var x:Float;
 					var y:Float;
@@ -2526,11 +2529,11 @@ class GraphicsBoundsHelper
 					inflateBounds(maxX, maxY, true);
 
 				case LINE_GRADIENT_STYLE, LINE_BITMAP_STYLE:
-					endPath();
+					endPath(false);
 					data.skip(type);
 
 				case LINE_STYLE:
-					endPath();
+					endPath(false);
 					var c = data.readLineStyle();
 					var strokePadding = c.thickness == null ? 0.0 : c.thickness * 0.5;
 					jointStyle = c.joints;
@@ -2539,7 +2542,7 @@ class GraphicsBoundsHelper
 					var scaleX = Math.abs(graphics.__owner.__worldTransform.a);
 					var scaleY = Math.abs(graphics.__owner.__worldTransform.d);
 
-					if (useScale9Grid)
+					if (graphics.__useScale9Grid)
 					{
 						strokePaddingX = strokePadding / scaleX;
 						strokePaddingY = strokePadding / scaleY;
@@ -2563,12 +2566,12 @@ class GraphicsBoundsHelper
 					}
 
 				case END_FILL:
-					endPath();
+					endPath(hasFill);
 					data.skip(type);
 					hasFill = false;
 
 				case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
-					endPath();
+					endPath(hasFill);
 					data.skip(type);
 					hasFill = true;
 
@@ -2577,7 +2580,7 @@ class GraphicsBoundsHelper
 			}
 		}
 
-		endPath();
+		endPath(hasFill);
 
 		if (Math.isNaN(bounds.width) || Math.isNaN(bounds.height))
 		{
@@ -2588,8 +2591,10 @@ class GraphicsBoundsHelper
 			boundsExStroke.setEmpty();
 		}
 
-		graphics.__boundsExStroke.copyFrom(boundsExStroke);
-		graphics.__bounds.copyFrom(bounds);
+		var changed = !originalBounds.equals(bounds);
+		Rectangle.__pool.release(originalBounds);
+
+		return changed;
 	}
 }
 
