@@ -71,7 +71,6 @@ class CairoGraphics
 	private static var worldAlpha:Float;
 	private static var tempMatrix = new Matrix();
 	private static var tempMatrix3 = new Matrix3();
-	private static var seenEdgeMap:IntMap<Bool> = new IntMap<Bool>();
 
 	private static function paintStroke():Void
 	{
@@ -132,7 +131,7 @@ class CairoGraphics
 	}
 
 	private static function createGradientPattern(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
-			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float, stroke:Bool):CairoPattern
+			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):CairoPattern
 	{
 		var pattern:CairoPattern = null;
 		matrix = matrix != null ? matrix : Matrix.__identity;
@@ -484,9 +483,9 @@ class CairoGraphics
 		Matrix.__pool.release(tileTransform);
 	}
 
-	private static function drawTriangles(v:Vector<Float>, ind:Vector<Int>, uvt:Vector<Float>, culling:TriangleCulling, stroke:Bool):Void
+	private static function drawTriangles(v:Vector<Float>, ind:Vector<Int>, uvt:Vector<Float>, culling:TriangleCulling):Void
 	{
-		seenEdgeMap.clear();
+		var seenEdgeMap = new IntMap<Bool>();
 
 		var i = 0;
 		var l = ind.length;
@@ -556,19 +555,17 @@ class CairoGraphics
 				}
 			}
 
-			abKey = edgeKey(ind[ia], ind[ib]);
-			bcKey = edgeKey(ind[ib], ind[ic]);
-			caKey = edgeKey(ind[ic], ind[ia]);
-
-			abShared = seenEdgeMap.exists(abKey);
-			bcShared = seenEdgeMap.exists(bcKey);
-			caShared = seenEdgeMap.exists(caKey);
-			seenEdgeMap.set(abKey, true);
-			seenEdgeMap.set(bcKey, true);
-			seenEdgeMap.set(caKey, true);
-
 			if (stroke)
 			{
+				abKey = edgeKey(ind[ia], ind[ib]);
+				bcKey = edgeKey(ind[ib], ind[ic]);
+				caKey = edgeKey(ind[ic], ind[ia]);
+				abShared = seenEdgeMap.exists(abKey);
+				bcShared = seenEdgeMap.exists(bcKey);
+				caShared = seenEdgeMap.exists(caKey);
+				seenEdgeMap.set(abKey, true);
+				seenEdgeMap.set(bcKey, true);
+				seenEdgeMap.set(caKey, true);
 				if (!abShared)
 				{
 					cairo.moveTo(x1, y1);
@@ -841,7 +838,7 @@ class CairoGraphics
 					}
 
 					strokePattern = createGradientPattern(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-						c.focalPointRatio, true);
+						c.focalPointRatio);
 					strokeBitmap = null;
 
 				case LINE_BITMAP_STYLE:
@@ -916,7 +913,7 @@ class CairoGraphics
 
 					fillBitmap = null;
 					fillPattern = createGradientPattern(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-						c.focalPointRatio, false);
+						c.focalPointRatio);
 
 				case BEGIN_SHADER_FILL:
 					var c = data.readBeginShaderFill();
@@ -962,7 +959,7 @@ class CairoGraphics
 
 				case DRAW_TRIANGLES:
 					var c = data.readDrawTriangles();
-					drawTriangles(c.vertices, c.indices, c.uvtData, c.culling, stroke);
+					drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
 
 				case WINDING_EVEN_ODD:
 					data.readWindingEvenOdd();

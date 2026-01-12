@@ -1,8 +1,8 @@
 package openfl.display._internal;
 
 #if !flash
-import openfl.display._internal.DrawCommandBuffer;
-import openfl.display._internal.DrawCommandReader;
+import haxe.ds.IntMap;
+import openfl.Vector;
 import openfl.display.BitmapData;
 import openfl.display.CanvasRenderer;
 import openfl.display.CapsStyle;
@@ -10,20 +10,21 @@ import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
 import openfl.display.SpreadMethod;
+import openfl.display._internal.DrawCommandBuffer;
+import openfl.display._internal.DrawCommandReader;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.Vector;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil; // TODO
 #end
 #if (js && html5)
+import js.Browser;
 import js.html.CanvasElement;
 import js.html.CanvasGradient;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
 import js.html.CanvasWindingRule;
-import js.Browser;
 import js.html.DOMMatrix;
 import js.html.Path2D;
 #end
@@ -74,7 +75,6 @@ class CanvasGraphics
 	@SuppressWarnings("checkstyle:Dynamic") private static var windingRule:#if (js && html5) CanvasWindingRule #else Dynamic #end;
 	private static var worldAlpha:Float;
 	private static var tempMatrix:Matrix = new Matrix();
-	private static var seenEdgeMap:Map<Int, Bool> = new Map<Int, Bool>();
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
 	private static var hitTestCanvas:CanvasElement;
@@ -177,8 +177,7 @@ class CanvasGraphics
 
 	@SuppressWarnings("checkstyle:Dynamic")
 	private static function createCanvasGradient(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
-			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float,
-			stroke:Bool = false):#if (js && html5) CanvasGradient #else Void #end
+			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):#if (js && html5) CanvasGradient #else Void #end
 	{
 		#if (js && html5)
 		var pattern:CanvasGradient = null;
@@ -612,10 +611,10 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function drawTriangles(v:Vector<Float>, ind:Vector<Int>, uvt:Vector<Float>, culling:TriangleCulling, stroke:Bool):Void
+	private static function drawTriangles(v:Vector<Float>, ind:Vector<Int>, uvt:Vector<Float>, culling:TriangleCulling):Void
 	{
 		#if (js && html5)
-		seenEdgeMap.clear();
+		var seenEdgeMap = new IntMap<Bool>();
 
 		var i = 0;
 		var l = ind.length;
@@ -978,7 +977,7 @@ class CanvasGraphics
 					}
 
 					strokeGradient = createCanvasGradient(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-						c.focalPointRatio, true);
+						c.focalPointRatio);
 					context.strokeStyle = strokeGradient;
 
 					strokeBitmap = null;
@@ -1057,7 +1056,7 @@ class CanvasGraphics
 					var c = data.readBeginGradientFill();
 
 					fillGradient = context.fillStyle = createCanvasGradient(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod,
-						c.interpolationMethod, c.focalPointRatio, false);
+						c.interpolationMethod, c.focalPointRatio);
 					fillBitmap = null;
 					fillPattern = null;
 
@@ -1108,7 +1107,7 @@ class CanvasGraphics
 
 				case DRAW_TRIANGLES:
 					var c = data.readDrawTriangles();
-					drawTriangles(c.vertices, c.indices, c.uvtData, c.culling, stroke);
+					drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
 
 				case WINDING_EVEN_ODD:
 					data.readWindingEvenOdd();
