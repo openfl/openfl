@@ -1829,11 +1829,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 			__setWorldTransformInvalid();
 			__setParentRenderDirty();
-
-			if (__scale9Grid != null && __graphics != null)
-			{
-				__graphics.__dirty = true;
-			}
 		}
 		#if (openfl_enable_experimental_update_queue && !dom)
 		__setUpdateQueueFlag();
@@ -1842,7 +1837,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __setWorldTransformInvalid():Void
 	{
+		if (__worldTransformInvalid) return;
+
 		__worldTransformInvalid = true;
+
+		if (__scale9Grid != null && __graphics != null)
+		{
+			__graphics.__dirty = true;
+		}
 	}
 
 	@:noCompletion private function __stopAllMovieClips():Void {}
@@ -2338,10 +2340,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__scale9Grid = null;
 		}
 
-		if (__graphics != null)
-		{
-			__graphics.__dirty = true;
-		}
+		__setRenderDirty();
 
 		return value;
 	}
