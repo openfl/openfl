@@ -49,13 +49,16 @@ class CanvasGraphics
 	private static var hitTestResult:Bool;
 	private static var hitTestPoint:Point = new Point();
 	private static var masking:Bool;
-	private static var inPath:Bool;
 	private static var pathStart:Point;
 	private static var pathPosition:Point;
-	private static var closePath:Bool;
 	private static var stroke:Bool;
+	private static var dirty:Bool;
+	private static var inPath:Bool;
 	private static var hasStroke:Bool;
 	private static var hasFill:Bool;
+	private static var hasStrokeStyle:Bool;
+	private static var numStrokeStyles:Int;
+	private static var hasFillStyle:Bool;
 	private static var fillStart:Point = new Point();
 	private static var fillPosition:Point = new Point();
 	private static var strokeStart:Point = new Point();
@@ -89,17 +92,35 @@ class CanvasGraphics
 	}
 	#end
 
-	private static function paintStroke():Void
+	private static function closePath():Void
 	{
 		#if (js && html5)
-		if (context.strokeStyle == null || masking)
+		if (pathStart.x != pathPosition.x || pathStart.y != pathPosition.y)
+		{
+			context.lineTo(pathStart.x, pathStart.y);
+		}
+		if (numStrokeStyles < 2)
+		{
+			context.closePath();
+		}
+		#end
+	}
+
+	private static function paintStroke(close:Bool):Void
+	{
+		#if (js && html5)
+		if (!hasStrokeStyle || masking)
 		{
 			return;
+		}
+		if (close)
+		{
+			closePath();
 		}
 		if (hitTesting)
 		{
 			#if debug_hitTest context.stroke(); #end
-			hitTestResult = context.isPointInStroke(hitTestPoint.x, hitTestPoint.y);
+			if (!hitTestResult) hitTestResult = context.isPointInStroke(hitTestPoint.x, hitTestPoint.y);
 			return;
 		}
 		if (strokePattern != null)
@@ -118,17 +139,21 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function paintFill():Void
+	private static function paintFill(close:Bool):Void
 	{
 		#if (js && html5)
-		if (context.fillStyle == null || masking)
+		if (!hasFillStyle || masking)
 		{
 			return;
+		}
+		if (close)
+		{
+			closePath();
 		}
 		if (hitTesting)
 		{
 			#if debug_hitTest context.fill(windingRule); #end
-			hitTestResult = context.isPointInPath(hitTestPoint.x, hitTestPoint.y, windingRule);
+			if (!hitTestResult) hitTestResult = context.isPointInPath(hitTestPoint.x, hitTestPoint.y, windingRule);
 			return;
 		}
 
@@ -723,8 +748,7 @@ class CanvasGraphics
 			context.moveTo(x1, y1);
 			context.lineTo(x2, y2);
 			context.lineTo(x3, y3);
-			context.closePath();
-			closePath = false;
+			dirty = true;
 
 			if (doPaint)
 			{
@@ -737,8 +761,9 @@ class CanvasGraphics
 				u3 = uvt[ind[ic] * uvtStep];
 				v3 = uvt[ind[ic] * uvtStep + 1];
 				calculatePatternMatrixFromTri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3, minX, minY, fillBitmap.width, fillBitmap.height, fillMatrix);
-				paintFill();
-				context.beginPath();
+
+				paint();
+
 				fillMatrix = oldFillMatrix;
 
 				// if (abShared) fixTriangleGap(x1, y1, x2, y2);
@@ -751,28 +776,20 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function endPath():Void
-	{
-		#if (js && html5)
-		endFill();
-		if (hitTesting && hitTestResult) return;
-		endStroke(hasFill);
-		#end
-	}
-
 	private static function endFill():Void
 	{
 		#if (js && html5)
-		if (fillCommands.length == 0) return;
-		playCommands(fillCommands, fillStart, fillPosition, true);
-		#end
-	}
-
-	private static function endStroke(close:Bool):Void
-	{
-		#if (js && html5)
-		if (strokeCommands.length == 0) return;
-		playCommands(strokeCommands, strokeStart, strokePosition, close);
+		if (fillCommands.length != 0)
+		{
+			playCommands(fillCommands, fillStart, fillPosition);
+			fillCommands.clear();
+		}
+		if (strokeCommands.length != 0)
+		{
+			playCommands(strokeCommands, strokeStart, strokePosition);
+			strokeCommands.clear();
+		}
+		inPath = false;
 		#end
 	}
 
@@ -792,7 +809,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function playCommands(commands:DrawCommandBuffer, start:Point, position:Point, close:Bool):Void
+	private static function playCommands(commands:DrawCommandBuffer, start:Point, position:Point):Void
 	{
 		#if (js && html5)
 		stroke = commands == strokeCommands;
@@ -801,7 +818,6 @@ class CanvasGraphics
 
 		pathStart = start;
 		pathPosition = position;
-		closePath = close;
 
 		context.beginPath();
 		context.moveTo(position.x, position.y);
@@ -828,6 +844,7 @@ class CanvasGraphics
 			{
 				case CUBIC_CURVE_TO:
 					var c = data.readCubicCurveTo();
+					dirty = true;
 
 					if (graphics.__useScale9Grid)
 					{
@@ -849,6 +866,7 @@ class CanvasGraphics
 
 				case CURVE_TO:
 					var c = data.readCurveTo();
+					dirty = true;
 
 					if (graphics.__useScale9Grid)
 					{
@@ -881,6 +899,7 @@ class CanvasGraphics
 					{
 						// flash doesn't draw the line if the previous
 						// position is equal to the new position
+						dirty = true;
 						context.lineTo(x, y);
 						position.setTo(x, y);
 					}
@@ -906,16 +925,21 @@ class CanvasGraphics
 				case LINE_STYLE:
 					var c = data.readLineStyle();
 
-					if (inPath)
+					if (dirty)
 					{
-						paintStroke();
+						paintStroke(false);
 						context.beginPath();
 						context.moveTo(position.x, position.y);
+						dirty = false;
 					}
 
-					if (c.thickness != null && (hitTesting || c.alpha >= 0.005))
+					hasStrokeStyle = c.thickness != null && (hitTesting || c.alpha >= 0.005);
+
+					if (hasStrokeStyle)
 					{
-						var strokePadding = c.thickness > 0.0 ? c.thickness : 1.0;
+						numStrokeStyles++;
+
+						var lineWidth = c.thickness > 0.0 ? c.thickness : 1.0;
 						if (!graphics.__useScale9Grid)
 						{
 							var scaleX = Math.abs(graphics.__owner.__worldTransform.a);
@@ -932,10 +956,10 @@ class CanvasGraphics
 								default:
 							}
 							if (scale < 1.0) scale = 1.0;
-							strokePadding /= scale;
+							lineWidth /= scale;
 						}
 
-						context.lineWidth = strokePadding;
+						context.lineWidth = lineWidth;
 
 						context.lineJoin = switch (c.joints)
 						{
@@ -969,11 +993,12 @@ class CanvasGraphics
 				case LINE_GRADIENT_STYLE:
 					var c = data.readLineGradientStyle();
 
-					if (inPath)
+					if (dirty)
 					{
-						paintStroke();
+						paintStroke(false);
 						context.beginPath();
 						context.moveTo(position.x, position.y);
+						dirty = false;
 					}
 
 					strokeGradient = createCanvasGradient(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
@@ -986,11 +1011,12 @@ class CanvasGraphics
 				case LINE_BITMAP_STYLE:
 					var c = data.readLineBitmapStyle();
 
-					if (inPath)
+					if (dirty)
 					{
-						paintStroke();
+						paintStroke(false);
 						context.beginPath();
 						context.moveTo(position.x, position.y);
+						dirty = false;
 					}
 
 					if (c.bitmap.readable)
@@ -1012,8 +1038,15 @@ class CanvasGraphics
 
 					strokeGradient = null;
 
+				case END_FILL:
+					var c = data.readEndFill();
+					hasFillStyle = false;
+					numStrokeStyles = 0;
+
 				case BEGIN_BITMAP_FILL:
 					var c = data.readBeginBitmapFill();
+
+					hasFillStyle = true;
 
 					if (c.bitmap.readable && !hitTesting && !masking)
 					{
@@ -1035,7 +1068,9 @@ class CanvasGraphics
 				case BEGIN_FILL:
 					var c = data.readBeginFill();
 
-					if (hasFill)
+					hasFillStyle = c.alpha >= 0.005 || hitTesting;
+
+					if (hasFillStyle)
 					{
 						if (c.alpha == 1)
 						{
@@ -1055,6 +1090,8 @@ class CanvasGraphics
 				case BEGIN_GRADIENT_FILL:
 					var c = data.readBeginGradientFill();
 
+					hasFillStyle = true;
+
 					fillGradient = context.fillStyle = createCanvasGradient(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod,
 						c.interpolationMethod, c.focalPointRatio);
 					fillBitmap = null;
@@ -1064,49 +1101,54 @@ class CanvasGraphics
 					var c = data.readBeginShaderFill();
 					var shaderBuffer = c.shaderBuffer;
 
-					if (hasFill)
+					hasFillStyle = true;
+
+					if (c.shaderBuffer.inputCount > 0 && shaderBuffer.inputs[0].readable && !hitTesting && !masking)
 					{
-						if (shaderBuffer.inputs[0].readable && !hitTesting && !masking)
-						{
-							fillBitmap = shaderBuffer.inputs[0];
-							fillPattern = context.fillStyle = createImagePattern(fillBitmap, shaderBuffer.inputWrap[0] != CLAMP,
-								shaderBuffer.inputFilter[0] != NEAREST);
-							fillMatrix.copyFrom(c.matrix != null ? c.matrix : Matrix.__identity);
-						}
-						else
-						{
-							// if it's hardware-only BitmapData, fall back to
-							// drawing solid black because we have no software
-							// pixels to work with
-							context.fillStyle = "#" + StringTools.hex(0, 6);
-							fillBitmap = null;
-							fillPattern = null;
-							fillMatrix.identity();
-						}
+						fillBitmap = shaderBuffer.inputs[0];
+						fillPattern = context.fillStyle = createImagePattern(fillBitmap, shaderBuffer.inputWrap[0] != CLAMP,
+							shaderBuffer.inputFilter[0] != NEAREST);
+						fillMatrix.copyFrom(c.matrix != null ? c.matrix : Matrix.__identity);
+					}
+					else
+					{
+						// if it's hardware-only BitmapData, fall back to
+						// drawing solid black because we have no software
+						// pixels to work with
+						context.fillStyle = "#" + StringTools.hex(0, 6);
+						fillBitmap = null;
+						fillPattern = null;
+						fillMatrix.identity();
 					}
 
 				case DRAW_CIRCLE:
 					var c = data.readDrawCircle();
+					dirty = true;
 					drawCircle(c.x, c.y, c.radius);
 
 				case DRAW_ELLIPSE:
 					var c = data.readDrawEllipse();
+					dirty = true;
 					drawEllipse(c.x, c.y, c.width, c.height);
 
 				case DRAW_RECT:
 					var c = data.readDrawRect();
+					dirty = true;
 					drawRect(c.x, c.y, c.width, c.height);
 
 				case DRAW_ROUND_RECT:
 					var c = data.readDrawRoundRect();
+					dirty = true;
 					drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 
 				case DRAW_QUADS:
 					var c = data.readDrawQuads();
+					dirty = true;
 					drawQuads(c.rects, c.indices, c.transforms);
 
 				case DRAW_TRIANGLES:
 					var c = data.readDrawTriangles();
+					dirty = true;
 					drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
 
 				case WINDING_EVEN_ODD:
@@ -1125,7 +1167,6 @@ class CanvasGraphics
 
 		paint();
 
-		commands.clear();
 		data.destroy();
 		#end
 	}
@@ -1133,26 +1174,19 @@ class CanvasGraphics
 	private static function paint():Void
 	{
 		#if (js && html5)
-		if (closePath)
+		if (dirty)
 		{
-			if (stroke && hasStroke && (pathPosition.x != pathStart.x || pathPosition.y != pathStart.y))
+			if (stroke)
 			{
-				context.lineTo(pathStart.x, pathStart.y);
+				paintStroke(hasFill);
 			}
 			else
 			{
-				context.closePath();
+				paintFill(hasFill);
 			}
+			if (!masking) context.beginPath();
+			dirty = false;
 		}
-		if (stroke)
-		{
-			if (hasStroke) paintStroke();
-		}
-		else
-		{
-			if (hasFill) paintFill();
-		}
-		if (!masking) context.beginPath();
 		#end
 	}
 
@@ -1175,6 +1209,10 @@ class CanvasGraphics
 		hasStroke = false;
 		hasFill = false;
 		hitTestResult = false;
+		hasStrokeStyle = false;
+		hasFillStyle = false;
+		dirty = false;
+		numStrokeStyles = 0;
 
 		var x0 = 0.0;
 		var y0 = 0.0;
@@ -1215,96 +1253,89 @@ class CanvasGraphics
 
 				case MOVE_TO:
 					var c = data.readMoveTo();
-					endPath();
 					fillCommands.moveTo(c.x, c.y);
 					if (hasStroke) strokeCommands.moveTo(c.x, c.y);
-					inPath = true;
-
-				case END_FILL:
-					var c = data.readEndFill();
-					endPath();
-					hasFill = false;
-					inPath = false;
 
 				case LINE_GRADIENT_STYLE:
 					var c = data.readLineGradientStyle();
+					hasStroke = true;
 					strokeCommands.lineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 
 				case LINE_BITMAP_STYLE:
 					var c = data.readLineBitmapStyle();
+					hasStroke = true;
 					strokeCommands.lineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
 
 				case LINE_STYLE:
 					var c = data.readLineStyle();
-					if (hitTesting && hasStroke) endStroke(false);
 					hasStroke = c.thickness != null && (hitTesting || c.alpha >= 0.005);
 					strokeCommands.lineStyle(c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 
+				case END_FILL:
+					endFill();
+					var c = data.readEndFill();
+					hasFill = false;
+					fillCommands.endFill();
+
 				case BEGIN_BITMAP_FILL:
-					endPath();
+					endFill();
 					var c = data.readBeginBitmapFill();
-					hasFill = c.bitmap.readable;
+					hasFill = true;
 					fillCommands.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
 
 				case BEGIN_FILL:
-					endPath();
+					endFill();
 					var c = data.readBeginFill();
-					hasFill = c.alpha >= 0.005;
+					hasFill = true;
 					fillCommands.beginFill(c.color, c.alpha);
 
 				case BEGIN_GRADIENT_FILL:
-					endPath();
+					endFill();
 					var c = data.readBeginGradientFill();
 					hasFill = true;
 					fillCommands.beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 
 				case BEGIN_SHADER_FILL:
-					endPath();
+					endFill();
 					var c = data.readBeginShaderFill();
-					hasFill = c.shaderBuffer.inputCount > 0;
+					hasFill = true;
 					fillCommands.beginShaderFill(c.shaderBuffer, c.matrix);
 
 				case DRAW_CIRCLE:
-					if (inPath) endPath();
+					if (inPath) endFill();
 					var c = data.readDrawCircle();
 					fillCommands.drawCircle(c.x, c.y, c.radius);
 					if (hasStroke) strokeCommands.drawCircle(c.x, c.y, c.radius);
-					inPath = false;
 
 				case DRAW_ELLIPSE:
-					if (inPath) endPath();
+					if (inPath) endFill();
 					var c = data.readDrawEllipse();
 					fillCommands.drawEllipse(c.x, c.y, c.width, c.height);
 					if (hasStroke) strokeCommands.drawEllipse(c.x, c.y, c.width, c.height);
-					inPath = false;
 
 				case DRAW_RECT:
-					if (inPath) endPath();
+					if (inPath) endFill();
 					var c = data.readDrawRect();
 					fillCommands.drawRect(c.x, c.y, c.width, c.height);
 					if (hasStroke) strokeCommands.drawRect(c.x, c.y, c.width, c.height);
-					inPath = false;
 
 				case DRAW_ROUND_RECT:
-					if (inPath) endPath();
+					if (inPath) endFill();
 					var c = data.readDrawRoundRect();
 					fillCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 					if (hasStroke) strokeCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-					inPath = false;
 
 				case DRAW_TRIANGLES:
-					if (inPath) endPath();
+					if (inPath) endFill();
 					var c = data.readDrawTriangles();
 					fillCommands.drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
 					if (hasStroke) strokeCommands.drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
-					inPath = false;
 
 				case DRAW_QUADS:
-					if (inPath) endPath();
+					if (inPath) endFill();
 					var c = data.readDrawQuads();
 					fillCommands.drawQuads(c.rects, c.indices, c.transforms);
 					if (hasStroke) strokeCommands.drawQuads(c.rects, c.indices, c.transforms);
-					inPath = false;
 
 				case OVERRIDE_BLEND_MODE:
 					var c = data.readOverrideBlendMode();
@@ -1324,7 +1355,7 @@ class CanvasGraphics
 			if (hitTestResult) break;
 		}
 
-		if (!hitTesting || !hitTestResult) endPath();
+		if (!hitTesting || !hitTestResult) endFill();
 
 		data.destroy();
 		#end
