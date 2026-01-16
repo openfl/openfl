@@ -59,47 +59,45 @@ class CairoGraphics
 	private static var hasStrokeStyle:Bool;
 	private static var numStrokeStyles:Int;
 	private static var hasFillStyle:Bool;
+	private static var fillStart:Point = new Point();
+	private static var fillPosition:Point = new Point();
+	private static var strokeStart:Point = new Point();
+	private static var strokePosition:Point = new Point();
+	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
+	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
 	private static var fillBitmap:BitmapData;
 	private static var strokeBitmap:BitmapData;
 	private static var fillPattern:CairoPattern;
 	private static var strokePattern:CairoPattern;
 	private static var fillMatrix:Matrix = new Matrix();
 	private static var strokeMatrix:Matrix = new Matrix();
-	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
-	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
-	private static var fillStart:Point = new Point();
-	private static var fillPosition:Point = new Point();
-	private static var strokeStart:Point = new Point();
-	private static var strokePosition:Point = new Point();
 	private static var worldAlpha:Float;
 	private static var tempMatrix = new Matrix();
 	private static var tempMatrix3 = new Matrix3();
+	private static var hitTestCairo:Cairo;
 
 	private static function closePath():Void
 	{
+		if (!inPath) return;
 		if (pathStart.x != pathPosition.x || pathStart.y != pathPosition.y)
 		{
 			cairo.lineTo(pathStart.x, pathStart.y);
 		}
-		if (numStrokeStyles < 2)
+		// we can't have more than 1 stroke style in a closed path.
+		if (!stroke || numStrokeStyles < 2)
 		{
 			cairo.closePath();
 		}
 	}
 
-	private static function paintStroke(close:Bool):Void
+	private static function paintStroke():Void
 	{
 		if (!hasStrokeStyle || masking)
 		{
 			return;
 		}
-		if (close)
-		{
-			closePath();
-		}
 		if (hitTesting)
 		{
-			#if debug_hitTest cairo.strokePreserve(); #end
 			if (!hitTestResult) hitTestResult = cairo.inStroke(hitTestPoint.x, hitTestPoint.y);
 			return;
 		}
@@ -111,19 +109,14 @@ class CairoGraphics
 		cairo.strokePreserve();
 	}
 
-	private static function paintFill(close:Bool):Void
+	private static function paintFill():Void
 	{
 		if (!hasFillStyle || masking)
 		{
 			return;
 		}
-		if (close)
-		{
-			closePath();
-		}
 		if (hitTesting)
 		{
-			#if debug_hitTest cairo.fillPreserve(); #end
 			if (!hitTestResult) hitTestResult = cairo.inFill(hitTestPoint.x, hitTestPoint.y);
 			return;
 		}
@@ -133,115 +126,25 @@ class CairoGraphics
 		cairo.fillPreserve();
 	}
 
-	private static function createImagePattern(fillBitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):CairoPattern
+	private static function paint():Void
 	{
-		var pattern = CairoPattern.createForSurface(fillBitmap.getSurface());
-		pattern.filter = (smooth && allowSmoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
-
-		if (bitmapRepeat)
-		{
-			pattern.extend = CairoExtend.REPEAT;
-		}
-		else
-		{
-			// when flash doesn't repeat the image, it extends the pixels on the
-			// edges to fill the remaining space, which is equivalent to the
-			// CairoExtend.PAD option.
-			pattern.extend = CairoExtend.PAD;
-		}
-
-		return pattern;
-	}
-
-	private static function createGradientPattern(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
-			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):CairoPattern
-	{
-		var pattern:CairoPattern = null;
-		matrix = matrix != null ? matrix : Matrix.__identity;
-		var transformed = false;
-		if (type == GradientType.RADIAL)
-		{
-			transformed = stroke ? false : Math.abs(matrix.a - matrix.d) > GRADIENT_TRANSFORM_THRESHOLD
-				|| Math.abs(matrix.b + matrix.c) > GRADIENT_TRANSFORM_THRESHOLD;
-		}
-		else
-		{
-			var dot = matrix.a * matrix.c + matrix.b * matrix.d;
-			transformed = stroke ? false : Math.abs(dot) > GRADIENT_TRANSFORM_THRESHOLD;
-		}
-
-		var transform = transformed ? Matrix.__identity : matrix;
-
-		switch (type)
-		{
-			case RADIAL:
-				focalPointRatio = focalPointRatio > 1.0 ? 1.0 : focalPointRatio < -1.0 ? -1.0 : focalPointRatio;
-				var fcx = transform.__transformX(819.2 * focalPointRatio, 0);
-				var fcy = transform.__transformY(819.2 * focalPointRatio, 0);
-				var cx = transform.__transformX(0, 0);
-				var cy = transform.__transformY(0, 0);
-				var ex = transform.__transformX(819.2, 0);
-				var ey = transform.__transformY(819.2, 0);
-
-				if (graphics.__useScale9Grid)
-				{
-					fcx = graphics.__getScale9GridPositionX(fcx);
-					fcy = graphics.__getScale9GridPositionY(fcy);
-					cx = graphics.__getScale9GridPositionX(cx);
-					cy = graphics.__getScale9GridPositionY(cy);
-					ex = graphics.__getScale9GridPositionX(ex);
-					ey = graphics.__getScale9GridPositionY(ey);
-				}
-
-				var dx = ex - cx;
-				var dy = ey - cy;
-				var radius = Math.sqrt(dx * dx + dy * dy);
-				pattern = CairoPattern.createRadial(fcx, fcy, 0.0, cx, cy, radius);
-
-			case LINEAR:
-				var fcx = transform.__transformX(-819.2, 0);
-				var fcy = transform.__transformY(-819.2, 0);
-				var cx = transform.__transformX(819.2, 0);
-				var cy = transform.__transformY(819.2, 0);
-
-				if (graphics.__useScale9Grid)
-				{
-					fcx = graphics.__getScale9GridPositionX(fcx);
-					fcy = graphics.__getScale9GridPositionY(fcy);
-					cx = graphics.__getScale9GridPositionX(cx);
-					cy = graphics.__getScale9GridPositionY(cy);
-				}
-
-				pattern = CairoPattern.createLinear(fcx, fcy, cx, cy);
-		}
-
-		var rgb:Int, alpha:Float, r:Float, g:Float, b:Float, ratio:Float;
-
-		for (i in 0...colors.length)
-		{
-			rgb = colors[i];
-			alpha = alphas[i];
-			r = ((rgb & 0xFF0000) >>> 16) / 0xFF;
-			g = ((rgb & 0x00FF00) >>> 8) / 0xFF;
-			b = (rgb & 0x0000FF) / 0xFF;
-
-			ratio = ratios[i] / 0xFF;
-			if (ratio < 0) ratio = 0;
-			else if (ratio > 1) ratio = 1;
-
-			pattern.addColorStopRGBA(ratio, r, g, b, alpha);
-		}
-
+		if (!dirty) return;
 		if (stroke)
 		{
-			strokeMatrix.copyFrom(transformed ? matrix : Matrix.__identity);
+			if (hasFill && hasStroke) closePath();
+			paintStroke();
 		}
 		else
 		{
-			fillMatrix.copyFrom(transformed ? matrix : Matrix.__identity);
+			if (hasFill) closePath();
+			paintFill();
 		}
-
-		return pattern;
+		if (!masking)
+		{
+			cairo.newPath();
+			cairo.moveTo(pathPosition.x, pathPosition.y);
+		}
+		dirty = false;
 	}
 
 	private static function drawCircle(x:Float, y:Float, radius:Float):Void
@@ -629,8 +532,7 @@ class CairoGraphics
 				v2 = uvt[ind[ib] * uvtStep + 1];
 				u3 = uvt[ind[ic] * uvtStep];
 				v3 = uvt[ind[ic] * uvtStep + 1];
-				calculatePatternMatrixFromTri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3, minX * 2, minY * 2, fillBitmap.width, fillBitmap.height,
-					fillMatrix);
+				calculateFillMatrixFromTri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3, minX, minY, fillBitmap.width, fillBitmap.height, fillMatrix);
 
 				paint();
 
@@ -655,22 +557,8 @@ class CairoGraphics
 			playCommands(strokeCommands, strokeStart, strokePosition);
 			strokeCommands.clear();
 		}
+		hasFill = false;
 		inPath = false;
-	}
-
-	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Bool
-	{
-		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
-	}
-
-	private static function applyPatternMatrix(pattern:CairoPattern, bitmapMatrix:Matrix, commands:DrawCommandBuffer):Void
-	{
-		var matrix = Matrix.__pool.get();
-		graphics.__calculatePatternMatrix(bitmapMatrix, commands, matrix);
-		matrix.invert();
-		pattern.matrix = matrix.__toMatrix3(tempMatrix3);
-		cairo.source = pattern;
-		Matrix.__pool.release(matrix);
 	}
 
 	private static function playCommands(commands:DrawCommandBuffer, start:Point, position:Point):Void
@@ -790,18 +678,18 @@ class CairoGraphics
 
 					if (dirty)
 					{
-						paintStroke(false);
-						cairo.newPath();
-						cairo.moveTo(position.x, position.y);
-						dirty = false;
+						paint();
 					}
 
+					var lastHasStrokeStyle = hasStrokeStyle;
 					hasStrokeStyle = c.thickness != null && (hitTesting || c.alpha >= 0.005);
+					if (hasStrokeStyle || hasStrokeStyle != lastHasStrokeStyle)
+					{
+						numStrokeStyles++;
+					}
 
 					if (hasStrokeStyle)
 					{
-						numStrokeStyles++;
-
 						var lineWidth = c.thickness > 0.0 ? c.thickness : 1.0;
 						if (!graphics.__useScale9Grid)
 						{
@@ -859,10 +747,7 @@ class CairoGraphics
 
 					if (dirty)
 					{
-						paintStroke(false);
-						cairo.newPath();
-						cairo.moveTo(position.x, position.y);
-						dirty = false;
+						paint();
 					}
 
 					strokePattern = createGradientPattern(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
@@ -874,10 +759,7 @@ class CairoGraphics
 
 					if (dirty)
 					{
-						paintStroke(false);
-						cairo.newPath();
-						cairo.moveTo(position.x, position.y);
-						dirty = false;
+						paint();
 					}
 
 					if (c.bitmap.readable)
@@ -1028,23 +910,6 @@ class CairoGraphics
 		data.destroy();
 	}
 
-	private static function paint():Void
-	{
-		if (dirty)
-		{
-			if (stroke)
-			{
-				paintStroke(hasFill);
-			}
-			else
-			{
-				paintFill(hasFill);
-			}
-			if (!masking) cairo.newPath();
-			dirty = false;
-		}
-	}
-
 	private static function processCommands(renderer:CairoRenderer = null):Void
 	{
 		fillCommands.clear();
@@ -1126,7 +991,6 @@ class CairoGraphics
 				case END_FILL:
 					endFill();
 					var c = data.readEndFill();
-					hasFill = false;
 					fillCommands.endFill();
 
 				case BEGIN_BITMAP_FILL:
@@ -1212,13 +1076,18 @@ class CairoGraphics
 		data.destroy();
 	}
 
+	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Bool
+	{
+		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
+	}
+
+	// Returns an unordered unique 32-bit key
 	private static inline function edgeKey(a:Int, b:Int):Int
 	{
-		// Make an unordered unique 32-bit key
 		return (a < b) ? (a << 16) | b : (b << 16) | a;
 	}
 
-	private static inline function calculatePatternMatrixFromTri(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, u1:Float, v1:Float, u2:Float,
+	private static inline function calculateFillMatrixFromTri(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, u1:Float, v1:Float, u2:Float,
 			v2:Float, u3:Float, v3:Float, offsetX:Float, offsetY:Float, texWidth:Int, texHeight:Int, matrix:Matrix):Void
 	{
 		u1 *= texWidth;
@@ -1249,6 +1118,16 @@ class CairoGraphics
 		}
 	}
 
+	private static function applyPatternMatrix(pattern:CairoPattern, bitmapMatrix:Matrix, commands:DrawCommandBuffer):Void
+	{
+		var matrix = Matrix.__pool.get();
+		graphics.__calculatePatternMatrix(bitmapMatrix, commands, matrix);
+		matrix.invert();
+		pattern.matrix = matrix.__toMatrix3(tempMatrix3);
+		cairo.source = pattern;
+		Matrix.__pool.release(matrix);
+	}
+
 	private static function drawImage(bitmap:BitmapData, sx:Float, sy:Float, sw:Float, sh:Float, dx:Float, dy:Float, dw:Float, dh:Float):Void
 	{
 		if (dw == 0.0 || dh == 0.0) return;
@@ -1276,6 +1155,117 @@ class CairoGraphics
 		}
 
 		cairo.restore();
+	}
+
+	private static function createImagePattern(fillBitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):CairoPattern
+	{
+		var pattern = CairoPattern.createForSurface(fillBitmap.getSurface());
+		pattern.filter = (smooth && allowSmoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
+
+		if (bitmapRepeat)
+		{
+			pattern.extend = CairoExtend.REPEAT;
+		}
+		else
+		{
+			// when flash doesn't repeat the image, it extends the pixels on the
+			// edges to fill the remaining space, which is equivalent to the
+			// CairoExtend.PAD option.
+			pattern.extend = CairoExtend.PAD;
+		}
+
+		return pattern;
+	}
+
+	private static function createGradientPattern(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
+			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):CairoPattern
+	{
+		var pattern:CairoPattern = null;
+		matrix = matrix != null ? matrix : Matrix.__identity;
+		var transformed = false;
+		if (type == GradientType.RADIAL)
+		{
+			transformed = stroke ? false : Math.abs(matrix.a - matrix.d) > GRADIENT_TRANSFORM_THRESHOLD
+				|| Math.abs(matrix.b + matrix.c) > GRADIENT_TRANSFORM_THRESHOLD;
+		}
+		else
+		{
+			var dot = matrix.a * matrix.c + matrix.b * matrix.d;
+			transformed = stroke ? false : Math.abs(dot) > GRADIENT_TRANSFORM_THRESHOLD;
+		}
+
+		var transform = transformed ? Matrix.__identity : matrix;
+
+		switch (type)
+		{
+			case RADIAL:
+				focalPointRatio = focalPointRatio > 1.0 ? 1.0 : focalPointRatio < -1.0 ? -1.0 : focalPointRatio;
+				var fcx = transform.__transformX(819.2 * focalPointRatio, 0);
+				var fcy = transform.__transformY(819.2 * focalPointRatio, 0);
+				var cx = transform.__transformX(0, 0);
+				var cy = transform.__transformY(0, 0);
+				var ex = transform.__transformX(819.2, 0);
+				var ey = transform.__transformY(819.2, 0);
+
+				if (graphics.__useScale9Grid)
+				{
+					fcx = graphics.__getScale9GridPositionX(fcx);
+					fcy = graphics.__getScale9GridPositionY(fcy);
+					cx = graphics.__getScale9GridPositionX(cx);
+					cy = graphics.__getScale9GridPositionY(cy);
+					ex = graphics.__getScale9GridPositionX(ex);
+					ey = graphics.__getScale9GridPositionY(ey);
+				}
+
+				var dx = ex - cx;
+				var dy = ey - cy;
+				var radius = Math.sqrt(dx * dx + dy * dy);
+				pattern = CairoPattern.createRadial(fcx, fcy, 0.0, cx, cy, radius);
+
+			case LINEAR:
+				var fcx = transform.__transformX(-819.2, 0);
+				var fcy = transform.__transformY(-819.2, 0);
+				var cx = transform.__transformX(819.2, 0);
+				var cy = transform.__transformY(819.2, 0);
+
+				if (graphics.__useScale9Grid)
+				{
+					fcx = graphics.__getScale9GridPositionX(fcx);
+					fcy = graphics.__getScale9GridPositionY(fcy);
+					cx = graphics.__getScale9GridPositionX(cx);
+					cy = graphics.__getScale9GridPositionY(cy);
+				}
+
+				pattern = CairoPattern.createLinear(fcx, fcy, cx, cy);
+		}
+
+		var rgb:Int, alpha:Float, r:Float, g:Float, b:Float, ratio:Float;
+
+		for (i in 0...colors.length)
+		{
+			rgb = colors[i];
+			alpha = alphas[i];
+			r = ((rgb & 0xFF0000) >>> 16) / 0xFF;
+			g = ((rgb & 0x00FF00) >>> 8) / 0xFF;
+			b = (rgb & 0x0000FF) / 0xFF;
+
+			ratio = ratios[i] / 0xFF;
+			if (ratio < 0) ratio = 0;
+			else if (ratio > 1) ratio = 1;
+
+			pattern.addColorStopRGBA(ratio, r, g, b, alpha);
+		}
+
+		if (stroke)
+		{
+			strokeMatrix.copyFrom(transformed ? matrix : Matrix.__identity);
+		}
+		else
+		{
+			fillMatrix.copyFrom(transformed ? matrix : Matrix.__identity);
+		}
+
+		return pattern;
 	}
 
 	private static function quadraticCurveTo(cx:Float, cy:Float, x:Float, y:Float):Void
@@ -1376,11 +1366,6 @@ class CairoGraphics
 			cairo.paint();
 			cairo.setOperator(OVER);
 
-			#if debug_hitTest
-			hitTesting = true;
-			hitTestPoint.setTo(Math.NaN, Math.NaN);
-			#end
-
 			var offset = Point.__pool.get();
 			graphics.__calculateRenderOffset(offset);
 			cairo.translate(-offset.x, -offset.y);
@@ -1434,13 +1419,16 @@ class CairoGraphics
 			y *= graphics.__owner.scaleY;
 		}
 
-		if (graphics.__cairo == null)
+		var cacheCairo = graphics.__cairo;
+
+		if (hitTestCairo == null)
 		{
-			var bitmap = new BitmapData(Math.floor(Math.max(1, bounds.width)), Math.floor(Math.max(1, bounds.height)), true, 0);
+			var bitmap = new BitmapData(1, 1, true, 0);
 			var surface = bitmap.getSurface();
-			graphics.__cairo = new Cairo(surface);
-			// graphics.__bitmap = bitmap;
+			hitTestCairo = new Cairo(surface);
 		}
+
+		graphics.__cairo = hitTestCairo;
 
 		cairo = graphics.__cairo;
 
@@ -1455,6 +1443,8 @@ class CairoGraphics
 
 		cairo.translate(offset.x, offset.y);
 		Point.__pool.release(offset);
+
+		graphics.__cairo = cacheCairo;
 
 		hitTesting = false;
 		CairoGraphics.graphics = null;

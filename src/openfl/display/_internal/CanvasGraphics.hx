@@ -65,7 +65,6 @@ class CanvasGraphics
 	private static var strokePosition:Point = new Point();
 	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
 	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
-
 	private static var fillBitmap:BitmapData;
 	private static var strokeBitmap:BitmapData;
 	private static var strokePattern:#if (js && html5) CanvasPattern #else Dynamic #end;
@@ -74,7 +73,6 @@ class CanvasGraphics
 	private static var fillGradient:#if (js && html5) CanvasGradient #else Dynamic #end;
 	private static var fillMatrix:Matrix = new Matrix();
 	private static var strokeMatrix:Matrix = new Matrix();
-
 	@SuppressWarnings("checkstyle:Dynamic") private static var windingRule:#if (js && html5) CanvasWindingRule #else Dynamic #end;
 	private static var worldAlpha:Float;
 	private static var tempMatrix:Matrix = new Matrix();
@@ -95,31 +93,28 @@ class CanvasGraphics
 	private static function closePath():Void
 	{
 		#if (js && html5)
+		if (!inPath) return;
 		if (pathStart.x != pathPosition.x || pathStart.y != pathPosition.y)
 		{
 			context.lineTo(pathStart.x, pathStart.y);
 		}
-		if (numStrokeStyles < 2)
+		// we can't have more than 1 stroke style in a closed path.
+		if (!stroke || numStrokeStyles < 2)
 		{
 			context.closePath();
 		}
 		#end
 	}
 
-	private static function paintStroke(close:Bool):Void
+	private static function paintStroke():Void
 	{
 		#if (js && html5)
 		if (!hasStrokeStyle || masking)
 		{
 			return;
 		}
-		if (close)
-		{
-			closePath();
-		}
 		if (hitTesting)
 		{
-			#if debug_hitTest context.stroke(); #end
 			if (!hitTestResult) hitTestResult = context.isPointInStroke(hitTestPoint.x, hitTestPoint.y);
 			return;
 		}
@@ -139,24 +134,18 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function paintFill(close:Bool):Void
+	private static function paintFill():Void
 	{
 		#if (js && html5)
 		if (!hasFillStyle || masking)
 		{
 			return;
 		}
-		if (close)
-		{
-			closePath();
-		}
 		if (hitTesting)
 		{
-			#if debug_hitTest context.fill(windingRule); #end
 			if (!hitTestResult) hitTestResult = context.isPointInPath(hitTestPoint.x, hitTestPoint.y, windingRule);
 			return;
 		}
-
 		if (fillGradient != null)
 		{
 			context.save();
@@ -176,188 +165,26 @@ class CanvasGraphics
 		#end
 	}
 
-	@SuppressWarnings("checkstyle:Dynamic")
-	private static function createImagePattern(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):#if (js && html5) CanvasPattern #else Dynamic #end
+	private static function paint():Void
 	{
 		#if (js && html5)
-		ImageCanvasUtil.convertToCanvas(bitmap.image);
-		context.imageSmoothingEnabled = smooth && allowSmoothing;
-		// flash extends the pixels on the edges to fill any remaining space,
-		// but context.createPattern doesn't have that as a repetition option,
-		// unlike cairo.
-		return context.createPattern(bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");
-		#else
-		return null;
-		#end
-	}
-
-	private static function toDOMMatrix(matrix:Matrix):#if (js && html5) DOMMatrix #else Dynamic #end
-	{
-		#if (js && html5)
-		return new DOMMatrix([matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty]);
-		#else
-		return null;
-		#end
-	}
-
-	@SuppressWarnings("checkstyle:Dynamic")
-	private static function createCanvasGradient(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
-			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):#if (js && html5) CanvasGradient #else Void #end
-	{
-		#if (js && html5)
-		var pattern:CanvasGradient = null;
-		matrix = matrix != null ? matrix : Matrix.__identity;
-		var transformed = false;
-		if (type == GradientType.RADIAL)
-		{
-			transformed = stroke ? false : Math.abs(matrix.a - matrix.d) > GRADIENT_TRANSFORM_THRESHOLD
-				|| Math.abs(matrix.b + matrix.c) > GRADIENT_TRANSFORM_THRESHOLD;
-		}
-		else
-		{
-			var dot = matrix.a * matrix.c + matrix.b * matrix.d;
-			transformed = stroke ? false : Math.abs(dot) > GRADIENT_TRANSFORM_THRESHOLD;
-		}
-
-		// When we are rendering a complex gradient, the gradient transform is handled later by
-		// transforming the path before rendering; so use the identity matrix here.
-		var transform = transformed ? Matrix.__identity : matrix;
-
-		var numRepeats = 25.0;
-		var gradientScale = spreadMethod == SpreadMethod.PAD ? 1.0 : numRepeats;
-
-		// Canvas does not have support for spread/repeat modes (reflect+repeat), so we have to
-		// simulate these repeat modes by duplicating color stops.
-		// TODO: We'll hit the edge if the gradient is shrunk way down, but don't think we can do
-		// anything better using the current Canvas API. Maybe we could consider the size of the
-		// shape here to make sure we fill the area.
-		var gradient:CanvasGradient;
-		var colorStops:Array<{ratio:Float, color:String}> = [];
-
-		switch (type)
-		{
-			case RADIAL:
-				// Canvas radial gradients can not be elliptical or skewed, so transform if there
-				// is a non-uniform scale or skew.
-				// A scale rotation matrix is always of the form:
-				// [[a  b]
-				//  [-b a]]
-				focalPointRatio = focalPointRatio > 1.0 ? 1.0 : focalPointRatio < -1.0 ? -1.0 : focalPointRatio;
-				var fcx = transform.__transformX(819.2 * focalPointRatio, 0);
-				var fcy = transform.__transformY(819.2 * focalPointRatio, 0);
-				var cx = transform.__transformX(0, 0);
-				var cy = transform.__transformY(0, 0);
-				var ex = transform.__transformX(819.2, 0);
-				var ey = transform.__transformY(819.2, 0);
-
-				if (graphics.__useScale9Grid)
-				{
-					fcx = graphics.__getScale9GridPositionX(fcx);
-					fcy = graphics.__getScale9GridPositionY(fcy);
-					cx = graphics.__getScale9GridPositionX(cx);
-					cy = graphics.__getScale9GridPositionY(cy);
-					ex = graphics.__getScale9GridPositionX(ex);
-					ey = graphics.__getScale9GridPositionY(ey);
-				}
-
-				var dx = ex - cx;
-				var dy = ey - cy;
-				var radius = Math.sqrt(dx * dx + dy * dy);
-				gradient = context.createRadialGradient(fcx, fcy, 0.0, cx, cy, radius * gradientScale);
-
-			case LINEAR:
-				// Canvas linear gradients are configured via the line endpoints, so we only need
-				// to transform it if the basis is not orthogonal (skew in the transform).
-				var x0 = transform.__transformX(-819.2, 0);
-				var y0 = transform.__transformY(-819.2, 0);
-				var x1 = transform.__transformX(819.2, 0);
-				var y2 = transform.__transformY(819.2, 0);
-
-				if (graphics.__useScale9Grid)
-				{
-					x0 = graphics.__getScale9GridPositionX(x0);
-					y0 = graphics.__getScale9GridPositionY(y0);
-					x1 = graphics.__getScale9GridPositionX(x1);
-					y2 = graphics.__getScale9GridPositionY(y2);
-				}
-
-				// If we have to scale the gradient due to spread mode, scale the endpoints away from the center.
-				var dx = x1 - x0;
-				var dy = y2 - y0;
-				var sdx = 0.5 * (gradientScale - 1.0) * dx;
-				var sdy = 0.5 * (gradientScale - 1.0) * dy;
-				gradient = context.createLinearGradient(x0 - sdx, y0 - sdy, x1 + sdx, y2 + sdy);
-		}
-
-		for (i in 0...colors.length)
-		{
-			var ratio = ratios[i] / 0xFF;
-			if (ratio < 0) ratio = 0;
-			else if (ratio > 1) ratio = 1;
-			colorStops.push({
-				ratio: ratio,
-				color: getRGBA(colors[i], alphas[i])
-			});
-		}
-
-		switch (spreadMethod)
-		{
-			case SpreadMethod.PAD:
-				for (stop in colorStops)
-				{
-					gradient.addColorStop(stop.ratio, stop.color);
-				}
-			case SpreadMethod.REFLECT:
-				var t = 0.0;
-				var step = 1.0 / numRepeats;
-				while (t < 1.0)
-				{
-					// Add the colors forward.
-					for (stop in colorStops)
-					{
-						gradient.addColorStop(t + stop.ratio * step, stop.color);
-					}
-					t += step;
-					// Add the colors backward.
-					var i = colorStops.length - 1;
-					while (i >= 0)
-					{
-						var stop = colorStops[i];
-						gradient.addColorStop(t + (1.0 - stop.ratio) * step, stop.color);
-						i--;
-					}
-					t += step;
-				}
-			case SpreadMethod.REPEAT:
-				if (colorStops.length > 0)
-				{
-					var first_stop = colorStops[0];
-					var last_stop = colorStops[colorStops.length - 1];
-					var t = 0.0;
-					var step = 1.0 / numRepeats;
-					while (t < 1.0)
-					{
-						// Duplicate the start/end stops to ensure we don't blend between the seams.
-						gradient.addColorStop(t, first_stop.color);
-						for (stop in colorStops)
-						{
-							gradient.addColorStop(t + stop.ratio * step, stop.color);
-						}
-						gradient.addColorStop(t + step, last_stop.color);
-						t += step;
-					}
-				}
-		}
-
+		if (!dirty) return;
 		if (stroke)
 		{
-			strokeMatrix.copyFrom(transformed ? matrix : Matrix.__identity);
+			if (hasFill && hasStroke) closePath();
+			paintStroke();
 		}
 		else
 		{
-			fillMatrix.copyFrom(transformed ? matrix : Matrix.__identity);
+			if (hasFill) closePath();
+			paintFill();
 		}
-		return gradient;
+		if (!masking)
+		{
+			context.beginPath();
+			context.moveTo(pathPosition.x, pathPosition.y);
+		}
+		dirty = false;
 		#end
 	}
 
@@ -760,15 +587,11 @@ class CanvasGraphics
 				v2 = uvt[ind[ib] * uvtStep + 1];
 				u3 = uvt[ind[ic] * uvtStep];
 				v3 = uvt[ind[ic] * uvtStep + 1];
-				calculatePatternMatrixFromTri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3, minX, minY, fillBitmap.width, fillBitmap.height, fillMatrix);
+				calculateFillMatrixFromTri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3, minX, minY, fillBitmap.width, fillBitmap.height, fillMatrix);
 
 				paint();
 
 				fillMatrix = oldFillMatrix;
-
-				// if (abShared) fixTriangleGap(x1, y1, x2, y2);
-				// if (bcShared) fixTriangleGap(x2, y2, x3, y3);
-				// if (caShared) fixTriangleGap(x3, y3, x1, y1);
 			}
 
 			i += 3;
@@ -789,23 +612,8 @@ class CanvasGraphics
 			playCommands(strokeCommands, strokeStart, strokePosition);
 			strokeCommands.clear();
 		}
+		hasFill = false;
 		inPath = false;
-		#end
-	}
-
-	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Bool
-	{
-		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
-	}
-
-	private static function applyPatternMatrix(pattern:#if (js && html5) CanvasPattern #else Dynamic #end, bitmapMatrix:Matrix, commands:DrawCommandBuffer):Void
-	{
-		#if (js && html5)
-		if (pattern == null) return;
-		var matrix = Matrix.__pool.get();
-		graphics.__calculatePatternMatrix(bitmapMatrix, commands, matrix);
-		pattern.setTransform(cast toDOMMatrix(matrix));
-		Matrix.__pool.release(matrix);
 		#end
 	}
 
@@ -927,18 +735,18 @@ class CanvasGraphics
 
 					if (dirty)
 					{
-						paintStroke(false);
-						context.beginPath();
-						context.moveTo(position.x, position.y);
-						dirty = false;
+						paint();
 					}
 
+					var lastHasStrokeStyle = hasStrokeStyle;
 					hasStrokeStyle = c.thickness != null && (hitTesting || c.alpha >= 0.005);
+					if (hasStrokeStyle || hasStrokeStyle != lastHasStrokeStyle)
+					{
+						numStrokeStyles++;
+					}
 
 					if (hasStrokeStyle)
 					{
-						numStrokeStyles++;
-
 						var lineWidth = c.thickness > 0.0 ? c.thickness : 1.0;
 						if (!graphics.__useScale9Grid)
 						{
@@ -995,10 +803,7 @@ class CanvasGraphics
 
 					if (dirty)
 					{
-						paintStroke(false);
-						context.beginPath();
-						context.moveTo(position.x, position.y);
-						dirty = false;
+						paint();
 					}
 
 					strokeGradient = createCanvasGradient(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
@@ -1013,10 +818,7 @@ class CanvasGraphics
 
 					if (dirty)
 					{
-						paintStroke(false);
-						context.beginPath();
-						context.moveTo(position.x, position.y);
-						dirty = false;
+						paint();
 					}
 
 					if (c.bitmap.readable)
@@ -1171,25 +973,6 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function paint():Void
-	{
-		#if (js && html5)
-		if (dirty)
-		{
-			if (stroke)
-			{
-				paintStroke(hasFill);
-			}
-			else
-			{
-				paintFill(hasFill);
-			}
-			if (!masking) context.beginPath();
-			dirty = false;
-		}
-		#end
-	}
-
 	private static function processCommands(renderer:CanvasRenderer = null):Void
 	{
 		#if (js && html5)
@@ -1274,7 +1057,6 @@ class CanvasGraphics
 				case END_FILL:
 					endFill();
 					var c = data.readEndFill();
-					hasFill = false;
 					fillCommands.endFill();
 
 				case BEGIN_BITMAP_FILL:
@@ -1361,31 +1143,18 @@ class CanvasGraphics
 		#end
 	}
 
+	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Bool
+	{
+		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
+	}
+
+	// Returns an unordered unique 32-bit key
 	private static inline function edgeKey(a:Int, b:Int):Int
 	{
-		// Make an unordered unique 32-bit key
 		return (a < b) ? (a << 16) | b : (b << 16) | a;
 	}
 
-	private static inline function normalizeUVT(uvt:Vector<Float>):#if (js && html5) Vector<Float> #else Void #end
-	{
-		#if (js && html5)
-		var result = new Vector<Float>();
-		var len = uvt.length;
-		for (t in 1...len + 1)
-		{
-			if (t % 3 == 0)
-			{
-				continue;
-			}
-
-			result.push(uvt[t - 1]);
-		}
-		return result;
-		#end
-	}
-
-	private static inline function calculatePatternMatrixFromTri(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, u1:Float, v1:Float, u2:Float,
+	private static inline function calculateFillMatrixFromTri(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, u1:Float, v1:Float, u2:Float,
 			v2:Float, u3:Float, v3:Float, offsetX:Float, offsetY:Float, texWidth:Int, texHeight:Int, matrix:Matrix):Void
 	{
 		#if (js && html5)
@@ -1418,6 +1187,17 @@ class CanvasGraphics
 		#end
 	}
 
+	private static function applyPatternMatrix(pattern:#if (js && html5) CanvasPattern #else Dynamic #end, bitmapMatrix:Matrix, commands:DrawCommandBuffer):Void
+	{
+		#if (js && html5)
+		if (pattern == null) return;
+		var matrix = Matrix.__pool.get();
+		graphics.__calculatePatternMatrix(bitmapMatrix, commands, matrix);
+		pattern.setTransform(cast toDOMMatrix(matrix));
+		Matrix.__pool.release(matrix);
+		#end
+	}
+
 	private static function getRGBA(color:UInt, alpha:Float):String
 	{
 		var r:UInt = (color & 0xFF0000) >>> 16;
@@ -1427,31 +1207,206 @@ class CanvasGraphics
 		return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
 	}
 
-	private static function fixTriangleGap(x1:Float, y1:Float, x2:Float, y2:Float, pad:Float = 1.0):Void
+	private static function toDOMMatrix(matrix:Matrix):#if (js && html5) DOMMatrix #else Dynamic #end
 	{
-		// hack to fix the small gaps between triangles, not great.
 		#if (js && html5)
-		var thickness = 1.5;
-		var shrink = thickness * 2;
-		var dx = x2 - x1;
-		var dy = y2 - y1;
-		var len = Math.sqrt(dx * dx + dy * dy);
-		if (len < shrink * 2) return;
-		dx /= len;
-		dy /= len;
-		// Shorten by half a pixel on each end
-		x1 += dx * shrink;
-		y1 += dy * shrink;
-		x2 -= dx * shrink;
-		y2 -= dy * shrink;
-		context.strokeStyle = fillPattern;
+		return new DOMMatrix([matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty]);
+		#else
+		return null;
+		#end
+	}
 
-		context.moveTo(x1, y1);
-		context.lineTo(x2, y2);
-		context.lineCap = "round";
-		context.lineWidth = shrink;
-		context.stroke();
-		context.beginPath();
+	@SuppressWarnings("checkstyle:Dynamic")
+	private static function createImagePattern(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):#if (js && html5) CanvasPattern #else Dynamic #end
+	{
+		#if (js && html5)
+		ImageCanvasUtil.convertToCanvas(bitmap.image);
+		context.imageSmoothingEnabled = smooth && allowSmoothing;
+		// flash extends the pixels on the edges to fill any remaining space,
+		// but context.createPattern doesn't have that as a repetition option,
+		// unlike cairo.
+		return context.createPattern(bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");
+		#else
+		return null;
+		#end
+	}
+
+	@SuppressWarnings("checkstyle:Dynamic")
+	private static function createCanvasGradient(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
+			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):#if (js && html5) CanvasGradient #else Void #end
+	{
+		#if (js && html5)
+		var pattern:CanvasGradient = null;
+		matrix = matrix != null ? matrix : Matrix.__identity;
+		var transformed = false;
+		if (type == GradientType.RADIAL)
+		{
+			transformed = stroke ? false : Math.abs(matrix.a - matrix.d) > GRADIENT_TRANSFORM_THRESHOLD
+				|| Math.abs(matrix.b + matrix.c) > GRADIENT_TRANSFORM_THRESHOLD;
+		}
+		else
+		{
+			var dot = matrix.a * matrix.c + matrix.b * matrix.d;
+			transformed = stroke ? false : Math.abs(dot) > GRADIENT_TRANSFORM_THRESHOLD;
+		}
+
+		// When we are rendering a complex gradient, the gradient transform is handled later by
+		// transforming the path before rendering; so use the identity matrix here.
+		var transform = transformed ? Matrix.__identity : matrix;
+
+		var numRepeats = 25.0;
+		var gradientScale = spreadMethod == SpreadMethod.PAD ? 1.0 : numRepeats;
+
+		// Canvas does not have support for spread/repeat modes (reflect+repeat), so we have to
+		// simulate these repeat modes by duplicating color stops.
+		// TODO: We'll hit the edge if the gradient is shrunk way down, but don't think we can do
+		// anything better using the current Canvas API. Maybe we could consider the size of the
+		// shape here to make sure we fill the area.
+		var gradient:CanvasGradient;
+		var colorStops:Array<{ratio:Float, color:String}> = [];
+
+		switch (type)
+		{
+			case RADIAL:
+				// Canvas radial gradients can not be elliptical or skewed, so transform if there
+				// is a non-uniform scale or skew.
+				// A scale rotation matrix is always of the form:
+				// [[a  b]
+				//  [-b a]]
+				focalPointRatio = focalPointRatio > 1.0 ? 1.0 : focalPointRatio < -1.0 ? -1.0 : focalPointRatio;
+				var fcx = transform.__transformX(819.2 * focalPointRatio, 0);
+				var fcy = transform.__transformY(819.2 * focalPointRatio, 0);
+				var cx = transform.__transformX(0, 0);
+				var cy = transform.__transformY(0, 0);
+				var ex = transform.__transformX(819.2, 0);
+				var ey = transform.__transformY(819.2, 0);
+
+				if (graphics.__useScale9Grid)
+				{
+					fcx = graphics.__getScale9GridPositionX(fcx);
+					fcy = graphics.__getScale9GridPositionY(fcy);
+					cx = graphics.__getScale9GridPositionX(cx);
+					cy = graphics.__getScale9GridPositionY(cy);
+					ex = graphics.__getScale9GridPositionX(ex);
+					ey = graphics.__getScale9GridPositionY(ey);
+				}
+
+				var dx = ex - cx;
+				var dy = ey - cy;
+				var radius = Math.sqrt(dx * dx + dy * dy);
+				gradient = context.createRadialGradient(fcx, fcy, 0.0, cx, cy, radius * gradientScale);
+
+			case LINEAR:
+				// Canvas linear gradients are configured via the line endpoints, so we only need
+				// to transform it if the basis is not orthogonal (skew in the transform).
+				var x0 = transform.__transformX(-819.2, 0);
+				var y0 = transform.__transformY(-819.2, 0);
+				var x1 = transform.__transformX(819.2, 0);
+				var y2 = transform.__transformY(819.2, 0);
+
+				if (graphics.__useScale9Grid)
+				{
+					x0 = graphics.__getScale9GridPositionX(x0);
+					y0 = graphics.__getScale9GridPositionY(y0);
+					x1 = graphics.__getScale9GridPositionX(x1);
+					y2 = graphics.__getScale9GridPositionY(y2);
+				}
+
+				// If we have to scale the gradient due to spread mode, scale the endpoints away from the center.
+				var dx = x1 - x0;
+				var dy = y2 - y0;
+				var sdx = 0.5 * (gradientScale - 1.0) * dx;
+				var sdy = 0.5 * (gradientScale - 1.0) * dy;
+				gradient = context.createLinearGradient(x0 - sdx, y0 - sdy, x1 + sdx, y2 + sdy);
+		}
+
+		for (i in 0...colors.length)
+		{
+			var ratio = ratios[i] / 0xFF;
+			if (ratio < 0) ratio = 0;
+			else if (ratio > 1) ratio = 1;
+			colorStops.push({
+				ratio: ratio,
+				color: getRGBA(colors[i], alphas[i])
+			});
+		}
+
+		switch (spreadMethod)
+		{
+			case SpreadMethod.PAD:
+				for (stop in colorStops)
+				{
+					gradient.addColorStop(stop.ratio, stop.color);
+				}
+			case SpreadMethod.REFLECT:
+				var t = 0.0;
+				var step = 1.0 / numRepeats;
+				while (t < 1.0)
+				{
+					// Add the colors forward.
+					for (stop in colorStops)
+					{
+						gradient.addColorStop(t + stop.ratio * step, stop.color);
+					}
+					t += step;
+					// Add the colors backward.
+					var i = colorStops.length - 1;
+					while (i >= 0)
+					{
+						var stop = colorStops[i];
+						gradient.addColorStop(t + (1.0 - stop.ratio) * step, stop.color);
+						i--;
+					}
+					t += step;
+				}
+			case SpreadMethod.REPEAT:
+				if (colorStops.length > 0)
+				{
+					var first_stop = colorStops[0];
+					var last_stop = colorStops[colorStops.length - 1];
+					var t = 0.0;
+					var step = 1.0 / numRepeats;
+					while (t < 1.0)
+					{
+						// Duplicate the start/end stops to ensure we don't blend between the seams.
+						gradient.addColorStop(t, first_stop.color);
+						for (stop in colorStops)
+						{
+							gradient.addColorStop(t + stop.ratio * step, stop.color);
+						}
+						gradient.addColorStop(t + step, last_stop.color);
+						t += step;
+					}
+				}
+		}
+
+		if (stroke)
+		{
+			strokeMatrix.copyFrom(transformed ? matrix : Matrix.__identity);
+		}
+		else
+		{
+			fillMatrix.copyFrom(transformed ? matrix : Matrix.__identity);
+		}
+		return gradient;
+		#end
+	}
+
+	private static inline function normalizeUVT(uvt:Vector<Float>):#if (js && html5) Vector<Float> #else Void #end
+	{
+		#if (js && html5)
+		var result = new Vector<Float>();
+		var len = uvt.length;
+		for (t in 1...len + 1)
+		{
+			if (t % 3 == 0)
+			{
+				continue;
+			}
+
+			result.push(uvt[t - 1]);
+		}
+		return result;
 		#end
 	}
 
@@ -1549,11 +1504,6 @@ class CanvasGraphics
 
 				context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 			}
-
-			#if debug_hitTest
-			hitTesting = true;
-			hitTestPoint.setTo(Math.NaN, Math.NaN);
-			#end
 
 			var offset = Point.__pool.get();
 			graphics.__calculateRenderOffset(offset);
