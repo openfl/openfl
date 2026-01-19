@@ -30,7 +30,6 @@ import js.html.Path2D;
 #end
 
 @:access(openfl.display.DisplayObject)
-@:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
@@ -627,8 +626,11 @@ class CanvasGraphics
 		pathStart = start;
 		pathPosition = position;
 
-		context.beginPath();
-		context.moveTo(position.x, position.y);
+		if (!masking)
+		{
+			context.beginPath();
+			context.moveTo(position.x, position.y);
+		}
 
 		var data = new DrawCommandReader(commands);
 

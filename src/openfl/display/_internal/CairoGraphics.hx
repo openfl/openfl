@@ -570,8 +570,11 @@ class CairoGraphics
 		pathStart = start;
 		pathPosition = position;
 
-		cairo.newPath();
-		cairo.moveTo(position.x, position.y);
+		if (!masking)
+		{
+			cairo.newPath();
+			cairo.moveTo(position.x, position.y);
+		}
 
 		var data = new DrawCommandReader(commands);
 
