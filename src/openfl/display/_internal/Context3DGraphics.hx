@@ -715,7 +715,7 @@ class Context3DGraphics
 						uvDataLength = verticesLength;
 					}
 
-					if (bitmap != null || (uvDataLength == 0 && fill != null))
+					if (bitmap != null || shaderBuffer != null || (uvDataLength == 0 && fill != null))
 					{
 						var numVertices = Math.floor(verticesLength / 2);
 						var length = indicesLength > 0 ? indicesLength : numVertices;
