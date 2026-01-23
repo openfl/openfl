@@ -1841,9 +1841,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		__worldTransformInvalid = true;
 
-		if (__scale9Grid != null && __graphics != null)
+		if (__graphics != null)
 		{
-			__graphics.__dirty = true;
+			if (__graphics.__invalidateVertexBufferOnTransform)
+			{
+				__graphics.__hardwareDirty = true;
+			}
+			if (__scale9Grid != null)
+			{
+				__graphics.__dirty = true;
+			}
 		}
 	}
 

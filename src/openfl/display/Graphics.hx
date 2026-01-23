@@ -62,6 +62,7 @@ import js.html.CanvasRenderingContext2D;
 {
 	@:noCompletion private static var maxTextureHeight:Null<Int> = null;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;
+	@:noCompletion private static var tempVertices:Vector<Float> = new Vector<Float>();
 
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __boundsExStroke:Rectangle;
@@ -86,7 +87,10 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __vertexBufferData:Float32Array;
 	@:noCompletion private var __vertexBufferDataUVT:Float32Array;
 	@:noCompletion private var __vertexBufferUVT:VertexBuffer3D;
+	@:noCompletion private var __invalidateVertexBufferOnTransform:Bool;
 	@:noCompletion private var __visible:Bool;
+	@:noCompletion private var __isHardwareDrawable:Bool;
+	@:noCompletion private var __isHardwareCompatible(get, never):Bool;
 	// private var __cachedTexture:RenderTexture;
 	@:noCompletion private var __owner:DisplayObject;
 	@:noCompletion private var __width:Int;
@@ -120,6 +124,7 @@ import js.html.CanvasRenderingContext2D;
 		__bitmapScaleY = 1;
 
 		__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
+		__isHardwareDrawable = true;
 	}
 
 	/**
@@ -328,6 +333,7 @@ import js.html.CanvasRenderingContext2D;
 			if (alpha > 0)
 			{
 				__visible = true;
+				__isHardwareDrawable = false;
 				break;
 			}
 		}
@@ -395,6 +401,8 @@ import js.html.CanvasRenderingContext2D;
 			shaderBuffer.update(cast shader);
 
 			__commands.beginShaderFill(shaderBuffer, matrix);
+
+			__visible = true;
 			#end
 		}
 	}
@@ -424,7 +432,9 @@ import js.html.CanvasRenderingContext2D;
 			__boundsExStroke.setEmpty();
 		}
 
+		__invalidateVertexBufferOnTransform = false;
 		__visible = false;
+		__isHardwareDrawable = true;
 
 		#if (js && html5)
 		moveTo(0, 0);
@@ -492,6 +502,7 @@ import js.html.CanvasRenderingContext2D;
 		__commands.cubicCurveTo(controlX1, controlY1, controlX2, controlY2, anchorX, anchorY);
 
 		__dirty = true;
+		__isHardwareDrawable = false;
 	}
 
 	/**
@@ -533,6 +544,7 @@ import js.html.CanvasRenderingContext2D;
 		__commands.curveTo(controlX, controlY, anchorX, anchorY);
 
 		__dirty = true;
+		__isHardwareDrawable = false;
 	}
 
 	/**
@@ -545,6 +557,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.drawCircle(x, y, radius);
 
+		__invalidateVertexBufferOnTransform = true;
 		__dirty = true;
 	}
 
@@ -572,6 +585,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.drawEllipse(x, y, width, height);
 
+		__invalidateVertexBufferOnTransform = true;
 		__dirty = true;
 	}
 
@@ -870,6 +884,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.drawRoundRect(x, y, width, height, ellipseWidth, ellipseHeight);
 
+		__invalidateVertexBufferOnTransform = true;
 		__dirty = true;
 	}
 
@@ -1317,7 +1332,11 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.lineStyle(thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
 
-		if (thickness != null) __visible = true;
+		if (thickness != null)
+		{
+			__visible = true;
+			__isHardwareDrawable = false;
+		}
 	}
 
 	/**
@@ -1348,6 +1367,7 @@ import js.html.CanvasRenderingContext2D;
 		__commands.lineTo(x, y);
 
 		__dirty = true;
+		__isHardwareDrawable = false;
 	}
 
 	/**
@@ -1821,15 +1841,58 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private function __generateUV(vertices:Vector<Float>, textureWidth:Float, textureHeight:Float, matrix:Matrix, result:Vector<Float>):Void
 	{
 		var length = vertices.length;
-		var x:Float, y:Float;
+		var x:Float, y:Float, textureX:Float, textureY:Float;
 		result.length = length;
 		var i = 0;
+
+		if (__useScale9Grid)
+		{
+			var minX:Float = Math.POSITIVE_INFINITY;
+			var minY:Float = Math.POSITIVE_INFINITY;
+			var maxX:Float = Math.NEGATIVE_INFINITY;
+			var maxY:Float = Math.NEGATIVE_INFINITY;
+			while (i < length)
+			{
+				x = vertices[i];
+				y = vertices[i + 1];
+				if (x < minX) minX = x;
+				if (y < minY) minY = y;
+				if (x > maxX) maxX = x;
+				if (y > maxY) maxY = y;
+				i += 2;
+			}
+			i = 0;
+
+			// Get scale9grid bounds
+			var sMinX = __getScale9GridPositionX(minX);
+			var sMinY = __getScale9GridPositionY(minY);
+			var sMaxX = __getScale9GridPositionX(maxX);
+			var sMaxY = __getScale9GridPositionY(maxY);
+
+			// Inverse scale factors
+			var invScaleX = (maxX - minX) / (sMaxX - sMinX);
+			var invScaleY = (maxY - minY) / (sMaxY - sMinY);
+
+			// Transform vertices
+			tempVertices.length = length;
+			while (i < length)
+			{
+				tempVertices[i] = (__getScale9GridPositionX(vertices[i]) - sMinX) * invScaleX + minX;
+				tempVertices[i + 1] = (__getScale9GridPositionY(vertices[i + 1]) - sMinY) * invScaleY + minY;
+				i += 2;
+			}
+			i = 0;
+			vertices = tempVertices;
+		}
+
 		while (i < length)
 		{
-			x = matrix != null ? matrix.__transformInverseX(vertices[i], vertices[i + 1]) : vertices[i];
-			y = matrix != null ? matrix.__transformInverseY(vertices[i], vertices[i + 1]) : vertices[i + 1];
-			result[i] = x / textureWidth;
-			result[i + 1] = y / textureHeight;
+			x = vertices[i];
+			y = vertices[i + 1];
+			textureX = matrix != null ? matrix.__transformInverseX(x, y) : x;
+			textureY = matrix != null ? matrix.__transformInverseY(x, y) : y;
+			result[i] = textureX / textureWidth;
+			result[i + 1] = textureY / textureHeight;
 			i += 2;
 		}
 	}
@@ -1844,59 +1907,44 @@ import js.html.CanvasRenderingContext2D;
 		return __getScale9GridPosition(pos, __owner.__scale9Grid.y, __owner.__scale9Grid.height, __boundsExStroke.height, __owner.scaleY);
 	}
 
-	/*
-		@:noCompletion private function __calculateScale9GridMinScale(scale:Point):Void
-		{
-			var scaleX = (__boundsExStroke.width - __owner.__scale9Grid.width) / __boundsExStroke.width;
-			var scaleY = (__boundsExStroke.height - __owner.__scale9Grid.height) / __boundsExStroke.height;
-			scale.setTo(scaleX, scaleY);
-		}
-	 */
-	@:noCompletion private inline function __getScale9GridPosition(pos:Float, startSize:Float, centerSize:Float, unscaledSize:Float, scale:Float):Float
+	@:noCompletion private inline function __getScale9GridPosition(pos:Float, start:Float, center:Float, total:Float, scale:Float):Float
 	{
-		if (scale <= 0.0) return 0.0;
+		if (scale <= 0) return 0;
 
-		var endSize = unscaledSize - centerSize - startSize;
-		var scaledSize = unscaledSize * scale;
-		var centerScaledSize = scaledSize - startSize - endSize;
+		var end = total - start - center;
+		var scaledTotal = total * scale;
+		var scaledCenter = scaledTotal - start - end;
 
-		// center collapses (scaled too small)
-		if (centerScaledSize < 0.0)
+		// center collapsed → compress start+end uniformly
+		if (scaledCenter <= 0)
 		{
-			var base = startSize + endSize;
-			var compression = scaledSize / base;
-
-			if (pos <= startSize)
+			var k = scaledTotal / (start + end);
+			if (pos <= start)
 			{
-				// start region
-				return pos * compression;
+				return pos * k;
 			}
-
-			if (pos >= startSize + centerSize)
+			else if (pos >= start + center)
 			{
-				// end region (anchored to far side)
-				return scaledSize - (unscaledSize - pos) * compression;
+				return scaledTotal - (total - pos) * k;
 			}
-
-			// center region collapses to boundary
-			return startSize * compression;
+			else
+			{
+				return start * k;
+			}
 		}
 
-		// Center region stretches
-		if (pos <= startSize)
-		{
-			// Start region not scaled
-			return pos;
-		}
+		// start
+		if (pos <= start) return pos;
 
-		if (pos >= startSize + centerSize)
-		{
-			// End region shifted by centerScaledSize
-			return startSize + centerScaledSize + (pos - startSize - centerSize);
-		}
+		// end
+		if (pos >= start + center) return start + scaledCenter + (pos - start - center);
 
-		// Center region scaled proportionally
-		return startSize + centerScaledSize * (pos - startSize) / centerSize;
+		var k = (pos - start) / center;
+		if (k < 0) k = 0;
+		else if (k > 1) k = 1;
+
+		// center
+		return start + scaledCenter * k;
 	}
 
 	@:noCompletion private function __calculatePatternMatrix(bitmapMatrix:Matrix, commands:DrawCommandBuffer, patternMatrix:Matrix):Void
@@ -1947,6 +1995,16 @@ import js.html.CanvasRenderingContext2D;
 		}
 
 		return __dirty = value;
+	}
+
+	@:noCompletion private function get___isHardwareCompatible():Bool
+	{
+		#if (openfl_force_sw_graphics || force_sw_graphics)
+		return false;
+		#elseif (openfl_force_hw_graphics || force_hw_graphics)
+		return true;
+		#end
+		return __isHardwareDrawable;
 	}
 }
 

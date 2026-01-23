@@ -203,7 +203,7 @@ class DisplayObjectRenderer extends EventDispatcher
 	{
 		if (value == true || displayObject.__filters != null) return true;
 
-		if (value == false || (displayObject.__graphics != null && !Context3DGraphics.isCompatible(displayObject.__graphics)))
+		if (value == false || (displayObject.__graphics != null && !displayObject.__graphics.__isHardwareCompatible))
 		{
 			return false;
 		}
