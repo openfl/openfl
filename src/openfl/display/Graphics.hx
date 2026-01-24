@@ -11,6 +11,7 @@ import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
 import openfl.geom.Matrix;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils._internal.Float32Array;
 import openfl.utils._internal.UInt16Array;
@@ -61,20 +62,20 @@ import js.html.CanvasRenderingContext2D;
 {
 	@:noCompletion private static var maxTextureHeight:Null<Int> = null;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;
+	@:noCompletion private static var tempVertices:Vector<Float> = new Vector<Float>();
 
 	@:noCompletion private var __bounds:Rectangle;
+	@:noCompletion private var __boundsExStroke:Rectangle;
+	@:noCompletion private var __boundsDirty:Bool;
 	@:noCompletion private var __commands:DrawCommandBuffer;
 	@:noCompletion private var __dirty(default, set):Bool = true;
 	@:noCompletion private var __hardwareDirty:Bool;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __managed:Bool;
-	@:noCompletion private var __positionX:Float;
-	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __quadBuffer:Context3DBuffer;
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __softwareDirty:Bool;
-	@:noCompletion private var __strokePadding:Float;
 	@:noCompletion private var __transformDirty:Bool;
 	@:noCompletion private var __triangleIndexBuffer:IndexBuffer3D;
 	@:noCompletion private var __triangleIndexBufferCount:Int;
@@ -86,7 +87,10 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __vertexBufferData:Float32Array;
 	@:noCompletion private var __vertexBufferDataUVT:Float32Array;
 	@:noCompletion private var __vertexBufferUVT:VertexBuffer3D;
+	@:noCompletion private var __invalidateVertexBufferOnTransform:Bool;
 	@:noCompletion private var __visible:Bool;
+	@:noCompletion private var __isHardwareDrawable:Bool;
+	@:noCompletion private var __isHardwareCompatible(get, never):Bool;
 	// private var __cachedTexture:RenderTexture;
 	@:noCompletion private var __owner:DisplayObject;
 	@:noCompletion private var __width:Int;
@@ -100,18 +104,19 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __bitmap:BitmapData;
 	@:noCompletion private var __bitmapScaleX:Float;
 	@:noCompletion private var __bitmapScaleY:Float;
+	@:noCompletion private var __useScale9Grid:Bool;
 
 	@:noCompletion private function new(owner:DisplayObject)
 	{
 		__owner = owner;
 
 		__commands = new DrawCommandBuffer();
-		__strokePadding = 0;
-		__positionX = 0;
-		__positionY = 0;
 		__renderTransform = new Matrix();
 		__usedShaderBuffers = new List<ShaderBuffer>();
 		__worldTransform = new Matrix();
+		__bounds = new Rectangle();
+		__boundsExStroke = new Rectangle();
+
 		__width = 0;
 		__height = 0;
 
@@ -119,10 +124,7 @@ import js.html.CanvasRenderingContext2D;
 		__bitmapScaleY = 1;
 
 		__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
-
-		#if (js && html5)
-		moveTo(0, 0);
-		#end
+		__isHardwareDrawable = true;
 	}
 
 	/**
@@ -331,6 +333,7 @@ import js.html.CanvasRenderingContext2D;
 			if (alpha > 0)
 			{
 				__visible = true;
+				__isHardwareDrawable = false;
 				break;
 			}
 		}
@@ -397,7 +400,9 @@ import js.html.CanvasRenderingContext2D;
 			__usedShaderBuffers.add(shaderBuffer);
 			shaderBuffer.update(cast shader);
 
-			__commands.beginShaderFill(shaderBuffer);
+			__commands.beginShaderFill(shaderBuffer, matrix);
+
+			__visible = true;
 			#end
 		}
 	}
@@ -418,18 +423,18 @@ import js.html.CanvasRenderingContext2D;
 
 		__usedShaderBuffers.clear();
 		__commands.clear();
-		__strokePadding = 0;
 
-		if (__bounds != null)
+		if (!__bounds.isEmpty())
 		{
 			__dirty = true;
 			__transformDirty = true;
-			__bounds = null;
+			__bounds.setEmpty();
+			__boundsExStroke.setEmpty();
 		}
 
+		__invalidateVertexBufferOnTransform = false;
 		__visible = false;
-		__positionX = 0;
-		__positionY = 0;
+		__isHardwareDrawable = true;
 
 		#if (js && html5)
 		moveTo(0, 0);
@@ -445,12 +450,8 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function copyFrom(sourceGraphics:Graphics):Void
 	{
-		__bounds = sourceGraphics.__bounds != null ? sourceGraphics.__bounds.clone() : null;
 		__commands = sourceGraphics.__commands.copy();
 		__dirty = true;
-		__strokePadding = sourceGraphics.__strokePadding;
-		__positionX = sourceGraphics.__positionX;
-		__positionY = sourceGraphics.__positionY;
 		__transformDirty = true;
 		__visible = sourceGraphics.__visible;
 	}
@@ -498,18 +499,10 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function cubicCurveTo(controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void
 	{
-		var xs = __findExtrema(__positionX, controlX1, controlX2, anchorX);
-		var ys = __findExtrema(__positionY, controlY1, controlY2, anchorY);
-
-		__inflateBounds(xs.min - __strokePadding, ys.min - __strokePadding);
-		__inflateBounds(xs.max + __strokePadding, ys.max + __strokePadding);
-
-		__positionX = anchorX;
-		__positionY = anchorY;
-
 		__commands.cubicCurveTo(controlX1, controlY1, controlX2, controlY2, anchorX, anchorY);
 
 		__dirty = true;
+		__isHardwareDrawable = false;
 	}
 
 	/**
@@ -548,44 +541,10 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function curveTo(controlX:Float, controlY:Float, anchorX:Float, anchorY:Float):Void
 	{
-		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
-		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
-
-		var ix:Float;
-		var iy:Float;
-
-		if ((controlX < anchorX && controlX > __positionX) || (controlX > anchorX && controlX < __positionX))
-		{
-			ix = anchorX;
-		}
-		else
-		{
-			var tx = ((__positionX - controlX) / (__positionX - 2 * controlX + anchorX));
-			ix = __calculateBezierQuadPoint(tx, __positionX, controlX, anchorX);
-		}
-
-		if ((controlY < anchorY && controlY > __positionY) || (controlY > anchorY && controlY < __positionY))
-		{
-			iy = anchorY;
-		}
-		else
-		{
-			var ty = ((__positionY - controlY) / (__positionY - (2 * controlY) + anchorY));
-			iy = __calculateBezierQuadPoint(ty, __positionY, controlY, anchorY);
-		}
-
-		__inflateBounds(ix - __strokePadding, iy - __strokePadding);
-		__inflateBounds(ix + __strokePadding, iy + __strokePadding);
-
-		__positionX = anchorX;
-		__positionY = anchorY;
-
-		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
-		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
-
 		__commands.curveTo(controlX, controlY, anchorX, anchorY);
 
 		__dirty = true;
+		__isHardwareDrawable = false;
 	}
 
 	/**
@@ -594,13 +553,11 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function drawCircle(x:Float, y:Float, radius:Float):Void
 	{
-		if (radius <= 0) return;
-
-		__inflateBounds(x - radius - __strokePadding, y - radius - __strokePadding);
-		__inflateBounds(x + radius + __strokePadding, y + radius + __strokePadding);
+		if (radius == 0) return;
 
 		__commands.drawCircle(x, y, radius);
 
+		__invalidateVertexBufferOnTransform = true;
 		__dirty = true;
 	}
 
@@ -624,13 +581,11 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function drawEllipse(x:Float, y:Float, width:Float, height:Float):Void
 	{
-		if (width <= 0 || height <= 0) return;
-
-		__inflateBounds(x - __strokePadding, y - __strokePadding);
-		__inflateBounds(x + width + __strokePadding, y + height + __strokePadding);
+		if (width == 0 || height == 0) return;
 
 		__commands.drawEllipse(x, y, width, height);
 
+		__invalidateVertexBufferOnTransform = true;
 		__dirty = true;
 	}
 
@@ -857,90 +812,14 @@ import js.html.CanvasRenderingContext2D;
 		if (rects == null) return;
 
 		var hasIndices = (indices != null);
-		var transformABCD = false, transformXY = false;
-
 		var length = hasIndices ? indices.length : Math.floor(rects.length / 4);
+
 		if (length == 0) return;
-
-		if (transforms != null)
-		{
-			if (transforms.length >= length * 6)
-			{
-				transformABCD = true;
-				transformXY = true;
-			}
-			else if (transforms.length >= length * 4)
-			{
-				transformABCD = true;
-			}
-			else if (transforms.length >= length * 2)
-			{
-				transformXY = true;
-			}
-		}
-
-		var tileRect = Rectangle.__pool.get();
-		var tileTransform = Matrix.__pool.get();
-
-		var minX = Math.POSITIVE_INFINITY;
-		var minY = Math.POSITIVE_INFINITY;
-		var maxX = Math.NEGATIVE_INFINITY;
-		var maxY = Math.NEGATIVE_INFINITY;
-
-		var ri:Int;
-		var ti:Int;
-
-		for (i in 0...length)
-		{
-			ri = (hasIndices ? (indices[i] * 4) : i * 4);
-			if (ri < 0) continue;
-			tileRect.setTo(0, 0, rects[ri + 2], rects[ri + 3]);
-
-			if (tileRect.width <= 0 || tileRect.height <= 0)
-			{
-				continue;
-			}
-
-			if (transformABCD && transformXY)
-			{
-				ti = i * 6;
-				tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4], transforms[ti + 5]);
-			}
-			else if (transformABCD)
-			{
-				ti = i * 4;
-				tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], tileRect.x, tileRect.y);
-			}
-			else if (transformXY)
-			{
-				ti = i * 2;
-				tileTransform.tx = transforms[ti];
-				tileTransform.ty = transforms[ti + 1];
-			}
-			else
-			{
-				tileTransform.tx = tileRect.x;
-				tileTransform.ty = tileRect.y;
-			}
-
-			tileRect.__transform(tileRect, tileTransform);
-
-			if (minX > tileRect.x) minX = tileRect.x;
-			if (minY > tileRect.y) minY = tileRect.y;
-			if (maxX < tileRect.right) maxX = tileRect.right;
-			if (maxY < tileRect.bottom) maxY = tileRect.bottom;
-		}
-
-		__inflateBounds(minX, minY);
-		__inflateBounds(maxX, maxY);
 
 		__commands.drawQuads(rects, indices, transforms);
 
 		__dirty = true;
 		__visible = true;
-
-		Rectangle.__pool.release(tileRect);
-		Matrix.__pool.release(tileTransform);
 	}
 
 	/**
@@ -965,12 +844,6 @@ import js.html.CanvasRenderingContext2D;
 	public function drawRect(x:Float, y:Float, width:Float, height:Float):Void
 	{
 		if (width == 0 && height == 0) return;
-
-		var xSign = width < 0 ? -1 : 1;
-		var ySign = height < 0 ? -1 : 1;
-
-		__inflateBounds(x - __strokePadding * xSign, y - __strokePadding * ySign);
-		__inflateBounds(x + width + __strokePadding * xSign, y + height + __strokePadding * ySign);
 
 		__commands.drawRect(x, y, width, height);
 
@@ -1009,14 +882,9 @@ import js.html.CanvasRenderingContext2D;
 	{
 		if (width == 0 && height == 0) return;
 
-		var xSign = width < 0 ? -1 : 1;
-		var ySign = height < 0 ? -1 : 1;
-
-		__inflateBounds(x - __strokePadding * xSign, y - __strokePadding * ySign);
-		__inflateBounds(x + width + __strokePadding * xSign, y + height + __strokePadding * ySign);
-
 		__commands.drawRoundRect(x, y, width, height, ellipseWidth, ellipseHeight);
 
+		__invalidateVertexBufferOnTransform = true;
 		__dirty = true;
 	}
 
@@ -1027,9 +895,6 @@ import js.html.CanvasRenderingContext2D;
 			bottomRightRadius:Float):Void
 	{
 		if (width <= 0 || height <= 0) return;
-
-		__inflateBounds(x - __strokePadding, y - __strokePadding);
-		__inflateBounds(x + width + __strokePadding, y + height + __strokePadding);
 
 		var xw = x + width;
 		var yh = y + height;
@@ -1099,8 +964,6 @@ import js.html.CanvasRenderingContext2D;
 
 		if (indices == null)
 		{
-			// TODO: Allow null indices
-
 			if (vertLength % 3 != 0)
 			{
 				throw new ArgumentError("Not enough vertices to close a triangle.");
@@ -1118,27 +981,6 @@ import js.html.CanvasRenderingContext2D;
 		{
 			culling = NONE;
 		}
-
-		var x:Float;
-		var y:Float;
-		var minX = Math.POSITIVE_INFINITY;
-		var minY = Math.POSITIVE_INFINITY;
-		var maxX = Math.NEGATIVE_INFINITY;
-		var maxY = Math.NEGATIVE_INFINITY;
-
-		for (i in 0...vertLength)
-		{
-			x = vertices[i * 2];
-			y = vertices[i * 2 + 1];
-
-			if (minX > x) minX = x;
-			if (minY > y) minY = y;
-			if (maxX < x) maxX = x;
-			if (maxY < y) maxY = y;
-		}
-
-		__inflateBounds(minX, minY);
-		__inflateBounds(maxX, maxY);
 
 		__commands.drawTriangles(vertices, indices, uvtData, culling);
 
@@ -1488,21 +1330,13 @@ import js.html.CanvasRenderingContext2D;
 			joints = JointStyle.ROUND;
 		}
 
-		if (thickness != null)
-		{
-			if (joints == JointStyle.MITER)
-			{
-				if (thickness > __strokePadding) __strokePadding = Math.ceil(thickness);
-			}
-			else
-			{
-				if (thickness / 2 > __strokePadding) __strokePadding = Math.ceil(thickness / 2);
-			}
-		}
-
 		__commands.lineStyle(thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
 
-		if (thickness != null) __visible = true;
+		if (thickness != null)
+		{
+			__visible = true;
+			__isHardwareDrawable = false;
+		}
 	}
 
 	/**
@@ -1530,20 +1364,10 @@ import js.html.CanvasRenderingContext2D;
 			return;
 		}
 
-		// TODO: Should we consider the origin instead, instead of inflating in all directions?
-
-		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
-		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
-
-		__positionX = x;
-		__positionY = y;
-
-		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
-		__inflateBounds(__positionX + __strokePadding * 2, __positionY + __strokePadding);
-
 		__commands.lineTo(x, y);
 
 		__dirty = true;
+		__isHardwareDrawable = false;
 	}
 
 	/**
@@ -1558,9 +1382,6 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function moveTo(x:Float, y:Float):Void
 	{
-		__positionX = x;
-		__positionY = y;
-
 		__commands.moveTo(x, y);
 	}
 
@@ -1629,30 +1450,16 @@ import js.html.CanvasRenderingContext2D;
 		return graphicsData;
 	}
 
-	@:noCompletion
-	private #if !js inline #end function __calculateBezierCubicPoint(t:Float, p1:Float, p2:Float, p3:Float, p4:Float):Float
-	{
-		var iT = 1 - t;
-		return p1 * (iT * iT * iT) + 3 * p2 * t * (iT * iT) + 3 * p3 * iT * (t * t) + p4 * (t * t * t);
-	}
-
-	@:noCompletion
-	private #if !js inline #end function __calculateBezierQuadPoint(t:Float, p1:Float, p2:Float, p3:Float):Float
-	{
-		var iT = 1 - t;
-		return iT * iT * p1 + 2 * iT * t * p2 + t * t * p3;
-	}
-
 	@:noCompletion private function __cleanup():Void
 	{
 		#if (js && html5)
-		if (__bounds != null && __canvas != null)
+		if (!__bounds.isEmpty() && __canvas != null)
 		{
 			__dirty = true;
 			__transformDirty = true;
 		}
 		#else
-		if (__bounds != null)
+		if (!__bounds.isEmpty())
 		{
 			__dirty = true;
 			__transformDirty = true;
@@ -1679,19 +1486,40 @@ import js.html.CanvasRenderingContext2D;
 		#end
 	}
 
-	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void
+	@:noCompletion private function __updateBounds():Void
 	{
-		if (__bounds == null) return;
+		#if (!openfl_legacy_scale9grid || cairo || canvas)
+		var worldTransform = __owner.__getWorldTransform();
+		__useScale9Grid = __owner.__scale9Grid != null && !__owner.__isMask && worldTransform.a >= 0 && worldTransform.b == 0 && worldTransform.c == 0
+			&& worldTransform.d >= 0;
+		#end
 
-		var bounds = Rectangle.__pool.get();
-		__bounds.__transform(bounds, matrix);
-		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-		Rectangle.__pool.release(bounds);
+		if (!__boundsDirty) return;
+
+		__transformDirty = GraphicsBoundsHelper.calculateBounds(__commands, this);
+		__bounds.copyFrom(GraphicsBoundsHelper.bounds);
+		__boundsExStroke.copyFrom(GraphicsBoundsHelper.boundsExStroke);
+		__boundsDirty = false;
+	}
+
+	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix, exStroke:Bool = false):Void
+	{
+		__updateBounds();
+
+		var bounds = exStroke ? __boundsExStroke : __bounds;
+		if (bounds.isEmpty()) return;
+
+		var transformedBounds = Rectangle.__pool.get();
+		bounds.__transform(transformedBounds, matrix);
+		rect.__expand(transformedBounds.x, transformedBounds.y, transformedBounds.width, transformedBounds.height);
+		Rectangle.__pool.release(transformedBounds);
 	}
 
 	@:noCompletion private function __hitTest(x:Float, y:Float, shapeFlag:Bool, matrix:Matrix):Bool
 	{
-		if (__bounds == null) return false;
+		__updateBounds();
+
+		if (__bounds.isEmpty()) return false;
 
 		var px = matrix.__transformInverseX(x, y);
 		var py = matrix.__transformInverseY(x, y);
@@ -1713,96 +1541,11 @@ import js.html.CanvasRenderingContext2D;
 		return false;
 	}
 
-	@:noCompletion private function __findExtrema(p1:Float, p2:Float, p3:Float, p4:Float):{min:Float, max:Float}
-	{
-		var solutions:Array<Float> = [];
-		if (!(((p2 < p4 && p2 > p1) || (p2 > p4 && p2 < p1)) && ((p3 < p4 && p3 > p1) || (p3 > p4 && p3 < p1))))
-		{
-			// The derivative of a cubic Bézier curve is a quadratic Bézier curve.
-			// f(t) = a * t * t + b * t + c = 0
-			var a = -p1 + 3 * p2 + p4 - 3 * p3;
-			var b = 2 * p1 - 4 * p2 + 2 * p3;
-			var c = p2 - p1;
-			// d is a discriminant
-			var d = b * b - 4 * a * c;
-			if (a == 0)
-			{
-				var t = -c / b;
-				if (t > 0 && t < 1)
-				{
-					solutions.push(__calculateBezierCubicPoint(t, p1, p2, p3, p4));
-				}
-			}
-			else if (d >= 0)
-			{
-				var t1 = (-b + Math.sqrt(d)) / (2 * a);
-				var t2 = (-b - Math.sqrt(d)) / (2 * a);
-				if (t1 > 0 && t1 < 1)
-				{
-					solutions.push(__calculateBezierCubicPoint(t1, p1, p2, p3, p4));
-				}
-				if (t2 > 0 && t2 < 1)
-				{
-					solutions.push(__calculateBezierCubicPoint(t2, p1, p2, p3, p4));
-				}
-			}
-		}
-		var min = p1;
-		var max = p1;
-		solutions.push(p4);
-		for (val in solutions)
-		{
-			if (val < min)
-			{
-				min = val;
-			}
-			if (val > max)
-			{
-				max = val;
-			}
-		}
-		return {min: min, max: max};
-	}
-
-	@:noCompletion private function __inflateBounds(x:Float, y:Float):Void
-	{
-		if (__bounds == null)
-		{
-			__bounds = new Rectangle(x, y, 0, 0);
-			__transformDirty = true;
-			return;
-		}
-
-		if (x < __bounds.x)
-		{
-			__bounds.width += __bounds.x - x;
-			__bounds.x = x;
-			__transformDirty = true;
-		}
-
-		if (y < __bounds.y)
-		{
-			__bounds.height += __bounds.y - y;
-			__bounds.y = y;
-			__transformDirty = true;
-		}
-
-		if (x > __bounds.x + __bounds.width)
-		{
-			__bounds.width = x - __bounds.x;
-		}
-
-		if (y > __bounds.y + __bounds.height)
-		{
-			__bounds.height = y - __bounds.y;
-		}
-	}
-
 	@:noCompletion private function __readGraphicsData(graphicsData:Vector<IGraphicsData>):Void
 	{
 		var data = new DrawCommandReader(__commands);
 		var path:GraphicsPath = null;
-		var stroke:GraphicsStroke;
+		var stroke:GraphicsStroke = null;
 
 		for (type in __commands.types)
 		{
@@ -1857,21 +1600,23 @@ import js.html.CanvasRenderingContext2D;
 					path.__drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
 
 				case LINE_GRADIENT_STYLE:
-					// TODO
-
 					var c = data.readLineGradientStyle();
-				// stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-				// stroke.fill = new GraphicsGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-				// graphicsData.push (stroke);
+					if (stroke != null)
+					{
+						stroke = new GraphicsStroke(stroke.thickness, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+						stroke.fill = new GraphicsGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+							c.focalPointRatio);
+						graphicsData.push(stroke);
+					}
 
 				case LINE_BITMAP_STYLE:
-					// TODO
-
 					var c = data.readLineBitmapStyle();
-					path = null;
-				// stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-				// stroke.fill = new GraphicsBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
-				// graphicsData.push (stroke);
+					if (stroke != null)
+					{
+						stroke = new GraphicsStroke(stroke.thickness, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+						stroke.fill = new GraphicsBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
+						graphicsData.push(stroke);
+					}
 
 				case LINE_STYLE:
 					var c = data.readLineStyle();
@@ -1897,6 +1642,8 @@ import js.html.CanvasRenderingContext2D;
 						c.focalPointRatio));
 
 				case BEGIN_SHADER_FILL:
+					var c = data.readBeginShaderFill();
+					graphicsData.push(new GraphicsShaderFill(c.shaderBuffer.shader, c.matrix));
 
 				default:
 					data.skip(type);
@@ -1911,26 +1658,28 @@ import js.html.CanvasRenderingContext2D;
 
 	@:noCompletion private function __update(displayMatrix:Matrix, pixelRatio:Float):Void
 	{
-		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0)
+		__updateBounds();
+
+		if (__bounds.width <= 0 || __bounds.height <= 0)
 		{
 			if (__width >= 1 || __height >= 1) __dirty = true;
 			__width = 0;
 			__height = 0;
 			return;
 		}
-
 		var parentTransform = __owner.__renderTransform;
-		if (parentTransform == null) return;
 
+		if (parentTransform == null) return;
 		var scaleX = pixelRatio, scaleY = pixelRatio;
 
 		#if (openfl_legacy_scale9grid && lime_cairo && !cairo && !openfl_force_hw_graphics && !force_hw_graphics)
-		var calculateScale = __owner.__worldScale9Grid == null;
+		var calculateScale = !__useScale9Grid;
 		#elseif (openfl_legacy_scale9grid && lime_canvas && !canvas && !openfl_force_hw_graphics && !force_hw_graphics)
-		var calculateScale = __owner.__worldScale9Grid == null;
+		var calculateScale = !__useScale9Grid;
 		#else
 		var calculateScale = true;
 		#end
+
 		if (calculateScale)
 		{
 			if (parentTransform.b == 0)
@@ -1941,7 +1690,6 @@ import js.html.CanvasRenderingContext2D;
 			{
 				scaleX = Math.sqrt(parentTransform.a * parentTransform.a + parentTransform.b * parentTransform.b);
 			}
-
 			if (parentTransform.c == 0)
 			{
 				scaleY = Math.abs(parentTransform.d);
@@ -1950,7 +1698,6 @@ import js.html.CanvasRenderingContext2D;
 			{
 				scaleY = Math.sqrt(parentTransform.c * parentTransform.c + parentTransform.d * parentTransform.d);
 			}
-
 			if (displayMatrix != null)
 			{
 				if (displayMatrix.b == 0)
@@ -1961,7 +1708,6 @@ import js.html.CanvasRenderingContext2D;
 				{
 					scaleX *= Math.sqrt(displayMatrix.a * displayMatrix.a + displayMatrix.b * displayMatrix.b);
 				}
-
 				if (displayMatrix.c == 0)
 				{
 					scaleY *= displayMatrix.d;
@@ -1972,9 +1718,8 @@ import js.html.CanvasRenderingContext2D;
 				}
 			}
 		}
-
 		#if openfl_disable_graphics_upscaling
-		if (__owner.__worldScale9Grid == null)
+		if (!__useScale9Grid)
 		{
 			if (scaleX > 1) scaleX = 1;
 			if (scaleY > 1) scaleY = 1;
@@ -1991,28 +1736,25 @@ import js.html.CanvasRenderingContext2D;
 			__height = 0;
 			return;
 		}
-
 		if (maxTextureWidth != null && width > maxTextureWidth)
 		{
 			width = maxTextureWidth;
 			scaleX = maxTextureWidth / __bounds.width;
 		}
-
 		if (maxTextureWidth != null && height > maxTextureHeight)
 		{
 			height = maxTextureHeight;
 			scaleY = maxTextureHeight / __bounds.height;
 		}
-
 		var inverseA:Float;
 		var inverseD:Float;
 
-		if (__owner.__worldScale9Grid != null)
+		if (__useScale9Grid)
 		{
-			__renderTransform.a = pixelRatio;
-			__renderTransform.d = pixelRatio;
-			inverseA = 1 / pixelRatio;
-			inverseD = 1 / pixelRatio;
+			__renderTransform.a = 1;
+			__renderTransform.d = 1;
+			inverseA = 1;
+			inverseD = 1;
 		}
 		else
 		{
@@ -2021,13 +1763,11 @@ import js.html.CanvasRenderingContext2D;
 			inverseA = (1 / __renderTransform.a);
 			inverseD = (1 / __renderTransform.d);
 		}
-
 		// Inlined & simplified `__worldTransform.concat (parentTransform)` below:
 		__worldTransform.a = inverseA * parentTransform.a;
 		__worldTransform.b = inverseA * parentTransform.b;
 		__worldTransform.c = inverseD * parentTransform.c;
 		__worldTransform.d = inverseD * parentTransform.d;
-
 		var x = __bounds.x;
 		var y = __bounds.y;
 		var tx = x * parentTransform.a + y * parentTransform.c + parentTransform.tx;
@@ -2045,6 +1785,7 @@ import js.html.CanvasRenderingContext2D;
 			// more precision.
 			// rendering will still be crisp, and animations will be smoother.
 			var nativePixelSize = 1 / pixelRatio;
+
 			__worldTransform.tx = Math.fround(tx / nativePixelSize) * nativePixelSize;
 			__worldTransform.ty = Math.fround(ty / nativePixelSize) * nativePixelSize;
 		}
@@ -2053,7 +1794,6 @@ import js.html.CanvasRenderingContext2D;
 			__worldTransform.tx = Math.fround(tx);
 			__worldTransform.ty = Math.fround(ty);
 		}
-
 		// Offset the rendering with the subpixel offset removed by Math.round above
 		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
 		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
@@ -2065,7 +1805,6 @@ import js.html.CanvasRenderingContext2D;
 		// extra pixel isn't needed
 		var newWidth = Math.ceil(width + 1.0);
 		var newHeight = Math.ceil(height + 1.0);
-
 		// Mark dirty if render size changed
 		if (newWidth != __width || newHeight != __height)
 		{
@@ -2073,9 +1812,171 @@ import js.html.CanvasRenderingContext2D;
 			__dirty = true;
 			#end
 		}
-
 		__width = newWidth;
 		__height = newHeight;
+	}
+
+	@:noCompletion private function __calculateRenderOffset(result:Point):Void
+	{
+		// Accounts for stroke thickness + scale
+		var scaleX = 1.0;
+		var scaleY = 1.0;
+		var startX = __boundsExStroke.x;
+		var startY = __boundsExStroke.y;
+		var strokePaddingX = (__bounds.x - __boundsExStroke.x);
+		var strokePaddingY = (__bounds.y - __boundsExStroke.y);
+
+		if (__useScale9Grid)
+		{
+			startX = __getScale9GridPositionX(startX);
+			startY = __getScale9GridPositionY(startY);
+			scaleX = __owner.scaleX;
+			scaleY = __owner.scaleY;
+		}
+
+		result.setTo(startX + (strokePaddingX * scaleX), startY + (strokePaddingY * scaleY));
+		result.offset(__renderTransform.tx, __renderTransform.ty);
+	}
+
+	@:noCompletion private function __generateUV(vertices:Vector<Float>, textureWidth:Float, textureHeight:Float, matrix:Matrix, result:Vector<Float>):Void
+	{
+		var length = vertices.length;
+		var x:Float, y:Float, textureX:Float, textureY:Float;
+		result.length = length;
+		var i = 0;
+
+		if (__useScale9Grid)
+		{
+			var minX:Float = Math.POSITIVE_INFINITY;
+			var minY:Float = Math.POSITIVE_INFINITY;
+			var maxX:Float = Math.NEGATIVE_INFINITY;
+			var maxY:Float = Math.NEGATIVE_INFINITY;
+			while (i < length)
+			{
+				x = vertices[i];
+				y = vertices[i + 1];
+				if (x < minX) minX = x;
+				if (y < minY) minY = y;
+				if (x > maxX) maxX = x;
+				if (y > maxY) maxY = y;
+				i += 2;
+			}
+			i = 0;
+
+			// Get scale9grid bounds
+			var sMinX = __getScale9GridPositionX(minX);
+			var sMinY = __getScale9GridPositionY(minY);
+			var sMaxX = __getScale9GridPositionX(maxX);
+			var sMaxY = __getScale9GridPositionY(maxY);
+
+			// Inverse scale factors
+			var invScaleX = (maxX - minX) / (sMaxX - sMinX);
+			var invScaleY = (maxY - minY) / (sMaxY - sMinY);
+
+			// Transform vertices
+			tempVertices.length = length;
+			while (i < length)
+			{
+				tempVertices[i] = (__getScale9GridPositionX(vertices[i]) - sMinX) * invScaleX + minX;
+				tempVertices[i + 1] = (__getScale9GridPositionY(vertices[i + 1]) - sMinY) * invScaleY + minY;
+				i += 2;
+			}
+			i = 0;
+			vertices = tempVertices;
+		}
+
+		while (i < length)
+		{
+			x = vertices[i];
+			y = vertices[i + 1];
+			textureX = matrix != null ? matrix.__transformInverseX(x, y) : x;
+			textureY = matrix != null ? matrix.__transformInverseY(x, y) : y;
+			result[i] = textureX / textureWidth;
+			result[i + 1] = textureY / textureHeight;
+			i += 2;
+		}
+	}
+
+	@:noCompletion private function __getScale9GridPositionX(pos:Float):Float
+	{
+		return __getScale9GridPosition(pos, __owner.__scale9Grid.x, __owner.__scale9Grid.width, __boundsExStroke.width, __owner.scaleX);
+	}
+
+	@:noCompletion private function __getScale9GridPositionY(pos:Float):Float
+	{
+		return __getScale9GridPosition(pos, __owner.__scale9Grid.y, __owner.__scale9Grid.height, __boundsExStroke.height, __owner.scaleY);
+	}
+
+	@:noCompletion private inline function __getScale9GridPosition(pos:Float, start:Float, center:Float, total:Float, scale:Float):Float
+	{
+		if (scale <= 0) return 0;
+
+		var end = total - start - center;
+		var scaledTotal = total * scale;
+		var scaledCenter = scaledTotal - start - end;
+
+		// center collapsed → compress start+end uniformly
+		if (scaledCenter <= 0)
+		{
+			var k = scaledTotal / (start + end);
+			if (pos <= start)
+			{
+				return pos * k;
+			}
+			else if (pos >= start + center)
+			{
+				return scaledTotal - (total - pos) * k;
+			}
+			else
+			{
+				return start * k;
+			}
+		}
+
+		// start
+		if (pos <= start) return pos;
+
+		// end
+		if (pos >= start + center) return start + scaledCenter + (pos - start - center);
+
+		var k = (pos - start) / center;
+		if (k < 0) k = 0;
+		else if (k > 1) k = 1;
+
+		// center
+		return start + scaledCenter * k;
+	}
+
+	@:noCompletion private function __calculatePatternMatrix(bitmapMatrix:Matrix, commands:DrawCommandBuffer, patternMatrix:Matrix):Void
+	{
+		patternMatrix.copyFrom(bitmapMatrix);
+
+		if (__useScale9Grid)
+		{
+			GraphicsBoundsHelper.calculateBounds(commands, this);
+			var bounds = GraphicsBoundsHelper.bounds;
+
+			var scaleX = __owner.scaleX;
+			var scaleY = __owner.scaleY;
+
+			var scaledLeft = __getScale9GridPositionX(bounds.x);
+			var scaledTop = __getScale9GridPositionY(bounds.y);
+			var scaledRight = __getScale9GridPositionX(bounds.x + bounds.width);
+			var scaledBottom = __getScale9GridPositionY(bounds.y + bounds.height);
+
+			var scaledWidth = scaledRight - scaledLeft;
+			var scaledHeight = scaledBottom - scaledTop;
+
+			var scaleX = scaledWidth / bounds.width;
+			var scaleY = scaledHeight / bounds.height;
+
+			if (Math.isNaN(scaleX) || scaleX == 0.0) scaleX = 1.0;
+			if (Math.isNaN(scaleY) || scaleY == 0.0) scaleY = 1.0;
+
+			patternMatrix.translate(-__boundsExStroke.x, -__boundsExStroke.y);
+			patternMatrix.scale(scaleX, scaleY);
+			patternMatrix.translate(scaledLeft, scaledTop);
+		}
 	}
 
 	// Get & Set Methods
@@ -2090,10 +1991,685 @@ import js.html.CanvasRenderingContext2D;
 		{
 			__softwareDirty = true;
 			__hardwareDirty = true;
+			__boundsDirty = true;
 		}
 
 		return __dirty = value;
 	}
+
+	@:noCompletion private function get___isHardwareCompatible():Bool
+	{
+		#if (openfl_force_sw_graphics || force_sw_graphics)
+		return false;
+		#elseif (openfl_force_hw_graphics || force_hw_graphics)
+		return true;
+		#end
+		return __isHardwareDrawable;
+	}
+}
+
+@:access(openfl.display.DisplayObject)
+@:access(openfl.display.Graphics)
+@:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
+class GraphicsBoundsHelper
+{
+	private static var graphics:Graphics;
+	private static var strokePaddingX:Float;
+	private static var strokePaddingY:Float;
+	private static var hasFill:Bool;
+	private static var miterLimit:Float;
+	private static var path:Array<PathPoint>;
+	private static var capsStyle:CapsStyle;
+	private static var jointStyle:JointStyle;
+	private static inline var EPSILON = 1e-8;
+	public static var bounds(default, never):Rectangle = new Rectangle();
+	public static var boundsExStroke(default, never):Rectangle = new Rectangle();
+
+	@:noCompletion private static function inflateBounds(x:Float, y:Float, stroke:Bool):Void
+	{
+		inflate(bounds, x, y, stroke);
+		inflate(boundsExStroke, x, y, false);
+	}
+
+	@:noCompletion private static function inflate(rect:Rectangle, x:Float, y:Float, stroke:Bool):Void
+	{
+		if (rect == null) return;
+
+		var paddingX = stroke ? strokePaddingX : 0.0;
+		var paddingY = stroke ? strokePaddingY : 0.0;
+		var left = x - paddingX;
+		var top = y - paddingY;
+		var right = x + paddingX;
+		var bottom = y + paddingY;
+
+		if (Math.isNaN(rect.width) && Math.isNaN(rect.height))
+		{
+			rect.x = left;
+			rect.y = top;
+			rect.width = right - left;
+			rect.height = bottom - top;
+			return;
+		}
+
+		var cacheRectRight = rect.right;
+		var cacheRectBottom = rect.bottom;
+
+		if (rect.x > left)
+		{
+			rect.x = left;
+			rect.width = cacheRectRight - left;
+		}
+		if (rect.y > top)
+		{
+			rect.y = top;
+			rect.height = cacheRectBottom - top;
+		}
+		if (cacheRectRight < right)
+		{
+			rect.width = right - rect.x;
+		}
+		if (cacheRectBottom < bottom)
+		{
+			rect.height = bottom - rect.y;
+		}
+	}
+
+	@:noCompletion private static function appendToPath(x:Float, y:Float, ?cx1:Float, ?cy1:Float, ?cx2:Float, ?cy2:Float):Void
+	{
+		if (path.length > 0 && path[path.length - 1].x == x && path[path.length - 1].y == y) return;
+
+		if (cx2 != null && cy2 != null)
+		{
+			path.push({
+				x: x,
+				y: y,
+				cx1: cx1,
+				cy1: cy1,
+				cx2: cx2,
+				cy2: cy2,
+			});
+		}
+		else if (cx1 != null && cy1 != null)
+		{
+			path.push({
+				x: x,
+				y: y,
+				cx1: cx1,
+				cy1: cy1
+			});
+		}
+		else
+		{
+			path.push({x: x, y: y});
+		}
+	}
+
+	@:noCompletion private static function jointBounds(x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float):Void
+	{
+		if (strokePaddingX < EPSILON && strokePaddingY < EPSILON) return;
+
+		if (jointStyle == JointStyle.ROUND)
+		{
+			inflate(bounds, x1, y1, true);
+			return;
+		}
+
+		var dx1 = x1 - x0;
+		var dy1 = y1 - y0;
+		var dx2 = x2 - x1;
+		var dy2 = y2 - y1;
+
+		var cross = dx1 * dy2 - dy1 * dx2;
+		if (Math.abs(cross) < EPSILON)
+		{
+			// Degenerate joint (straight line, both segments are colinear)
+			inflate(bounds, x1, y1, true);
+		}
+		else if (cross > 0)
+		{
+			// flip normals if ccw
+			dx1 = -dx1;
+			dy1 = -dy1;
+			dx2 = -dx2;
+			dy2 = -dy2;
+		}
+
+		var len1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+		if (len1 < EPSILON) return;
+
+		var len2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+		if (len2 < EPSILON) return;
+
+		dx1 /= len1;
+		dy1 /= len1;
+		dx2 /= len2;
+		dy2 /= len2;
+
+		var nx1 = -dy1 * strokePaddingX;
+		var ny1 = dx1 * strokePaddingY;
+
+		var nx2 = -dy2 * strokePaddingX;
+		var ny2 = dx2 * strokePaddingY;
+
+		if (jointStyle == JointStyle.MITER)
+		{
+			var cosTheta = dx1 * dx2 + dy1 * dy2;
+			cosTheta = Math.min(1, Math.max(-1, cosTheta));
+			var theta = Math.acos(cosTheta);
+
+			if (theta <= miterLimit)
+			{
+				var p0x = x1 - dx1 * strokePaddingX + nx1;
+				var p0y = y1 - dy1 * strokePaddingY + ny1;
+
+				var p1x = x1 + nx1;
+				var p1y = y1 + ny1;
+
+				var p2x = x1 + nx2;
+				var p2y = y1 + ny2;
+
+				var p3x = x1 + dx2 * strokePaddingX + nx2;
+				var p3y = y1 + dy2 * strokePaddingY + ny2;
+
+				var denom = (p1x - p0x) * (p3y - p2y) - (p1y - p0y) * (p3x - p2x);
+				if (Math.abs(denom) > EPSILON)
+				{
+					var t = ((p2x - p0x) * (p3y - p2y) - (p2y - p0y) * (p3x - p2x)) / denom;
+					var mx = p0x + (p1x - p0x) * t;
+					var my = p0y + (p1y - p0y) * t;
+					inflate(bounds, mx, my, false);
+					return;
+				}
+			}
+		}
+
+		// bevel joints
+		inflate(bounds, x1 + nx1, y1 + ny1, false);
+		inflate(bounds, x1 + nx2, y1 + ny2, false);
+	}
+
+	@:noCompletion private static function capBounds(from:PathPoint, to:PathPoint, atStart:Bool):Void
+	{
+		var dx = to.x - from.x;
+		var dy = to.y - from.y;
+		var len = Math.sqrt(dx * dx + dy * dy);
+		if (len < EPSILON) return;
+
+		var px = atStart ? from.x : to.x;
+		var py = atStart ? from.y : to.y;
+		var ux = dx / len;
+		var uy = dy / len;
+		var pxu = -uy;
+		var pyu = ux;
+
+		switch capsStyle
+		{
+			case CapsStyle.ROUND:
+				inflate(bounds, px, py, true);
+
+			case CapsStyle.SQUARE:
+				var sx = px + (atStart ? -ux * strokePaddingX : ux * strokePaddingX);
+				var sy = py + (atStart ? -uy * strokePaddingY : uy * strokePaddingY);
+				var x0 = sx + pxu * strokePaddingX;
+				var y0 = sy + pyu * strokePaddingY;
+				var x1 = sx - pxu * strokePaddingX;
+				var y1 = sy - pyu * strokePaddingY;
+				inflate(bounds, x0, y0, false);
+				inflate(bounds, x1, y1, false);
+
+			case CapsStyle.NONE:
+				var x0 = px + pxu * strokePaddingX;
+				var y0 = py + pyu * strokePaddingY;
+				var x1 = px - pxu * strokePaddingX;
+				var y1 = py - pyu * strokePaddingY;
+				inflate(bounds, x0, y0, false);
+				inflate(bounds, x1, y1, false);
+		}
+	}
+
+	@:noCompletion private static inline function curveBounds(a:PathPoint, b:PathPoint):Void
+	{
+		inflateBounds(b.x, b.y, false);
+
+		if (b.cx2 != null)
+		{
+			var xs = cubicExtrema(a.x, b.cx1, b.cx2, b.x);
+			var ys = cubicExtrema(a.y, b.cy1, b.cy2, b.y);
+			inflateBounds(xs.min, ys.min, true);
+			inflateBounds(xs.max, ys.max, true);
+		}
+		else if (b.cx1 != null)
+		{
+			var tx = quadExtremum(a.x, b.cx1, b.x);
+			var ty = quadExtremum(a.y, b.cy1, b.y);
+			if (tx > 0 && tx < 1)
+			{
+				var px = quad(a.x, b.cx1, b.x, tx);
+				var py = quad(a.y, b.cy1, b.y, tx);
+				inflateBounds(px, py, true);
+			}
+			if (ty > 0 && ty < 1)
+			{
+				var px = quad(a.x, b.cx1, b.x, ty);
+				var py = quad(a.y, b.cy1, b.y, ty);
+				inflateBounds(px, py, true);
+			}
+		}
+	}
+
+	@:noCompletion private static function cubicExtrema(p1:Float, p2:Float, p3:Float, p4:Float):{min:Float, max:Float}
+	{
+		var solutions:Array<Float> = [];
+		if (!(((p2 < p4 && p2 > p1) || (p2 > p4 && p2 < p1)) && ((p3 < p4 && p3 > p1) || (p3 > p4 && p3 < p1))))
+		{
+			// The derivative of a cubic Bézier curve is a quadratic Bézier curve.
+			// f(t) = a * t * t + b * t + c = 0
+			var a = -p1 + 3 * p2 + p4 - 3 * p3;
+			var b = 2 * p1 - 4 * p2 + 2 * p3;
+			var c = p2 - p1;
+			// d is a discriminant
+			var d = b * b - 4 * a * c;
+			if (a == 0)
+			{
+				var t = -c / b;
+				if (t > 0 && t < 1)
+				{
+					solutions.push(calculateBezierCubicPoint(t, p1, p2, p3, p4));
+				}
+			}
+			else if (d >= 0)
+			{
+				var t1 = (-b + Math.sqrt(d)) / (2 * a);
+				var t2 = (-b - Math.sqrt(d)) / (2 * a);
+				if (t1 > 0 && t1 < 1)
+				{
+					solutions.push(calculateBezierCubicPoint(t1, p1, p2, p3, p4));
+				}
+				if (t2 > 0 && t2 < 1)
+				{
+					solutions.push(calculateBezierCubicPoint(t2, p1, p2, p3, p4));
+				}
+			}
+		}
+		var min = p1;
+		var max = p1;
+		solutions.push(p4);
+		for (val in solutions)
+		{
+			if (val < min)
+			{
+				min = val;
+			}
+			if (val > max)
+			{
+				max = val;
+			}
+		}
+		return {min: min, max: max};
+	}
+
+	@:noCompletion private static inline function calculateBezierCubicPoint(t:Float, p1:Float, p2:Float, p3:Float, p4:Float):Float
+	{
+		var iT = 1 - t;
+		return p1 * (iT * iT * iT) + 3 * p2 * t * (iT * iT) + 3 * p3 * iT * (t * t) + p4 * (t * t * t);
+	}
+
+	@:noCompletion private static inline function quadExtremum(a:Float, b:Float, c:Float):Float
+	{
+		var denom = (a - 2 * b + c);
+		if (Math.abs(denom) < EPSILON) return Math.NaN;
+		return (a - b) / denom;
+	}
+
+	@:noCompletion private static inline function quad(a:Float, b:Float, c:Float, t:Float)
+	{
+		return (1 - t) * (1 - t) * a + 2 * (1 - t) * t * b + t * t * c;
+	}
+
+	@:noCompletion private static function endPath(close:Bool):Void
+	{
+		if (path.length > 1)
+		{
+			var prev:PathPoint;
+			var curr:PathPoint;
+			var next:PathPoint;
+			var n = path.length;
+
+			if (path[0].x == path[n - 1].x && path[0].y == path[n - 1].y)
+			{
+				path[0] = path[n - 1];
+				path.pop();
+				n--;
+				close = true;
+			}
+
+			for (i in 0...n)
+			{
+				prev = (close && i == 0) ? path[n - 1] : path[i - 1];
+				curr = path[i];
+				next = (close && i == n - 1) ? path[0] : path[i + 1];
+
+				if (prev != null)
+				{
+					curveBounds(prev, curr);
+				}
+				else
+				{
+					inflateBounds(curr.x, curr.y, false);
+				}
+
+				if (prev != null && next != null)
+				{
+					var x0 = prev.x;
+					var y0 = prev.y;
+					var x1 = curr.x;
+					var y1 = curr.y;
+					var x2 = next.x;
+					var y2 = next.y;
+
+					// Pick closest control points if they exist
+					if (curr.cx2 != null)
+					{
+						x0 = curr.cx2;
+						y0 = curr.cy2;
+					}
+					else if (curr.cx1 != null)
+					{
+						x0 = curr.cx1;
+						y0 = curr.cy1;
+					}
+					if (next.cx1 != null)
+					{
+						x2 = next.cx1;
+						y2 = next.cy1;
+					}
+					jointBounds(x0, y0, x1, y1, x2, y2);
+				}
+			}
+
+			if (!close)
+			{
+				capBounds(path[0], path[1], true);
+				capBounds(path[n - 2], path[n - 1], false);
+			}
+		}
+
+		if (path.length > 0) path = [];
+	}
+
+	public static function calculateBounds(commands:DrawCommandBuffer, graphics:Graphics):Bool
+	{
+		GraphicsBoundsHelper.graphics = graphics;
+
+		var originalBounds = Rectangle.__pool.get();
+		originalBounds.copyFrom(bounds);
+
+		strokePaddingX = 0.0;
+		strokePaddingY = 0.0;
+		hasFill = false;
+		capsStyle = CapsStyle.ROUND;
+		jointStyle = JointStyle.ROUND;
+		miterLimit = 0.0;
+		path = [];
+
+		bounds.setTo(Math.NaN, Math.NaN, Math.NaN, Math.NaN);
+		boundsExStroke.setTo(Math.NaN, Math.NaN, Math.NaN, Math.NaN);
+
+		var data = new DrawCommandReader(commands);
+		for (type in commands.types)
+		{
+			switch (type)
+			{
+				case CUBIC_CURVE_TO:
+					var c = data.readCubicCurveTo();
+					if (path.length == 0) appendToPath(0.0, 0.0);
+					appendToPath(c.anchorX, c.anchorY, c.controlX1, c.controlY1, c.controlX2, c.controlY2);
+
+				case CURVE_TO:
+					var c = data.readCurveTo();
+					if (path.length == 0) appendToPath(0.0, 0.0);
+					appendToPath(c.anchorX, c.anchorY, c.controlX, c.controlY);
+
+				case LINE_TO:
+					var c = data.readLineTo();
+					if (path.length == 0) appendToPath(0.0, 0.0);
+					appendToPath(c.x, c.y);
+
+				case MOVE_TO:
+					var c = data.readMoveTo();
+					endPath(hasFill);
+					appendToPath(c.x, c.y);
+
+				case DRAW_CIRCLE:
+					endPath(hasFill);
+					var c = data.readDrawCircle();
+					inflateBounds(c.x - c.radius, c.y - c.radius, true);
+					inflateBounds(c.x + c.radius, c.y + c.radius, true);
+
+				case DRAW_ELLIPSE:
+					endPath(hasFill);
+					var c = data.readDrawEllipse();
+					inflateBounds(c.x, c.y, true);
+					inflateBounds(c.x + c.width, c.y + c.height, true);
+
+				case DRAW_RECT:
+					endPath(hasFill);
+					var c = data.readDrawRect();
+					var minX = Math.min(c.x, c.x + c.width);
+					var minY = Math.min(c.y, c.y + c.height);
+					var maxX = Math.max(c.x, c.x + c.width);
+					var maxY = Math.max(c.y, c.y + c.height);
+					inflateBounds(minX, minY, true);
+					inflateBounds(maxX, maxY, true);
+
+				case DRAW_ROUND_RECT:
+					endPath(hasFill);
+					var c = data.readDrawRoundRect();
+					var minX = Math.min(c.x, c.x + c.width);
+					var minY = Math.min(c.y, c.y + c.height);
+					var maxX = Math.max(c.x, c.x + c.width);
+					var maxY = Math.max(c.y, c.y + c.height);
+					inflateBounds(minX, minY, true);
+					inflateBounds(maxX, maxY, true);
+
+				case DRAW_QUADS:
+					endPath(hasFill);
+					var c = data.readDrawQuads();
+					var rects = c.rects;
+					var indices = c.indices;
+					var transforms = c.transforms;
+					var hasIndices = (indices != null);
+					var transformABCD = false, transformXY = false;
+					var length = hasIndices ? indices.length : Math.floor(rects.length / 4);
+
+					if (transforms != null)
+					{
+						if (transforms.length >= length * 6)
+						{
+							transformABCD = true;
+							transformXY = true;
+						}
+						else if (transforms.length >= length * 4)
+						{
+							transformABCD = true;
+						}
+						else if (transforms.length >= length * 2)
+						{
+							transformXY = true;
+						}
+					}
+
+					var tileRect = Rectangle.__pool.get();
+					var tileTransform = Matrix.__pool.get();
+
+					var minX = Math.POSITIVE_INFINITY;
+					var minY = Math.POSITIVE_INFINITY;
+					var maxX = Math.NEGATIVE_INFINITY;
+					var maxY = Math.NEGATIVE_INFINITY;
+
+					var ri:Int;
+					var ti:Int;
+
+					for (i in 0...length)
+					{
+						ri = (hasIndices ? (indices[i] * 4) : i * 4);
+						if (ri < 0) continue;
+						tileRect.setTo(0, 0, rects[ri + 2], rects[ri + 3]);
+
+						if (tileRect.width <= 0 || tileRect.height <= 0)
+						{
+							continue;
+						}
+
+						if (transformABCD && transformXY)
+						{
+							// this overrides / ignores tileRect.x & tileRect.y
+							ti = i * 6;
+							tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4],
+								transforms[ti + 5]);
+						}
+						else if (transformABCD)
+						{
+							ti = i * 4;
+							tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], tileRect.x, tileRect.y);
+						}
+						else if (transformXY)
+						{
+							ti = i * 2;
+							tileTransform.tx = transforms[ti];
+							tileTransform.ty = transforms[ti + 1];
+						}
+						else
+						{
+							tileTransform.tx = tileRect.x;
+							tileTransform.ty = tileRect.y;
+						}
+
+						tileRect.__transform(tileRect, tileTransform);
+
+						if (minX > tileRect.x) minX = tileRect.x;
+						if (minY > tileRect.y) minY = tileRect.y;
+						if (maxX < tileRect.right) maxX = tileRect.right;
+						if (maxY < tileRect.bottom) maxY = tileRect.bottom;
+					}
+
+					inflateBounds(minX, minY, true);
+					inflateBounds(maxX, maxY, true);
+
+					Rectangle.__pool.release(tileRect);
+					Matrix.__pool.release(tileTransform);
+
+				case DRAW_TRIANGLES:
+					endPath(hasFill);
+					var c = data.readDrawTriangles();
+					var x:Float;
+					var y:Float;
+					var minX = Math.POSITIVE_INFINITY;
+					var minY = Math.POSITIVE_INFINITY;
+					var maxX = Math.NEGATIVE_INFINITY;
+					var maxY = Math.NEGATIVE_INFINITY;
+					var v = c.vertices;
+					var vertLength = v.length;
+
+					for (i in 0...vertLength)
+					{
+						x = v[i * 2];
+						y = v[i * 2 + 1];
+
+						if (minX > x) minX = x;
+						if (minY > y) minY = y;
+						if (maxX < x) maxX = x;
+						if (maxY < y) maxY = y;
+					}
+
+					inflateBounds(minX, minY, true);
+					inflateBounds(maxX, maxY, true);
+
+				case LINE_GRADIENT_STYLE, LINE_BITMAP_STYLE:
+					endPath(false);
+					data.skip(type);
+
+				case LINE_STYLE:
+					endPath(false);
+					var c = data.readLineStyle();
+					var strokePadding = c.thickness == null ? 0.0 : c.thickness * 0.5;
+					jointStyle = c.joints;
+					capsStyle = c.caps;
+					miterLimit = c.miterLimit;
+					var scaleX = Math.abs(graphics.__owner.__worldTransform.a);
+					var scaleY = Math.abs(graphics.__owner.__worldTransform.d);
+
+					if (graphics.__useScale9Grid)
+					{
+						strokePaddingX = strokePadding / scaleX;
+						strokePaddingY = strokePadding / scaleY;
+					}
+					else
+					{
+						var scale = 1.0;
+						switch (c.scaleMode)
+						{
+							case LineScaleMode.NONE:
+								scale = Math.max(scaleX, scaleY);
+							case LineScaleMode.VERTICAL:
+								scale = scaleX;
+							case LineScaleMode.HORIZONTAL:
+								scale = scaleY;
+							default:
+						}
+						if (scale < 1.0) scale = 1.0;
+						strokePaddingX = strokePadding / scale;
+						strokePaddingY = strokePadding / scale;
+					}
+
+				case END_FILL:
+					endPath(hasFill);
+					data.skip(type);
+					hasFill = false;
+
+				case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
+					endPath(hasFill);
+					data.skip(type);
+					hasFill = true;
+
+				default:
+					data.skip(type);
+			}
+		}
+
+		endPath(hasFill);
+
+		if (Math.isNaN(bounds.width) || Math.isNaN(bounds.height))
+		{
+			bounds.setEmpty();
+		}
+		if (Math.isNaN(boundsExStroke.width) || Math.isNaN(boundsExStroke.height))
+		{
+			boundsExStroke.setEmpty();
+		}
+
+		var changed = !originalBounds.equals(bounds);
+		Rectangle.__pool.release(originalBounds);
+
+		return changed;
+	}
+}
+
+typedef PathPoint =
+{
+	var x:Float;
+	var y:Float;
+	@:optional var cx1:Float;
+	@:optional var cy1:Float;
+	@:optional var cx2:Float;
+	@:optional var cy2:Float;
+}
+
+typedef CubicExtrema =
+{
+	var t0:Float;
+	var t1:Float;
 }
 #else
 typedef Graphics = flash.display.Graphics;

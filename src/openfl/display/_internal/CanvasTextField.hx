@@ -44,11 +44,6 @@ class CanvasTextField
 		{
 			textField.__updateLayout();
 
-			if (graphics.__bounds == null)
-			{
-				graphics.__bounds = new Rectangle();
-			}
-
 			// There might be a better way of handling this!
 			if (textField.text.length == 0)
 			{
@@ -421,6 +416,7 @@ class CanvasTextField
 				graphics.__bitmapScaleY = pixelRatio;
 				graphics.__visible = true;
 				textField.__dirty = false;
+				graphics.__boundsDirty = false;
 				graphics.__softwareDirty = false;
 				graphics.__dirty = false;
 			}

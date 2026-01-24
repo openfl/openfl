@@ -88,7 +88,7 @@ class DrawCommandBuffer
 					beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 				case BEGIN_SHADER_FILL:
 					var c = data.readBeginShaderFill();
-					beginShaderFill(c.shaderBuffer);
+					beginShaderFill(c.shaderBuffer, c.matrix);
 				case CUBIC_CURVE_TO:
 					var c = data.readCubicCurveTo();
 					cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
@@ -184,12 +184,13 @@ class DrawCommandBuffer
 		f.push(focalPointRatio);
 	}
 
-	public function beginShaderFill(shaderBuffer:ShaderBuffer):Void
+	public function beginShaderFill(shaderBuffer:ShaderBuffer, matrix:Matrix):Void
 	{
 		prepareWrite();
 
 		types.push(BEGIN_SHADER_FILL);
 		o.push(shaderBuffer);
+		o.push(matrix);
 	}
 
 	public function clear():Void

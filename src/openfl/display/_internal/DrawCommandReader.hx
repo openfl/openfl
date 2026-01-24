@@ -60,7 +60,7 @@ class DrawCommandReader
 				fPos += 1; // focalPointRatio
 
 			case BEGIN_SHADER_FILL:
-				oPos += 1; // shaderBuffer
+				oPos += 2; // shaderBuffer, matrix
 
 			case CUBIC_CURVE_TO:
 				fPos += 6; // controlX1, controlY1, controlX2, controlY2, anchorX, anchorY
@@ -463,6 +463,13 @@ abstract BeginShaderFillView(DrawCommandReader)
 	private inline function get_shaderBuffer():ShaderBuffer
 	{
 		return cast this.obj(0);
+	}
+
+	public var matrix(get, never):Matrix;
+
+	private inline function get_matrix():Matrix
+	{
+		return cast this.obj(1);
 	}
 }
 

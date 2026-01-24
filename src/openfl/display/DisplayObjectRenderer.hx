@@ -203,7 +203,7 @@ class DisplayObjectRenderer extends EventDispatcher
 	{
 		if (value == true || displayObject.__filters != null) return true;
 
-		if (value == false || (displayObject.__graphics != null && !Context3DGraphics.isCompatible(displayObject.__graphics)))
+		if (value == false || (displayObject.__graphics != null && !displayObject.__graphics.__isHardwareCompatible))
 		{
 			return false;
 		}
@@ -250,16 +250,16 @@ class DisplayObjectRenderer extends EventDispatcher
 		if (renderer.__worldColorTransform != null) colorTransform.__combine(renderer.__worldColorTransform);
 		var updated = false;
 
-		if (displayObject.cacheAsBitmap
-			|| (renderer.__type != OPENGL
-				&& !colorTransform.__isDefault(true) #if (openfl_legacy_scale9grid && openfl_force_gl_cacheasbitmap_for_scale9grid)
-					|| (renderer.__type == OPENGL && displayObject.scale9Grid != null) #end))
+		var renderCacheBitmap = displayObject.cacheAsBitmap || (renderer.__type != OPENGL && !colorTransform.__isDefault(true));
+		#if (openfl_legacy_scale9grid && openfl_force_gl_cacheasbitmap_for_scale9grid)
+		if (renderer.__type == OPENGL && displayObject.scale9Grid != null) renderCacheBitmap = true;
+		#end
+		if (renderCacheBitmap)
 		{
 			var rect:Rectangle = null;
 
 			var needRender = (displayObject.__cacheBitmap == null
-				|| (displayObject.__renderDirty && (force || (displayObject.__children != null && displayObject.__children.length > 0)))
-				|| displayObject.opaqueBackground != displayObject.__cacheBitmapBackground);
+				|| (displayObject.__renderDirty && (force || (displayObject.__children != null && displayObject.__children.length > 0))));
 			var softwareDirty = needRender
 				|| (displayObject.__graphics != null && displayObject.__graphics.__softwareDirty)
 				|| !displayObject.__cacheBitmapColorTransform.__equals(colorTransform, true);
@@ -411,21 +411,16 @@ class DisplayObjectRenderer extends EventDispatcher
 			if (needRender)
 			{
 				updateTransform = true;
-				displayObject.__cacheBitmapBackground = displayObject.opaqueBackground;
 
 				if (filterWidth >= 0.5 && filterHeight >= 0.5)
 				{
-					var needsFill = (displayObject.opaqueBackground != null
-						&& (bitmapWidth != filterWidth || bitmapHeight != filterHeight));
-					var fillColor = displayObject.opaqueBackground != null ? (0xFF << 24) | displayObject.opaqueBackground : 0;
-					var bitmapColor = needsFill ? 0 : fillColor;
 					var allowFramebuffer = (renderer.__type == OPENGL);
 
 					if (displayObject.__cacheBitmapData == null
 						|| bitmapWidth > displayObject.__cacheBitmapData.width
 						|| bitmapHeight > displayObject.__cacheBitmapData.height)
 					{
-						displayObject.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
+						displayObject.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 
 						if (displayObject.__cacheBitmap == null) displayObject.__cacheBitmap = new Bitmap();
 						displayObject.__cacheBitmap.__bitmapData = displayObject.__cacheBitmapData;
@@ -433,13 +428,7 @@ class DisplayObjectRenderer extends EventDispatcher
 					}
 					else
 					{
-						displayObject.__cacheBitmapData.__fillRect(displayObject.__cacheBitmapData.rect, bitmapColor, allowFramebuffer);
-					}
-
-					if (needsFill)
-					{
-						rect.setTo(0, 0, filterWidth, filterHeight);
-						displayObject.__cacheBitmapData.__fillRect(rect, fillColor, allowFramebuffer);
+						displayObject.__cacheBitmapData.__fillRect(displayObject.__cacheBitmapData.rect, 0, allowFramebuffer);
 					}
 				}
 				else
@@ -522,8 +511,7 @@ class DisplayObjectRenderer extends EventDispatcher
 					{
 						if (displayObject.__cacheBitmapData.image == null)
 						{
-							var color = displayObject.opaqueBackground != null ? (0xFF << 24) | displayObject.opaqueBackground : 0;
-							displayObject.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, color);
+							displayObject.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 							displayObject.__cacheBitmap.__bitmapData = displayObject.__cacheBitmapData;
 						}
 

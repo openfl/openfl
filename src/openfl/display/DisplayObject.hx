@@ -628,7 +628,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		@see [Setting an opaque background](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/setting-an-opaque-background.html)
 	**/
-	public var opaqueBackground:Null<Int>;
+	public var opaqueBackground(get, set):Null<Int>;
 
 	/**
 		Indicates the DisplayObjectContainer object that contains this display
@@ -967,7 +967,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __cacheAsBitmap:Bool;
 	@:noCompletion private var __cacheAsBitmapMatrix:Matrix;
 	@:noCompletion private var __cacheBitmap:Bitmap;
-	@:noCompletion private var __cacheBitmapBackground:Null<Int>;
 	@:noCompletion private var __cacheBitmapColorTransform:ColorTransform;
 	@:noCompletion private var __cacheBitmapData:BitmapData;
 	@:noCompletion private var __cacheBitmapData2:BitmapData;
@@ -990,6 +989,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __metaData:Dynamic;
 	@:noCompletion private var __name:String;
 	@:noCompletion private var __objectTransform:Transform;
+	@:noCompletion private var __opaqueBackground:Null<Int>;
 	@:noCompletion private var __renderable:Bool;
 	@:noCompletion private var __renderDirty:Bool;
 	@:noCompletion private var __renderParent:DisplayObject;
@@ -1075,6 +1075,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			"name": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_name (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_name (v); }")
+			},
+			"opaqueBackground": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_opaqueBackground (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_opaqueBackground (v); }")
 			},
 			"root": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_root (); }")
@@ -1212,6 +1216,27 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		return __dispatchWithCapture(event);
 	}
 
+	@:noCompletion private function __getTargetCoordinateSpaceMatrix(targetCoordinateSpace:DisplayObject, matrix:Matrix):Void
+	{
+		if (targetCoordinateSpace != null && targetCoordinateSpace != this)
+		{
+			matrix.copyFrom(__getWorldTransform());
+
+			var targetMatrix = Matrix.__pool.get();
+
+			targetMatrix.copyFrom(targetCoordinateSpace.__getWorldTransform());
+			targetMatrix.invert();
+
+			matrix.concat(targetMatrix);
+
+			Matrix.__pool.release(targetMatrix);
+		}
+		else
+		{
+			matrix.identity();
+		}
+	}
+
 	/**
 		Returns a rectangle that defines the area of the display object relative
 		to the coordinate system of the `targetCoordinateSpace` object.
@@ -1240,23 +1265,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		var matrix = Matrix.__pool.get();
 
-		if (targetCoordinateSpace != null && targetCoordinateSpace != this)
-		{
-			matrix.copyFrom(__getWorldTransform());
-
-			var targetMatrix = Matrix.__pool.get();
-
-			targetMatrix.copyFrom(targetCoordinateSpace.__getWorldTransform());
-			targetMatrix.invert();
-
-			matrix.concat(targetMatrix);
-
-			Matrix.__pool.release(targetMatrix);
-		}
-		else
-		{
-			matrix.identity();
-		}
+		__getTargetCoordinateSpaceMatrix(targetCoordinateSpace, matrix);
 
 		var bounds = new Rectangle();
 		__getBounds(bounds, matrix);
@@ -1286,8 +1295,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	public function getRect(targetCoordinateSpace:DisplayObject):Rectangle
 	{
-		// should not account for stroke widths, but is that possible?
-		return getBounds(targetCoordinateSpace);
+		var matrix = Matrix.__pool.get();
+
+		__getTargetCoordinateSpaceMatrix(targetCoordinateSpace, matrix);
+
+		var bounds = new Rectangle();
+		__getBounds(bounds, matrix, true);
+
+		Matrix.__pool.release(matrix);
+
+		return bounds;
 	}
 
 	/**
@@ -1579,11 +1596,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __enterFrame(deltaTime:Int):Void {}
 
-	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void
+	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix, exStroke:Bool = false):Void
 	{
 		if (__graphics != null)
 		{
-			__graphics.__getBounds(rect, matrix);
+			__graphics.__getBounds(rect, matrix, exStroke);
 		}
 	}
 
@@ -1820,7 +1837,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __setWorldTransformInvalid():Void
 	{
+		if (__worldTransformInvalid) return;
+
 		__worldTransformInvalid = true;
+
+		if (__graphics != null)
+		{
+			if (__graphics.__invalidateVertexBufferOnTransform)
+			{
+				__graphics.__hardwareDirty = true;
+			}
+			if (__scale9Grid != null)
+			{
+				__graphics.__dirty = true;
+			}
+		}
 	}
 
 	@:noCompletion private function __stopAllMovieClips():Void {}
@@ -2233,6 +2264,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private function set_name(value:String):String
 	{
 		return __name = value;
+	}
+
+	@:noCompletion private function get_opaqueBackground():Null<Int>
+	{
+		return __opaqueBackground;
+	}
+
+	@:noCompletion private function set_opaqueBackground(value:Null<Int>):Null<Int>
+	{
+		if (__opaqueBackground != value) __setRenderDirty();
+		return __opaqueBackground = value;
 	}
 
 	@:noCompletion private function get_root():DisplayObject

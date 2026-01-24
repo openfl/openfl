@@ -146,6 +146,7 @@ class CairoRenderer extends DisplayObjectRenderer
 
 		cairo.newPath();
 		__renderDrawableMask(mask);
+		cairo.fillRule = WINDING;
 		cairo.clip();
 	}
 

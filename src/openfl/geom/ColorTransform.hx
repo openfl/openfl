@@ -270,11 +270,12 @@ class ColorTransform
 
 	@:noCompletion private function __equals(ct:ColorTransform, ignoreAlphaMultiplier:Bool):Bool
 	{
+		// multipliers often get stuck at 0.999999999 after invert & combine in the render pipeline, causing unnecessary BitmapData.colorTransform call.
 		return (ct != null
-			&& redMultiplier == ct.redMultiplier
-			&& greenMultiplier == ct.greenMultiplier
-			&& blueMultiplier == ct.blueMultiplier
-			&& (ignoreAlphaMultiplier || alphaMultiplier == ct.alphaMultiplier)
+			&& Math.abs(redMultiplier - ct.redMultiplier) < 0.0001
+			&& Math.abs(greenMultiplier - ct.greenMultiplier) < 0.0001
+			&& Math.abs(blueMultiplier - ct.blueMultiplier) < 0.0001
+			&& (ignoreAlphaMultiplier || Math.abs(alphaMultiplier - ct.alphaMultiplier) < 0.0001)
 			&& redOffset == ct.redOffset
 			&& greenOffset == ct.greenOffset
 			&& blueOffset == ct.blueOffset
@@ -283,21 +284,15 @@ class ColorTransform
 
 	@:noCompletion private function __isDefault(ignoreAlphaMultiplier:Bool):Bool
 	{
-		if (ignoreAlphaMultiplier)
-		{
-			return (redMultiplier == 1
-				&& greenMultiplier == 1
-				&& blueMultiplier == 1
-				&& /*alphaMultiplier == 1 &&*/ redOffset == 0
-				&& greenOffset == 0
-				&& blueOffset == 0
-				&& alphaOffset == 0);
-		}
-		else
-		{
-			return (redMultiplier == 1 && greenMultiplier == 1 && blueMultiplier == 1 && alphaMultiplier == 1 && redOffset == 0 && greenOffset == 0
-				&& blueOffset == 0 && alphaOffset == 0);
-		}
+		// multipliers often get stuck at 0.999999999 after invert & combine in the render pipeline, causing unnecessary BitmapData.colorTransform call.
+		return (redMultiplier > 0.9999
+			&& greenMultiplier > 0.9999
+			&& blueMultiplier > 0.9999
+			&& (ignoreAlphaMultiplier || alphaMultiplier > 0.9999)
+			&& redOffset == 0
+			&& greenOffset == 0
+			&& blueOffset == 0
+			&& alphaOffset == 0);
 	}
 
 	@:noCompletion private function __setArrays(colorMultipliers:Array<Float>, colorOffsets:Array<Float>):Void

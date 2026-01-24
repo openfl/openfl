@@ -45,11 +45,6 @@ class CairoTextField
 		if (textField.__dirty)
 		{
 			textField.__updateLayout();
-
-			if (graphics.__bounds == null)
-			{
-				graphics.__bounds = new Rectangle();
-			}
 			// There might be a better way of handling this!
 			if (textField.text.length == 0)
 			{
@@ -516,6 +511,7 @@ class CairoTextField
 		graphics.__bitmap.image.dirty = true;
 		graphics.__bitmap.image.version++;
 		textField.__dirty = false;
+		graphics.__boundsDirty = false;
 		graphics.__softwareDirty = false;
 		graphics.__dirty = false;
 		#end
