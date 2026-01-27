@@ -105,6 +105,9 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __bitmapScaleX:Float;
 	@:noCompletion private var __bitmapScaleY:Float;
 	@:noCompletion private var __useScale9Grid:Bool;
+	#if gl_stats
+	@:noCompletion private var __glDrawCalls:Int = 0;
+	#end
 
 	@:noCompletion private function new(owner:DisplayObject)
 	{
