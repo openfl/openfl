@@ -255,8 +255,8 @@ class RectangleTest extends Test
 		var rect = new Rectangle(0, 0, 100, 100);
 
 		Assert.isTrue(rect.containsRect(new Rectangle(0, 0, 100, 100)));
-		Assert.isFalse(rect.containsRect(new Rectangle()));
-		Assert.isFalse(rect.containsRect(new Rectangle(0, 0, 1, 0)));
+		Assert.isTrue(rect.containsRect(new Rectangle()));
+		Assert.isTrue(rect.containsRect(new Rectangle(0, 0, 1, 0)));
 		Assert.isTrue(rect.containsRect(new Rectangle(0, 0, 1, 1)));
 		Assert.isTrue(rect.containsRect(new Rectangle(1, 1)));
 		Assert.isFalse(rect.containsRect(new Rectangle(-1, 0, 100, 100)));
@@ -266,8 +266,8 @@ class RectangleTest extends Test
 
 		Assert.isTrue(rect.containsRect(new Rectangle(-100, -100, 200, 200)));
 		Assert.isTrue(rect.containsRect(new Rectangle()));
-		Assert.isFalse(rect.containsRect(new Rectangle(-100, -100)));
-		Assert.isFalse(rect.containsRect(new Rectangle(100, 100)));
+		Assert.isTrue(rect.containsRect(new Rectangle(-100, -100)));
+		Assert.isTrue(rect.containsRect(new Rectangle(100, 100)));
 		Assert.isTrue(rect.containsRect(new Rectangle(99, 99)));
 		Assert.isFalse(rect.containsRect(new Rectangle(-101, -100, 200, 200)));
 		Assert.isFalse(rect.containsRect(new Rectangle(-100, -100, 201, 201)));
@@ -373,8 +373,8 @@ class RectangleTest extends Test
 	public function test_isEmpty()
 	{
 		Assert.isTrue(new Rectangle().isEmpty());
-		Assert.isTrue(new Rectangle(100, 100, -1, -1).isEmpty());
-		Assert.isTrue(new Rectangle(0, 0, -1, -1).isEmpty());
+		Assert.isFalse(new Rectangle(100, 100, -1, -1).isEmpty());
+		Assert.isFalse(new Rectangle(0, 0, -1, -1).isEmpty());
 		Assert.isTrue(new Rectangle(0, 0, 1, 0).isEmpty());
 		Assert.isFalse(new Rectangle(0, 0, 1, 1).isEmpty());
 	}

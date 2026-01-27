@@ -251,7 +251,12 @@ class Rectangle
 	**/
 	public function contains(x:Float, y:Float):Bool
 	{
-		return x >= this.x && y >= this.y && x < right && y < bottom;
+		var x0 = Math.min(this.x, this.right);
+		var x1 = Math.max(this.x, this.right);
+		var y0 = Math.min(this.y, this.bottom);
+		var y1 = Math.max(this.y, this.bottom);
+
+		return x >= x0 && x < x1 && y >= y0 && y < y1;
 	}
 
 	/**
@@ -283,14 +288,18 @@ class Rectangle
 	**/
 	public function containsRect(rect:Rectangle):Bool
 	{
-		if (rect.width <= 0 || rect.height <= 0)
-		{
-			return rect.x > x && rect.y > y && rect.right < right && rect.bottom < bottom;
-		}
-		else
-		{
-			return rect.x >= x && rect.y >= y && rect.right <= right && rect.bottom <= bottom;
-		}
+		var sx0 = Math.min(this.x, this.right);
+		var sx1 = Math.max(this.x, this.right);
+		var sy0 = Math.min(this.y, this.bottom);
+		var sy1 = Math.max(this.y, this.bottom);
+
+		var ox0 = Math.min(rect.x, rect.right);
+		var ox1 = Math.max(rect.x, rect.right);
+		var oy0 = Math.min(rect.y, rect.bottom);
+		var oy1 = Math.max(rect.y, rect.bottom);
+
+		// A rectangle contains another if all corners are inside (exclusive right/bottom)
+		return ox0 >= sx0 && oy0 >= sy0 && ox1 <= sx1 && oy1 <= sy1;
 	}
 
 	/**
@@ -504,7 +513,7 @@ class Rectangle
 	**/
 	public function isEmpty():Bool
 	{
-		return (width <= 0 || height <= 0);
+		return (width == 0 || height == 0);
 	}
 
 	/**
@@ -585,19 +594,20 @@ class Rectangle
 	**/
 	public function union(toUnion:Rectangle):Rectangle
 	{
-		if (width == 0 || height == 0)
-		{
-			return toUnion.clone();
-		}
-		else if (toUnion.width == 0 || toUnion.height == 0)
-		{
-			return clone();
-		}
+		var sourceLeft = Math.min(x, x + width);
+		var sourceRight = Math.max(x, x + width);
+		var sourceTop = Math.min(y, y + height);
+		var sourceBottom = Math.max(y, y + height);
 
-		var x0 = x > toUnion.x ? toUnion.x : x;
-		var x1 = right < toUnion.right ? toUnion.right : right;
-		var y0 = y > toUnion.y ? toUnion.y : y;
-		var y1 = bottom < toUnion.bottom ? toUnion.bottom : bottom;
+		var otherLeft = Math.min(toUnion.x, toUnion.x + toUnion.width);
+		var otherRight = Math.max(toUnion.x, toUnion.x + toUnion.width);
+		var otherTop = Math.min(toUnion.y, toUnion.y + toUnion.height);
+		var otherBottom = Math.max(toUnion.y, toUnion.y + toUnion.height);
+
+		var x0 = Math.min(sourceLeft, otherLeft);
+		var x1 = Math.max(sourceRight, otherRight);
+		var y0 = Math.min(sourceTop, otherTop);
+		var y1 = Math.max(sourceBottom, otherBottom);
 
 		return new Rectangle(x0, y0, x1 - x0, y1 - y0);
 	}
