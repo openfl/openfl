@@ -560,8 +560,6 @@ class Context3DGraphics
 		var vertexBuffer = hasUVTData ? graphics.__vertexBufferUVT : graphics.__vertexBuffer;
 		var bufferPosition = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
 
-		trace(vertexBuffer);
-
 		var uMatrix = renderer.__getMatrix(graphics.__owner.__renderTransform, AUTO);
 		var shader:Shader;
 
