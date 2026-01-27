@@ -2600,31 +2600,30 @@ class GraphicsBoundsHelper
 					jointStyle = c.joints;
 					capsStyle = c.caps;
 					miterLimit = c.miterLimit;
-					var scaleX = Math.abs(graphics.__owner.__worldTransform.a);
-					var scaleY = Math.abs(graphics.__owner.__worldTransform.d);
-
+					var scaleX = 1.0;
+					var scaleY = 1.0;
 					if (graphics.__useScale9Grid)
 					{
-						strokePaddingX = strokePadding / scaleX;
-						strokePaddingY = strokePadding / scaleY;
+						scaleX = Math.abs(graphics.__owner.__worldTransform.a);
+						scaleY = Math.abs(graphics.__owner.__worldTransform.d);
 					}
 					else
 					{
-						var scale = 1.0;
+						if (scaleX < 1.0) scaleX = 1.0;
+						if (scaleY < 1.0) scaleY = 1.0;
 						switch (c.scaleMode)
 						{
 							case LineScaleMode.NONE:
-								scale = Math.max(scaleX, scaleY);
+								scaleX = scaleY = Math.max(scaleX, scaleY);
 							case LineScaleMode.VERTICAL:
-								scale = scaleX;
+								scaleY = scaleX;
 							case LineScaleMode.HORIZONTAL:
-								scale = scaleY;
+								scaleX = scaleY;
 							default:
 						}
-						if (scale < 1.0) scale = 1.0;
-						strokePaddingX = strokePadding / scale;
-						strokePaddingY = strokePadding / scale;
 					}
+					strokePaddingX = scaleX != 0.0 ? strokePadding / scaleX : 0.0;
+					strokePaddingY = scaleY != 0.0 ? strokePadding / scaleY : 0.0;
 
 				case END_FILL:
 					endPath(hasFill);
