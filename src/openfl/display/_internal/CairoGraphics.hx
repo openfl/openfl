@@ -131,7 +131,8 @@ class CairoGraphics
 		if (!dirty) return;
 		if (stroke)
 		{
-			if (hasFill && hasStroke) closePath();
+			// in flash, we close the path if the start position is the same as the end.
+			if ((hasFill || (pathPosition.x == pathStart.x && pathPosition.y == pathStart.y)) && hasStroke) closePath();
 			paintStroke();
 		}
 		else

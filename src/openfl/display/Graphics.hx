@@ -1499,9 +1499,12 @@ import js.html.CanvasRenderingContext2D;
 
 		if (!__boundsDirty) return;
 
-		__transformDirty = GraphicsBoundsHelper.calculateBounds(__commands, this);
-		__bounds.copyFrom(GraphicsBoundsHelper.bounds);
-		__boundsExStroke.copyFrom(GraphicsBoundsHelper.boundsExStroke);
+		var originalBounds = Rectangle.__pool.get();
+		originalBounds.copyFrom(__bounds);
+		GraphicsBoundsHelper.calculateBounds(__commands, __bounds, __boundsExStroke, this);
+		__transformDirty = !originalBounds.equals(__bounds);
+		Rectangle.__pool.release(originalBounds);
+
 		__boundsDirty = false;
 	}
 
@@ -1956,22 +1959,23 @@ import js.html.CanvasRenderingContext2D;
 
 		if (__useScale9Grid)
 		{
-			GraphicsBoundsHelper.calculateBounds(commands, this);
-			var bounds = GraphicsBoundsHelper.bounds;
+			var patternBounds = Rectangle.__pool.get();
+
+			GraphicsBoundsHelper.calculateBounds(commands, patternBounds, null, this);
 
 			var scaleX = __owner.scaleX;
 			var scaleY = __owner.scaleY;
 
-			var scaledLeft = __getScale9GridPositionX(bounds.x);
-			var scaledTop = __getScale9GridPositionY(bounds.y);
-			var scaledRight = __getScale9GridPositionX(bounds.x + bounds.width);
-			var scaledBottom = __getScale9GridPositionY(bounds.y + bounds.height);
+			var scaledLeft = __getScale9GridPositionX(patternBounds.x);
+			var scaledTop = __getScale9GridPositionY(patternBounds.y);
+			var scaledRight = __getScale9GridPositionX(patternBounds.x + patternBounds.width);
+			var scaledBottom = __getScale9GridPositionY(patternBounds.y + patternBounds.height);
 
 			var scaledWidth = scaledRight - scaledLeft;
 			var scaledHeight = scaledBottom - scaledTop;
 
-			var scaleX = scaledWidth / bounds.width;
-			var scaleY = scaledHeight / bounds.height;
+			var scaleX = scaledWidth / patternBounds.width;
+			var scaleY = scaledHeight / patternBounds.height;
 
 			if (Math.isNaN(scaleX) || scaleX == 0.0) scaleX = 1.0;
 			if (Math.isNaN(scaleY) || scaleY == 0.0) scaleY = 1.0;
@@ -1979,6 +1983,8 @@ import js.html.CanvasRenderingContext2D;
 			patternMatrix.translate(-__boundsExStroke.x, -__boundsExStroke.y);
 			patternMatrix.scale(scaleX, scaleY);
 			patternMatrix.translate(scaledLeft, scaledTop);
+
+			Rectangle.__pool.release(patternBounds);
 		}
 	}
 
@@ -2018,29 +2024,52 @@ import js.html.CanvasRenderingContext2D;
 class GraphicsBoundsHelper
 {
 	private static var graphics:Graphics;
+	private static var bounds:Rectangle;
+	private static var boundsExStroke:Rectangle;
 	private static var strokePaddingX:Float;
 	private static var strokePaddingY:Float;
 	private static var hasFill:Bool;
 	private static var miterLimit:Float;
-	private static var path:Array<PathPoint>;
 	private static var capsStyle:CapsStyle;
 	private static var jointStyle:JointStyle;
-	private static inline var EPSILON = 1e-8;
-	public static var bounds(default, never):Rectangle = new Rectangle();
-	public static var boundsExStroke(default, never):Rectangle = new Rectangle();
 
-	@:noCompletion private static function inflateBounds(x:Float, y:Float, stroke:Bool):Void
+	private static var firstX:Null<Float>;
+	private static var firstY:Null<Float>;
+	private static var secondX:Null<Float>;
+	private static var secondY:Null<Float>;
+	private static var secondCX:Null<Float>;
+	private static var secondCY:Null<Float>;
+	private static var prevPrevX:Null<Float>;
+	private static var prevPrevY:Null<Float>;
+	private static var prevX:Null<Float>;
+	private static var prevY:Null<Float>;
+	private static var prevCX:Null<Float>;
+	private static var prevCY:Null<Float>;
+	private static var currX:Null<Float>;
+	private static var currY:Null<Float>;
+	private static var currCX1:Null<Float>;
+	private static var currCY1:Null<Float>;
+	private static var currCX2:Null<Float>;
+	private static var currCY2:Null<Float>;
+
+	private static var tmpCubicExtrema1:CubicExtrema = {min: 0.0, max: 0.0};
+	private static var tmpCubicExtrema2:CubicExtrema = {min: 0.0, max: 0.0};
+
+	private static inline var EPSILON = 1e-8;
+
+	@:noCompletion private static function inflateBounds(x:Float, y:Float):Void
 	{
-		inflate(bounds, x, y, stroke);
+		inflate(bounds, x, y, true);
 		inflate(boundsExStroke, x, y, false);
 	}
 
-	@:noCompletion private static function inflate(rect:Rectangle, x:Float, y:Float, stroke:Bool):Void
+	@:noCompletion private static function inflate(rect:Rectangle, x:Float, y:Float, useStrokePadding:Bool):Void
 	{
 		if (rect == null) return;
 
-		var paddingX = stroke ? strokePaddingX : 0.0;
-		var paddingY = stroke ? strokePaddingY : 0.0;
+		var paddingX = useStrokePadding ? strokePaddingX : 0.0;
+		var paddingY = useStrokePadding ? strokePaddingY : 0.0;
+
 		var left = x - paddingX;
 		var top = y - paddingY;
 		var right = x + paddingX;
@@ -2080,127 +2109,169 @@ class GraphicsBoundsHelper
 
 	@:noCompletion private static function appendToPath(x:Float, y:Float, ?cx1:Float, ?cy1:Float, ?cx2:Float, ?cy2:Float):Void
 	{
-		if (path.length > 0 && path[path.length - 1].x == x && path[path.length - 1].y == y) return;
+		if (x == currX && y == currY) return;
 
-		if (cx2 != null && cy2 != null)
+		if (firstX == null)
 		{
-			path.push({
-				x: x,
-				y: y,
-				cx1: cx1,
-				cy1: cy1,
-				cx2: cx2,
-				cy2: cy2,
-			});
+			firstX = x;
+			firstY = y;
 		}
-		else if (cx1 != null && cy1 != null)
+		else if (secondX == null)
 		{
-			path.push({
-				x: x,
-				y: y,
-				cx1: cx1,
-				cy1: cy1
-			});
+			secondX = x;
+			secondY = y;
+			secondCX = cx1;
+			secondCY = cy1;
 		}
-		else
-		{
-			path.push({x: x, y: y});
-		}
+
+		prevPrevX = prevX;
+		prevPrevY = prevY;
+
+		prevX = currX;
+		prevY = currY;
+		prevCX = currCX2;
+		prevCY = currCY2;
+
+		currX = x;
+		currY = y;
+		currCX1 = cx1;
+		currCY1 = cy1;
+		currCX2 = cx2;
+		currCY2 = cy2;
+
+		inflate(bounds, currX, currY, false);
+		inflate(boundsExStroke, currX, currY, false);
+
+		curveBounds();
+		strokeJointBounds();
 	}
 
-	@:noCompletion private static function jointBounds(x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float):Void
+	@:noCompletion private static function strokeJointBounds():Void
 	{
 		if (strokePaddingX < EPSILON && strokePaddingY < EPSILON) return;
 
-		if (jointStyle == JointStyle.ROUND)
+		if (prevX != null && prevPrevX != null)
 		{
-			inflate(bounds, x1, y1, true);
-			return;
-		}
+			var x0 = (prevCX != null) ? prevCX : prevPrevX;
+			var y0 = (prevCY != null) ? prevCY : prevPrevY;
 
-		var dx1 = x1 - x0;
-		var dy1 = y1 - y0;
-		var dx2 = x2 - x1;
-		var dy2 = y2 - y1;
+			var x1 = prevX;
+			var y1 = prevY;
 
-		var cross = dx1 * dy2 - dy1 * dx2;
-		if (Math.abs(cross) < EPSILON)
-		{
-			// Degenerate joint (straight line, both segments are colinear)
-			inflate(bounds, x1, y1, true);
-		}
-		else if (cross > 0)
-		{
-			// flip normals if ccw
-			dx1 = -dx1;
-			dy1 = -dy1;
-			dx2 = -dx2;
-			dy2 = -dy2;
-		}
+			var x2 = (currCX1 != null) ? currCX1 : currX;
+			var y2 = (currCY1 != null) ? currCY1 : currY;
 
-		var len1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
-		if (len1 < EPSILON) return;
-
-		var len2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
-		if (len2 < EPSILON) return;
-
-		dx1 /= len1;
-		dy1 /= len1;
-		dx2 /= len2;
-		dy2 /= len2;
-
-		var nx1 = -dy1 * strokePaddingX;
-		var ny1 = dx1 * strokePaddingY;
-
-		var nx2 = -dy2 * strokePaddingX;
-		var ny2 = dx2 * strokePaddingY;
-
-		if (jointStyle == JointStyle.MITER)
-		{
-			var cosTheta = dx1 * dx2 + dy1 * dy2;
-			cosTheta = Math.min(1, Math.max(-1, cosTheta));
-			var theta = Math.acos(cosTheta);
-
-			if (theta <= miterLimit)
+			if (jointStyle == JointStyle.ROUND)
 			{
-				var p0x = x1 - dx1 * strokePaddingX + nx1;
-				var p0y = y1 - dy1 * strokePaddingY + ny1;
+				inflate(bounds, x1, y1, true);
+				return;
+			}
 
-				var p1x = x1 + nx1;
-				var p1y = y1 + ny1;
+			var dx1 = x1 - x0;
+			var dy1 = y1 - y0;
+			var dx2 = x2 - x1;
+			var dy2 = y2 - y1;
 
-				var p2x = x1 + nx2;
-				var p2y = y1 + ny2;
+			var cross = dx1 * dy2 - dy1 * dx2;
+			if (Math.abs(cross) < EPSILON)
+			{
+				// Degenerate joint (straight line, both segments are colinear)
+				inflate(bounds, x1, y1, true);
+			}
+			else if (cross > 0)
+			{
+				// flip normals if ccw
+				dx1 = -dx1;
+				dy1 = -dy1;
+				dx2 = -dx2;
+				dy2 = -dy2;
+			}
 
-				var p3x = x1 + dx2 * strokePaddingX + nx2;
-				var p3y = y1 + dy2 * strokePaddingY + ny2;
+			var len1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+			if (len1 < EPSILON) return;
 
-				var denom = (p1x - p0x) * (p3y - p2y) - (p1y - p0y) * (p3x - p2x);
-				if (Math.abs(denom) > EPSILON)
+			var len2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+			if (len2 < EPSILON) return;
+
+			dx1 /= len1;
+			dy1 /= len1;
+			dx2 /= len2;
+			dy2 /= len2;
+
+			var nx1 = -dy1 * strokePaddingX;
+			var ny1 = dx1 * strokePaddingY;
+
+			var nx2 = -dy2 * strokePaddingX;
+			var ny2 = dx2 * strokePaddingY;
+
+			if (jointStyle == JointStyle.MITER)
+			{
+				var cosTheta = dx1 * dx2 + dy1 * dy2;
+				cosTheta = Math.min(1, Math.max(-1, cosTheta));
+				var theta = Math.acos(cosTheta);
+
+				if (theta <= miterLimit)
 				{
-					var t = ((p2x - p0x) * (p3y - p2y) - (p2y - p0y) * (p3x - p2x)) / denom;
-					var mx = p0x + (p1x - p0x) * t;
-					var my = p0y + (p1y - p0y) * t;
-					inflate(bounds, mx, my, false);
-					return;
+					var p0x = x1 - dx1 * strokePaddingX + nx1;
+					var p0y = y1 - dy1 * strokePaddingY + ny1;
+
+					var p1x = x1 + nx1;
+					var p1y = y1 + ny1;
+
+					var p2x = x1 + nx2;
+					var p2y = y1 + ny2;
+
+					var p3x = x1 + dx2 * strokePaddingX + nx2;
+					var p3y = y1 + dy2 * strokePaddingY + ny2;
+
+					var denom = (p1x - p0x) * (p3y - p2y) - (p1y - p0y) * (p3x - p2x);
+					if (Math.abs(denom) > EPSILON)
+					{
+						var t = ((p2x - p0x) * (p3y - p2y) - (p2y - p0y) * (p3x - p2x)) / denom;
+						var mx = p0x + (p1x - p0x) * t;
+						var my = p0y + (p1y - p0y) * t;
+						inflate(bounds, mx, my, false);
+						return;
+					}
 				}
 			}
-		}
 
-		// bevel joints
-		inflate(bounds, x1 + nx1, y1 + ny1, false);
-		inflate(bounds, x1 + nx2, y1 + ny2, false);
+			// bevel joints
+			inflate(bounds, x1 + nx1, y1 + ny1, false);
+			inflate(bounds, x1 + nx2, y1 + ny2, false);
+		}
 	}
 
-	@:noCompletion private static function capBounds(from:PathPoint, to:PathPoint, atStart:Bool):Void
+	@:noCompletion private static inline function strokeCapsBounds():Void
 	{
-		var dx = to.x - from.x;
-		var dy = to.y - from.y;
+		if (strokePaddingX < EPSILON && strokePaddingY < EPSILON) return;
+
+		if (secondCX != null)
+		{
+			strokeCapBounds(secondCX, secondCY, firstX, firstY, true);
+		}
+		else
+		{
+			strokeCapBounds(secondX, secondY, firstX, firstY, true);
+		}
+
+		if (prevCX != null)
+		{
+			strokeCapBounds(prevCX, prevCY, currX, currY, false);
+		}
+		else
+		{
+			strokeCapBounds(prevX, prevY, currX, currY, false);
+		}
+	}
+
+	@:noCompletion private static function strokeCapBounds(fromX:Float, fromY:Float, toX:Float, toY:Float, atStart:Bool):Void
+	{
+		var dx = toX - fromX;
+		var dy = toY - fromY;
 		var len = Math.sqrt(dx * dx + dy * dy);
 		if (len < EPSILON) return;
 
-		var px = atStart ? from.x : to.x;
-		var py = atStart ? from.y : to.y;
 		var ux = dx / len;
 		var uy = dy / len;
 		var pxu = -uy;
@@ -2209,11 +2280,11 @@ class GraphicsBoundsHelper
 		switch capsStyle
 		{
 			case CapsStyle.ROUND:
-				inflate(bounds, px, py, true);
+				inflate(bounds, toX, toY, true);
 
 			case CapsStyle.SQUARE:
-				var sx = px + (atStart ? -ux * strokePaddingX : ux * strokePaddingX);
-				var sy = py + (atStart ? -uy * strokePaddingY : uy * strokePaddingY);
+				var sx = toX + ux * strokePaddingX;
+				var sy = toY + uy * strokePaddingY;
 				var x0 = sx + pxu * strokePaddingX;
 				var y0 = sy + pyu * strokePaddingY;
 				var x1 = sx - pxu * strokePaddingX;
@@ -2222,48 +2293,59 @@ class GraphicsBoundsHelper
 				inflate(bounds, x1, y1, false);
 
 			case CapsStyle.NONE:
-				var x0 = px + pxu * strokePaddingX;
-				var y0 = py + pyu * strokePaddingY;
-				var x1 = px - pxu * strokePaddingX;
-				var y1 = py - pyu * strokePaddingY;
+				var x0 = toX + pxu * strokePaddingX;
+				var y0 = toY + pyu * strokePaddingY;
+				var x1 = toX - pxu * strokePaddingX;
+				var y1 = toY - pyu * strokePaddingY;
 				inflate(bounds, x0, y0, false);
 				inflate(bounds, x1, y1, false);
 		}
 	}
 
-	@:noCompletion private static inline function curveBounds(a:PathPoint, b:PathPoint):Void
+	@:noCompletion private static function curveBounds():Void
 	{
-		inflateBounds(b.x, b.y, false);
-
-		if (b.cx2 != null)
+		if (prevX != null)
 		{
-			var xs = cubicExtrema(a.x, b.cx1, b.cx2, b.x);
-			var ys = cubicExtrema(a.y, b.cy1, b.cy2, b.y);
-			inflateBounds(xs.min, ys.min, true);
-			inflateBounds(xs.max, ys.max, true);
-		}
-		else if (b.cx1 != null)
-		{
-			var tx = quadExtremum(a.x, b.cx1, b.x);
-			var ty = quadExtremum(a.y, b.cy1, b.y);
-			if (tx > 0 && tx < 1)
+			if (currCX2 != null)
 			{
-				var px = quad(a.x, b.cx1, b.x, tx);
-				var py = quad(a.y, b.cy1, b.y, tx);
-				inflateBounds(px, py, true);
+				var xs = cubicExtrema(prevX, currCX1, currCX2, currX, tmpCubicExtrema1);
+				var ys = cubicExtrema(prevY, currCY1, currCY2, currY, tmpCubicExtrema2);
+				inflateBounds(xs.min, ys.min);
+				inflateBounds(xs.max, ys.max);
 			}
-			if (ty > 0 && ty < 1)
+			else if (currCX1 != null)
 			{
-				var px = quad(a.x, b.cx1, b.x, ty);
-				var py = quad(a.y, b.cy1, b.y, ty);
-				inflateBounds(px, py, true);
+				var tx = quadExtremum(prevX, currCX1, currX);
+				var ty = quadExtremum(prevY, currCY1, currY);
+				if (tx > 0 && tx < 1)
+				{
+					var px = quad(prevX, currCX1, currX, tx);
+					var py = quad(prevY, currCY1, currY, tx);
+					inflateBounds(px, py);
+				}
+				if (ty > 0 && ty < 1)
+				{
+					var px = quad(prevX, currCX1, currX, ty);
+					var py = quad(prevY, currCY1, currY, ty);
+					inflateBounds(px, py);
+				}
 			}
 		}
 	}
 
-	@:noCompletion private static function cubicExtrema(p1:Float, p2:Float, p3:Float, p4:Float):{min:Float, max:Float}
+	@:noCompletion private static function minMax(v:Float, res:{min:Float, max:Float}):Void
 	{
-		var solutions:Array<Float> = [];
+		if (v < res.min) res.min = v;
+		if (v > res.max) res.max = v;
+	}
+
+	@:noCompletion private static function cubicExtrema(p1:Float, p2:Float, p3:Float, p4:Float, res:CubicExtrema):CubicExtrema
+	{
+		res.min = p1;
+		res.max = p1;
+
+		minMax(p4, res);
+
 		if (!(((p2 < p4 && p2 > p1) || (p2 > p4 && p2 < p1)) && ((p3 < p4 && p3 > p1) || (p3 > p4 && p3 < p1))))
 		{
 			// The derivative of a cubic Bézier curve is a quadratic Bézier curve.
@@ -2278,7 +2360,7 @@ class GraphicsBoundsHelper
 				var t = -c / b;
 				if (t > 0 && t < 1)
 				{
-					solutions.push(calculateBezierCubicPoint(t, p1, p2, p3, p4));
+					minMax(calculateBezierCubicPoint(t, p1, p2, p3, p4), res);
 				}
 			}
 			else if (d >= 0)
@@ -2287,29 +2369,16 @@ class GraphicsBoundsHelper
 				var t2 = (-b - Math.sqrt(d)) / (2 * a);
 				if (t1 > 0 && t1 < 1)
 				{
-					solutions.push(calculateBezierCubicPoint(t1, p1, p2, p3, p4));
+					minMax(calculateBezierCubicPoint(t1, p1, p2, p3, p4), res);
 				}
 				if (t2 > 0 && t2 < 1)
 				{
-					solutions.push(calculateBezierCubicPoint(t2, p1, p2, p3, p4));
+					minMax(calculateBezierCubicPoint(t2, p1, p2, p3, p4), res);
 				}
 			}
 		}
-		var min = p1;
-		var max = p1;
-		solutions.push(p4);
-		for (val in solutions)
-		{
-			if (val < min)
-			{
-				min = val;
-			}
-			if (val > max)
-			{
-				max = val;
-			}
-		}
-		return {min: min, max: max};
+
+		return res;
 	}
 
 	@:noCompletion private static inline function calculateBezierCubicPoint(t:Float, p1:Float, p2:Float, p3:Float, p4:Float):Float
@@ -2332,81 +2401,49 @@ class GraphicsBoundsHelper
 
 	@:noCompletion private static function endPath(close:Bool):Void
 	{
-		if (path.length > 1)
+		if (prevX != null)
 		{
-			var prev:PathPoint;
-			var curr:PathPoint;
-			var next:PathPoint;
-			var n = path.length;
-
-			if (path[0].x == path[n - 1].x && path[0].y == path[n - 1].y)
+			if ((currX == firstX && currY == firstY) || close)
 			{
-				path[0] = path[n - 1];
-				path.pop();
-				n--;
-				close = true;
+				// necessary to correctly represent a closed path with stroke + JointStyle
+				if (currX != firstX || currY != firstY) appendToPath(firstX, firstY);
+				appendToPath(secondX, secondY, secondCX, secondCY);
 			}
-
-			for (i in 0...n)
+			else
 			{
-				prev = (close && i == 0) ? path[n - 1] : path[i - 1];
-				curr = path[i];
-				next = (close && i == n - 1) ? path[0] : path[i + 1];
-
-				if (prev != null)
-				{
-					curveBounds(prev, curr);
-				}
-				else
-				{
-					inflateBounds(curr.x, curr.y, false);
-				}
-
-				if (prev != null && next != null)
-				{
-					var x0 = prev.x;
-					var y0 = prev.y;
-					var x1 = curr.x;
-					var y1 = curr.y;
-					var x2 = next.x;
-					var y2 = next.y;
-
-					// Pick closest control points if they exist
-					if (curr.cx2 != null)
-					{
-						x0 = curr.cx2;
-						y0 = curr.cy2;
-					}
-					else if (curr.cx1 != null)
-					{
-						x0 = curr.cx1;
-						y0 = curr.cy1;
-					}
-					if (next.cx1 != null)
-					{
-						x2 = next.cx1;
-						y2 = next.cy1;
-					}
-					jointBounds(x0, y0, x1, y1, x2, y2);
-				}
-			}
-
-			if (!close)
-			{
-				capBounds(path[0], path[1], true);
-				capBounds(path[n - 2], path[n - 1], false);
+				strokeCapsBounds();
 			}
 		}
 
-		if (path.length > 0) path = [];
+		firstX = null;
+		firstY = null;
+
+		secondX = null;
+		secondY = null;
+		secondCX = null;
+		secondCY = null;
+
+		prevX = null;
+		prevY = null;
+		prevCX = null;
+		prevCY = null;
+
+		prevPrevX = null;
+		prevPrevY = null;
+
+		currX = null;
+		currY = null;
+		currCX1 = null;
+		currCY1 = null;
+		currCX2 = null;
+		currCY2 = null;
 	}
 
-	public static function calculateBounds(commands:DrawCommandBuffer, graphics:Graphics):Bool
+	public static function calculateBounds(commands:DrawCommandBuffer, bounds:Rectangle, boundsExStroke:Rectangle, graphics:Graphics):Void
 	{
 		GraphicsBoundsHelper.graphics = graphics;
-
-		var originalBounds = Rectangle.__pool.get();
-		originalBounds.copyFrom(bounds);
+		GraphicsBoundsHelper.bounds = bounds;
+		GraphicsBoundsHelper.boundsExStroke = boundsExStroke;
 
 		strokePaddingX = 0.0;
 		strokePaddingY = 0.0;
@@ -2414,10 +2451,9 @@ class GraphicsBoundsHelper
 		capsStyle = CapsStyle.ROUND;
 		jointStyle = JointStyle.ROUND;
 		miterLimit = 0.0;
-		path = [];
 
-		bounds.setTo(Math.NaN, Math.NaN, Math.NaN, Math.NaN);
-		boundsExStroke.setTo(Math.NaN, Math.NaN, Math.NaN, Math.NaN);
+		if (bounds != null) bounds.setTo(Math.NaN, Math.NaN, Math.NaN, Math.NaN);
+		if (boundsExStroke != null) boundsExStroke.setTo(Math.NaN, Math.NaN, Math.NaN, Math.NaN);
 
 		var data = new DrawCommandReader(commands);
 		for (type in commands.types)
@@ -2426,17 +2462,17 @@ class GraphicsBoundsHelper
 			{
 				case CUBIC_CURVE_TO:
 					var c = data.readCubicCurveTo();
-					if (path.length == 0) appendToPath(0.0, 0.0);
+					if (currX == null) appendToPath(0.0, 0.0);
 					appendToPath(c.anchorX, c.anchorY, c.controlX1, c.controlY1, c.controlX2, c.controlY2);
 
 				case CURVE_TO:
 					var c = data.readCurveTo();
-					if (path.length == 0) appendToPath(0.0, 0.0);
+					if (currX == null) appendToPath(0.0, 0.0);
 					appendToPath(c.anchorX, c.anchorY, c.controlX, c.controlY);
 
 				case LINE_TO:
 					var c = data.readLineTo();
-					if (path.length == 0) appendToPath(0.0, 0.0);
+					if (currX == null) appendToPath(0.0, 0.0);
 					appendToPath(c.x, c.y);
 
 				case MOVE_TO:
@@ -2447,14 +2483,14 @@ class GraphicsBoundsHelper
 				case DRAW_CIRCLE:
 					endPath(hasFill);
 					var c = data.readDrawCircle();
-					inflateBounds(c.x - c.radius, c.y - c.radius, true);
-					inflateBounds(c.x + c.radius, c.y + c.radius, true);
+					inflateBounds(c.x - c.radius, c.y - c.radius);
+					inflateBounds(c.x + c.radius, c.y + c.radius);
 
 				case DRAW_ELLIPSE:
 					endPath(hasFill);
 					var c = data.readDrawEllipse();
-					inflateBounds(c.x, c.y, true);
-					inflateBounds(c.x + c.width, c.y + c.height, true);
+					inflateBounds(c.x, c.y);
+					inflateBounds(c.x + c.width, c.y + c.height);
 
 				case DRAW_RECT:
 					endPath(hasFill);
@@ -2463,8 +2499,8 @@ class GraphicsBoundsHelper
 					var minY = Math.min(c.y, c.y + c.height);
 					var maxX = Math.max(c.x, c.x + c.width);
 					var maxY = Math.max(c.y, c.y + c.height);
-					inflateBounds(minX, minY, true);
-					inflateBounds(maxX, maxY, true);
+					inflateBounds(minX, minY);
+					inflateBounds(maxX, maxY);
 
 				case DRAW_ROUND_RECT:
 					endPath(hasFill);
@@ -2473,8 +2509,8 @@ class GraphicsBoundsHelper
 					var minY = Math.min(c.y, c.y + c.height);
 					var maxX = Math.max(c.x, c.x + c.width);
 					var maxY = Math.max(c.y, c.y + c.height);
-					inflateBounds(minX, minY, true);
-					inflateBounds(maxX, maxY, true);
+					inflateBounds(minX, minY);
+					inflateBounds(maxX, maxY);
 
 				case DRAW_QUADS:
 					endPath(hasFill);
@@ -2486,82 +2522,85 @@ class GraphicsBoundsHelper
 					var transformABCD = false, transformXY = false;
 					var length = hasIndices ? indices.length : Math.floor(rects.length / 4);
 
-					if (transforms != null)
+					if (length > 0)
 					{
-						if (transforms.length >= length * 6)
+						if (transforms != null)
 						{
-							transformABCD = true;
-							transformXY = true;
+							if (transforms.length >= length * 6)
+							{
+								transformABCD = true;
+								transformXY = true;
+							}
+							else if (transforms.length >= length * 4)
+							{
+								transformABCD = true;
+							}
+							else if (transforms.length >= length * 2)
+							{
+								transformXY = true;
+							}
 						}
-						else if (transforms.length >= length * 4)
+
+						var tileRect = Rectangle.__pool.get();
+						var tileTransform = Matrix.__pool.get();
+
+						var minX = Math.POSITIVE_INFINITY;
+						var minY = Math.POSITIVE_INFINITY;
+						var maxX = Math.NEGATIVE_INFINITY;
+						var maxY = Math.NEGATIVE_INFINITY;
+
+						var ri:Int;
+						var ti:Int;
+
+						for (i in 0...length)
 						{
-							transformABCD = true;
+							ri = (hasIndices ? (indices[i] * 4) : i * 4);
+							if (ri < 0) continue;
+							tileRect.setTo(0, 0, rects[ri + 2], rects[ri + 3]);
+
+							if (tileRect.width <= 0 || tileRect.height <= 0)
+							{
+								continue;
+							}
+
+							if (transformABCD && transformXY)
+							{
+								// this overrides / ignores tileRect.x & tileRect.y
+								ti = i * 6;
+								tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4],
+									transforms[ti + 5]);
+							}
+							else if (transformABCD)
+							{
+								ti = i * 4;
+								tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], tileRect.x, tileRect.y);
+							}
+							else if (transformXY)
+							{
+								ti = i * 2;
+								tileTransform.tx = transforms[ti];
+								tileTransform.ty = transforms[ti + 1];
+							}
+							else
+							{
+								tileTransform.tx = tileRect.x;
+								tileTransform.ty = tileRect.y;
+							}
+
+							tileRect.__transform(tileRect, tileTransform);
+
+							if (minX > tileRect.x) minX = tileRect.x;
+							if (minY > tileRect.y) minY = tileRect.y;
+							if (maxX < tileRect.right) maxX = tileRect.right;
+							if (maxY < tileRect.bottom) maxY = tileRect.bottom;
 						}
-						else if (transforms.length >= length * 2)
-						{
-							transformXY = true;
-						}
+
+						inflateBounds(minX, minY);
+						inflateBounds(maxX, maxY);
+
+						Rectangle.__pool.release(tileRect);
+						Matrix.__pool.release(tileTransform);
 					}
-
-					var tileRect = Rectangle.__pool.get();
-					var tileTransform = Matrix.__pool.get();
-
-					var minX = Math.POSITIVE_INFINITY;
-					var minY = Math.POSITIVE_INFINITY;
-					var maxX = Math.NEGATIVE_INFINITY;
-					var maxY = Math.NEGATIVE_INFINITY;
-
-					var ri:Int;
-					var ti:Int;
-
-					for (i in 0...length)
-					{
-						ri = (hasIndices ? (indices[i] * 4) : i * 4);
-						if (ri < 0) continue;
-						tileRect.setTo(0, 0, rects[ri + 2], rects[ri + 3]);
-
-						if (tileRect.width <= 0 || tileRect.height <= 0)
-						{
-							continue;
-						}
-
-						if (transformABCD && transformXY)
-						{
-							// this overrides / ignores tileRect.x & tileRect.y
-							ti = i * 6;
-							tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4],
-								transforms[ti + 5]);
-						}
-						else if (transformABCD)
-						{
-							ti = i * 4;
-							tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], tileRect.x, tileRect.y);
-						}
-						else if (transformXY)
-						{
-							ti = i * 2;
-							tileTransform.tx = transforms[ti];
-							tileTransform.ty = transforms[ti + 1];
-						}
-						else
-						{
-							tileTransform.tx = tileRect.x;
-							tileTransform.ty = tileRect.y;
-						}
-
-						tileRect.__transform(tileRect, tileTransform);
-
-						if (minX > tileRect.x) minX = tileRect.x;
-						if (minY > tileRect.y) minY = tileRect.y;
-						if (maxX < tileRect.right) maxX = tileRect.right;
-						if (maxY < tileRect.bottom) maxY = tileRect.bottom;
-					}
-
-					inflateBounds(minX, minY, true);
-					inflateBounds(maxX, maxY, true);
-
-					Rectangle.__pool.release(tileRect);
-					Matrix.__pool.release(tileTransform);
 
 				case DRAW_TRIANGLES:
 					endPath(hasFill);
@@ -2575,19 +2614,22 @@ class GraphicsBoundsHelper
 					var v = c.vertices;
 					var vertLength = v.length;
 
-					for (i in 0...vertLength)
+					if (vertLength != 0)
 					{
-						x = v[i * 2];
-						y = v[i * 2 + 1];
+						for (i in 0...vertLength)
+						{
+							x = v[i * 2];
+							y = v[i * 2 + 1];
 
-						if (minX > x) minX = x;
-						if (minY > y) minY = y;
-						if (maxX < x) maxX = x;
-						if (maxY < y) maxY = y;
+							if (minX > x) minX = x;
+							if (minY > y) minY = y;
+							if (maxX < x) maxX = x;
+							if (maxY < y) maxY = y;
+						}
+
+						inflateBounds(minX, minY);
+						inflateBounds(maxX, maxY);
 					}
-
-					inflateBounds(minX, minY, true);
-					inflateBounds(maxX, maxY, true);
 
 				case LINE_GRADIENT_STYLE, LINE_BITMAP_STYLE:
 					endPath(false);
@@ -2642,36 +2684,27 @@ class GraphicsBoundsHelper
 
 		endPath(hasFill);
 
-		if (Math.isNaN(bounds.width) || Math.isNaN(bounds.height))
+		if (bounds != null)
 		{
-			bounds.setEmpty();
+			if (Math.isNaN(bounds.width) || Math.isNaN(bounds.height))
+			{
+				bounds.setEmpty();
+			}
 		}
-		if (Math.isNaN(boundsExStroke.width) || Math.isNaN(boundsExStroke.height))
+		if (boundsExStroke != null)
 		{
-			boundsExStroke.setEmpty();
+			if ((Math.isNaN(boundsExStroke.width) || Math.isNaN(boundsExStroke.height)))
+			{
+				boundsExStroke.setEmpty();
+			}
 		}
-
-		var changed = !originalBounds.equals(bounds);
-		Rectangle.__pool.release(originalBounds);
-
-		return changed;
 	}
-}
-
-typedef PathPoint =
-{
-	var x:Float;
-	var y:Float;
-	@:optional var cx1:Float;
-	@:optional var cy1:Float;
-	@:optional var cx2:Float;
-	@:optional var cy2:Float;
 }
 
 typedef CubicExtrema =
 {
-	var t0:Float;
-	var t1:Float;
+	var min:Float;
+	var max:Float;
 }
 #else
 typedef Graphics = flash.display.Graphics;
