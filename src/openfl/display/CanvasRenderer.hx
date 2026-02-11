@@ -150,8 +150,6 @@ class CanvasRenderer extends DisplayObjectRenderer
 
 		context.beginPath();
 		__renderDrawableMask(mask);
-		context.closePath();
-
 		context.clip();
 	}
 

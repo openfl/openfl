@@ -101,6 +101,7 @@ class CairoTextField
 		}
 
 		graphics.__update(renderer.__worldTransform, pixelRatio);
+		graphics.__bitmapScaleX = graphics.__bitmapScaleY = pixelRatio;
 
 		var width = Math.round(graphics.__width * pixelRatio);
 		var height = Math.round(graphics.__height * pixelRatio);
@@ -170,9 +171,6 @@ class CairoTextField
 			cairo.paint();
 			cairo.setOperator(OVER);
 		}
-
-		graphics.__bitmapScaleX = pixelRatio;
-		graphics.__bitmapScaleY = pixelRatio;
 
 		var options = new CairoFontOptions();
 

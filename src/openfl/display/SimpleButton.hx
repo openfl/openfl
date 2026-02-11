@@ -207,20 +207,11 @@ class SimpleButton extends InteractiveObject
 
 	@:noCompletion private override function __getRenderBounds(rect:Rectangle, matrix:Matrix):Void
 	{
-		if (__scrollRect != null)
-		{
-			super.__getRenderBounds(rect, matrix);
-			return;
-		}
-		else
-		{
-			super.__getBounds(rect, matrix);
-		}
+		super.__getRenderBounds(rect, matrix);
 
-		if (__currentState == null)
-		{
-			return;
-		}
+		if (__scrollRect != null) return;
+
+		if (__currentState == null) return;
 
 		var childWorldTransform = Matrix.__pool.get();
 

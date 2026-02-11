@@ -50,7 +50,7 @@ class CairoDisplayObject
 				renderer.__setBlendMode(displayObject.__worldBlendMode);
 				renderer.__pushMaskObject(displayObject);
 
-				renderer.applyMatrix(displayObject.__renderTransform, cairo);
+				renderer.applyMatrix(displayObject.__getRenderTransform(), cairo);
 
 				var rect = Rectangle.__pool.get();
 				displayObject.__getRenderBounds(rect, Matrix.__identity);

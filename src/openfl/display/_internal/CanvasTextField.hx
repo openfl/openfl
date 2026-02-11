@@ -100,6 +100,7 @@ class CanvasTextField
 		}
 
 		graphics.__update(renderer.__worldTransform, pixelRatio);
+		graphics.__bitmapScaleX = graphics.__bitmapScaleY = pixelRatio;
 
 		if (textField.__dirty || graphics.__softwareDirty)
 		{
@@ -412,8 +413,6 @@ class CanvasTextField
 					graphics.__bitmap.image.version++;
 				}
 
-				graphics.__bitmapScaleX = pixelRatio;
-				graphics.__bitmapScaleY = pixelRatio;
 				graphics.__visible = true;
 				textField.__dirty = false;
 				graphics.__boundsDirty = false;

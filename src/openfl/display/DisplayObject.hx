@@ -24,6 +24,7 @@ import openfl.Vector;
 import lime.graphics.cairo.Cairo;
 #end
 #if (js && html5)
+import js.html.Element;
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
@@ -1021,10 +1022,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __worldVisibleChanged:Bool;
 	@:noCompletion private var __worldTransformInvalid:Bool;
 	@:noCompletion private var __worldZ:Int;
+	@:noCompletion private var __localBounds:Rectangle;
+	@:noCompletion private var __localBoundsDirty:Bool;
 	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
 	@:noCompletion private var __context:CanvasRenderingContext2D;
 	@:noCompletion private var __style:CSSStyleDeclaration;
+	@:noCompletion private var __opaqueBackgroundElement:Element;
 	#end
 
 	#if openfljs
@@ -1138,6 +1142,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__cacheAsBitmap = false;
 		__transform = new Matrix();
 		__visible = true;
+		__localBounds = new Rectangle();
 
 		__rotation = 0;
 		__rotationSine = 0;
@@ -1476,6 +1481,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__context.clearRect(0, 0, 0, 0);
 			__context = null;
 		}
+		if (__opaqueBackgroundElement != null)
+		{
+			__opaqueBackgroundElement.parentElement.removeChild(__opaqueBackgroundElement);
+			__opaqueBackgroundElement = null;
+		}
 		#end
 
 		if (__graphics != null)
@@ -1598,9 +1608,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix, exStroke:Bool = false):Void
 	{
-		if (__graphics != null)
+		if (__scrollRect == null)
 		{
-			__graphics.__getBounds(rect, matrix, exStroke);
+			if (__graphics != null)
+			{
+				__graphics.__getBounds(rect, matrix, exStroke);
+			}
+		}
+		else
+		{
+			var r = Rectangle.__pool.get();
+			// r.copyFrom(__scrollRect);
+			r.setTo(0, 0, __scrollRect.width, __scrollRect.height);
+			r.__transform(r, matrix);
+			rect.__expand(r.x, r.y, r.width, r.height);
+			Rectangle.__pool.release(r);
 		}
 	}
 
@@ -1642,31 +1664,31 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __getLocalBounds(rect:Rectangle):Void
 	{
-		// var cacheX = __transform.tx;
-		// var cacheY = __transform.ty;
-		// __transform.tx = __transform.ty = 0;
-
-		__getBounds(rect, __transform);
-
-		// __transform.tx = cacheX;
-		// __transform.ty = cacheY;
-
-		rect.x -= __transform.tx;
-		rect.y -= __transform.ty;
+		if (__localBoundsDirty)
+		{
+			__localBoundsDirty = false;
+			__localBounds.setEmpty();
+			__getBounds(__localBounds, __transform);
+			rect.x -= __transform.tx;
+			rect.y -= __transform.ty;
+		}
+		rect.copyFrom(__localBounds);
 	}
 
 	@:noCompletion private function __getRenderBounds(rect:Rectangle, matrix:Matrix):Void
 	{
 		if (__scrollRect == null)
 		{
-			__getBounds(rect, matrix);
+			if (__graphics != null)
+			{
+				__graphics.__getBounds(rect, matrix);
+			}
 		}
 		else
 		{
-			// TODO: Should we have smaller bounds if scrollRect is larger than content?
-
 			var r = Rectangle.__pool.get();
 			r.copyFrom(__scrollRect);
+			// r.setTo(0, 0, __scrollRect.width, __scrollRect.height);
 			r.__transform(r, matrix);
 			rect.__expand(r.x, r.y, r.width, r.height);
 			Rectangle.__pool.release(r);
@@ -1809,6 +1831,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (!__renderDirty)
 		{
 			__renderDirty = true;
+			__localBoundsDirty = true;
 			__setParentRenderDirty();
 		}
 		#if (openfl_enable_experimental_update_queue && !dom)
@@ -1826,6 +1849,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (!__transformDirty)
 		{
 			__transformDirty = true;
+			__localBoundsDirty = true;
 
 			__setWorldTransformInvalid();
 			__setParentRenderDirty();
@@ -1847,10 +1871,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			{
 				__graphics.__hardwareDirty = true;
 			}
+			#if !openfl_legacy_scale9grid
 			if (__scale9Grid != null)
 			{
 				__graphics.__dirty = true;
 			}
+			#end
 		}
 	}
 
@@ -2016,6 +2042,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		if (__scrollRect != null)
 		{
+			__worldTransform.__translateTransformed(-__scrollRect.x, -__scrollRect.y);
 			__renderTransform.__translateTransformed(-__scrollRect.x, -__scrollRect.y);
 		}
 	}
@@ -2346,6 +2373,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			__scale9Grid = null;
 		}
+
+		#if !openfl_legacy_scale9grid
+		if (__graphics != null)
+		{
+			__graphics.__dirty = true;
+		}
+		#end
 
 		__setRenderDirty();
 

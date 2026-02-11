@@ -66,10 +66,10 @@ class CanvasGraphics
 	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
 	private static var fillBitmap:BitmapData;
 	private static var strokeBitmap:BitmapData;
-	private static var strokePattern:#if (js && html5) CanvasPattern #else Dynamic #end;
-	private static var fillPattern:#if (js && html5) CanvasPattern #else Dynamic #end;
-	private static var strokeGradient:#if (js && html5) CanvasGradient #else Dynamic #end;
-	private static var fillGradient:#if (js && html5) CanvasGradient #else Dynamic #end;
+	private static var strokePattern:Dynamic;
+	private static var fillPattern:Dynamic;
+	private static var hasFillMatrix:Bool;
+	private static var hasStrokeMatrix:Bool;
 	private static var fillMatrix:Matrix = new Matrix();
 	private static var strokeMatrix:Matrix = new Matrix();
 	@SuppressWarnings("checkstyle:Dynamic") private static var windingRule:#if (js && html5) CanvasWindingRule #else Dynamic #end;
@@ -117,18 +117,20 @@ class CanvasGraphics
 			if (!hitTestResult) hitTestResult = context.isPointInStroke(hitTestPoint.x, hitTestPoint.y);
 			return;
 		}
-		if (strokePattern != null)
-		{
-			applyPatternMatrix(strokePattern, strokeMatrix, strokeCommands);
-		}
-		if (strokeGradient != null)
+		var isGradient = Std.isOfType(strokePattern, CanvasGradient);
+		if (isGradient)
 		{
 			// TODO:
 			// This is the hard case -- the Canvas API provides no good way to transform gradients,
 			// and the inverse-transform trick used above for gradient fills can't be used here
 			// because it will distort the stroke geometry.
 		}
+		else if (strokePattern != null && hasStrokeMatrix)
+		{
+			applyPatternMatrix(strokePattern, strokeMatrix, strokeCommands);
+		}
 
+		context.strokeStyle = strokePattern;
 		context.stroke();
 		#end
 	}
@@ -145,19 +147,21 @@ class CanvasGraphics
 			if (!hitTestResult) hitTestResult = context.isPointInPath(hitTestPoint.x, hitTestPoint.y, windingRule);
 			return;
 		}
-		if (fillGradient != null)
+		var isGradient = Std.isOfType(fillPattern, CanvasGradient);
+		if (isGradient)
 		{
 			context.save();
 			context.transform(fillMatrix.a, fillMatrix.b, fillMatrix.c, fillMatrix.d, fillMatrix.tx, fillMatrix.ty);
 		}
-		else if (fillPattern != null)
+		else if (fillPattern != null && hasFillMatrix)
 		{
 			applyPatternMatrix(fillPattern, fillMatrix, fillCommands);
 		}
 
+		context.fillStyle = fillPattern;
 		context.fill(windingRule);
 
-		if (fillGradient != null)
+		if (isGradient)
 		{
 			context.restore();
 		}
@@ -630,7 +634,7 @@ class CanvasGraphics
 		if (!masking)
 		{
 			context.beginPath();
-			context.moveTo(position.x, position.y);
+			context.moveTo(pathPosition.x, pathPosition.y);
 		}
 
 		var data = new DrawCommandReader(commands);
@@ -667,12 +671,12 @@ class CanvasGraphics
 						var scaledAnchorY = graphics.__getScale9GridPositionY(c.anchorY);
 
 						context.bezierCurveTo(scaledControlX1, scaledControlY1, scaledControlX2, scaledControlY2, scaledAnchorX, scaledAnchorY);
-						position.setTo(scaledAnchorX, scaledAnchorY);
+						pathPosition.setTo(scaledAnchorX, scaledAnchorY);
 					}
 					else
 					{
 						context.bezierCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-						position.setTo(c.anchorX, c.anchorY);
+						pathPosition.setTo(c.anchorX, c.anchorY);
 					}
 
 				case CURVE_TO:
@@ -687,12 +691,12 @@ class CanvasGraphics
 						var scaledAnchorY = graphics.__getScale9GridPositionY(c.anchorY);
 
 						context.quadraticCurveTo(scaledControlX, scaledControlY, scaledAnchorX, scaledAnchorY);
-						position.setTo(scaledAnchorX, scaledAnchorY);
+						pathPosition.setTo(scaledAnchorX, scaledAnchorY);
 					}
 					else
 					{
 						context.quadraticCurveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
-						position.setTo(c.anchorX, c.anchorY);
+						pathPosition.setTo(c.anchorX, c.anchorY);
 					}
 
 				case LINE_TO:
@@ -706,13 +710,13 @@ class CanvasGraphics
 						y = graphics.__getScale9GridPositionY(y);
 					}
 
-					if (position.x != x || position.y != y)
+					if (pathPosition.x != x || pathPosition.y != y)
 					{
 						// flash doesn't draw the line if the previous
 						// position is equal to the new position
 						dirty = true;
 						context.lineTo(x, y);
-						position.setTo(x, y);
+						pathPosition.setTo(x, y);
 					}
 
 				case MOVE_TO:
@@ -726,12 +730,12 @@ class CanvasGraphics
 						y = graphics.__getScale9GridPositionY(y);
 					}
 
-					if (position.x != x || position.y != y)
+					if (pathPosition.x != x || pathPosition.y != y)
 					{
 						context.moveTo(x, y);
-						position.setTo(x, y);
+						pathPosition.setTo(x, y);
 					}
-					start.setTo(position.x, position.y);
+					pathStart.setTo(pathPosition.x, pathPosition.y);
 
 				case LINE_STYLE:
 					var c = data.readLineStyle();
@@ -789,17 +793,20 @@ class CanvasGraphics
 
 						if (c.alpha == 1)
 						{
-							context.strokeStyle = "#" + StringTools.hex(c.color & 0x00FFFFFF, 6);
+							strokePattern = "#" + StringTools.hex(c.color & 0x00FFFFFF, 6);
 						}
 						else
 						{
-							context.strokeStyle = cast getRGBA(c.color, c.alpha);
+							strokePattern = cast getRGBA(c.color, c.alpha);
 						}
 					}
+					else
+					{
+						strokePattern = null;
+					}
 
-					strokePattern = null;
+					hasStrokeMatrix = false;
 					strokeBitmap = null;
-					strokeGradient = null;
 
 				case LINE_GRADIENT_STYLE:
 					var c = data.readLineGradientStyle();
@@ -809,12 +816,10 @@ class CanvasGraphics
 						paint();
 					}
 
-					strokeGradient = createCanvasGradient(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+					strokePattern = createCanvasGradient(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
 						c.focalPointRatio);
-					context.strokeStyle = strokeGradient;
 
 					strokeBitmap = null;
-					strokePattern = null;
 
 				case LINE_BITMAP_STYLE:
 					var c = data.readLineBitmapStyle();
@@ -827,21 +832,19 @@ class CanvasGraphics
 					if (c.bitmap.readable)
 					{
 						strokeBitmap = c.bitmap;
-						strokePattern = context.strokeStyle = createImagePattern(c.bitmap, c.repeat, c.smooth);
+						strokePattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						strokeMatrix.copyFrom(c.matrix != null ? c.matrix : Matrix.__identity);
+						hasStrokeMatrix = true;
 					}
 					else
 					{
 						// if it's hardware-only BitmapData, fall back to
 						// drawing solid black because we have no software
 						// pixels to work with
-						context.strokeStyle = "#" + StringTools.hex(0, 6);
-						strokePattern = null;
+						strokePattern = "#" + StringTools.hex(0, 6);
 						strokeBitmap = null;
-						strokeMatrix.identity();
+						hasStrokeMatrix = false;
 					}
-
-					strokeGradient = null;
 
 				case END_FILL:
 					var c = data.readEndFill();
@@ -856,18 +859,18 @@ class CanvasGraphics
 					if (c.bitmap.readable && !hitTesting && !masking)
 					{
 						fillBitmap = c.bitmap;
-						fillPattern = context.fillStyle = createImagePattern(c.bitmap, c.repeat, c.smooth);
+						fillPattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						fillMatrix.copyFrom(c.matrix != null ? c.matrix : Matrix.__identity);
+						hasFillMatrix = true;
 					}
 					else
 					{
 						// if it's hardware-only BitmapData, fall back to
 						// drawing solid black because we have no software
 						// pixels to work with
-						context.fillStyle = "#" + StringTools.hex(0, 6);
-						fillPattern = null;
+						fillPattern = "#" + StringTools.hex(0, 6);
 						fillBitmap = null;
-						fillMatrix.identity();
+						hasFillMatrix = false;
 					}
 
 				case BEGIN_FILL:
@@ -879,28 +882,29 @@ class CanvasGraphics
 					{
 						if (c.alpha == 1)
 						{
-							context.fillStyle = "#" + StringTools.hex(c.color & 0xFFFFFF, 6);
+							fillPattern = "#" + StringTools.hex(c.color & 0xFFFFFF, 6);
 						}
 						else
 						{
-							context.fillStyle = cast getRGBA(c.color, c.alpha);
+							fillPattern = cast getRGBA(c.color, c.alpha);
 						}
+					}
+					else
+					{
+						fillPattern = null;
 					}
 
 					fillBitmap = null;
-					fillPattern = null;
-					fillGradient = null;
-					fillMatrix.identity();
+					hasFillMatrix = false;
 
 				case BEGIN_GRADIENT_FILL:
 					var c = data.readBeginGradientFill();
 
 					hasFillStyle = true;
 
-					fillGradient = context.fillStyle = createCanvasGradient(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod,
-						c.interpolationMethod, c.focalPointRatio);
+					fillPattern = createCanvasGradient(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+						c.focalPointRatio);
 					fillBitmap = null;
-					fillPattern = null;
 
 				case BEGIN_SHADER_FILL:
 					var c = data.readBeginShaderFill();
@@ -911,19 +915,18 @@ class CanvasGraphics
 					if (c.shaderBuffer.inputCount > 0 && shaderBuffer.inputs[0].readable && !hitTesting && !masking)
 					{
 						fillBitmap = shaderBuffer.inputs[0];
-						fillPattern = context.fillStyle = createImagePattern(fillBitmap, shaderBuffer.inputWrap[0] != CLAMP,
-							shaderBuffer.inputFilter[0] != NEAREST);
+						fillPattern = createImagePattern(fillBitmap, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
 						fillMatrix.copyFrom(c.matrix != null ? c.matrix : Matrix.__identity);
+						hasFillMatrix = true;
 					}
 					else
 					{
 						// if it's hardware-only BitmapData, fall back to
 						// drawing solid black because we have no software
 						// pixels to work with
-						context.fillStyle = "#" + StringTools.hex(0, 6);
+						fillPattern = "#" + StringTools.hex(0, 6);
 						fillBitmap = null;
-						fillPattern = null;
-						fillMatrix.identity();
+						hasFillMatrix = false;
 					}
 
 				case DRAW_CIRCLE:
@@ -987,8 +990,8 @@ class CanvasGraphics
 		strokeBitmap = null;
 		fillPattern = null;
 		strokePattern = null;
-		fillGradient = null;
-		strokeGradient = null;
+		hasFillMatrix = false;
+		hasStrokeMatrix = false;
 		fillMatrix.identity();
 		strokeMatrix.identity();
 		inPath = false;
@@ -1386,10 +1389,12 @@ class CanvasGraphics
 		if (stroke)
 		{
 			strokeMatrix.copyFrom(transformed ? matrix : Matrix.__identity);
+			hasStrokeMatrix = true;
 		}
 		else
 		{
 			fillMatrix.copyFrom(transformed ? matrix : Matrix.__identity);
+			hasFillMatrix = true;
 		}
 		return gradient;
 		#end
@@ -1427,17 +1432,6 @@ class CanvasGraphics
 		#end
 
 		graphics.__update(renderer.__worldTransform, pixelRatio);
-
-		if (graphics.__useScale9Grid)
-		{
-			graphics.__bitmapScaleX = graphics.__owner.scaleX;
-			graphics.__bitmapScaleY = graphics.__owner.scaleY;
-		}
-		else
-		{
-			graphics.__bitmapScaleX = 1;
-			graphics.__bitmapScaleY = 1;
-		}
 
 		if (!graphics.__softwareDirty)
 		{

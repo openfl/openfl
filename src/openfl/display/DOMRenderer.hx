@@ -29,6 +29,7 @@ import js.html.Element;
 @:noDebug
 #end
 @:access(openfl.display.DisplayObject)
+@:access(openfl.display.Graphics)
 @:access(openfl.display.IBitmapDrawable)
 @:access(openfl.display.Stage3D)
 @:access(openfl.geom.Matrix)
@@ -51,6 +52,7 @@ class DOMRenderer extends DisplayObjectRenderer
 	@:noCompletion private var __transformProperty:String;
 	@:noCompletion private var __vendorPrefix:String;
 	@:noCompletion private var __z:Int;
+	@:noCompletion private var __scale9RenderTransform:Matrix;
 
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function new(element:#if lime DOMRenderContext #else Dynamic #end)
@@ -87,51 +89,14 @@ class DOMRenderer extends DisplayObjectRenderer
 		__numClipRects = 0;
 		__z = 0;
 
+		__scale9RenderTransform = new Matrix();
+
 		#if lime
 		__type = DOM;
 		#end
 
 		__canvasRenderer = new CanvasRenderer(null);
 		__canvasRenderer.__isDOM = true;
-	}
-
-	/**
-		Applies CSS styles to the specified DOM element, using a DisplayObject as the
-		virtual parent. This helps set the z-order, position and other components for
-		the DOM object
-	**/
-	@SuppressWarnings("checkstyle:Dynamic")
-	public function applyStyle(parent:DisplayObject, childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void
-	{
-		#if (js && html5)
-		if (parent != null && childElement != null)
-		{
-			if (parent.__style == null || childElement.parentElement != element)
-			{
-				__initializeElement(parent, childElement);
-			}
-
-			parent.__style = childElement.style;
-
-			__updateClip(parent);
-			__applyStyle(parent, true, true, true);
-		}
-		#end
-	}
-
-	/**
-		Removes previously set CSS styles from a DOM element, used when the element
-		should no longer be a part of the display hierarchy
-	**/
-	@SuppressWarnings("checkstyle:Dynamic")
-	public function clearStyle(childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void
-	{
-		#if (js && html5)
-		if (childElement != null && childElement.parentElement == element)
-		{
-			element.removeChild(childElement);
-		}
-		#end
 	}
 
 	@:noCompletion private function __applyStyle(displayObject:DisplayObject, setTransform:Bool, setAlpha:Bool, setClip:Bool):Void
@@ -143,7 +108,20 @@ class DOMRenderer extends DisplayObjectRenderer
 
 		if (setTransform && displayObject.__renderTransformChanged)
 		{
-			style.setProperty(__transformProperty, displayObject.__renderTransform.to3DString(__roundPixels), null);
+			if (displayObject.__graphics != null && displayObject.__graphics.__useScale9Grid)
+			{
+				__scale9RenderTransform.a = displayObject.__renderTransform.a / displayObject.__scaleX;
+				__scale9RenderTransform.b = displayObject.__renderTransform.b / displayObject.__scaleY;
+				__scale9RenderTransform.c = displayObject.__renderTransform.c / displayObject.__scaleX;
+				__scale9RenderTransform.d = displayObject.__renderTransform.d / displayObject.__scaleY;
+				__scale9RenderTransform.tx = displayObject.__renderTransform.tx;
+				__scale9RenderTransform.ty = displayObject.__renderTransform.ty;
+				style.setProperty(__transformProperty, __scale9RenderTransform.to3DString(__roundPixels), null);
+			}
+			else
+			{
+				style.setProperty(__transformProperty, displayObject.__renderTransform.to3DString(__roundPixels), null);
+			}
 		}
 
 		if (displayObject.__worldZ != ++__z)

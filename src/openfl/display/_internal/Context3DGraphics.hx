@@ -592,10 +592,15 @@ class Context3DGraphics
 			renderer.applyBitmapData(blankBitmapData, true, repeat);
 			#if lime
 			var color:ARGB = (fill : ARGB);
-			tempColorTransform.redOffset = color.r;
-			tempColorTransform.greenOffset = color.g;
-			tempColorTransform.blueOffset = color.b;
-			tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
+			var worldColorTransform = graphics.__owner.__worldColorTransform;
+			tempColorTransform.redMultiplier = worldColorTransform.redMultiplier;
+			tempColorTransform.greenMultiplier = worldColorTransform.greenMultiplier;
+			tempColorTransform.blueMultiplier = worldColorTransform.blueMultiplier;
+			tempColorTransform.alphaMultiplier = worldColorTransform.alphaMultiplier;
+			tempColorTransform.redOffset = color.r * worldColorTransform.redMultiplier + worldColorTransform.redOffset;
+			tempColorTransform.greenOffset = color.g * worldColorTransform.greenMultiplier + worldColorTransform.greenOffset;
+			tempColorTransform.blueOffset = color.b * worldColorTransform.blueMultiplier + worldColorTransform.blueOffset;
+			tempColorTransform.alphaOffset = color.a * worldColorTransform.alphaMultiplier + worldColorTransform.alphaOffset;
 			renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 			renderer.applyColorTransform(tempColorTransform);
 			#else
@@ -703,10 +708,15 @@ class Context3DGraphics
 			renderer.applyBitmapData(blankBitmapData, true, repeat);
 			#if lime
 			var color:ARGB = (fill : ARGB);
-			tempColorTransform.redOffset = color.r;
-			tempColorTransform.greenOffset = color.g;
-			tempColorTransform.blueOffset = color.b;
-			tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
+			var worldColorTransform = graphics.__owner.__worldColorTransform;
+			tempColorTransform.redMultiplier = worldColorTransform.redMultiplier;
+			tempColorTransform.greenMultiplier = worldColorTransform.greenMultiplier;
+			tempColorTransform.blueMultiplier = worldColorTransform.blueMultiplier;
+			tempColorTransform.alphaMultiplier = worldColorTransform.alphaMultiplier;
+			tempColorTransform.redOffset = color.r * worldColorTransform.redMultiplier + worldColorTransform.redOffset;
+			tempColorTransform.greenOffset = color.g * worldColorTransform.greenMultiplier + worldColorTransform.greenOffset;
+			tempColorTransform.blueOffset = color.b * worldColorTransform.blueMultiplier + worldColorTransform.blueOffset;
+			tempColorTransform.alphaOffset = color.a * worldColorTransform.alphaMultiplier + worldColorTransform.alphaOffset;
 			renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 			renderer.applyColorTransform(tempColorTransform);
 			#else

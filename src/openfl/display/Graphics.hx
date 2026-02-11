@@ -438,10 +438,6 @@ import js.html.CanvasRenderingContext2D;
 		__invalidateVertexBufferOnTransform = false;
 		__visible = false;
 		__isHardwareDrawable = true;
-
-		#if (js && html5)
-		moveTo(0, 0);
-		#end
 	}
 
 	/**
@@ -1491,7 +1487,7 @@ import js.html.CanvasRenderingContext2D;
 
 	@:noCompletion private function __updateBounds():Void
 	{
-		#if (!openfl_legacy_scale9grid || cairo || canvas)
+		#if (!openfl_legacy_scale9grid)
 		var worldTransform = __owner.__getWorldTransform();
 		__useScale9Grid = __owner.__scale9Grid != null && !__owner.__isMask && worldTransform.a >= 0 && worldTransform.b == 0 && worldTransform.c == 0
 			&& worldTransform.d >= 0;
@@ -1679,11 +1675,19 @@ import js.html.CanvasRenderingContext2D;
 		var scaleX = pixelRatio, scaleY = pixelRatio;
 
 		#if (openfl_legacy_scale9grid && lime_cairo && !cairo && !openfl_force_hw_graphics && !force_hw_graphics)
-		var calculateScale = !__useScale9Grid;
+		var calculateScale = __owner.__worldScale9Grid == null;
 		#elseif (openfl_legacy_scale9grid && lime_canvas && !canvas && !openfl_force_hw_graphics && !force_hw_graphics)
-		var calculateScale = !__useScale9Grid;
+		var calculateScale = __owner.__worldScale9Grid == null;
 		#else
 		var calculateScale = true;
+		#end
+
+		#if openfl_legacy_scale9grid
+		var useScale9Grid = __owner.__worldScale9Grid != null;
+		var legacyScale9Grid = true;
+		#else
+		var useScale9Grid = __useScale9Grid;
+		var legacyScale9Grid = false;
 		#end
 
 		if (calculateScale)
@@ -1724,8 +1728,9 @@ import js.html.CanvasRenderingContext2D;
 				}
 			}
 		}
+
 		#if openfl_disable_graphics_upscaling
-		if (!__useScale9Grid)
+		if (!useScale9Grid)
 		{
 			if (scaleX > 1) scaleX = 1;
 			if (scaleY > 1) scaleY = 1;
@@ -1735,7 +1740,7 @@ import js.html.CanvasRenderingContext2D;
 		var width = Math.abs(__bounds.width * scaleX);
 		var height = Math.abs(__bounds.height * scaleY);
 
-		if (width < 1 || height < 1)
+		if (width == 0 || height == 0)
 		{
 			if (__width >= 1 || __height >= 1) __dirty = true;
 			__width = 0;
@@ -1752,11 +1757,21 @@ import js.html.CanvasRenderingContext2D;
 			height = maxTextureHeight;
 			scaleY = maxTextureHeight / __bounds.height;
 		}
+
+		// Calculate the size to contain the graphics and an extra subpixel
+		// We used to add tx and ty from __renderTransform instead of 1.0
+		// but it improves performance if we keep the size consistent when the
+		// extra pixel isn't needed
+		var newWidth = Math.ceil(width + 1.0);
+		var newHeight = Math.ceil(height + 1.0);
+
 		var inverseA:Float;
 		var inverseD:Float;
 
-		if (__useScale9Grid)
+		if (useScale9Grid && !legacyScale9Grid)
 		{
+			__bitmapScaleX = __owner.__scaleX;
+			__bitmapScaleY = __owner.__scaleY;
 			__renderTransform.a = 1;
 			__renderTransform.d = 1;
 			inverseA = 1;
@@ -1764,11 +1779,14 @@ import js.html.CanvasRenderingContext2D;
 		}
 		else
 		{
+			__bitmapScaleX = 1.0;
+			__bitmapScaleY = 1.0;
 			__renderTransform.a = width / __bounds.width;
 			__renderTransform.d = height / __bounds.height;
 			inverseA = (1 / __renderTransform.a);
 			inverseD = (1 / __renderTransform.d);
 		}
+
 		// Inlined & simplified `__worldTransform.concat (parentTransform)` below:
 		__worldTransform.a = inverseA * parentTransform.a;
 		__worldTransform.b = inverseA * parentTransform.b;
@@ -1780,37 +1798,40 @@ import js.html.CanvasRenderingContext2D;
 		var ty = x * parentTransform.b + y * parentTransform.d + parentTransform.ty;
 
 		#if openfl_disable_graphics_pixel_snapping
-		__worldTransform.tx = tx;
-		__worldTransform.ty = ty;
+		var pixelSnapping = false;
 		#else
-		// round the world position for crisp graphics rendering
-		if (pixelRatio > 1.0)
-		{
-			// on HiDPI screens, we can round to the nearest device pixel
-			// instead of the nearest stage pixel because device pixels have
-			// more precision.
-			// rendering will still be crisp, and animations will be smoother.
-			var nativePixelSize = 1 / pixelRatio;
+		var pixelSnapping = !useScale9Grid;
+		#end
 
-			__worldTransform.tx = Math.fround(tx / nativePixelSize) * nativePixelSize;
-			__worldTransform.ty = Math.fround(ty / nativePixelSize) * nativePixelSize;
+		if (pixelSnapping)
+		{
+			// round the world position for crisp graphics rendering
+			if (pixelRatio > 1.0)
+			{
+				// on HiDPI screens, we can round to the nearest device pixel
+				// instead of the nearest stage pixel because device pixels have
+				// more precision.
+				// rendering will still be crisp, and animations will be smoother.
+				var nativePixelSize = 1 / pixelRatio;
+
+				__worldTransform.tx = Math.fround(tx / nativePixelSize) * nativePixelSize;
+				__worldTransform.ty = Math.fround(ty / nativePixelSize) * nativePixelSize;
+			}
+			else
+			{
+				__worldTransform.tx = Math.fround(tx);
+				__worldTransform.ty = Math.fround(ty);
+			}
+			// Offset the rendering with the subpixel offset removed by Math.round above
+			__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
+			__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
 		}
 		else
 		{
-			__worldTransform.tx = Math.fround(tx);
-			__worldTransform.ty = Math.fround(ty);
+			__worldTransform.tx = tx;
+			__worldTransform.ty = ty;
 		}
-		// Offset the rendering with the subpixel offset removed by Math.round above
-		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
-		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
-		#end
 
-		// Calculate the size to contain the graphics and an extra subpixel
-		// We used to add tx and ty from __renderTransform instead of 1.0
-		// but it improves performance if we keep the size consistent when the
-		// extra pixel isn't needed
-		var newWidth = Math.ceil(width + 1.0);
-		var newHeight = Math.ceil(height + 1.0);
 		// Mark dirty if render size changed
 		if (newWidth != __width || newHeight != __height)
 		{
@@ -1825,23 +1846,22 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private function __calculateRenderOffset(result:Point):Void
 	{
 		// Accounts for stroke thickness + scale
-		var scaleX = 1.0;
-		var scaleY = 1.0;
-		var startX = __boundsExStroke.x;
-		var startY = __boundsExStroke.y;
-		var strokePaddingX = (__bounds.x - __boundsExStroke.x);
-		var strokePaddingY = (__bounds.y - __boundsExStroke.y);
-
 		if (__useScale9Grid)
 		{
-			startX = __getScale9GridPositionX(startX);
-			startY = __getScale9GridPositionY(startY);
-			scaleX = __owner.scaleX;
-			scaleY = __owner.scaleY;
+			var strokePaddingX = (__bounds.x - __boundsExStroke.x);
+			var strokePaddingY = (__bounds.y - __boundsExStroke.y);
+			var startX = __getScale9GridPositionX(__boundsExStroke.x);
+			var startY = __getScale9GridPositionY(__boundsExStroke.y);
+			var scaleX = __owner.scaleX;
+			var scaleY = __owner.scaleY;
+			result.x = startX + (strokePaddingX * scaleX) + __renderTransform.tx;
+			result.y = startY + (strokePaddingY * scaleY) + __renderTransform.ty;
 		}
-
-		result.setTo(startX + (strokePaddingX * scaleX), startY + (strokePaddingY * scaleY));
-		result.offset(__renderTransform.tx, __renderTransform.ty);
+		else
+		{
+			result.x = __bounds.x + __renderTransform.tx;
+			result.y = __bounds.y + __renderTransform.ty;
+		}
 	}
 
 	@:noCompletion private function __generateUV(vertices:Vector<Float>, textureWidth:Float, textureHeight:Float, matrix:Matrix, result:Vector<Float>):Void

@@ -23,7 +23,7 @@ import lime.math.ARGB;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DDisplayObject
 {
-	@:noCompletion static private var __opaqueBackgroundShapes = new ObjectPool<Shape>(function() return new Shape());
+	@:noCompletion static private var __opaqueBackgroundShape:Shape;
 
 	public static inline function render(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
 	{
@@ -52,30 +52,33 @@ class Context3DDisplayObject
 			var context = renderer.__context3D;
 
 			var rect = Rectangle.__pool.get();
+			var renderTransform = displayObject.__getRenderTransform();
 
+			if (__opaqueBackgroundShape == null)
+			{
+				__opaqueBackgroundShape = new Shape();
+				__opaqueBackgroundShape.__renderable = true;
+			}
+
+			var shape = __opaqueBackgroundShape;
+			shape.graphics.clear();
+			shape.graphics.beginFill(displayObject.opaqueBackground);
+
+			// Pixel offset fix for axis-aligned transform when bounds.x is resting perfectly between 2 pixel centers
+			// if ((renderTransform.a * renderTransform.b == 0) && (renderTransform.c * renderTransform.d == 0))
+			// {
+			// 	displayObject.__getRenderBounds(rect, renderTransform);
+			// 	if (Math.abs(rect.x % 1) == 0.5) rect.x += 0.01;
+			// 	shape.__renderTransform.copyFrom(Matrix.__identity);
+			// }
+			// else
+			// {
 			displayObject.__getRenderBounds(rect, Matrix.__identity);
+			shape.__renderTransform.copyFrom(renderTransform);
+			// }
+			shape.graphics.drawRect(rect.x, rect.y, rect.width, rect.height);
 
-			var rotated = displayObject.__renderTransform.b != 0 || displayObject.__renderTransform.c != 0;
-			if (rotated)
-			{
-				var shape = __opaqueBackgroundShapes.get();
-				shape.graphics.clear();
-				shape.graphics.beginFill(displayObject.opaqueBackground);
-				shape.graphics.drawRect(rect.x, rect.y, rect.width, rect.height);
-				shape.__renderTransform.copyFrom(displayObject.__renderTransform);
-				shape.__renderable = true;
-				Context3DDisplayObject.render(shape, renderer);
-				__opaqueBackgroundShapes.release(shape);
-			}
-			else
-			{
-				renderer.__pushMaskRect(rect, displayObject.__renderTransform);
-				#if lime
-				var color:ARGB = (displayObject.opaqueBackground : ARGB);
-				context.__clear(true, color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1, 0, 0, Context3DClearMask.COLOR);
-				#end
-				renderer.__popMaskRect();
-			}
+			Context3DDisplayObject.render(shape, renderer);
 
 			renderer.__popMaskObject(displayObject);
 
@@ -98,38 +101,12 @@ class Context3DDisplayObject
 	{
 		if (displayObject.__graphics != null)
 		{
-			// Context3DGraphics.renderMask (displayObject.__graphics, renderer);
 			Context3DShape.renderMask(displayObject, renderer);
 		}
 	}
 
 	public static inline function renderMask(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
 	{
-		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
-
-		if (displayObject.opaqueBackground != null
-			&& !displayObject.__isCacheBitmapRender
-			&& displayObject.width > 0
-			&& displayObject.height > 0)
-		{
-			// var gl = renderer.__context.webgl;
-
-			// TODO
-
-			// var rect = Rectangle.__pool.get ();
-			// rect.setTo (0, 0, displayObject.width, displayObject.height);
-			// renderer.__pushMaskRect (rect, displayObject.__renderTransform);
-
-			// var color:ARGB = (displayObject.opaqueBackground:ARGB);
-			// gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1);
-			// gl.clear (gl.COLOR_BUFFER_BIT);
-
-			// renderer.__popMaskRect ();
-			// renderer.__popMaskObject (displayObject);
-
-			// Rectangle.__pool.release (rect);
-		}
-
 		if (displayObject.__graphics != null)
 		{
 			Context3DShape.renderMask(displayObject, renderer);

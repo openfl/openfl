@@ -48,7 +48,7 @@ class CanvasDisplayObject
 
 					var context = renderer.context;
 
-					renderer.setTransform(displayObject.__renderTransform, context);
+					renderer.setTransform(displayObject.__getRenderTransform(), context);
 
 					var rect = Rectangle.__pool.get();
 					displayObject.__getRenderBounds(rect, Matrix.__identity);

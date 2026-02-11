@@ -735,6 +735,8 @@ class DisplayObjectContainer extends InteractiveObject
 	{
 		super.__getBounds(rect, matrix, exStroke);
 
+		if (__scrollRect != null) return;
+
 		if (__children.length == 0) return;
 
 		var childWorldTransform = Matrix.__pool.get();
@@ -755,6 +757,7 @@ class DisplayObjectContainer extends InteractiveObject
 	@:noCompletion private override function __getFilterBounds(rect:Rectangle, matrix:Matrix):Void
 	{
 		super.__getFilterBounds(rect, matrix);
+
 		if (__scrollRect != null) return;
 
 		if (__children.length == 0) return;
@@ -767,12 +770,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 			DisplayObject.__calculateAbsoluteTransform(child.__transform, matrix, childWorldTransform);
 
-			var childRect = Rectangle.__pool.get();
-
-			child.__getFilterBounds(childRect, childWorldTransform);
-			rect.__expand(childRect.x, childRect.y, childRect.width, childRect.height);
-
-			Rectangle.__pool.release(childRect);
+			child.__getFilterBounds(rect, childWorldTransform);
 		}
 
 		Matrix.__pool.release(childWorldTransform);
@@ -780,15 +778,9 @@ class DisplayObjectContainer extends InteractiveObject
 
 	@:noCompletion private override function __getRenderBounds(rect:Rectangle, matrix:Matrix):Void
 	{
-		if (__scrollRect != null)
-		{
-			super.__getRenderBounds(rect, matrix);
-			return;
-		}
-		else
-		{
-			super.__getBounds(rect, matrix);
-		}
+		super.__getRenderBounds(rect, matrix);
+
+		if (__scrollRect != null) return;
 
 		if (__children.length == 0) return;
 
@@ -939,16 +931,15 @@ class DisplayObjectContainer extends InteractiveObject
 
 	@:noCompletion private override function __setWorldTransformInvalid():Void
 	{
-		if (!__worldTransformInvalid)
-		{
-			super.__setWorldTransformInvalid();
+		if (__worldTransformInvalid) return;
 
-			if (__children != null)
+		super.__setWorldTransformInvalid();
+
+		if (__children != null)
+		{
+			for (child in __children)
 			{
-				for (child in __children)
-				{
-					child.__setWorldTransformInvalid();
-				}
+				child.__setWorldTransformInvalid();
 			}
 		}
 	}
