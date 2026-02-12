@@ -453,6 +453,7 @@ import js.html.CanvasRenderingContext2D;
 		__dirty = true;
 		__transformDirty = true;
 		__visible = sourceGraphics.__visible;
+		__isHardwareDrawable = sourceGraphics.__isHardwareDrawable;
 	}
 
 	/**
