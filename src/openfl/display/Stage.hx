@@ -2352,6 +2352,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					__renderer.__clear();
 				}
 
+				__renderer.__worldTransform = __displayMatrix;
 				__renderer.__render(this);
 			}
 			else if (context3D == null)
@@ -3654,7 +3655,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (context3D != null)
 		{
-			#if openfl_dpi_aware
+			#if cpp
+			context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
+			#elseif openfl_dpi_aware
 			context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 			#else
 			context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
@@ -3668,6 +3671,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (__renderer != null)
 		{
+			__renderer.__worldTransform = __displayMatrix;
 			__renderer.__resize(windowWidth, windowHeight);
 		}
 

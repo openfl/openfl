@@ -390,7 +390,17 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function setViewport():Void
 	{
-		__gl.viewport(__offsetX, __offsetY, __displayWidth, __displayHeight);
+		if (__defaultRenderTarget == null && __context3D != null && __context3D.__stage3D == null && __stage != null && __stage.window != null)
+		{
+			var contextHeight = Std.int(__stage.window.height * __stage.window.scale);
+			var viewportY = contextHeight - __displayHeight - __offsetY;
+			if (viewportY < 0) viewportY = 0;
+			__gl.viewport(__offsetX, viewportY, __displayWidth, __displayHeight);
+		}
+		else
+		{
+			__gl.viewport(__offsetX, __offsetY, __displayWidth, __displayHeight);
+		}
 	}
 
 	/**
@@ -402,6 +412,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	{
 		if (__currentShader != null)
 		{
+			if (__defaultRenderTarget == null && __context3D.__state.renderToTexture == null)
+			{
+				setViewport();
+			}
 			if (__currentShader.__position != null) __currentShader.__position.__useArray = true;
 			if (__currentShader.__textureCoord != null) __currentShader.__textureCoord.__useArray = true;
 			__context3D.setProgram(__currentShader.program);
@@ -777,6 +791,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			}
 			#end
 			__context3D.setScissorRectangle(__scissorRectangle);
+			setViewport();
 
 			__upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
 
@@ -848,7 +863,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			}
 			#end
 			__context3D.setScissorRectangle(__scissorRectangle);
-			// __gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
+			setViewport();
 
 			// __upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
 
@@ -978,6 +993,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 		__projection.createOrtho(0, __displayWidth + __offsetX * 2, 0, __displayHeight + __offsetY * 2, -1000, 1000);
 		__projectionFlipped.createOrtho(0, __displayWidth + __offsetX * 2, __displayHeight + __offsetY * 2, 0, -1000, 1000);
+		setViewport();
 	}
 
 	@:noCompletion private function __resumeClipAndMask(childRenderer:OpenGLRenderer):Void

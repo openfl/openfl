@@ -12,6 +12,7 @@ import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.Texture;
 import openfl.display3D.textures.VideoTexture;
 import openfl.display.BitmapData;
+import openfl.display.OpenGLRenderer;
 import openfl.display.Stage;
 import openfl.display.Stage3D;
 import openfl.errors.Error;
@@ -140,6 +141,7 @@ import lime.math.Vector2;
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.DisplayObjectRenderer)
+@:access(openfl.display.OpenGLRenderer)
 @:access(openfl.display.Shader)
 @:access(openfl.display.Stage)
 @:access(openfl.display.Stage3D)
@@ -2461,9 +2463,21 @@ import lime.math.Vector2;
 					scaledBackBufferHeight = Std.int(backBufferHeight * __stage.window.scale);
 				}
 				#end
-				var x = __stage3D == null ? 0 : Std.int(__stage3D.x);
-				var y = Std.int((__stage.window.height * __stage.window.scale) - scaledBackBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
-				gl.viewport(x, y, scaledBackBufferWidth, scaledBackBufferHeight);
+				if (__stage3D == null && __stage.__renderer != null && Std.isOfType(__stage.__renderer, OpenGLRenderer))
+				{
+					var renderer:OpenGLRenderer = cast __stage.__renderer;
+					var contextHeight = Std.int(__stage.window.height * __stage.window.scale);
+					var viewportX = renderer.__offsetX;
+					var viewportY = contextHeight - renderer.__displayHeight - renderer.__offsetY;
+					if (viewportY < 0) viewportY = 0;
+					gl.viewport(viewportX, viewportY, renderer.__displayWidth, renderer.__displayHeight);
+				}
+				else
+				{
+					var x = __stage3D == null ? 0 : Std.int(__stage3D.x);
+					var y = Std.int((__stage.window.height * __stage.window.scale) - scaledBackBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
+					gl.viewport(x, y, scaledBackBufferWidth, scaledBackBufferHeight);
+				}
 			}
 			else
 			{
