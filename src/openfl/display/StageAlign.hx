@@ -52,14 +52,14 @@ package openfl.display;
 	{
 		return switch (value)
 		{
-			case "bottom": BOTTOM;
-			case "bottomLeft": BOTTOM_LEFT;
-			case "bottomRight": BOTTOM_RIGHT;
-			case "left": LEFT;
-			case "right": RIGHT;
-			case "top": TOP;
-			case "topLeft": TOP_LEFT;
-			case "topRight": TOP_RIGHT;
+			case "bottom", "B", "b": BOTTOM;
+			case "bottomLeft", "BL", "bl": BOTTOM_LEFT;
+			case "bottomRight", "BR", "br": BOTTOM_RIGHT;
+			case "left", "L", "l": LEFT;
+			case "right", "R", "r": RIGHT;
+			case "top", "T", "t": TOP;
+			case "topLeft", "TL", "tl": TOP_LEFT;
+			case "topRight", "TR", "tr": TOP_RIGHT;
 			default: null;
 		}
 	}

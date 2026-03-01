@@ -3551,6 +3551,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var visibleY = 0.0;
 		switch (align)
 		{
+			case null:
+				// AIR/Flash behavior for stage.align = "" (no edge anchor): center both axes
+				visibleX = Math.round((__logicalWidth - visibleWidth) / 2);
+				visibleY = Math.round((__logicalHeight - visibleHeight) / 2);
 			case BOTTOM_RIGHT:
 				visibleX = Math.round(__logicalWidth - visibleWidth);
 				visibleY = Math.round(__logicalHeight - visibleHeight);
