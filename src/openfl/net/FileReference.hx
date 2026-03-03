@@ -956,7 +956,7 @@ class FileReference extends EventDispatcher
 			data = Bytes.fromFile(__path);
 			openFileDialog_onComplete();
 		}
-		#elseif (js && html5)
+		#elseif (js && html5 && lime)
 		var file = __inputControl.files[0];
 		var reader = new FileReader();
 		reader.onload = function(evt)
@@ -1358,7 +1358,7 @@ class FileReference extends EventDispatcher
 			return;
 		}
 		__uploadFileBytes(request, uploadDataFieldName, fileBytes);
-		#elseif (js && html5)
+		#elseif (js && html5 && lime)
 		var file = __inputControl.files[0];
 		var reader = new FileReader();
 		reader.onload = function(evt)

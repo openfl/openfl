@@ -136,7 +136,7 @@ class CanvasGraphics
 	@SuppressWarnings("checkstyle:Dynamic")
 	private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):#if (js && html5) CanvasPattern #else Dynamic #end
 	{
-		#if (js && html5)
+		#if (js && html5 && lime)
 		ImageCanvasUtil.convertToCanvas(bitmap.image);
 		setSmoothing(smooth);
 		// flash extends the pixels on the edges to fill any remaining space,

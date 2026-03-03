@@ -2778,6 +2778,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__dispatchEvent(new FullScreenEvent(FullScreenEvent.FULL_SCREEN, false, false, false, true));
 		}
 	}
+	#else // lime
+	@:noCompletion private function __renderAfterEvent():Void {}
 	#end
 
 	@:noCompletion private function __onMouse(type:String, x:Float, y:Float, button:Int):Void
