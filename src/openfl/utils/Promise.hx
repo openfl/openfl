@@ -100,16 +100,6 @@ class Promise<T>
 		{
 			future.isComplete = true;
 			future.value = data;
-
-			if (future.__completeListeners != null)
-			{
-				for (listener in future.__completeListeners)
-				{
-					listener(data);
-				}
-
-				future.__completeListeners = null;
-			}
 		}
 
 		return this;
@@ -141,16 +131,6 @@ class Promise<T>
 		{
 			future.isError = true;
 			future.error = msg;
-
-			if (future.__errorListeners != null)
-			{
-				for (listener in future.__errorListeners)
-				{
-					listener(msg);
-				}
-
-				future.__errorListeners = null;
-			}
 		}
 
 		return this;
@@ -166,13 +146,6 @@ class Promise<T>
 	{
 		if (!future.isError && !future.isComplete)
 		{
-			if (future.__progressListeners != null)
-			{
-				for (listener in future.__progressListeners)
-				{
-					listener(progress, total);
-				}
-			}
 		}
 
 		return this;
