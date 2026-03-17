@@ -699,7 +699,14 @@ class DisplayObjectRenderer extends EventDispatcher
 							filter.__renderDirty = false;
 						}
 
-						displayObject.__cacheBitmap.__bitmapData = bitmap;
+						if (displayObject.__cacheBitmapData != bitmap)
+						{
+							cacheBitmap = displayObject.__cacheBitmapData;
+							displayObject.__cacheBitmapData = bitmap;
+							displayObject.__cacheBitmapData2 = cacheBitmap;
+						}
+
+						displayObject.__cacheBitmap.__bitmapData = displayObject.__cacheBitmapData;
 					}
 
 					parentRenderer.__blendMode = NORMAL;
