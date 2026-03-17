@@ -467,11 +467,24 @@ class DisplayObjectRenderer extends EventDispatcher
 			}
 			else
 			{
-				// Should we retain these longer?
+				var currentCacheBitmapData = displayObject.__cacheBitmap.bitmapData;
 
-				displayObject.__cacheBitmapData = displayObject.__cacheBitmap.bitmapData;
-				displayObject.__cacheBitmapData2 = null;
-				displayObject.__cacheBitmapData3 = null;
+				if (currentCacheBitmapData == displayObject.__cacheBitmapData2)
+				{
+					var previousMainBitmapData = displayObject.__cacheBitmapData;
+					displayObject.__cacheBitmapData = currentCacheBitmapData;
+					displayObject.__cacheBitmapData2 = previousMainBitmapData;
+				}
+				else if (currentCacheBitmapData == displayObject.__cacheBitmapData3)
+				{
+					var previousMainBitmapData = displayObject.__cacheBitmapData;
+					displayObject.__cacheBitmapData = currentCacheBitmapData;
+					displayObject.__cacheBitmapData3 = previousMainBitmapData;
+				}
+				else
+				{
+					displayObject.__cacheBitmapData = currentCacheBitmapData;
+				}
 			}
 
 			if (updateTransform || needRender)
