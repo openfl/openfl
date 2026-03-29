@@ -53,6 +53,8 @@ class CairoGraphics
 	private static var graphics:Graphics;
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
+	private static var hitTestBitmap:BitmapData;
+	private static var hitTestCairo:Cairo;
 	private static var hitTesting:Bool;
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
@@ -464,15 +466,19 @@ class CairoGraphics
 			x -= bounds.x;
 			y -= bounds.y;
 
-			if (graphics.__cairo == null)
+			// use a shared 1x1 Cairo instance for hit testing to avoid
+			// allocating extra surfaces on graphics that don't need them (such
+			// as those that are rendered on the GL path instead).
+			// cairo uses the vectors for hit testing, so a tiny 1x1 surface
+			// does not negatively affect accuracy.
+			if (hitTestCairo == null)
 			{
-				var bitmap = new BitmapData(Math.floor(Math.max(1, bounds.width)), Math.floor(Math.max(1, bounds.height)), true, 0);
-				var surface = bitmap.getSurface();
-				graphics.__cairo = new Cairo(surface);
-				// graphics.__bitmap = bitmap;
+				hitTestBitmap = new BitmapData(1, 1, true, 0);
+				hitTestCairo = new Cairo(hitTestBitmap.getSurface());
 			}
 
-			cairo = graphics.__cairo;
+			cairo = hitTestCairo;
+			cairo.identityMatrix();
 
 			fillCommands.clear();
 			strokeCommands.clear();
