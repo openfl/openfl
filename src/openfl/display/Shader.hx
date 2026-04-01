@@ -960,6 +960,17 @@ class Shader
 
 		return __glVertexSource = value;
 	}
+
+	@:noCompletion private var __useDrawElements:Bool = false;
+
+	/**
+	 * When set to true, triangles are rendered using gl.drawElements; otherwise, gl.drawArrays is used. This setting only affects the Graphics.drawTriangles interface.
+	 * @param value Whether to use draw elements.
+	 */
+	public function useDrawElements(value:Bool = true):Void
+	{
+		__useDrawElements = value;
+	}
 }
 #else
 typedef Shader = flash.display.Shader;
