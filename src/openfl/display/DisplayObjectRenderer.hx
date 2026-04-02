@@ -442,6 +442,7 @@ class DisplayObjectRenderer extends EventDispatcher
 						&& __hasMaskedDescendant(displayObject)
 						&& __isOnMouseOverPath(displayObject))
 					{
+						displayObject.__cacheBitmapData.__texture.dispose();
 						displayObject.__cacheBitmapData.__texture = null;
 					}
 
