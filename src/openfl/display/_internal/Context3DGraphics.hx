@@ -122,7 +122,7 @@ class Context3DGraphics
 			var vertexOffset = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
 
 			// Use index buffer for indexed render
-			var useDrawElements = shaderBuffer != null && shaderBuffer.shader.__useDrawElements;
+			var useDrawElements = shaderBuffer != null && shaderBuffer.paramDataLength < length * shaderBuffer.paramIndicesDataLength;
 			if (useDrawElements)
 			{
 				resizeIndexBuffer(graphics, false, triangleIndexBufferPosition + length);
@@ -761,9 +761,10 @@ class Context3DGraphics
 
 					if (bitmap != null || shaderBuffer != null || (uvDataLength == 0 && fill != null))
 					{
-						var useDrawElements = shaderBuffer != null && shaderBuffer.shader.__useDrawElements;
 						var numVertices = Math.floor(verticesLength / 2);
 						var length = indicesLength > 0 ? indicesLength : numVertices;
+						var useDrawElements = shaderBuffer != null
+							&& shaderBuffer.paramDataLength < length * shaderBuffer.paramIndicesDataLength;
 
 						var hasUVTData = uvDataLength >= (numVertices * 3);
 						var vertLength = hasUVTData ? 4 : 2;
