@@ -61,7 +61,9 @@ class Context3DGraphics
 		var bitmapMatrix:Matrix = null;
 
 		var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
-		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+		// no scale9Grid for masks
+		// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 		if (!hasScale9Grid)
 		{
 			scale9Grid = null;
@@ -679,7 +681,9 @@ class Context3DGraphics
 				}
 
 				var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
-				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+				// no scale9Grid for masks
+				// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 				if (!hasScale9Grid)
 				{
 					scale9Grid = null;
@@ -715,7 +719,7 @@ class Context3DGraphics
 						uvDataLength = verticesLength;
 					}
 
-					if (bitmap != null || (uvDataLength == 0 && fill != null))
+					if (bitmap != null || shaderBuffer != null || (uvDataLength == 0 && fill != null))
 					{
 						var numVertices = Math.floor(verticesLength / 2);
 						var length = indicesLength > 0 ? indicesLength : numVertices;

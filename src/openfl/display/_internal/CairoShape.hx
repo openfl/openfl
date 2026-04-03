@@ -101,11 +101,18 @@ class CairoShape
 			{
 				var transform = graphics.__worldTransform;
 				var scale9Grid = shape.__worldScale9Grid;
+				// no scale9Grid for masks
+				// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+				var hasScale9Grid = scale9Grid != null && !shape.__isMask && Math.abs(shape.__rotation) < 0.02;
+				if (!hasScale9Grid)
+				{
+					scale9Grid = null;
+				}
 
 				renderer.__setBlendMode(shape.__worldBlendMode);
 				renderer.__pushMaskObject(shape);
 
-				if (scale9Grid != null && transform.b == 0 && transform.c == 0)
+				if (hasScale9Grid)
 				{
 					#if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
 					var pixelRatio = 1;

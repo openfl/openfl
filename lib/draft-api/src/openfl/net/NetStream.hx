@@ -6,6 +6,9 @@ import openfl.events.EventDispatcher;
 import openfl.events.NetStatusEvent;
 import openfl.media.SoundMixer;
 import openfl.media.SoundTransform;
+#if (cpp && windows)
+import openfl.media.Video;
+#end
 #if (js && html5)
 import js.html.VideoElement;
 import js.Browser;
@@ -81,7 +84,7 @@ import js.Browser;
 	`Sound.id3` property to read metadata from the sound file.
 
 	@event asyncError       Dispatched when an exception is thrown
-							asynchronously — that is, from native
+							asynchronously נthat is, from native
 							asynchronous code. This event is dispatched when a
 							server calls a method on the client that is not
 							defined.
@@ -508,6 +511,7 @@ import js.Browser;
 							`"DRM.encryptedFLV"`.
 **/
 @:access(openfl.media.SoundMixer)
+@:access(openfl.media.Video)
 #if !openfl_debug
 @:fileXml('tags="haxe,release"') @:noDebug
 #end
@@ -603,7 +607,7 @@ class NetStream extends EventDispatcher
 	/**
 		The number of seconds of data currently in the buffer. You can use
 		this property with the `bufferTime` property to estimate how close the
-		buffer is to being full — for example, to display feedback to a user
+		buffer is to being full נfor example, to display feedback to a user
 		who is waiting for data to be loaded into the buffer.
 	**/
 	public var bufferLength(default, null):Float;
@@ -710,7 +714,7 @@ class NetStream extends EventDispatcher
 	/**
 		The number of bytes of data that have been loaded into the
 		application. You can use this property with the `bytesTotal` property
-		to estimate how close the buffer is to being full — for example, to
+		to estimate how close the buffer is to being full נfor example, to
 		display feedback to a user who is waiting for data to be loaded into
 		the buffer.
 	**/
@@ -1125,6 +1129,11 @@ class NetStream extends EventDispatcher
 	@:noCompletion private var __connection:NetConnection;
 	@:noCompletion private var __soundTransform:SoundTransform;
 	@:noCompletion private var __timer:Timer;
+	#if (cpp && windows)
+	@:noCompletion private var __attachedVideos:Array<Video>;
+	@:noCompletion private var __nativeSource:String;
+	@:noCompletion private var __nativeIsPlaying:Bool;
+	#end
 	#if (js && html5)
 	@:noCompletion private var __video(default, null):VideoElement;
 	#end
@@ -1190,7 +1199,12 @@ class NetStream extends EventDispatcher
 		super();
 
 		__connection = connection;
+		__closed = false;
 		__soundTransform = new SoundTransform();
+		#if (cpp && windows)
+		__attachedVideos = [];
+		__nativeIsPlaying = false;
+		#end
 
 		#if (js && html5)
 		__video = cast Browser.document.createElement("video");
@@ -1347,8 +1361,8 @@ class NetStream extends EventDispatcher
 		display the video on the stage.
 
 		You can use `snapshotMilliseconds` to send a single snapshot (by
-		providing a value of 0) or a series of snapshots — in effect,
-		time-lapse footage — by providing a positive number that adds a
+		providing a value of 0) or a series of snapshots נin effect,
+		time-lapse footage נby providing a positive number that adds a
 		trailer of the specified number of milliseconds to the video feed. The
 		trailer extends the display time of the video message. By repeatedly
 		calling `attachCamera()` with a positive value for
@@ -1376,7 +1390,7 @@ class NetStream extends EventDispatcher
 		1/300 (one per 300 seconds, or one every 5 minutes), and then issue a
 		`NetStream.attachCamera(source)` command, letting the camera capture
 		continuously for 500 minutes. The resulting file will play back in 500
-		minutes — the same length of time that it took to record — with
+		minutes נthe same length of time that it took to record נwith
 		each frame being displayed for 5 minutes.
 
 		Both techniques capture the same 500 frames, and both approaches are
@@ -1427,6 +1441,19 @@ class NetStream extends EventDispatcher
 		__video.pause();
 		__video.src = "";
 		time = 0;
+		#elseif (cpp && windows)
+		__closed = true;
+		__nativeIsPlaying = false;
+
+		if (__attachedVideos != null)
+		{
+			for (video in __attachedVideos)
+			{
+				if (video != null) video.__netStreamClose();
+			}
+		}
+
+		time = 0;
 		#end
 	}
 
@@ -1444,6 +1471,10 @@ class NetStream extends EventDispatcher
 		#if (js && html5)
 		close();
 		__video = null;
+		#elseif (cpp && windows)
+		close();
+		__nativeSource = null;
+		__attachedVideos = [];
 		#end
 	}
 
@@ -1512,6 +1543,16 @@ class NetStream extends EventDispatcher
 	{
 		#if (js && html5)
 		if (__video != null) __video.pause();
+		#elseif (cpp && windows)
+		__nativeIsPlaying = false;
+
+		if (__attachedVideos != null)
+		{
+			for (video in __attachedVideos)
+			{
+				if (video != null) video.__netStreamPause();
+			}
+		}
 		#end
 	}
 
@@ -1605,6 +1646,28 @@ class NetStream extends EventDispatcher
 			__video.srcObject = cast url;
 		}
 		__video.play();
+		#elseif (cpp && windows)
+		if (url == null || url == "")
+		{
+			return;
+		}
+
+		__closed = false;
+		__nativeSource = cast url;
+		__nativeIsPlaying = true;
+
+		if (__attachedVideos != null)
+		{
+			for (video in __attachedVideos)
+			{
+				if (video != null)
+				{
+					video.__netStreamPlay(__nativeSource);
+					video.__netStreamSeek(time);
+					video.__netStreamApplySoundTransform(__soundTransform);
+				}
+			}
+		}
 		#end
 	}
 
@@ -1880,6 +1943,16 @@ class NetStream extends EventDispatcher
 	{
 		#if (js && html5)
 		if (__video != null) __video.play();
+		#elseif (cpp && windows)
+		__nativeIsPlaying = true;
+
+		if (__attachedVideos != null)
+		{
+			for (video in __attachedVideos)
+			{
+				if (video != null) video.__netStreamResume();
+			}
+		}
 		#end
 	}
 
@@ -1974,6 +2047,24 @@ class NetStream extends EventDispatcher
 
 		__dispatchStatus("NetStream.SeekStart.Notify");
 		__video.currentTime = time;
+		#elseif (cpp && windows)
+		if (time < 0)
+		{
+			time = 0;
+		}
+
+		this.time = time;
+
+		if (__attachedVideos != null)
+		{
+			for (video in __attachedVideos)
+			{
+				if (video != null) video.__netStreamSeek(time);
+			}
+		}
+
+		__dispatchStatus("NetStream.SeekStart.Notify");
+		__dispatchStatus("NetStream.Seek.Complete");
 		#end
 	}
 
@@ -2085,8 +2176,64 @@ class NetStream extends EventDispatcher
 		{
 			__video.pause();
 		}
+		#elseif (cpp && windows)
+		if (__nativeIsPlaying)
+		{
+			pause();
+		}
+		else
+		{
+			resume();
+		}
 		#end
 	}
+
+	#if (cpp && windows)
+	@:noCompletion private function __nativeAttachVideo(video:Video):Void
+	{
+		if (video == null)
+		{
+			return;
+		}
+
+		if (__attachedVideos == null)
+		{
+			__attachedVideos = [];
+		}
+
+		if (__attachedVideos.indexOf(video) == -1)
+		{
+			__attachedVideos.push(video);
+		}
+
+		video.__netStreamApplySoundTransform(__soundTransform);
+
+		if (!__closed && __nativeSource != null)
+		{
+			video.__netStreamPlay(__nativeSource);
+			video.__netStreamSeek(time);
+
+			if (__nativeIsPlaying)
+			{
+				video.__netStreamResume();
+			}
+			else
+			{
+				video.__netStreamPause();
+			}
+		}
+	}
+
+	@:noCompletion private function __nativeDetachVideo(video:Video):Void
+	{
+		if (__attachedVideos == null || video == null)
+		{
+			return;
+		}
+
+		__attachedVideos.remove(video);
+	}
+	#end
 
 	@:noCompletion private function __dispatchStatus(code:String):Void
 	{
@@ -2229,6 +2376,14 @@ class NetStream extends EventDispatcher
 			if (__video != null)
 			{
 				__video.volume = SoundMixer.__soundTransform.volume * __soundTransform.volume;
+			}
+			#elseif (cpp && windows)
+			if (__attachedVideos != null)
+			{
+				for (video in __attachedVideos)
+				{
+					if (video != null) video.__netStreamApplySoundTransform(__soundTransform);
+				}
 			}
 			#end
 		}

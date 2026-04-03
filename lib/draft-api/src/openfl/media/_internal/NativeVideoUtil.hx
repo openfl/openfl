@@ -1,4 +1,5 @@
 package openfl.media._internal;
+
 import haxe.Constraints.Function;
 import lime.media.openal.AL;
 import lime.media.openal.ALBuffer;
@@ -12,8 +13,8 @@ import sys.thread.Deque;
  */
 class NativeVideoUtil
 {
-
 	static var worker = new BackgroundWorker();
+
 	/**
 	 * Delays a callback function for the specified time in seconds.
 	 * Accurate to ~2ms assuming timeBeginPeriod(1) is active.
@@ -46,62 +47,62 @@ class NativeVideoUtil
 	{
 		/*if (seconds <= 0) return;
 
-		var target = Sys.time() + seconds;
+			var target = Sys.time() + seconds;
 
-		if (seconds >= 0.002)
-		{
-			//trace('longsleep');
-			Sys.sleep(0);
+			if (seconds >= 0.002)
+			{
+				//trace('longsleep');
+				Sys.sleep(0);
 		}*/
 
-		@:inline spinlock(seconds);
+		@:inline busywait(seconds);
 	}
 
-	public static function spinlock(seconds:Float):Void
+	public static function busywait(seconds:Float):Void
 	{
 		var pTime = timestamp();
 
 		while (timestamp() - pTime < seconds)
 		{
-			//Sys.sleep(0);
+			// Sys.sleep(0);
 		}
 	}
 
 	public static inline function timestamp():Float
 	{
-		//we need to pass this from cffi for hl and neko
+		// we need to pass this from cffi for hl and neko
 		#if cpp
 		return untyped __global__.__time_stamp();
 		#end
-		//we need to pass this from cffi for hl and neko
+		// we need to pass this from cffi for hl and neko
 		#if hl
-		//TODO: hashlink cffi
+		// TODO: hashlink cffi
 		#end
 		#if neko
-		//TODO: Neko cffi
+		// TODO: Neko cffi
 		#end
-		//return 0.0;
+		// return 0.0;
 	}
-	
-		@:noCompletion public static function setupAL(bufferCount:Int):ALObject
+
+	@:noCompletion public static function setupAL(bufferCount:Int):ALObject
 	{
 		var buffers:Array<ALBuffer> = AL.genBuffers(bufferCount);
 		var source:ALSource = AL.createSource();
-		
+
 		var ret:ALObject = {
-			buffers:buffers,
-			source:source
+			buffers: buffers,
+			source: source
 		}
-		
+
 		return ret;
 	}
 }
 
-@:noCompletion private typedef ALObject = {
+@:noCompletion private typedef ALObject =
+{
 	buffers:Array<ALBuffer>,
 	source:ALSource
 }
-	
 
 @:noCompletion private typedef WorkerObject =
 {

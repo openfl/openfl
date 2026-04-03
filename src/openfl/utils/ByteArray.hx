@@ -224,14 +224,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		the zlib compressed data format specification, those bytes (that is, the
 		portion containing the compressed version of the original data) are
 		compressed using the deflate algorithm. Consequently those bytes are
-		identical to the result of calling `compress(<ph
-		outputclass="javascript">air.CompressionAlgorithm.DEFLATE)` on the
-		original ByteArray. However, the result from `compress(<ph
-		outputclass="javascript">air.CompressionAlgorithm.ZLIB)` includes
-		the extra metadata, while the
-		`compress(CompressionAlgorithm.DEFLATE)` result includes only
-		the compressed version of the original ByteArray data and nothing
-		else.
+		identical to the result of calling
+		`compress(CompressionAlgorithm.DEFLATE)` on the original ByteArray.
+		However, the result from `compress(CompressionAlgorithm.ZLIB)` includes
+		the extra metadata, while the `compress(CompressionAlgorithm.DEFLATE)`
+		result includes only the compressed version of the original ByteArray
+		data and nothing else.
 
 		In order to use the deflate format to compress a ByteArray instance's
 		data in a specific format such as gzip or zip, you cannot simply call
@@ -2027,14 +2025,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		the zlib compressed data format specification, those bytes (that is, the
 		portion containing the compressed version of the original data) are
 		compressed using the deflate algorithm. Consequently those bytes are
-		identical to the result of calling `compress(<ph
-		outputclass="javascript">air.CompressionAlgorithm.DEFLATE)` on the
-		original ByteArray. However, the result from `compress(<ph
-		outputclass="javascript">air.CompressionAlgorithm.ZLIB)` includes
-		the extra metadata, while the
-		`compress(CompressionAlgorithm.DEFLATE)` result includes only
-		the compressed version of the original ByteArray data and nothing
-		else.
+		identical to the result of calling
+		`compress(CompressionAlgorithm.DEFLATE)` on the original ByteArray.
+		However, the result from `compress(CompressionAlgorithm.ZLIB)` includes
+		the extra metadata, while the `compress(CompressionAlgorithm.DEFLATE)`
+		result includes only the compressed version of the original ByteArray
+		data and nothing else.
 
 		In order to use the deflate format to compress a ByteArray instance's
 		data in a specific format such as gzip or zip, you cannot simply call

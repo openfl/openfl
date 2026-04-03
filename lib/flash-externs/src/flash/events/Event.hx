@@ -99,7 +99,11 @@ extern class Event
 
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false);
 	public function clone():Event;
+	#if (haxe_ver >= 4.2)
+	public function formatToString(className:String, args:haxe.Rest<String>):String;
+	#else
 	public function formatToString(className:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):String;
+	#end
 	public function isDefaultPrevented():Bool;
 	public function preventDefault():Void;
 	public function stopImmediatePropagation():Void;

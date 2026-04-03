@@ -24,109 +24,37 @@ import js.Browser;
 #end
 
 /**
-	The Stage class represents the main drawing area.
-	For SWF content running in the browser (in Flash<sup>®</sup> Player), the
-	Stage represents the entire area where Flash content is shown. For content
-	running in AIR on desktop operating systems, each NativeWindow object has
-	a corresponding Stage object.
+	The Stage3D class provides a display area and a programmable rendering
+	context for drawing 2D and 3D graphics.
 
-	The Stage object is not globally accessible. You need to access it through
-	the `stage` property of a DisplayObject instance.
+	Stage3D provides a high-performance rendering surface for content rendered
+	using the `Context3D` class. This surface uses the graphics processing unit
+	(GPU) when possible. The runtime stage provides a fixed number of `Stage3D`
+	objects. The number of instances varies by the type of device. Desktop
+	computers typically provide four Stage3D instances.
 
-	The Stage class has several ancestor classes נDisplayObjectContainer,
-	InteractiveObject, DisplayObject, and EventDispatcher נfrom which it
-	inherits properties and methods. Many of these properties and methods are
-	either inapplicable to Stage objects, or require security checks when
-	called on a Stage object. The properties and methods that require security
-	checks are documented as part of the Stage class.
+	Content drawn to the `Stage3D` viewport is composited with other visible
+	graphics objects in a predefined order. The most distant are all
+	`StageVideo` surfaces. `Stage3D` comes next, with traditional Flash display
+	object content being rendered last, on top of all others. StageVideo and
+	Stage3D layers are rendered with no transparency; thus a viewport completely
+	obscures any other Stage3D or StageVideo viewports positioned underneath it.
+	Display list content is rendered with transparency.
 
-	In addition, the following inherited properties are inapplicable to Stage
-	objects. If you try to set them, an IllegalOperationError is thrown. These
-	properties may always be read, but since they cannot be set, they will
-	always contain default values.
+	**Note:** You can use the `visible` property of a Stage3D object to remove
+	it from the display temporarily, such as when playing a video using the
+	StageVideo class.
 
-	* `accessibilityProperties`
-	* `alpha`
-	* `blendMode`
-	* `cacheAsBitmap`
-	* `contextMenu`
-	* `filters`
-	* `focusRect`
-	* `loaderInfo`
-	* `mask`
-	* `mouseEnabled`
-	* `name`
-	* `opaqueBackground`
-	* `rotation`
-	* `scale9Grid`
-	* `scaleX`
-	* `scaleY`
-	* `scrollRect`
-	* `tabEnabled`
-	* `tabIndex`
-	* `transform`
-	* `visible`
-	* `x`
-	* `y`
+	A `Stage3D` object is retrieved from the Player stage using its `stage3Ds`
+	member. Use the Stage3D instance to request an associated rendering context
+	and to position the display on the runtime stage.
 
-	Some events that you might expect to be a part of the Stage class, such as
-	`enterFrame`, `exitFrame`, `frameConstructed`, and `render`, cannot be
-	Stage events because a reference to the Stage object cannot be guaranteed
-	to exist in every situation where these events are used. Because these
-	events cannot be dispatched by the Stage object, they are instead
-	dispatched by every DisplayObject instance, which means that you can add
-	an event listener to any DisplayObject instance to listen for these
-	events. These events, which are part of the DisplayObject class, are
-	called broadcast events to differentiate them from events that target a
-	specific DisplayObject instance. Two other broadcast events, `activate`
-	and `deactivate`, belong to DisplayObject's superclass, EventDispatcher.
-	The `activate` and `deactivate` events behave similarly to the
-	DisplayObject broadcast events, except that these two events are
-	dispatched not only by all DisplayObject instances, but also by all
-	EventDispatcher instances and instances of other EventDispatcher
-	subclasses. For more information on broadcast events, see the
-	DisplayObject class.
+	@event context3DCreate      Dispatched when a rendering context is created.
+	@event error             	Dispatched when a request for a rendering
+								context fails.
 
-	@event fullScreen             Dispatched when the Stage object enters, or
-								  leaves, full-screen mode. A change in
-								  full-screen mode can be initiated through
-								  Haxe code, or the user invoking a
-								  keyboard shortcut, or if the current focus
-								  leaves the full-screen window.
-	@event mouseLeave             Dispatched by the Stage object when the
-								  pointer moves out of the stage area. If the
-								  mouse button is pressed, the event is not
-								  dispatched.
-	@event orientationChange      Dispatched by the Stage object when the
-								  stage orientation changes.
-								  Orientation changes can occur when the user
-								  rotates the device, opens a slide-out
-								  keyboard, or when the `setAspectRatio()` is
-								  called.
-
-								  **Note:** If the `autoOrients` property is
-								  `false`, then the stage orientation does not
-								  change when a device is rotated. Thus,
-								  StageOrientationEvents are only dispatched
-								  for device rotation when `autoOrients` is
-								  `true`.
-	@event orientationChanging    Dispatched by the Stage object when the
-								  stage orientation begins changing.
-								  **Important:** orientationChanging events
-								  are not dispatched on Android devices.
-
-								  **Note:** If the `autoOrients` property is
-								  `false`, then the stage orientation does not
-								  change when a device is rotated. Thus,
-								  StageOrientationEvents are only dispatched
-								  for device rotation when `autoOrients` is
-								  `true`.
-	@event resize                 Dispatched when the `scaleMode` property of
-								  the Stage object is set to
-								  `StageScaleMode.NO_SCALE` and the SWF file
-								  is resized.
-	@event stageVideoAvailability Dispatched by the Stage object when the
-								  state of the stageVideos property changes.
+	@see `openfl.display.Stage`
+	@see `openfl.display3D.Context3D`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

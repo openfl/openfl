@@ -271,6 +271,8 @@ import lime.math.Vector2;
 	@:noCompletion private var __enableErrorChecking:Bool;
 	@:noCompletion private var __fragmentConstants:Float32Array;
 	@:noCompletion private var __frontBufferTexture:RectangleTexture;
+	@:noCompletion private var __glslSamplerUniformLocations:Array<Dynamic>;
+	@:noCompletion private var __glslSamplerUniformProgram:Program3D;
 	@:noCompletion private var __positionScale:Float32Array; // TODO: Better approach?
 	@:noCompletion private var __present:Bool;
 	@:noCompletion private var __programs:Map<String, Program3D>;
@@ -306,6 +308,8 @@ import lime.math.Vector2;
 		__positionScale = new Float32Array([1.0, 1.0, 1.0, 1.0]);
 		#end
 		__programs = new Map<String, Program3D>();
+		__glslSamplerUniformLocations = [];
+		__glslSamplerUniformProgram = null;
 
 		if (__glMaxViewportDims == -1)
 		{
@@ -460,6 +464,12 @@ import lime.math.Vector2;
 	public function clear(red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0,
 			mask:UInt = Context3DClearMask.ALL):Void
 	{
+		__clear(false, red, green, blue, alpha, depth, stencil, mask);
+	}
+
+	@:noCompletion private function __clear(useScissor:Bool, red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1,
+			stencil:UInt = 0, mask:UInt = Context3DClearMask.ALL)
+	{
 		__flushGLFramebuffer();
 		__flushGLViewport();
 
@@ -519,7 +529,15 @@ import lime.math.Vector2;
 
 		if (clearMask == 0) return;
 
-		__setGLScissorTest(false);
+		if (useScissor)
+		{
+			__flushGLScissor();
+		}
+		else
+		{
+			__setGLScissorTest(false);
+		}
+
 		gl.clear(clearMask);
 	}
 
@@ -1407,6 +1425,8 @@ import lime.math.Vector2;
 	{
 		__state.program = program;
 		__state.shader = null; // TODO: Merge this logic
+		__glslSamplerUniformProgram = null;
+		__glslSamplerUniformLocations = [];
 
 		if (program != null)
 		{
@@ -2345,11 +2365,139 @@ import lime.math.Vector2;
 		}
 	}
 
+	@:noCompletion private static function __parseSamplerIndex(name:String):Int
+	{
+		if (name == null || name.length == 0) return -1;
+
+		var end = name.length;
+		var start = end;
+		while (start > 0)
+		{
+			var code = name.charCodeAt(start - 1);
+			if (code >= 48 && code <= 57)
+			{
+				start--;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		if (start == end) return -1;
+		return Std.parseInt(name.substring(start));
+	}
+
+	@:noCompletion private function __buildGLSLSamplerUniformCache():Void
+	{
+		if (__state.program == null || __state.program.__format != GLSL)
+		{
+			__glslSamplerUniformProgram = null;
+			__glslSamplerUniformLocations = [];
+			return;
+		}
+
+		if (__glslSamplerUniformProgram == __state.program)
+		{
+			return;
+		}
+
+		__glslSamplerUniformProgram = __state.program;
+		__glslSamplerUniformLocations = [];
+
+		var maxSamplerSlots = __state.textures.length;
+		var nextAutoSampler = 0;
+		var numActiveUniforms:Int = gl.getProgramParameter(__state.program.__glProgram, gl.ACTIVE_UNIFORMS);
+
+		// Preserve legacy behavior first: explicit u_texN uniforms map to sampler N.
+		for (samplerIndex in 0...maxSamplerSlots)
+		{
+			var explicitLocation = gl.getUniformLocation(__state.program.__glProgram, "u_tex" + samplerIndex);
+			#if (js && html5)
+			if (explicitLocation != null)
+			{
+				__glslSamplerUniformLocations[samplerIndex] = explicitLocation;
+			}
+			#else
+			if (explicitLocation > -1)
+			{
+				__glslSamplerUniformLocations[samplerIndex] = explicitLocation;
+			}
+			#end
+		}
+
+		for (i in 0...numActiveUniforms)
+		{
+			var info = gl.getActiveUniform(__state.program.__glProgram, i);
+			if (info == null) continue;
+
+			if (info.type != GL.SAMPLER_2D && info.type != GL.SAMPLER_CUBE)
+			{
+				continue;
+			}
+
+			var uniformName:String = info.name;
+			if (uniformName == null || uniformName == "") continue;
+
+			var bracketIndex = uniformName.indexOf("[");
+			if (bracketIndex >= 0)
+			{
+				uniformName = uniformName.substring(0, bracketIndex);
+			}
+
+			var location = gl.getUniformLocation(__state.program.__glProgram, uniformName);
+			#if (js && html5)
+			if (location == null) continue;
+			#else
+			if (location <= -1) continue;
+			#end
+
+			var samplerIndex = __parseSamplerIndex(uniformName);
+			if (samplerIndex < 0 || samplerIndex >= maxSamplerSlots || __glslSamplerUniformLocations[samplerIndex] != null)
+			{
+				while (nextAutoSampler < maxSamplerSlots && __glslSamplerUniformLocations[nextAutoSampler] != null)
+				{
+					nextAutoSampler++;
+				}
+
+				if (nextAutoSampler >= maxSamplerSlots)
+				{
+					continue;
+				}
+
+				samplerIndex = nextAutoSampler;
+			}
+
+			__glslSamplerUniformLocations[samplerIndex] = location;
+		}
+	}
+
+	@:noCompletion private function __flushGLSLSamplerUniforms():Void
+	{
+		if (__state.program == null || __state.program.__format != GLSL) return;
+
+		__buildGLSLSamplerUniformCache();
+
+		for (i in 0...__glslSamplerUniformLocations.length)
+		{
+			var location = __glslSamplerUniformLocations[i];
+			if (location != null)
+			{
+				gl.uniform1i(location, i);
+			}
+		}
+	}
+
 	@:noCompletion private function __flushGLTextures():Void
 	{
 		var sampler = 0;
 		var texture:TextureBase;
 		var samplerState:SamplerState;
+
+		if (__state.program != null && __state.program.__format == GLSL)
+		{
+			__flushGLSLSamplerUniforms();
+		}
 
 		for (i in 0...__state.textures.length)
 		{
@@ -2393,18 +2541,7 @@ import lime.math.Vector2;
 				__bindGLTexture2D(null);
 			}
 
-			// handles glsl uniforms but they must start with "u_tex" we need to change this or document it
-			if (__state.program != null && __state.program.__format == GLSL)
-			{
-				var uniformName = "u_tex" + sampler;
-
-				var location = gl.getUniformLocation(__state.program.__glProgram, uniformName);
-				if (location > -1)
-				{
-					gl.uniform1i(location, sampler);
-				}
-			}
-			else if (__state.program != null && __state.program.__format == AGAL && samplerState.textureAlpha)
+			if (__state.program != null && __state.program.__format == AGAL && samplerState.textureAlpha)
 			{
 				gl.activeTexture(gl.TEXTURE0 + sampler + 4);
 

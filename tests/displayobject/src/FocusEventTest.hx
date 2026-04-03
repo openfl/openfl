@@ -272,6 +272,14 @@ class FocusEventTest extends Test
 		// Ensure that all events were actually delivered...
 		Assert.equals(0, expect.length);
 
+		for (s in [root, old1, old2, new1, new2])
+		{
+			s.removeEventListener(FocusEvent.FOCUS_IN, checkEvent);
+			s.removeEventListener(FocusEvent.FOCUS_IN, checkEvent, true);
+			s.removeEventListener(FocusEvent.FOCUS_OUT, checkEvent);
+			s.removeEventListener(FocusEvent.FOCUS_OUT, checkEvent, true);
+		}
+
 		Lib.current.stage.removeChild(root);
 	}
 }

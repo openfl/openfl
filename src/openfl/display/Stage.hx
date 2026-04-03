@@ -71,8 +71,8 @@ typedef Element = Dynamic;
 	The Stage object is not globally accessible. You need to access it
 	through the `stage` property of a DisplayObject instance.
 
-	The Stage class has several ancestor classes  -  DisplayObjectContainer,
-	InteractiveObject, DisplayObject, and EventDispatcher  -  from which it
+	The Stage class has several ancestor classes — DisplayObjectContainer,
+	InteractiveObject, DisplayObject, and EventDispatcher — from which it
 	inherits properties and methods. Many of these properties and methods are
 	either inapplicable to Stage objects, or require security checks when
 	called on a Stage object. The properties and methods that require security
@@ -1129,7 +1129,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		softKeyboardRect = new Rectangle();
 		stageFocusRect = true;
 
-		#if mac
+		#if (mac || ios || tvos)
 		__macKeyboard = true;
 		#elseif (js && html5)
 		__macKeyboard = untyped #if haxe4 js.Syntax.code #else __js__ #end ("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
@@ -1381,7 +1381,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				#if openfl_dpi_aware
 				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 				#else
-				context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
+				var unscaledWindowWidth = Std.int(window.width);
+				var unscaledWindowHeight = Std.int(window.height);
+				context3D.configureBackBuffer(unscaledWindowWidth, unscaledWindowHeight, 0, true, true, true);
 				#end
 				context3D.present();
 				__renderer = new OpenGLRenderer(context3D);
@@ -1687,10 +1689,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (!event.__preventDefault)
 		{
-			// #if mobile
 			Log.println(CallStack.toString(CallStack.exceptionStack()));
 			Log.println(Std.string(e));
-			// #end
 
 			#if (cpp && !cppia)
 			untyped __cpp__("throw e");
@@ -3162,38 +3162,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 		}
 
+		var newMouseOverTarget:InteractiveObject = null;
 		if (target != __mouseOverTarget)
 		{
-			if (target != null)
-			{
-				var event:MouseEvent = null;
-
-				#if openfl_pool_events
-				event = MouseEvent.__pool.get();
-				event.type = MouseEvent.MOUSE_OVER;
-				event.stageX = __mouseX;
-				event.stageY = __mouseY;
-				var local = target.__globalToLocal(targetPoint, localPoint);
-				event.localX = local.x;
-				event.localY = local.y;
-				event.target = target;
-				event.clickCount = 0;
-				#else
-				event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), cast target);
-				#end
-
-				__dispatchStack(event, stack);
-
-				if (event.__updateAfterEventFlag)
-				{
-					__renderAfterEvent();
-				}
-
-				#if openfl_pool_events
-				MouseEvent.__pool.release(event);
-				#end
-			}
-
+			newMouseOverTarget = target;
 			__mouseOverTarget = target;
 			__mouseOutStack = stack;
 		}
@@ -3240,6 +3212,38 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				// we have a listener here
 				__rollOutStack.push(item);
 			}
+		}
+
+		if (newMouseOverTarget != null)
+		{
+			var event:MouseEvent = null;
+
+			#if openfl_pool_events
+			event = MouseEvent.__pool.get();
+			// MOUSE_OVER should be dispatched after ROLL_OVER
+			event.type = MouseEvent.MOUSE_OVER;
+			event.stageX = __mouseX;
+			event.stageY = __mouseY;
+			var local = newMouseOverTarget.__globalToLocal(targetPoint, localPoint);
+			event.localX = local.x;
+			event.localY = local.y;
+			event.target = newMouseOverTarget;
+			event.clickCount = 0;
+			#else
+			event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, 0, __mouseX, __mouseY, newMouseOverTarget.__globalToLocal(targetPoint, localPoint),
+				cast newMouseOverTarget);
+			#end
+
+			__dispatchStack(event, stack);
+
+			if (event.__updateAfterEventFlag)
+			{
+				__renderAfterEvent();
+			}
+
+			#if openfl_pool_events
+			MouseEvent.__pool.release(event);
+			#end
 		}
 
 		if (__dragObject != null)
@@ -3548,6 +3552,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var visibleY = 0.0;
 		switch (align)
 		{
+			case null:
+				// it is undocumented, but it is possible to align the stage in
+				// Flash to the center both horizontally and vertically by
+				// setting stage.align to an invalid value, such as an empty
+				// string ("")
+				visibleX = Math.round((__logicalWidth - visibleWidth) / 2);
+				visibleY = Math.round((__logicalHeight - visibleHeight) / 2);
 			case BOTTOM_RIGHT:
 				visibleX = Math.floor(__logicalWidth - visibleWidth);
 				visibleY = Math.floor(__logicalHeight - visibleHeight);
@@ -3655,7 +3666,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			#if openfl_dpi_aware
 			context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 			#else
-			context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
+			var unscaledWindowWidth = Std.int(window.width);
+			var unscaledWindowHeight = Std.int(window.height);
+			context3D.configureBackBuffer(unscaledWindowWidth, unscaledWindowHeight, 0, true, true, true);
 			#end
 		}
 
@@ -3818,13 +3831,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 				if (updateChildren)
 				{
-					// #if dom
 					if (DisplayObject.__supportDOM)
 					{
 						__wasDirty = true;
 					}
-
-					// #end
 
 					// __dirty = false;
 				}

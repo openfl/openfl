@@ -1989,6 +1989,50 @@ class InteractiveObjectTest extends Test
 		spriteParent.parent.removeChild(spriteParent);
 	}
 
+	public function test_rollOverThenMouseOverEvents()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping rollOver/mouseOver event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		sprite.graphics.endFill();
+		sprite.x = 20.0;
+		sprite.y = 30.0;
+		Lib.current.addChild(sprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
+		var dispatchedMouseOver = false;
+		var dispatchedRollOver = false;
+		sprite.addEventListener(MouseEvent.ROLL_OVER, function(event:MouseEvent):Void
+		{
+			dispatchedRollOver = true;
+			Assert.isFalse(dispatchedMouseOver);
+		});
+		sprite.addEventListener(MouseEvent.MOUSE_OVER, function(event:MouseEvent):Void
+		{
+			dispatchedMouseOver = true;
+			Assert.isTrue(dispatchedRollOver);
+		});
+
+		stage.window.onMouseMove.dispatch(25.0, 35.0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatchedMouseOver);
+		Assert.isTrue(dispatchedRollOver);
+
+		sprite.parent.removeChild(sprite);
+	}
+
 	@Ignored
 	public function test_touchBeginEvent()
 	{
