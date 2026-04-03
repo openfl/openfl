@@ -1,4 +1,4 @@
-package openfl.net._internal;
+package openfl.media._internal;
 
 import cpp.Pointer;
 import cpp.Void as CppVoid;

@@ -516,4 +516,36 @@ class DisplayObjectContainerTest extends Test
 		openfl.Lib.current.removeChild(sprite1);
 		openfl.Lib.current.removeChild(sprite2);
 	}
+
+	public function test_getBoundsWithScale0Child()
+	{
+		var sprite = new Sprite();
+		var child = new Sprite();
+		child.graphics.beginFill(0xFF0000);
+		child.graphics.drawRect(0, 0, 150, 100);
+		sprite.addChild(child);
+
+		var bounds = sprite.getBounds(sprite);
+		Assert.equals(0, bounds.x);
+		Assert.equals(0, bounds.y);
+		Assert.equals(150, bounds.width);
+		Assert.equals(100, bounds.height);
+
+		child.scaleX = 0.0;
+
+		bounds = sprite.getBounds(sprite);
+		Assert.equals(0, bounds.x);
+		Assert.equals(0, bounds.y);
+		Assert.equals(0, bounds.width);
+		Assert.equals(100, bounds.height);
+
+		child.scaleX = 1.0;
+		child.scaleY = 0.0;
+
+		bounds = sprite.getBounds(sprite);
+		Assert.equals(0, bounds.x);
+		Assert.equals(0, bounds.y);
+		Assert.equals(150, bounds.width);
+		Assert.equals(0, bounds.height);
+	}
 }

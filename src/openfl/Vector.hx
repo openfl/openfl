@@ -29,7 +29,7 @@ import haxe.Constraints.Function;
 	retrieved. The second line constructs an instance of the same Vector type (that is,
 	a Vector whose elements are all String objects) and assigns it to `v`.
 
-	```as3
+	```haxe
 	var v:Vector<String>;
 	v = new Vector<String>();
 	```
@@ -523,8 +523,8 @@ abstract Vector<T>(IVector<T>)
 		* a function that takes two arguments of the base type (T) of the Vector and
 		returns a Number:
 
-			```as3
-			function compare(x:T, y:T):Number {}
+			```haxe
+			function compare(x:T, y:T):Int {}
 			```
 
 			The logic of the function is that, given two elements `x` and `y`, the function
@@ -2350,10 +2350,13 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 			unshift: { value: p.unshift },
 			get_length: { value: p.get_length },
 			set_length: { value: p.set_length },
+			fixed: { writable: true },
 		}
 		var _VectorData = function (length, fixed, array) {
 			if (array == null) array = [];
-			return Object.defineProperties (construct (array, length, fixed), _VectorDataDescriptor);
+			var result = Object.defineProperties (array, _VectorDataDescriptor);
+			construct (result, length, fixed);
+			return result;
 		}
 		_VectorDataDescriptor.constructor.value = _VectorData;
 		_VectorData.__name__ = ref.__name__;

@@ -93,11 +93,11 @@ import sys.FileSystem;
 	space and to user privacy controls. Perform these checks when you call
 	`getLocal()` and `flush()`:
 
-	* `SharedObject.getLocal()`  -  Flash Player throws an
+	* `SharedObject.getLocal()` — Flash Player throws an
 	exception when a call to this method fails, such as when the user has
 	disabled third-party shared objects and the domain of your SWF file does
 	not match the domain in the browser address bar.
-	* `SharedObject.flush()`  -  Flash Player throws an
+	* `SharedObject.flush()` — Flash Player throws an
 	exception when a call to this method fails. It returns
 	`SharedObjectFlushStatus.FLUSHED` when it succeeds. It returns
 	`SharedObjectFlushStatus.PENDING` when additional storage space
@@ -206,7 +206,7 @@ class SharedObject extends EventDispatcher
 	/**
 		The collection of attributes assigned to the `data` property of
 		the object; these attributes can be shared and stored. Each attribute can
-		be an object of any ActionScript or JavaScript type  -  Array, Number,
+		be an object of any ActionScript or JavaScript type — Array, Number,
 		Boolean, ByteArray, XML, and so on. For example, the following lines
 		assign values to various aspects of a shared object:
 
@@ -398,7 +398,7 @@ class SharedObject extends EventDispatcher
 	/**
 		Immediately writes a locally persistent shared object to a local file. If
 		you don't use this method, Flash Player writes the shared object to a file
-		when the shared object session ends  -  that is, when the SWF file is
+		when the shared object session ends — that is, when the SWF file is
 		closed, when the shared object is garbage-collected because it no longer
 		has any references to it, or when you call
 		`SharedObject.clear()` or `SharedObject.close()`.

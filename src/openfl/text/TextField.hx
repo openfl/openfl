@@ -36,14 +36,7 @@ import js.html.DivElement;
 
 /**
 	The TextField class is used to create display objects for text display and
-	input. <ph outputclass="flexonly">You can use the TextField class to
-	perform low-level text rendering. However, in Flex, you typically use the
-	Label, Text, TextArea, and TextInput controls to process text. <ph
-	outputclass="flashonly">You can give a text field an instance name in the
-	Property inspector and use the methods and properties of the TextField
-	class to manipulate it with Haxe code. TextField instance names are
-	displayed in the Movie Explorer and in the Insert Target Path dialog box in
-	the Actions panel.
+	input.
 
 	To create a text field dynamically, use the `TextField()`
 	constructor.
@@ -459,8 +452,7 @@ class TextField extends InteractiveObject
 		enter only characters in the string into the text field. The string is
 		scanned from left to right. You can specify a range by using the hyphen
 		(-) character. Only user interaction is restricted; a script can put any
-		text into the text field. <ph outputclass="flashonly">This property does
-		not synchronize with the Embed font options in the Property inspector.
+		text into the text field.
 
 		If the string begins with a caret(^) character, all characters are
 		initially accepted and succeeding characters in the string are excluded
@@ -2844,11 +2836,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function get_htmlText():String
 	{
-		// #if (js && html5)
 		return __isHTML ? __htmlText : __text;
-		// #else
-		// return __text;
-		// #end
 	}
 
 	@:noCompletion private function set_htmlText(value:String):String
@@ -3555,7 +3543,15 @@ class TextField extends InteractiveObject
 	@:noCompletion private function window_onKeyDown(key:KeyCode, modifier:KeyModifier):Void
 	{
 		inline function isModifierPressed()
-			return #if mac modifier.metaKey #elseif js(modifier.metaKey || modifier.ctrlKey) #else (modifier.ctrlKey && !modifier.altKey) #end;
+		{
+			#if (mac || ios || tvos)
+			return modifier.metaKey;
+			#elseif js
+			return modifier.metaKey || modifier.ctrlKey;
+			#else
+			return modifier.ctrlKey && !modifier.altKey;
+			#end
+		}
 
 		switch (key)
 		{
@@ -3747,17 +3743,18 @@ class TextField extends InteractiveObject
 			#if !js
 			case V:
 				#if lime
-				if (#if mac modifier.metaKey #else modifier.ctrlKey && !modifier.altKey #end)
+				if (isModifierPressed())
 				{
-					if (Clipboard.text != null)
+					var clipboardText = Clipboard.text;
+					if (clipboardText != null)
 					{
-						var te = new TextEvent(TextEvent.TEXT_INPUT, true, true, Clipboard.text);
+						var te = new TextEvent(TextEvent.TEXT_INPUT, true, true, clipboardText);
 
 						dispatchEvent(te);
 
 						if (!te.isDefaultPrevented())
 						{
-							__replaceSelectedText(Clipboard.text, true);
+							__replaceSelectedText(clipboardText, true);
 
 							dispatchEvent(new Event(Event.CHANGE, true));
 						}

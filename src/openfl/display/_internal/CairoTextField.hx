@@ -123,7 +123,7 @@ class CairoTextField
 				needsUpscaling = true;
 			}
 
-			if (!renderable || needsUpscaling)
+			if (!renderable || needsUpscaling || width <= 0 || height <= 0)
 			{
 				graphics.__cairo = null;
 				graphics.__bitmap = null;
