@@ -147,16 +147,7 @@ class Loader extends DisplayObjectContainer
 
 	@:noCompletion private static function __init__()
 	{
-		var loaders = [new BitmapDataLoader(), new ScriptLoader(), new AssetManifestLoader()];
-
-		if (__registeredLoaders == null)
-		{
-			__registeredLoaders = loaders;
-		}
-		else
-		{
-			__registeredLoaders = loaders.concat(__registeredLoaders);
-		}
+		#if openfljs inline #end Loader.__registerDefaultLoaders();
 	}
 
 	/**
@@ -215,6 +206,20 @@ class Loader extends DisplayObjectContainer
 		contentLoaderInfo = LoaderInfo.create(this);
 		uncaughtErrorEvents = contentLoaderInfo.uncaughtErrorEvents;
 		__unloaded = true;
+	}
+
+	@:noCompletion private static function __registerDefaultLoaders():Void
+	{
+		var loaders = [new BitmapDataLoader(), new ScriptLoader(), new AssetManifestLoader()];
+
+		if (__registeredLoaders == null)
+		{
+			__registeredLoaders = loaders;
+		}
+		else
+		{
+			__registeredLoaders = loaders.concat(__registeredLoaders);
+		}
 	}
 
 	public override function addChild(child:DisplayObject):DisplayObject

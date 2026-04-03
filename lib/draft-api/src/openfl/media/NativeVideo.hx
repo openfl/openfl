@@ -1,5 +1,6 @@
 package openfl.media;
 
+import openfl.display.Bitmap;
 #if (cpp && windows)
 import lime.media.openal.AL;
 import lime.media.openal.ALSource;
@@ -15,7 +16,6 @@ import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import lime.utils.UInt8Array;
 import openfl.Lib;
-import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
@@ -39,8 +39,11 @@ import sys.thread.Mutex;
  *
  * @author Christopher Speciale
  */
+@:beta
+#if (cpp && windows)
 @:access(openfl.media._internal.NativeVideoBackend)
-final class NativeVideo extends Bitmap {
+final class NativeVideo extends Bitmap
+{
 	/**
 	 * Indicates whether the native video/audio playback system is supported on the current platform.
 	 * Currently only `true` on Windows targets using C++.
@@ -67,6 +70,21 @@ final class NativeVideo extends Bitmap {
 	 * Default is `4096` bytes.
 	 */
 	public static var AUDIO_BUFFER_SIZE:Int = 4096;
+
+	/**
+	 * If audio leads video by at least this many milliseconds, force a seek-based resync.
+	 */
+	public static var AV_HARD_RESYNC_MS:Int = 1000;
+
+	/**
+	 * Minimum interval between hard resync seeks.
+	 */
+	public static var AV_RESYNC_COOLDOWN_MS:Int = 500;
+
+	/**
+	 * Maximum number of decode-only catch-up frames processed per update.
+	 */
+	public static var AV_CATCHUP_MAX_FRAMES:Int = 8;
 
 	/**
 	 * Indicates whether playback is currently active.
@@ -98,18 +116,24 @@ final class NativeVideo extends Bitmap {
 	 */
 	public var soundTransform(get, set):SoundTransform;
 
-	@:noCompletion private inline function get_isPlaying():Bool {
+	@:noCompletion private inline function get_isPlaying():Bool
+	{
 		return __isPlaying.load();
 	}
 
-	@:noCompletion private inline function get_currentTime():Float {
+	@:noCompletion private inline function get_currentTime():Float
+	{
 		return __currentTime;
 	}
 
-	@:noCompletion private inline function set_currentTime(value:Float):Float {
-		if (value < 0) {
+	@:noCompletion private inline function set_currentTime(value:Float):Float
+	{
+		if (value < 0)
+		{
 			value = 0;
-		} else if (value > duration) {
+		}
+		else if (value > duration)
+		{
 			value = duration;
 		}
 
@@ -118,28 +142,39 @@ final class NativeVideo extends Bitmap {
 		return value;
 	}
 
-	@:noCompletion private inline function get_duration():Float {
+	@:noCompletion private inline function get_duration():Float
+	{
 		return __videoDuration * 0.001;
 	}
 
-	@:noCompletion private inline function set_soundTransform(value:SoundTransform):SoundTransform {
-		#if (cpp && windows)
-		if (__alSource != null) {
+	@:noCompletion public inline function __getVideoWidth():Int
+	{
+		return __videoWidth;
+	}
+
+	@:noCompletion public inline function __getVideoHeight():Int
+	{
+		return __videoHeight;
+	}
+
+	@:noCompletion private inline function set_soundTransform(value:SoundTransform):SoundTransform
+	{
+		if (__alSource != null)
+		{
 			inline AL.sourcef(__alSource, AL.GAIN, value.volume);
 
 			var pan = value.pan;
 			inline AL.source3f(__alSource, AL.POSITION, pan, 0, 0);
 		}
-		#end
 
 		return __soundTransform = value;
 	}
 
-	@:noCompletion private inline function get_soundTransform():SoundTransform {
+	@:noCompletion private inline function get_soundTransform():SoundTransform
+	{
 		return __soundTransform;
 	}
 
-	#if (cpp && windows)
 	@:noCompletion private var __isHardware:Bool;
 	@:noCompletion private var __textureWidth:Int;
 	@:noCompletion private var __textureHeight:Int;
@@ -156,6 +191,8 @@ final class NativeVideo extends Bitmap {
 	@:noCompletion private var __uvs:VertexBuffer3D;
 	@:noCompletion private var __indices:IndexBuffer3D;
 	@:noCompletion private var __program:Program3D;
+	@:noCompletion private var __positionAttributeIndex:Int = 0;
+	@:noCompletion private var __texCoordAttributeIndex:Int = 1;
 	@:noCompletion private var __processFrames:Void->Void;
 	@:noCompletion private var __audioSampleRate:Int;
 	@:noCompletion private var __audioBitsPerSample:Int;
@@ -163,17 +200,15 @@ final class NativeVideo extends Bitmap {
 	@:noCompletion private var __audioBuffers:Vector<Bytes>;
 	@:noCompletion private var __alAudioBuffers:Array<ALBuffer>;
 	@:noCompletion private var __alSource:ALSource;
+	@:noCompletion private var __audioThreadActive:AtomicBool;
 	@:noCompletion private var __audioBufferReadIndex:Int;
 	@:noCompletion private var __secondsPerBuffer:Float;
 	@:noCompletion private var __audioCallbackQueue:Deque<Void->Void>;
 	#if (cpp || (hl && hl_ver >= "1.13"))
 	@:noCompletion private var __audioBufferReady:Vector<AtomicBool>;
 	@:noCompletion private var __isPlaying:AtomicBool;
-	#else
-	@:noCompletion private var __audioBufferReady:Vector<Bool>;
-	@:noCompletion private var __audioBufferReadyMutex:Mutex = new Mutex();
-	@:noCompletion private var __isPlaying:Bool;
 	#end
+	@:noCompletion private var __audioBufferReadyMutex:Mutex = new Mutex();
 	@:noCompletion private var __sampleBuffer:Bytes;
 	@:noCompletion private var __frameRate:Float;
 	@:noCompletion private var __frameDuration:Float;
@@ -186,7 +221,9 @@ final class NativeVideo extends Bitmap {
 	@:noCompletion private var __audioWritten:Int;
 	@:noCompletion private var __decoderThread:BackgroundWorker = new BackgroundWorker();
 	@:noCompletion private var __currentTime:Float = 0.0;
+	@:noCompletion private var __lastResyncAtMS:Int = -1000000;
 	@:noCompletion private var __soundTransform:SoundTransform;
+	@:noCompletion private var __backendHandle:Int = 0;
 
 	/**
 	 * Creates a new NativeVideo instance.
@@ -196,11 +233,15 @@ final class NativeVideo extends Bitmap {
 	 * @param smoothing Whether to apply smoothing to the output bitmap.
 	 * @throws An error if the video backend cannot be initialized.
 	 */
-	public function new(width:Int, height:Int, smoothing:Bool = false) {
-		if (!__videoInit()) {
+	public function new(width:Int, height:Int, smoothing:Bool = false)
+	{
+		__backendHandle = __videoCreate();
+		if (__backendHandle <= 0)
+		{
 			throw "Could not initialize Native Video Backend";
 		}
 		__isPlaying = new AtomicBool(false);
+		__audioThreadActive = new AtomicBool(false);
 
 		__isHardware = Lib.current.stage.window.context.type != "cairo";
 		__processFrames = __isHardware ? __processGLFrames : __processSoftwareFrames;
@@ -218,17 +259,40 @@ final class NativeVideo extends Bitmap {
 	 * @param path The file path to the video.
 	 * @throws An error if the video cannot be loaded or is unsupported.
 	 */
-	public function load(path:String):Void {
-		__videoWidth = __videoGetWidth(path);
-		__videoHeight = __videoGetHeight(path);
+	public function load(path:String):Void
+	{
+		__ensureBackendHandle();
+		__videoWidth = __videoGetWidth(__backendHandle, path);
+		__videoHeight = __videoGetHeight(__backendHandle, path);
 
-		if (__videoWidth == -1 || __videoHeight == -1) {
+		if (__videoWidth == -1 || __videoHeight == -1)
+		{
 			throw "Video not supported.";
 		}
 
-		if (__isHardware) {
-			if (!__videoGLLoad(path)) {
+		// Allow auto-size behavior when constructor receives non-positive values.
+		if (__textureWidth <= 0)
+		{
+			__textureWidth = __videoWidth;
+		}
+		if (__textureHeight <= 0)
+		{
+			__textureHeight = __videoHeight;
+		}
+
+		if (__isHardware)
+		{
+			if (!__videoGLLoad(__backendHandle, path))
+			{
 				throw "Video not supported.";
+			}
+
+			var decodedWidth = __videoGetFrameWidth(__backendHandle);
+			var decodedHeight = __videoGetFrameHeight(__backendHandle);
+			if (decodedWidth > 0 && decodedHeight > 0)
+			{
+				__videoWidth = decodedWidth;
+				__videoHeight = decodedHeight;
 			}
 
 			__context = Lib.current.stage.context3D;
@@ -237,9 +301,9 @@ final class NativeVideo extends Bitmap {
 			__textureUV = __context.createRectangleTexture(Std.int(__videoWidth * 0.5), Std.int(__videoHeight * 0.5), null, false);
 
 			@:privateAccess
-			__textureY.__textureID = NativeVideoBackend.__getTextureIDY();
+			__textureY.__textureID = __getTextureIDY(__backendHandle);
 			@:privateAccess
-			__textureUV.__textureID = NativeVideoBackend.__getTextureIDUV();
+			__textureUV.__textureID = __getTextureIDUV(__backendHandle);
 
 			@:privateAccess
 			__textureY.__internalFormat = __textureY.__format = GLUtil.RED(__context);
@@ -249,7 +313,11 @@ final class NativeVideo extends Bitmap {
 			__setupData();
 			__createProgram();
 			this.bitmapData = BitmapData.fromTexture(__videoTexture);
-		} else {
+			this.width = __textureWidth;
+			this.height = __textureHeight;
+		}
+		else
+		{
 			__frameRect = new Rectangle(0, 0, __videoWidth, __videoHeight);
 
 			var bmd:BitmapData = new BitmapData(__videoWidth, __videoHeight, false, 0x0);
@@ -258,7 +326,10 @@ final class NativeVideo extends Bitmap {
 			this.width = __textureWidth;
 			this.height = __textureHeight;
 
-			if (!__videoSoftwareLoad(path, __videoBuffer.getData(), __videoBuffer.length)) {
+			__ensureSoftwareVideoBuffer();
+
+			if (!__videoSoftwareLoad(__backendHandle, path, __videoBuffer.getData(), __videoBuffer.length))
+			{
 				throw "Video not supported.";
 			}
 		}
@@ -273,58 +344,42 @@ final class NativeVideo extends Bitmap {
 	/**
 	 * Unloads the current video and releases resources.
 	 */
-	public function unload(dispose:Bool = false):Void {
+	public function unload(dispose:Bool = false):Void
+	{
 		stop();
 
-		__videoShutdown();
+		if (__audioThread != null) __audioThread.cancel();
+		__waitForAudioThreadToExit();
 
-		#if (cpp && windows)
-		if (dispose && __isHardware && __context != null) {
-			if (__videoTexture != null)
-				__videoTexture.dispose();
-			if (__textureY != null)
-				__textureY.dispose();
-			if (__textureUV != null)
-				__textureUV.dispose();
-			if (__program != null)
-				__program.dispose();
-			if (__positions != null)
-				__positions.dispose();
-			if (__uvs != null)
-				__uvs.dispose();
-			if (__indices != null)
-				__indices.dispose();
+		if (__backendHandle > 0)
+		{
+			__videoShutdown(__backendHandle);
+			__backendHandle = 0;
+		}
 
-			if (this.bitmapData != null) {
+		if (dispose && __isHardware && __context != null)
+		{
+			if (__videoTexture != null) __videoTexture.dispose();
+			if (__textureY != null) __textureY.dispose();
+			if (__textureUV != null) __textureUV.dispose();
+			if (__program != null) __program.dispose();
+			if (__positions != null) __positions.dispose();
+			if (__uvs != null) __uvs.dispose();
+			if (__indices != null) __indices.dispose();
+
+			if (this.bitmapData != null)
+			{
 				this.bitmapData.dispose();
 				this.bitmapData = null;
 			}
 		}
-		#end
 
-		#if (cpp && windows)
-		if (__alSource != null) {
-			inline AL.sourceStop(__alSource);
-			for (buf in __alAudioBuffers) {
-				if (buf != null)
-					inline AL.deleteBuffer(buf);
-			}
-			inline AL.deleteSource(__alSource);
-			__alSource = null;
-		}
-		__alAudioBuffers = null;
+		__disposeALResources();
 		__audioBuffers = null;
-		__sampleBuffer = null;
-		#end
 
-		if (__audioThread != null)
-			__audioThread.cancel();
-		if (__videoThread != null)
-			__videoThread.cancel();
-		if (__timerThread != null)
-			__timerThread.cancel();
-		if (__decoderThread != null)
-			__decoderThread.cancel();
+		if (__videoThread != null) __videoThread.cancel();
+		if (__timerThread != null) __timerThread.cancel();
+		if (__decoderThread != null) __decoderThread.cancel();
 
 		__audioThread = null;
 		__videoThread = null;
@@ -340,7 +395,8 @@ final class NativeVideo extends Bitmap {
 	/**
 	 * Starts video playback.
 	 */
-	public function play():Void {
+	public function play():Void
+	{
 		__setPlayingState(true);
 		// __runAudioThread();
 		__runThreads();
@@ -349,15 +405,30 @@ final class NativeVideo extends Bitmap {
 	/**
 	 * Stops video playback.
 	 */
-	public function stop():Void {
+	public function stop():Void
+	{
 		__setPlayingState(false);
 	}
 
-	@:noCompletion private #if !debug inline #end function __setPlayingState(value:Bool):Void {
+	@:noCompletion private #if !debug inline #end function __setPlayingState(value:Bool):Void
+	{
 		__isPlaying.exchange(value);
 	}
 
-	@:noCompletion private function __setupAL():Void {
+	@:noCompletion private inline function __ensureBackendHandle():Void
+	{
+		if (__backendHandle <= 0)
+		{
+			__backendHandle = __videoCreate();
+			if (__backendHandle <= 0)
+			{
+				throw "Could not initialize Native Video Backend";
+			}
+		}
+	}
+
+	@:noCompletion private function __setupAL():Void
+	{
 		// var alObj = NativeVideoUtil.setupAL(AUDIO_BUFFER_COUNT);
 		// __alAudioBuffers = alObj.buffers;
 		// __alSource = alObj.source;
@@ -366,26 +437,30 @@ final class NativeVideo extends Bitmap {
 		// AL.sourceQueueBuffers(__alSource, AUDIO_BUFFER_COUNT, __alAudioBuffers);
 		// @:inline
 		// AL.sourcePlay(__alSource);
-	}	
+	}
 
-	@:noCompletion private function __setupThreads():Void {
+	@:noCompletion private function __setupThreads():Void
+	{
 		__audioThread = new BackgroundWorker();
 		__audioCallbackQueue = new Deque();
 
 		__decoderThread = new BackgroundWorker();
 	}
 
-	@:noCompletion private function __runThreads():Void {
+	@:noCompletion private function __runThreads():Void
+	{
 		__runAudioThread();
 	}
 
-	@:noCompletion private function __fillBuffer(index:Int):Bool {
+	@:noCompletion private function __fillBuffer(index:Int):Bool
+	{
 		var currentBuffer:ALBuffer = __alAudioBuffers[index];
 		var position:Int = 0;
 
 		// while(position < __sampleBuffer.length){
-		var bytesAvailable:Int = __videoGetAudioSamples(__sampleBuffer);
-		if (bytesAvailable <= 0) {
+		var bytesAvailable:Int = __videoGetAudioSamples(__backendHandle, __sampleBuffer);
+		if (bytesAvailable <= 0)
+		{
 			// if(bytesAvailable == -1){
 			return false;
 			// }
@@ -410,18 +485,22 @@ final class NativeVideo extends Bitmap {
 
 	@:noCompletion private var __audioChannelFormat:Int;
 
-	@:noCompletion private function __prefillAudioBuffers():Void {
-		for (i in 0...__alAudioBuffers.length) {
+	@:noCompletion private function __prefillAudioBuffers():Void
+	{
+		for (i in 0...__alAudioBuffers.length)
+		{
 			__fillBuffer(i);
 			@:inline AL.sourceQueueBuffer(__alSource, __alAudioBuffers[i]);
 		}
 	}
 
-	@:noCompletion private function __createAudioBuffers():Void {
+	@:noCompletion private function __createAudioBuffers():Void
+	{
 		__alAudioBuffers = inline AL.genBuffers(AUDIO_BUFFER_COUNT);
 	}
 
-	@:noCompletion private function __runAudioThread():Void {
+	@:noCompletion private function __runAudioThread():Void
+	{
 		__alSource = inline AL.createSource();
 		__alAudioBuffers = [];
 
@@ -437,7 +516,8 @@ final class NativeVideo extends Bitmap {
 		var framesPerBuffer:Int = Std.int(bufferSize / bytesPerFrame);
 		__sampleBuffer = Bytes.alloc(bufferSize);
 
-		__audioChannelFormat = switch (__audioChannels) {
+		__audioChannelFormat = switch (__audioChannels)
+		{
 			case 1: AL.FORMAT_MONO16;
 			case 2: AL.FORMAT_STEREO16;
 			default: throw "Unsupported audio channel count: " + __audioChannels;
@@ -448,93 +528,240 @@ final class NativeVideo extends Bitmap {
 		soundTransform = __soundTransform;
 		@:inline AL.sourcePlay(__alSource);
 
-		__audioThread.doWork.add((_) -> {
-			while (isPlaying) {
-				var state = inline AL.getSourcei(__alSource, AL.SOURCE_STATE);
-				var processed:Int = inline AL.getSourcei(__alSource, AL.BUFFERS_PROCESSED);
-				if (processed > 0) {
-					__currentTime += (processed * __secondsPerBuffer);
-				}
-				for (_ in 0...processed) {
-					var buf = inline AL.sourceUnqueueBuffer(__alSource);
-					var index:Int = __alAudioBuffers.indexOf(buf);
-					if (index >= 0) {
-						if (__fillBuffer(index)) {
-							inline AL.sourceQueueBuffer(__alSource, buf);
-						} else {
-							__setPlayingState(false);
-							break;
+		__audioThread.doWork.add((_) ->
+		{
+			__audioThreadActive.store(true);
+			try
+			{
+				while (isPlaying)
+				{
+					var state = inline AL.getSourcei(__alSource, AL.SOURCE_STATE);
+					var processed:Int = inline AL.getSourcei(__alSource, AL.BUFFERS_PROCESSED);
+					if (processed > 0)
+					{
+						__currentTime += (processed * __secondsPerBuffer);
+					}
+					for (_ in 0...processed)
+					{
+						var buf = inline AL.sourceUnqueueBuffer(__alSource);
+						var index:Int = __alAudioBuffers.indexOf(buf);
+						if (index >= 0)
+						{
+							if (__fillBuffer(index))
+							{
+								inline AL.sourceQueueBuffer(__alSource, buf);
+							}
+							else
+							{
+								__setPlayingState(false);
+								break;
+							}
 						}
 					}
-				}
 
-				if (state != AL.PLAYING && inline AL.getSourcei(__alSource, AL.BUFFERS_QUEUED) > 0) {
-					inline AL.sourcePlay(__alSource);
-				}
+					if (state != AL.PLAYING && inline AL.getSourcei(__alSource, AL.BUFFERS_QUEUED) > 0)
+					{
+						inline AL.sourcePlay(__alSource);
+					}
 
-				Sys.sleep(__secondsPerBuffer);
+					Sys.sleep(__secondsPerBuffer);
+				}
 			}
+			catch (e:Dynamic) {}
 
-			inline AL.sourceStop(__alSource);
-			for (buf in __alAudioBuffers)
-				@:inline AL.deleteBuffer(buf);
-			inline AL.deleteSource(__alSource);
+			__disposeALResources();
+			__audioThreadActive.store(false);
 		});
 
 		__audioThread.run();
 	}
 
-	@:noCompletion private function __clearAudioBuffers():Void {
-		while (inline AL.getSourcei(__alSource, AL.BUFFERS_QUEUED) > 0) {
-			inline AL.sourceUnqueueBuffer(__alSource);
+	@:noCompletion private function __waitForAudioThreadToExit(timeoutSeconds:Float = 1.0):Void
+	{
+		var timeoutAt:Float = Sys.time() + timeoutSeconds;
+		while (__audioThreadActive.load() && Sys.time() < timeoutAt)
+		{
+			Sys.sleep(0.005);
+		}
+	}
+
+	@:noCompletion private function __disposeALResources():Void
+	{
+		var source = __alSource;
+		var buffers = __alAudioBuffers;
+
+		__alSource = null;
+		__alAudioBuffers = null;
+		__sampleBuffer = null;
+
+		if (source != null)
+		{
+			inline AL.sourceStop(source);
+		}
+
+		if (buffers != null)
+		{
+			for (buf in buffers)
+			{
+				if (buf != null)
+				{
+					@:inline AL.deleteBuffer(buf);
+				}
+			}
+		}
+
+		if (source != null)
+		{
+			inline AL.deleteSource(source);
+		}
+	}
+
+	@:noCompletion private function __clearAudioBuffers():Void
+	{
+		if (__alSource == null || __alAudioBuffers == null || __alAudioBuffers.length == 0 || __sampleBuffer == null)
+		{
+			return;
+		}
+
+		var shouldResume:Bool = isPlaying && inline AL.getSourcei(__alSource, AL.SOURCE_STATE) == AL.PLAYING;
+		inline AL.sourceStop(__alSource);
+
+		// Only unqueue processed buffers; unqueueing "queued" buffers directly is invalid on some drivers.
+		var maxDrainPasses:Int = __alAudioBuffers.length + 1;
+		var pass:Int = 0;
+		while (pass < maxDrainPasses)
+		{
+			var processed:Int = inline AL.getSourcei(__alSource, AL.BUFFERS_PROCESSED);
+			if (processed <= 0)
+			{
+				break;
+			}
+
+			for (_ in 0...processed)
+			{
+				inline AL.sourceUnqueueBuffer(__alSource);
+			}
+
+			pass++;
+		}
+
+		var queued:Int = inline AL.getSourcei(__alSource, AL.BUFFERS_QUEUED);
+		if (queued > 0)
+		{
+			// Some drivers may not expose all queued buffers as processed after stop.
+			// Recreate source/buffers to guarantee a clean queue after seek.
+			for (buf in __alAudioBuffers)
+			{
+				if (buf != null)
+				{
+					@:inline AL.deleteBuffer(buf);
+				}
+			}
+			inline AL.deleteSource(__alSource);
+
+			__alSource = inline AL.createSource();
+			__createAudioBuffers();
+			soundTransform = __soundTransform;
 		}
 
 		__prefillAudioBuffers();
+
+		if (shouldResume && isPlaying)
+		{
+			@:inline AL.sourcePlay(__alSource);
+		}
 	}
 
-	@:noCompletion private function __loadMetaData():Void {
-		__audioSampleRate = __videoGetAudioSampleRate();
-		__frameRate = __videoGetFrameRate();
+	@:noCompletion private function __loadMetaData():Void
+	{
+		__audioSampleRate = __videoGetAudioSampleRate(__backendHandle);
+		__frameRate = __videoGetFrameRate(__backendHandle);
 		__frameDuration = 1.0 / __frameRate;
 		__frameDurationMS = Std.int(__frameDuration * 1000);
-		__audioChannels = __videoGetAudioChannelCount();
-		__videoDuration = __videoGetDuration();
-		__audioBitsPerSample = __videoGetAudioBitsPerSample();
+		__audioChannels = __videoGetAudioChannelCount(__backendHandle);
+		__videoDuration = __videoGetDuration(__backendHandle);
+		__audioBitsPerSample = __videoGetAudioBitsPerSample(__backendHandle);
 	}
 
-	@:noCompletion override private function __enterFrame(deltaTime:Int):Void {
+	@:noCompletion override private function __enterFrame(deltaTime:Int):Void
+	{
 		super.__enterFrame(deltaTime);
-	
+		__updatePlaybackFrame();
+	}
+
+	@:noCompletion public function __updatePlaybackFrame():Void
+	{
 		if (!isPlaying) return;
-	
-		var audioPos:Int = Std.int(currentTime * 1000);
-		var videoPos:Int = __videoGetVideoPosition();
+
+		// Use backend-reported audio position as the authoritative clock when available.
+		var audioPos:Int = __videoGetAudioPosition(__backendHandle);
+		if (audioPos >= 0)
+		{
+			__currentTime = audioPos * 0.001;
+		}
+		else
+		{
+			audioPos = Std.int(currentTime * 1000);
+		}
+
+		var videoPos:Int = __videoGetVideoPosition(__backendHandle);
 		var diff:Int = audioPos - videoPos;
-	
-		if (diff >= 200) {
-			__skipTo(audioPos);
+
+		// UI stalls (such as native window move/resize) can pause rendering while decode/audio threads continue.
+		// Avoid repeated short seeks: only hard-resync on large drift, and rate-limit those seeks.
+		if (diff >= AV_HARD_RESYNC_MS)
+		{
+			if (audioPos - __lastResyncAtMS >= AV_RESYNC_COOLDOWN_MS)
+			{
+				__lastResyncAtMS = audioPos;
+				__skipTo(audioPos);
+				// Render one frame immediately after seek so videoPos can catch up before next update.
+				__processFrames();
+			}
 			return;
 		}
-	
-		if (diff < -(__frameDurationMS * 2)) {
+
+		if (diff < -(__frameDurationMS * 2))
+		{
 			return;
 		}
-	
-		var framesBehind:Int = Std.int(diff / __frameDurationMS);
-	
-		if (framesBehind > 1) {
-			if (__isHardware) {
-				__videoGLUpdateFrame();
-			} else {
-				__videoSoftwareUpdateFrame();
+
+		if (__frameDurationMS > 0 && diff > __frameDurationMS)
+		{
+			var catchupFrames:Int = Std.int(diff / __frameDurationMS);
+			if (catchupFrames > AV_CATCHUP_MAX_FRAMES)
+			{
+				catchupFrames = AV_CATCHUP_MAX_FRAMES;
+			}
+
+			while (catchupFrames-- > 0)
+			{
+				if (__isHardware)
+				{
+					if (!__videoGLUpdateFrame(__backendHandle))
+					{
+						stop();
+						return;
+					}
+				}
+				else
+				{
+					if (!__videoSoftwareUpdateFrame(__backendHandle))
+					{
+						stop();
+						return;
+					}
+				}
 			}
 		}
-	
+
 		__processFrames();
 	}
 
-	@:noCompletion private function __processGLFrames():Void {
-		if (!__videoGLUpdateFrame()) {
+	@:noCompletion private function __processGLFrames():Void
+	{
+		if (!__videoGLUpdateFrame(__backendHandle))
+		{
 			stop();
 			return;
 		}
@@ -544,8 +771,9 @@ final class NativeVideo extends Bitmap {
 		__context.setTextureAt(0, __textureY);
 		__context.setTextureAt(1, __textureUV);
 
-		__context.setVertexBufferAt(0, __positions, 0, FLOAT_2); // aPosition
-		__context.setVertexBufferAt(1, __uvs, 0, FLOAT_2); // aTexCoord
+		// GLSL attribute locations are driver-assigned unless explicitly bound.
+		__context.setVertexBufferAt(__positionAttributeIndex, __positions, 0, FLOAT_2);
+		__context.setVertexBufferAt(__texCoordAttributeIndex, __uvs, 0, FLOAT_2);
 		__context.drawTriangles(__indices);
 		__context.setRenderToBackBuffer();
 
@@ -554,8 +782,10 @@ final class NativeVideo extends Bitmap {
 		this.bitmapData = this.bitmapData;
 	}
 
-	@:noCompletion private function __processSoftwareFrames():Void {
-		if (!__videoSoftwareUpdateFrame()) {
+	@:noCompletion private function __processSoftwareFrames():Void
+	{
+		if (!__videoSoftwareUpdateFrame(__backendHandle))
+		{
 			stop();
 			return;
 		}
@@ -564,28 +794,29 @@ final class NativeVideo extends Bitmap {
 		this.bitmapData.setPixels(__frameRect, __bitmapBuffer);
 	}
 
-	@:noCompletion private function __skipTo(time:Int):Void {
-		__videoFramesSeekTo(time);
-		__currentTime = __videoGetAudioPosition() * .001;
+	@:noCompletion private function __skipTo(time:Int):Void
+	{
+		__videoFramesSeekTo(__backendHandle, time);
+		__currentTime = __videoGetAudioPosition(__backendHandle) * .001;
 		__clearAudioBuffers();
 	}
 
-	@:noCompletion private function __unloadBuffers():Void {
+	@:noCompletion private function __unloadBuffers():Void
+	{
 		__bitmapBuffer = null;
 		__videoBuffer = null;
 		__audioBuffers = null;
 	}
 
-	@:noCompletion private function __setupBuffers():Void {
-		if (!__isHardware) {
-			var product:Int = __videoWidth * __videoHeight;
-
-			var __bitmapBufferLength:Int = product * 4;
-			__bitmapBuffer = Bytes.alloc(__bitmapBufferLength);
-
-			var videoBufferLength:Int = Std.int(product * 1.5);
-			__videoBuffer = Bytes.alloc(videoBufferLength);
-		} else {
+	@:noCompletion private function __setupBuffers():Void
+	{
+		if (!__isHardware)
+		{
+			__ensureSoftwareVideoBuffer();
+			__ensureSoftwareBitmapBuffer();
+		}
+		else
+		{
 			// video gl buffers!
 		}
 
@@ -597,20 +828,45 @@ final class NativeVideo extends Bitmap {
 		__secondsPerBuffer = totalFrames / __audioSampleRate;
 	}
 
-	@:noCompletion private function __setupData():Void {
+	@:noCompletion private function __ensureSoftwareVideoBuffer():Void
+	{
+		var videoBufferLength:Int = Std.int(__videoWidth * __videoHeight * 1.5);
+
+		if (__videoBuffer == null || __videoBuffer.length != videoBufferLength)
+		{
+			__videoBuffer = Bytes.alloc(videoBufferLength);
+		}
+	}
+
+	@:noCompletion private function __ensureSoftwareBitmapBuffer():Void
+	{
+		var bitmapBufferLength:Int = __videoWidth * __videoHeight * 4;
+
+		if (__bitmapBuffer == null || __bitmapBuffer.length != bitmapBufferLength)
+		{
+			__bitmapBuffer = Bytes.alloc(bitmapBufferLength);
+		}
+	}
+
+	@:noCompletion private function __setupData():Void
+	{
 		// Compute aspect ratios
 		var videoAspect = __videoWidth / __videoHeight;
 		var texAspect = __textureWidth / __textureHeight;
-	
+
 		var sx = 1.0;
 		var sy = 1.0;
-	
-		if (videoAspect > texAspect) {
+
+		if (videoAspect > texAspect)
+		{
 			sy = texAspect / videoAspect;
-		} else {
+		}
+		else
+		{
 			sx = videoAspect / texAspect;
 		}
-	
+
+		// Set up the position buffer (screen position scaling)
 		var posData = new Float32Array([
 			-1 * sx, -1 * sy,
 			 1 * sx, -1 * sy,
@@ -619,7 +875,9 @@ final class NativeVideo extends Bitmap {
 		]);
 		__positions = __context.createVertexBuffer(4, 2);
 		__positions.uploadFromTypedArray(posData, 0);
-	
+
+		// Y/UV source textures are allocated at native video dimensions,
+		// so UV coordinates should always address the full [0..1] range.
 		var uvData = new Float32Array([
 			0, 0,
 			1, 0,
@@ -628,43 +886,47 @@ final class NativeVideo extends Bitmap {
 		]);
 		__uvs = __context.createVertexBuffer(4, 2);
 		__uvs.uploadFromTypedArray(uvData, 0);
-	
+
+		// Upload index buffer
 		__indices = __context.createIndexBuffer(6);
 		__indices.uploadFromTypedArray(new UInt16Array([0, 1, 2, 2, 1, 3]), 0);
 	}
-	
 
-	@:noCompletion private function __createProgram():Void {
+	@:noCompletion private function __createProgram():Void
+	{
 		var vertexShader:String = "attribute vec2 aPosition;
-		attribute vec2 aTexCoord;
-		varying vec2 vTexCoord;
+attribute vec2 aTexCoord;
 
-		void main() {
-		vTexCoord = aTexCoord;
-		gl_Position = vec4(aPosition, 0.0, 1.0);
-	}";
+varying vec2 vTexCoord;
 
+void main() {
+    vTexCoord = aTexCoord;
+    gl_Position = vec4(aPosition, 0.0, 1.0);
+}";
+
+		// Context3D GLSL sampler binding maps uniforms by trailing numeric suffix.
+		// Keep these names aligned with setTextureAt(0/1) calls in __processGLFrames.
 		var fragmentShader:String = "
-		uniform sampler2D u_tex0; 
-		uniform sampler2D u_tex1;  
+		uniform sampler2D u_tex0; // Swizzled Y texture (GL_RED mapped to RGB)
+		uniform sampler2D u_tex1; // UV texture (GL_RG)
 
 		varying vec2 vTexCoord;
 
 		void main() {
-			// vertical flip?
-			// vec2 uvCoord = vec2(vTexCoord.x, 1.0 - vTexCoord.y);
-			vec2 uvCoord = vTexCoord;
+			vec2 uvCoord = vTexCoord; // Use scaled UVs from vertex shader
 
-			float yRaw = texture2D(u_tex0, uvCoord).r;
-			vec2  uv   = texture2D(u_tex1, uvCoord).rg;
+			vec3 yColor = texture2D(u_tex0, uvCoord).rgb;
 
-			float y = clamp((yRaw * 255.0 - 16.0) / 219.0, 0.0, 1.0);
+			vec2 uv = texture2D(u_tex1, uvCoord).rg;
+
+			float y = clamp((yColor.r * 255.0 - 16.0) / 219.0, 0.0, 1.0);
+
 			float u = (uv.r * 255.0 - 128.0) / 224.0;
 			float v = (uv.g * 255.0 - 128.0) / 224.0;
 
-			float r = y + 1.5748   * v;
-			float g = y - 0.1873   * u - 0.4681   * v;
-			float b = y + 1.8556   * u;
+			float r = y + 1.5748 * v;
+			float g = y - 0.1873 * u - 0.4681 * v;
+			float b = y + 1.8556 * u;
 
 			gl_FragColor = vec4(r, g, b, 1.0);
 		}
@@ -672,90 +934,141 @@ final class NativeVideo extends Bitmap {
 
 		__program = __context.createProgram(GLSL);
 		__program.uploadSources(vertexShader, fragmentShader);
+		__positionAttributeIndex = __program.getAttributeIndex("aPosition");
+		__texCoordAttributeIndex = __program.getAttributeIndex("aTexCoord");
+
+		// Fallback to conventional slots if the shader compiler does not report a location.
+		if (__positionAttributeIndex < 0)
+		{
+			__positionAttributeIndex = 0;
+		}
+		if (__texCoordAttributeIndex < 0)
+		{
+			__texCoordAttributeIndex = 1;
+		}
 	}
 
-	@:noCompletion private static function __videoInit():Bool {
-		return NativeVideoBackend.__videoInit();
+	@:noCompletion private static function __videoCreate():Int
+	{
+		return NativeVideoBackend.__videoCreate();
 	}
 
-	@:noCompletion private static function __videoSoftwareLoad(path:String, buffer:BytesData, length:Int):Bool {
-		return NativeVideoBackend.__videoSoftwareLoad(path, Pointer.ofArray(buffer), length);
+	@:noCompletion private static function __videoSoftwareLoad(handle:Int, path:String, buffer:BytesData, length:Int):Bool
+	{
+		return NativeVideoBackend.__videoSoftwareLoad(handle, path, Pointer.ofArray(buffer), length);
 	}
 
-	@:noCompletion private static function __videoSoftwareUpdateFrame():Bool {
-		return NativeVideoBackend.__videoSoftwareUpdateFrame();
+	@:noCompletion private static function __videoSoftwareUpdateFrame(handle:Int):Bool
+	{
+		return NativeVideoBackend.__videoSoftwareUpdateFrame(handle);
 	}
 
-	@:noCompletion private static function __videoGLLoad(path:String):Bool {
-		return NativeVideoBackend.__videoGLLoad(path);
+	@:noCompletion private static function __videoGLLoad(handle:Int, path:String):Bool
+	{
+		return NativeVideoBackend.__videoGLLoad(handle, path);
 	}
 
-	@:noCompletion private static function __videoGLUpdateFrame():Bool {
-		return NativeVideoBackend.__videoGLUpdateFrame();
+	@:noCompletion private static function __videoGLUpdateFrame(handle:Int):Bool
+	{
+		return NativeVideoBackend.__videoGLUpdateFrame(handle);
 	}
 
-	@:noCompletion private static function __videoGetWidth(path:String):Int {
-		return NativeVideoBackend.__videoGetWidth(path);
+	@:noCompletion private static function __videoGetWidth(handle:Int, path:String):Int
+	{
+		return NativeVideoBackend.__videoGetWidth(handle, path);
 	}
 
-	@:noCompletion private static function __videoGetHeight(path:String):Int {
-		return NativeVideoBackend.__videoGetHeight(path);
+	@:noCompletion private static function __videoGetHeight(handle:Int, path:String):Int
+	{
+		return NativeVideoBackend.__videoGetHeight(handle, path);
 	}
 
-	@:noCompletion private static function __videoShutdown():Void {
-		NativeVideoBackend.__videoShutdown();
+	@:noCompletion private static function __videoShutdown(handle:Int):Void
+	{
+		NativeVideoBackend.__videoShutdown(handle);
 	}
 
-	@:noCompletion private static function __videoGetAudioSamples(buffer:Bytes):Int {
-		return NativeVideoBackend.__videoGetAudioSamples(Pointer.ofArray(buffer.getData()), buffer.length);
+	@:noCompletion private static function __videoGetAudioSamples(handle:Int, buffer:Bytes):Int
+	{
+		return NativeVideoBackend.__videoGetAudioSamples(handle, Pointer.ofArray(buffer.getData()), buffer.length);
 	}
 
-	@:noCompletion private static function __videoGetAudioSampleRate():Int {
-		return NativeVideoBackend.__videoGetAudioSampleRate();
+	@:noCompletion private static function __videoGetAudioSampleRate(handle:Int):Int
+	{
+		return NativeVideoBackend.__videoGetAudioSampleRate(handle);
 	}
 
-	@:noCompletion private static function __videoGetAudioBitsPerSample():Int {
-		return NativeVideoBackend.__videoGetAudioBitsPerSample();
+	@:noCompletion private static function __videoGetAudioBitsPerSample(handle:Int):Int
+	{
+		return NativeVideoBackend.__videoGetAudioBitsPerSample(handle);
 	}
 
-	@:noCompletion private static function __videoGetFrameRate():Float {
-		return NativeVideoBackend.__videoGetFrameRate();
+	@:noCompletion private static function __videoGetFrameRate(handle:Int):Float
+	{
+		return NativeVideoBackend.__videoGetFrameRate(handle);
 	}
 
-	@:noCompletion private static function __videoGetAudioChannelCount():Int {
-		return NativeVideoBackend.__videoGetAudioChannelCount();
+	@:noCompletion private static function __videoGetAudioChannelCount(handle:Int):Int
+	{
+		return NativeVideoBackend.__videoGetAudioChannelCount(handle);
 	}
 
-	@:noCompletion private static function __videoGetDuration():Int {
-		return NativeVideoBackend.__videoGetDuration();
+	@:noCompletion private static function __videoGetDuration(handle:Int):Int
+	{
+		return NativeVideoBackend.__videoGetDuration(handle);
 	}
 
-	@:noCompletion private static function __videoGetAudioPosition():Int {
-		return NativeVideoBackend.__videoGetAudioPosition();
+	@:noCompletion private static function __videoGetAudioPosition(handle:Int):Int
+	{
+		return NativeVideoBackend.__videoGetAudioPosition(handle);
 	}
 
-	@:noCompletion private static function __videoGetVideoPosition():Int {
-		return NativeVideoBackend.__videoGetVideoPosition();
+	@:noCompletion private static function __videoGetVideoPosition(handle:Int):Int
+	{
+		return NativeVideoBackend.__videoGetVideoPosition(handle);
 	}
 
-	@:noCompletion private static function __videoFramesSeekTo(time:Int):Void {
-		NativeVideoBackend.__videoFramesSeekTo(time);
+	@:noCompletion private static function __videoGetFrameWidth(handle:Int):Int
+	{
+		return NativeVideoBackend.__videoGetFrameWidth(handle);
 	}
 
-	@:noCompletion private static function nv12ToRGBA(nv12:Bytes, rgba:Bytes, width:Int, height:Int) {
+	@:noCompletion private static function __videoGetFrameHeight(handle:Int):Int
+	{
+		return NativeVideoBackend.__videoGetFrameHeight(handle);
+	}
+
+	@:noCompletion private static function __videoFramesSeekTo(handle:Int, time:Int):Void
+	{
+		NativeVideoBackend.__videoFramesSeekTo(handle, time);
+	}
+
+	@:noCompletion private static function __getTextureIDY(handle:Int):Int
+	{
+		return NativeVideoBackend.__getTextureIDY(handle);
+	}
+
+	@:noCompletion private static function __getTextureIDUV(handle:Int):Int
+	{
+		return NativeVideoBackend.__getTextureIDUV(handle);
+	}
+
+	@:noCompletion private static function nv12ToRGBA(nv12:Bytes, rgba:Bytes, width:Int, height:Int)
+	{
 		var frameSize = width * height;
 		var uvOffset = frameSize + width * 2; // skip first UV row
 		var maxUVRows = ((height - 4) >> 1); // only read UV rows for 270 Y lines
 
-		for (y in 0...height) {
+		for (y in 0...height)
+		{
 			var yRow = y * width;
 			var uvRowIndex = (y >> 1);
-			if (uvRowIndex >= maxUVRows)
-				continue; // prevent UV overflow
+			if (uvRowIndex >= maxUVRows) continue; // prevent UV overflow
 
 			var uvRow = uvOffset + uvRowIndex * width;
 
-			for (x in 0...width) {
+			for (x in 0...width)
+			{
 				var Y = nv12.get(yRow + x) & 0xFF;
 				var U = nv12.get(uvRow + (x & ~1)) & 0xFF;
 				var V = nv12.get(uvRow + (x & ~1) + 1) & 0xFF;
@@ -777,13 +1090,17 @@ final class NativeVideo extends Bitmap {
 		}
 	}
 
-	@:noCompletion private inline static function clamp(v:Int):Int {
+	@:noCompletion private inline static function clamp(v:Int):Int
+	{
 		return v < 0 ? 0 : (v > 255 ? 255 : v);
 	}
-	#else
-	public function new(Width:Int, height:Int, smoothing:Bool = false) {
+#else
+final class NativeVideo extends Bitmap
+{
+	public function new(Width:Int, height:Int, smoothing:Bool = false)
+	{
 		super();
 		Lib.notImplemented();
 	}
-	#end
+#end
 }

@@ -260,12 +260,7 @@ class DisplayObjectContainer extends InteractiveObject
 			child.__setRenderDirty();
 			__setRenderDirty();
 
-			// #if !openfl_disable_event_pooling
-			// var event = Event.__pool.get();
-			// event.type = Event.ADDED;
-			// #else
 			var event = new Event(Event.ADDED);
-			// #end
 			event.bubbles = true;
 
 			event.target = child;
@@ -746,7 +741,10 @@ class DisplayObjectContainer extends InteractiveObject
 
 		for (child in __children)
 		{
-			if (child.__scaleX == 0 || child.__scaleY == 0) continue;
+			// unlike visual bounds, we cannot skip children with zero scale on
+			// just 1 axis. A child with scaleY == 0 may still have width that
+			// we cannot ignore.
+			if (child.__scaleX == 0 && child.__scaleY == 0) continue;
 
 			DisplayObject.__calculateAbsoluteTransform(child.__transform, matrix, childWorldTransform);
 

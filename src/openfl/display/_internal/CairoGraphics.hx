@@ -80,7 +80,9 @@ class CairoGraphics
 			#if (openfl_legacy_scale9grid && !cairo)
 			var hasScale9Grid:Bool = false;
 			#else
-			var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+			// no scale9Grid for masks
+			// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+			var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 			#end
 
 			if (bitmapStrokeMatrix != null || (hasScale9Grid && strokeScale9Bounds != null && bitmapStroke != null))
@@ -182,7 +184,9 @@ class CairoGraphics
 				#if (openfl_legacy_scale9grid && !cairo)
 				var hasScale9Grid:Bool = false;
 				#else
-				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+				// no scale9Grid for masks
+				// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 				#end
 				if (hasScale9Grid)
 				{
@@ -225,7 +229,9 @@ class CairoGraphics
 				#if (openfl_legacy_scale9grid && !cairo)
 				var hasScale9Grid:Bool = false;
 				#else
-				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+				// no scale9Grid for masks
+				// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 				#end
 				if (hasScale9Grid)
 				{
@@ -740,7 +746,9 @@ class CairoGraphics
 		#if (openfl_legacy_scale9grid && !cairo)
 		var hasScale9Grid:Bool = false;
 		#else
-		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+		// no scale9Grid for masks
+		// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 		#end
 		if (!hasScale9Grid)
 		{
@@ -1837,7 +1845,9 @@ class CairoGraphics
 		#if (openfl_legacy_scale9grid && !cairo)
 		var hasScale9Grid:Bool = false;
 		#else
-		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+		// no scale9Grid for masks
+		// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 		#end
 		if (hasScale9Grid)
 		{
@@ -1886,7 +1896,20 @@ class CairoGraphics
 
 			if (graphics.__cairo == null || graphics.__bitmap == null)
 			{
-				var bitmap = needsUpscaling ? new BitmapData(Std.int(width * 1.25), Std.int(height * 1.25), true, 0) : new BitmapData(width, height, true, 0);
+				var bitmapWidth = needsUpscaling ? Std.int(width * 1.25) : width;
+				var bitmapHeight = needsUpscaling ? Std.int(height * 1.25) : height;
+
+				if (Graphics.maxTextureWidth != null && bitmapWidth > Graphics.maxTextureWidth)
+				{
+					bitmapWidth = Graphics.maxTextureWidth;
+				}
+
+				if (Graphics.maxTextureHeight != null && bitmapHeight > Graphics.maxTextureHeight)
+				{
+					bitmapHeight = Graphics.maxTextureHeight;
+				}
+
+				var bitmap = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 				var surface = bitmap.getSurface();
 				graphics.__cairo = new Cairo(surface);
 				graphics.__bitmap = bitmap;

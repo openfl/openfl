@@ -4,7 +4,7 @@ package openfl.display;
 import lime.system.DisplayMode;
 
 /**
-	The ScreenMode object provides information about the width, height and refresh rate of a Screen. 
+	The ScreenMode object provides information about the width, height and refresh rate of a Screen.
 **/
 class ScreenMode
 {
@@ -47,6 +47,6 @@ class ScreenMode
 }
 #else
 #if air
-typedef Screen = flash.display.ScreenMode;
+typedef ScreenMode = flash.display.ScreenMode;
 #end
 #end

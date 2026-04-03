@@ -874,10 +874,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	/**
 		An object with properties pertaining to a display object's matrix, color
-		transform, and pixel bounds. The specific properties  -  matrix,
+		transform, and pixel bounds. The specific properties — matrix,
 		colorTransform, and three read-only properties
 		(`concatenatedMatrix`, `concatenatedColorTransform`,
-		and `pixelBounds`)  -  are described in the entry for the
+		and `pixelBounds`) — are described in the entry for the
 		Transform class.
 
 		Each of the transform object's properties is itself an object. This
@@ -2321,7 +2321,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			__scaleX = value;
 
-			if (__transform.b == 0)
+			if (__rotation == 0)
 			{
 				if (value != __transform.a) __setTransformDirty();
 				__transform.a = value;
@@ -2355,7 +2355,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			__scaleY = value;
 
-			if (__transform.c == 0)
+			if (__rotation == 0)
 			{
 				if (value != __transform.d) __setTransformDirty();
 				__transform.d = value;
