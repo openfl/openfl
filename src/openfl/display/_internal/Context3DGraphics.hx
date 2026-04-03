@@ -123,9 +123,13 @@ class Context3DGraphics
 
 			// TODO: Implement drawElements optimization when uvtData.length == 3 (x, y, t) if the t component is identical for each shared index.
 			// TODO: Support drawElements by moving the t division logic from the CPU buffer to the shader when uvtData.length == 3 (x, y, t).
+			#if openfl_enable_experimental_graphics_draw_elements
 			var useDrawElements = !hasUVTData
 				&& (shaderBuffer == null
 					|| (shaderBuffer != null && shaderBuffer.paramDataLength < length * shaderBuffer.paramIndicesDataLength));
+			#else
+			var useDrawElements = false;
+			#end
 			if (useDrawElements)
 			{
 				resizeIndexBuffer(graphics, false, triangleIndexBufferPosition + length);
@@ -777,10 +781,13 @@ class Context3DGraphics
 
 						// TODO: Implement drawElements optimization when uvtData.length == 3 (x, y, t) if the t component is identical for each shared index.
 						// TODO: Support drawElements by moving the t division logic from the CPU buffer to the shader when uvtData.length == 3 (x, y, t).
+						#if openfl_enable_experimental_graphics_draw_elements
 						var useDrawElements = !hasUVTData
 							&& (shaderBuffer == null
 								|| (shaderBuffer != null && shaderBuffer.paramDataLength < length * shaderBuffer.paramIndicesDataLength));
-
+						#else
+						var useDrawElements = false;
+						#end
 						var uMatrix = renderer.__getMatrix(graphics.__owner.__renderTransform, AUTO);
 						var shader:Shader;
 
