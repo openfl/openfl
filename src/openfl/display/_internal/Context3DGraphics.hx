@@ -121,7 +121,8 @@ class Context3DGraphics
 			var dataPerVertex = vertLength + 2;
 			var vertexOffset = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
 
-			// Use index buffer for indexed render
+			// TODO: Implement drawElements optimization when uvtData.length == 3 (x, y, t) if the t component is identical for each shared index.
+			// TODO: Support drawElements by moving the t division logic from the CPU buffer to the shader when uvtData.length == 3 (x, y, t).
 			var useDrawElements = !hasUVTData
 				&& (shaderBuffer == null
 					|| (shaderBuffer != null && shaderBuffer.paramDataLength < length * shaderBuffer.paramIndicesDataLength));
@@ -774,6 +775,8 @@ class Context3DGraphics
 						var vertexBuffer = hasUVTData ? graphics.__vertexBufferUVT : graphics.__vertexBuffer;
 						var bufferPosition = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
 
+						// TODO: Implement drawElements optimization when uvtData.length == 3 (x, y, t) if the t component is identical for each shared index.
+						// TODO: Support drawElements by moving the t division logic from the CPU buffer to the shader when uvtData.length == 3 (x, y, t).
 						var useDrawElements = !hasUVTData
 							&& (shaderBuffer == null
 								|| (shaderBuffer != null && shaderBuffer.paramDataLength < length * shaderBuffer.paramIndicesDataLength));
