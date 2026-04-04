@@ -211,6 +211,74 @@ class DisplayObjectRenderer extends EventDispatcher
 		return null;
 	}
 
+	@:noCompletion private function __clipFilterCacheBounds(displayObject:DisplayObject, renderer:DisplayObjectRenderer, bitmapMatrix:Matrix,
+		rect:Rectangle):Bool
+	{
+		#if lime
+		if (renderer.__type != OPENGL) return false;
+		if (displayObject.__filters == null || rect.width <= 0 || rect.height <= 0) return false;
+
+		// The filtered cache path assumes the cached bitmap uses the current
+		// render transform. Custom cache matrices need different coordinate
+		// handling, so leave those unchanged.
+		if (bitmapMatrix != displayObject.__renderTransform) return false;
+
+		var glRenderer:OpenGLRenderer = cast renderer;
+		var clipRect = Rectangle.__pool.get();
+
+		if (renderer.__stage != null && glRenderer.__defaultRenderTarget == null)
+		{
+			clipRect.setTo(0, 0, renderer.__stage.stageWidth, renderer.__stage.stageHeight);
+		}
+		else
+		{
+			var pixelRatio = renderer.__pixelRatio > 0 ? renderer.__pixelRatio : 1;
+			clipRect.setTo(glRenderer.__offsetX / pixelRatio, glRenderer.__offsetY / pixelRatio, glRenderer.__displayWidth / pixelRatio,
+				glRenderer.__displayHeight / pixelRatio);
+		}
+
+		var leftExtension = 0.0;
+		var topExtension = 0.0;
+		var rightExtension = 0.0;
+		var bottomExtension = 0.0;
+
+		for (filter in displayObject.__filters)
+		{
+			leftExtension += filter.__leftExtension;
+			topExtension += filter.__topExtension;
+			rightExtension += filter.__rightExtension;
+			bottomExtension += filter.__bottomExtension;
+		}
+
+		if (rect.width <= clipRect.width && rect.height <= clipRect.height)
+		{
+			Rectangle.__pool.release(clipRect);
+			return false;
+		}
+
+		clipRect.x -= leftExtension + displayObject.__renderTransform.tx;
+		clipRect.y -= topExtension + displayObject.__renderTransform.ty;
+		clipRect.width += leftExtension + rightExtension;
+		clipRect.height += topExtension + bottomExtension;
+
+		rect.__contract(clipRect.x, clipRect.y, clipRect.width, clipRect.height);
+		if (rect.width < 0) rect.width = 0;
+		if (rect.height < 0) rect.height = 0;
+
+		Rectangle.__pool.release(clipRect);
+		return true;
+		#end
+
+		return false;
+	}
+
+	@:noCompletion private inline function __getFilterCacheBounds(rect:Rectangle, pixelRatio:Float, cacheBounds:Rectangle):Void
+	{
+		cacheBounds.x = rect.x > 0 ? Math.ceil(rect.x) : Math.floor(rect.x);
+		cacheBounds.y = rect.y > 0 ? Math.ceil(rect.y) : Math.floor(rect.y);
+		cacheBounds.width = rect.width > 0 ? Math.ceil((rect.width + 1) * pixelRatio) : 0;
+		cacheBounds.height = rect.height > 0 ? Math.ceil((rect.height + 1) * pixelRatio) : 0;
+	}
 	@:noCompletion private function __updateCacheBitmap(displayObject:DisplayObject, force:Bool):Bool
 	{
 		if (displayObject == null) return false;
@@ -368,6 +436,7 @@ class DisplayObjectRenderer extends EventDispatcher
 			var bitmapWidth = 0, bitmapHeight = 0;
 			var filterWidth = 0, filterHeight = 0;
 			var offsetX = 0., offsetY = 0.;
+			var desiredCacheBounds:Rectangle = null;
 
 			#if (openfl_disable_hdpi || openfl_disable_hdpi_cacheasbitmap)
 			var pixelRatio = 1;
@@ -380,12 +449,56 @@ class DisplayObjectRenderer extends EventDispatcher
 				rect = Rectangle.__pool.get();
 
 				displayObject.__getFilterBounds(rect, displayObject.__cacheBitmapMatrix);
+				if (renderer.__type == OPENGL && hasFilters && bitmapMatrix == displayObject.__renderTransform)
+				{
+					var clippedRect = Rectangle.__pool.get();
+					clippedRect.copyFrom(rect);
 
-				filterWidth = rect.width > 0 ? Math.ceil((rect.width + 1) * pixelRatio) : 0;
-				filterHeight = rect.height > 0 ? Math.ceil((rect.height + 1) * pixelRatio) : 0;
+					if (__clipFilterCacheBounds(displayObject, renderer, bitmapMatrix, clippedRect))
+					{
+						desiredCacheBounds = Rectangle.__pool.get();
+						__getFilterCacheBounds(clippedRect, pixelRatio, desiredCacheBounds);
 
-				offsetX = rect.x > 0 ? Math.ceil(rect.x) : Math.floor(rect.x);
-				offsetY = rect.y > 0 ? Math.ceil(rect.y) : Math.floor(rect.y);
+						if (!needRender && displayObject.__cacheBitmapBounds != null && !displayObject.__cacheBitmapBounds.equals(desiredCacheBounds))
+						{
+							needRender = true;
+						}
+
+						if (needRender || displayObject.__cacheBitmapBounds == null)
+						{
+							rect.copyFrom(clippedRect);
+						}
+						else
+						{
+							rect.x = displayObject.__cacheBitmapBounds.x;
+							rect.y = displayObject.__cacheBitmapBounds.y;
+							rect.width = Math.max(0, (displayObject.__cacheBitmapBounds.width / pixelRatio) - 1);
+							rect.height = Math.max(0, (displayObject.__cacheBitmapBounds.height / pixelRatio) - 1);
+						}
+					}
+					else if (!needRender && displayObject.__cacheBitmapBounds != null)
+					{
+						needRender = true;
+					}
+
+					Rectangle.__pool.release(clippedRect);
+				}
+
+				if (desiredCacheBounds == null)
+				{
+					filterWidth = rect.width > 0 ? Math.ceil((rect.width + 1) * pixelRatio) : 0;
+					filterHeight = rect.height > 0 ? Math.ceil((rect.height + 1) * pixelRatio) : 0;
+
+					offsetX = rect.x > 0 ? Math.ceil(rect.x) : Math.floor(rect.x);
+					offsetY = rect.y > 0 ? Math.ceil(rect.y) : Math.floor(rect.y);
+				}
+				else
+				{
+					filterWidth = Std.int(desiredCacheBounds.width);
+					filterHeight = Std.int(desiredCacheBounds.height);
+					offsetX = desiredCacheBounds.x;
+					offsetY = desiredCacheBounds.y;
+				}
 
 				if (displayObject.__cacheBitmapData != null)
 				{
@@ -412,6 +525,15 @@ class DisplayObjectRenderer extends EventDispatcher
 			{
 				updateTransform = true;
 				displayObject.__cacheBitmapBackground = displayObject.opaqueBackground;
+				if (desiredCacheBounds != null)
+				{
+					if (displayObject.__cacheBitmapBounds == null) displayObject.__cacheBitmapBounds = new Rectangle();
+					displayObject.__cacheBitmapBounds.copyFrom(desiredCacheBounds);
+				}
+				else
+				{
+					displayObject.__cacheBitmapBounds = null;
+				}
 
 				if (filterWidth >= 0.5 && filterHeight >= 0.5)
 				{
@@ -447,6 +569,7 @@ class DisplayObjectRenderer extends EventDispatcher
 					ColorTransform.__pool.release(colorTransform);
 
 					displayObject.__cacheBitmap = null;
+					displayObject.__cacheBitmapBounds = null;
 					displayObject.__cacheBitmapData = null;
 					displayObject.__cacheBitmapData2 = null;
 					displayObject.__cacheBitmapData3 = null;
@@ -835,6 +958,7 @@ class DisplayObjectRenderer extends EventDispatcher
 			if (updateTransform || needRender)
 			{
 				Rectangle.__pool.release(rect);
+				if (desiredCacheBounds != null) Rectangle.__pool.release(desiredCacheBounds);
 			}
 
 			updated = updateTransform;
@@ -848,6 +972,7 @@ class DisplayObjectRenderer extends EventDispatcher
 			}
 
 			displayObject.__cacheBitmap = null;
+			displayObject.__cacheBitmapBounds = null;
 			displayObject.__cacheBitmapData = null;
 			displayObject.__cacheBitmapData2 = null;
 			displayObject.__cacheBitmapData3 = null;

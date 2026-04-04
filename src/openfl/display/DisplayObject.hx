@@ -968,6 +968,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __cacheAsBitmapMatrix:Matrix;
 	@:noCompletion private var __cacheBitmap:Bitmap;
 	@:noCompletion private var __cacheBitmapBackground:Null<Int>;
+	@:noCompletion private var __cacheBitmapBounds:Rectangle;
 	@:noCompletion private var __cacheBitmapColorTransform:ColorTransform;
 	@:noCompletion private var __cacheBitmapData:BitmapData;
 	@:noCompletion private var __cacheBitmapData2:BitmapData;
@@ -1489,6 +1490,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__cacheBitmapData3.dispose();
 			__cacheBitmapData3 = null;
 		}
+
+		__cacheBitmapBounds = null;
 	}
 
 	@:noCompletion private function __dispatch(event:Event):Bool
