@@ -1915,7 +1915,7 @@ import js.html.CanvasRenderingContext2D;
 		}
 	}
 
-	@:noCompletion private function __update(displayMatrix:Matrix, pixelRatio:Float):Void
+	@:noCompletion private function __update(displayMatrix:Matrix, pixelRatio:Float, allowRenderSizeReuse:Bool = false):Void
 	{
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0)
 		{
@@ -2022,7 +2022,7 @@ import js.html.CanvasRenderingContext2D;
 		var renderWidth = newWidth;
 		var renderHeight = newHeight;
 		var useExactRenderScale = (__owner.__drawableType == TEXT_FIELD);
-		var allowRenderSizeReuse = !useExactRenderScale;
+		allowRenderSizeReuse = allowRenderSizeReuse && !useExactRenderScale;
 
 		#if !openfl_disable_graphics_upscaling
 		if (allowRenderSizeReuse && __owner.__worldScale9Grid == null)
@@ -2069,8 +2069,8 @@ import js.html.CanvasRenderingContext2D;
 		}
 		else
 		{
-			__renderTransform.a = (useExactRenderScale ? width : renderWidth) / __bounds.width;
-			__renderTransform.d = (useExactRenderScale ? height : renderHeight) / __bounds.height;
+			__renderTransform.a = (allowRenderSizeReuse ? renderWidth : width) / __bounds.width;
+			__renderTransform.d = (allowRenderSizeReuse ? renderHeight : height) / __bounds.height;
 			inverseA = (1 / __renderTransform.a);
 			inverseD = (1 / __renderTransform.d);
 		}
