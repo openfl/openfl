@@ -830,6 +830,15 @@ class DisplayObjectRenderer extends EventDispatcher
 				}
 
 				displayObject.__isCacheBitmapRender = false;
+
+				if (displayObject.__drawableType == TEXT_FIELD && displayObject.__graphics != null)
+				{
+					// Keep TextField software cache state in sync with the freshly
+					// rerasterized cache bitmap, without overriding the broader
+					// object/transform invalidation flow.
+					displayObject.__graphics.__softwareDirty = false;
+				}
+
 			}
 
 			if (updateTransform || needRender)
