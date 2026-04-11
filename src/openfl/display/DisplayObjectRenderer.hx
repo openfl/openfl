@@ -445,6 +445,8 @@ class DisplayObjectRenderer extends EventDispatcher
 				else
 				{
 					ColorTransform.__pool.release(colorTransform);
+					if (rect != null) Rectangle.__pool.release(rect);
+					if (desiredCacheBounds != null) Rectangle.__pool.release(desiredCacheBounds);
 
 					displayObject.__cacheBitmap = null;
 					displayObject.__cacheBitmapData = null;
