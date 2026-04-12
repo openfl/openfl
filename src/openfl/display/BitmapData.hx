@@ -3180,13 +3180,14 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private function __drawGL(source:IBitmapDrawable, renderer:OpenGLRenderer):Void
 	{
 		var context = renderer.__context3D;
+		var requireDepthStencil = __requiresRTTDepthStencil(source);
 
 		var cacheRTT = context.__state.renderToTexture;
 		var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
 		var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
 		var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
 
-		context.setRenderToTexture(getTexture(context), true);
+		context.setRenderToTexture(getTexture(context), requireDepthStencil);
 
 		renderer.__render(source);
 
@@ -3198,6 +3199,39 @@ class BitmapData implements IBitmapDrawable
 		{
 			context.setRenderToBackBuffer();
 		}
+	}
+
+	@:noCompletion private static function __requiresRTTDepthStencil(source:IBitmapDrawable):Bool
+	{
+		return source != null && source.__drawableType != BITMAP_DATA && __displayObjectRequiresRTTDepthStencil(cast source);
+	}
+
+	@:noCompletion private static function __displayObjectRequiresRTTDepthStencil(displayObject:DisplayObject):Bool
+	{
+		if (displayObject == null) return false;
+		if (displayObject.__mask != null) return true;
+
+		if (displayObject.__scrollRect != null)
+		{
+			var renderTransform = displayObject.__renderTransform;
+			if (renderTransform != null && (renderTransform.b != 0 || renderTransform.c != 0))
+			{
+				return true;
+			}
+		}
+
+		var children = displayObject.__children;
+		if (children == null) return false;
+
+		for (child in children)
+		{
+			if (child != null && __displayObjectRequiresRTTDepthStencil(child))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@:noCompletion private function __fillRect(rect:Rectangle, color:Int, allowFramebuffer:Bool):Void
