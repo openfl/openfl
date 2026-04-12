@@ -443,7 +443,7 @@ class DisplayObjectRenderer extends EventDispatcher
 						&& __hasMaskedDescendant(displayObject)
 						&& __isOnMouseOverPath(displayObject))
 					{
-						displayObject.__cacheBitmapData.__texture.__disposeFramebuffer();
+						displayObject.__cacheBitmapData.__texture.__disposeDepthStencil();
 					}
 
 					if (needsFill)

@@ -182,7 +182,7 @@ class TextureBase extends EventDispatcher
 		}
 	}
 
-	@:noCompletion private function __disposeFramebuffer():Void
+	@:noCompletion private function __disposeDepthStencil():Void
 	{
 		var gl = __context.gl;
 		var depthRenderbuffer = __glDepthRenderbuffer;
@@ -196,12 +196,6 @@ class TextureBase extends EventDispatcher
 			}
 
 			__context.__contextState.__currentGLFramebuffer = null;
-		}
-
-		if (__glFramebuffer != null)
-		{
-			gl.deleteFramebuffer(__glFramebuffer);
-			__glFramebuffer = null;
 		}
 
 		if (depthRenderbuffer != null)
