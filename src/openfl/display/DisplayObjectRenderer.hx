@@ -33,6 +33,7 @@ import lime.graphics.RenderContextType;
 @:access(openfl.display.Stage)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.events.RenderEvent)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
@@ -442,8 +443,7 @@ class DisplayObjectRenderer extends EventDispatcher
 						&& __hasMaskedDescendant(displayObject)
 						&& __isOnMouseOverPath(displayObject))
 					{
-						displayObject.__cacheBitmapData.__texture.dispose();
-						displayObject.__cacheBitmapData.__texture = null;
+						displayObject.__cacheBitmapData.__texture.__disposeFramebuffer();
 					}
 
 					if (needsFill)
