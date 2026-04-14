@@ -575,7 +575,40 @@ class Context3DGraphics
 						return false;
 					}
 
+				case DRAW_CIRCLE:
+					if (hasColorFill || hasBitmapFill || hasShaderFill)
+					{
+						data.skip(type);
+					}
+					else
+					{
+						data.destroy();
+						return false;
+					}
+
+				case DRAW_ELLIPSE:
+					if (hasColorFill || hasBitmapFill || hasShaderFill)
+					{
+						data.skip(type);
+					}
+					else
+					{
+						data.destroy();
+						return false;
+					}
+
 				case DRAW_RECT:
+					if (hasColorFill || hasBitmapFill || hasShaderFill)
+					{
+						data.skip(type);
+					}
+					else
+					{
+						data.destroy();
+						return false;
+					}
+
+				case DRAW_ROUND_RECT:
 					if (hasColorFill || hasBitmapFill || hasShaderFill)
 					{
 						data.skip(type);
