@@ -564,6 +564,18 @@ class Context3DGraphics
 					hasShaderFill = true;
 					data.skip(type);
 
+				case LINE_STYLE:
+					var c = data.readLineStyle();
+					if (c.thickness == null)
+					{
+						data.skip(type);
+					}
+					else
+					{
+						data.destroy();
+						return false;
+					}
+
 				case DRAW_QUADS:
 					if (hasColorFill || hasBitmapFill || hasShaderFill)
 					{
