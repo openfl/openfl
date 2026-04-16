@@ -600,15 +600,27 @@ class Context3DGraphics
 		return true;
 		#end
 
+		if (!graphics.__hardwareDirty && graphics.__hardwareCompatibilityKnown)
+		{
+			return graphics.__hardwareCompatible;
+		}
+
+		inline function cacheCompatibility(result:Bool):Bool
+		{
+			graphics.__hardwareCompatible = result;
+			graphics.__hardwareCompatibilityKnown = true;
+			return result;
+		}
+
 		if (graphics.__owner.__worldScale9Grid != null)
 		{
-			return false;
+			return cacheCompatibility(false);
 		}
 
 		#if !openfl_disable_graphics_tessellator
 		if (GraphicsTessellator.prepare(graphics))
 		{
-			return true;
+			return cacheCompatibility(true);
 		}
 		#end
 
@@ -639,14 +651,14 @@ class Context3DGraphics
 				if (linePathMoveCount != 1)
 				{
 					data.destroy();
-					return false;
+					return cacheCompatibility(false);
 				}
 
 				var reducedCount = reduceBitmapLinePath(linePathVertices, reducedLinePathVertices);
 				if (reducedCount != 4)
 				{
 					data.destroy();
-					return false;
+					return cacheCompatibility(false);
 				}
 			}
 
@@ -667,7 +679,7 @@ class Context3DGraphics
 					if (c.matrix != null && (c.matrix.a * c.matrix.d - c.matrix.b * c.matrix.c) == 0)
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 					hasBitmapFill = true;
 					hasColorFill = false;
@@ -700,7 +712,7 @@ class Context3DGraphics
 					else
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 
 				case DRAW_QUADS:
@@ -715,7 +727,7 @@ class Context3DGraphics
 					else
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 
 				case DRAW_CIRCLE:
@@ -730,7 +742,7 @@ class Context3DGraphics
 					else
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 
 				case DRAW_ELLIPSE:
@@ -745,7 +757,7 @@ class Context3DGraphics
 					else
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 
 				case DRAW_RECT:
@@ -760,7 +772,7 @@ class Context3DGraphics
 					else
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 
 				case DRAW_ROUND_RECT:
@@ -775,7 +787,7 @@ class Context3DGraphics
 					else
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 
 				case DRAW_TRIANGLES:
@@ -790,7 +802,7 @@ class Context3DGraphics
 					else
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 
 				case MOVE_TO:
@@ -799,7 +811,7 @@ class Context3DGraphics
 						if (linePathMoveCount > 0 || linePathSegmentCount > 0)
 						{
 							data.destroy();
-							return false;
+							return cacheCompatibility(false);
 						}
 
 						linePathMoveCount = 1;
@@ -823,7 +835,7 @@ class Context3DGraphics
 					else
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 
 				case END_FILL:
@@ -842,12 +854,12 @@ class Context3DGraphics
 
 				default:
 					data.destroy();
-					return false;
+					return cacheCompatibility(false);
 			}
 		}
 
 		data.destroy();
-		return true;
+		return cacheCompatibility(true);
 	}
 
 
