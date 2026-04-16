@@ -291,6 +291,7 @@ class SharedObject extends EventDispatcher
 
 	@:noCompletion private var __localPath:String;
 	@:noCompletion private var __name:String;
+	@:noCompletion private var __delimiter:String;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -332,7 +333,7 @@ class SharedObject extends EventDispatcher
 
 			if (storage != null)
 			{
-				storage.removeItem(__localPath + ":" + __name);
+				storage.removeItem(__localPath + __delimiter + __name);
 			}
 			#else
 			var path = __getPath(__localPath, __name);
@@ -467,8 +468,8 @@ class SharedObject extends EventDispatcher
 
 			if (storage != null)
 			{
-				storage.removeItem(__localPath + ":" + __name);
-				storage.setItem(__localPath + ":" + __name, encodedData);
+				storage.removeItem(__localPath + __delimiter + __name);
+				storage.setItem(__localPath + __delimiter + __name, encodedData);
 			}
 			#else
 			var path = __getPath(__localPath, __name);
@@ -624,6 +625,11 @@ class SharedObject extends EventDispatcher
 
 						 The following diagram shows the use of the
 						 `secure` parameter:
+		@param forceDelimiter Sets the delimiter between `localPath` and `name`
+				to the specified String value. It replaces the delimiter used by default 
+				that is `:` for js+html5 target and `/` otherwise.
+				
+				This value bypasses the illegal values check in `name`
 		@return A reference to a shared object that is persistent locally and is
 				available only to the current client. If Flash Player can't create
 				or find the shared object (for example, if `localPath`
@@ -725,6 +731,7 @@ class SharedObject extends EventDispatcher
 			sharedObject.data = {};
 			sharedObject.__localPath = localPath;
 			sharedObject.__name = name;
+			sharedObject.__delimiter = delimiter;
 
 			if (encodedData != null && encodedData != "")
 			{
