@@ -675,9 +675,9 @@ class WebSocket
 	private function __close(code:Int, ?reason:String):Void
 	{
 		if (__socket == null) return;
-		
+
 		var stage = Lib.current.stage;
-		
+
 		if (__connected)
 		{
 			__socket.close();
@@ -952,19 +952,21 @@ inline function fromAcceptedSocket(socket:FlexSocket):WebSocket
 	return acceptedSocket;
 }
 
-class Random{
-	public static function getSecureRandomBytes(len:Int):Bytes 
+class Random
+{
+	public static function getSecureRandomBytes(len:Int):Bytes
 	{
-        var out:Bytes = Bytes.alloc(len);
-        var seed:Int = Std.int(haxe.Timer.stamp() * 1000000) ^ Std.random(0x7FFFFFFF);
+		var out:Bytes = Bytes.alloc(len);
+		var seed:Int = Std.int(haxe.Timer.stamp() * 1000000) ^ Std.random(0x7FFFFFFF);
 
-        for (i in 0...len) {
-            seed ^= seed << 13;
-            seed ^= seed >> 17;
-            seed ^= seed << 5;
-            out.set(i, (seed & 0xFF));
-        }
+		for (i in 0...len)
+		{
+			seed ^= seed << 13;
+			seed ^= seed >> 17;
+			seed ^= seed << 5;
+			out.set(i, (seed & 0xFF));
+		}
 
-        return out;
-    }
+		return out;
+	}
 }

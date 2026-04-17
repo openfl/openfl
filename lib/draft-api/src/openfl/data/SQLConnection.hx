@@ -1,4 +1,5 @@
 package openfl.data;
+
 import openfl.utils.Function;
 import openfl.utils.Object;
 import openfl.errors.ArgumentError;
@@ -25,14 +26,12 @@ import sys.thread.Mutex;
 @:access(openfl.data.SQLStatement)
 class SQLConnection extends EventDispatcher
 {
-	public static inline var isSupported:Bool =
-		#if windows
-		true;
-		#end
+	public static inline var isSupported:Bool = #if windows true; #end
 	private static inline var DEFAULT_CACHE_SIZE:UInt = 2000;
+
 	public var autoCompact(get, null):Bool;
 	public var cacheSize(get, set):UInt;
-	//public var columnNameStyle(get, set):String;
+	// public var columnNameStyle(get, set):String;
 	public var connected(get, null):Bool;
 	public var inTransaction(get, null):Bool;
 	public var lastInsertRowID(get, null):Float;
@@ -59,47 +58,44 @@ class SQLConnection extends EventDispatcher
 		super();
 	}
 
-	private function __onSQLWorkerComplete(message:Dynamic):Void
-	{
+	private function __onSQLWorkerComplete(message:Dynamic):Void {}
 
-	}
-
-	private function __onSQLWorkerError(message:Dynamic<>):Void
-	{
-
-	}
+	private function __onSQLWorkerError(message:Dynamic<>):Void {}
 
 	private function __onSQLWorkerProgress(message:Dynamic):Void
 	{
-		if (Std.isOfType(message, SQLEvent)){
+		if (Std.isOfType(message, SQLEvent))
+		{
 			var evt:SQLEvent = message;
 			__dispatchEvent(evt);
-		} else {
+		}
+		else
+		{
 			var obj:Object = message;
-			
+
 			var type:Int = obj.type;
 			var statement:SQLStatement = obj.statement;
 			var event:Event = obj.event;
 			var prefetch:Int = obj.prefetch;
 			statement.__prefetch = prefetch;
-			
-			if(type == 0){
-				
-				
+
+			if (type == 0)
+			{
 				var results:ResultSet = obj.results;
-				
-			
+
 				statement.__resultSet = results;
-				
+
 				statement.__queueResult();
-				
-			} else {
+			}
+			else
+			{
 				var executing:Bool = obj.executing;
-				if (executing){
+				if (executing)
+				{
 					statement.__queueResult();
 				}
 			}
-			
+
 			statement.__dispatchEvent(event);
 		}
 	}
@@ -114,7 +110,6 @@ class SQLConnection extends EventDispatcher
 		__sqlWorker.onProgress.add(__onSQLWorkerProgress);
 		__sqlWorker.doWork.add(__sqlWork);
 		__sqlWorker.run();
-
 	}
 
 	private function __sqlWork(m:Dynamic):Void
@@ -125,8 +120,9 @@ class SQLConnection extends EventDispatcher
 			job();
 		}
 	}
-	
-	private function __addToQue(job:Function):Void{
+
+	private function __addToQue(job:Function):Void
+	{
 		__sqlMutex.acquire();
 		__sqlQueue.add(job);
 		__sqlMutex.release;
@@ -140,7 +136,8 @@ class SQLConnection extends EventDispatcher
 			__sqlQueue.add(__analyzeAsync);
 			__sqlMutex.release;
 		}
-		else {
+		else
+		{
 			__connection.request("ANALYZE;");
 			__dispatchSQLEvent(SQLEvent.ANALYZE);
 		}
@@ -150,7 +147,8 @@ class SQLConnection extends EventDispatcher
 	{
 		var event:Event;
 
-		try{
+		try
+		{
 			__connection.request("ANALYZE;");
 			event = new SQLEvent(SQLEvent.ANALYZE);
 		}
@@ -170,11 +168,11 @@ class SQLConnection extends EventDispatcher
 			__sqlQueue.add(__beginAsync(options));
 			__sqlMutex.release;
 		}
-		else {
+		else
+		{
 			__connection.startTransaction();
 			__dispatchSQLEvent(SQLEvent.BEGIN);
 		}
-
 	}
 
 	private function __beginAsync(options:String):Function
@@ -204,7 +202,8 @@ class SQLConnection extends EventDispatcher
 			__sqlQueue.add(deanalyzeAsync);
 			__sqlMutex.release;
 		}
-		else {
+		else
+		{
 			__connection.close();
 			open(__reference, __openMode, __initAutoCompact, __initPageSize);
 		}
@@ -216,7 +215,8 @@ class SQLConnection extends EventDispatcher
 	{
 		var event:Event;
 
-		try{
+		try
+		{
 			__connection.close();
 			openAsync(__reference, __openMode, __initAutoCompact, __initPageSize);
 			event = new SQLEvent(SQLEvent.DEANALYZE);
@@ -250,18 +250,19 @@ class SQLConnection extends EventDispatcher
 			__sqlQueue.add(__closeAsync);
 			__sqlMutex.release;
 		}
-		else {
+		else
+		{
 			__connection.close();
 			__dispatchSQLEvent(SQLEvent.CLOSE);
 		}
-
 	}
 
 	private function __closeAsync():Void
 	{
 		var event:Event;
 
-		try{
+		try
+		{
 			__connection.close();
 			event = new SQLEvent(SQLEvent.CLOSE);
 		}
@@ -280,7 +281,8 @@ class SQLConnection extends EventDispatcher
 			__sqlQueue.add(__commitAsync);
 			__sqlMutex.release;
 		}
-		else {
+		else
+		{
 			__connection.commit();
 			__dispatchSQLEvent(SQLEvent.COMMIT);
 		}
@@ -290,7 +292,8 @@ class SQLConnection extends EventDispatcher
 	{
 		var event:Event;
 
-		try{
+		try
+		{
 			__connection.commit();
 			event = new SQLEvent(SQLEvent.COMMIT);
 		}
@@ -309,7 +312,8 @@ class SQLConnection extends EventDispatcher
 			__sqlQueue.add(__compactAsync);
 			__sqlMutex.release;
 		}
-		else {
+		else
+		{
 			__connection.request("VACUUM;");
 			__dispatchSQLEvent(SQLEvent.COMPACT);
 		}
@@ -319,7 +323,8 @@ class SQLConnection extends EventDispatcher
 	{
 		var event:Event;
 
-		try{
+		try
+		{
 			__connection.request("VACUUM;");
 			event = new SQLEvent(SQLEvent.COMPACT);
 		}
@@ -349,7 +354,8 @@ class SQLConnection extends EventDispatcher
 			reference = ":memory:";
 			__createConnection(reference);
 		}
-		else {
+		else
+		{
 			var file:File;
 			__openMode = openMode;
 
@@ -368,7 +374,8 @@ class SQLConnection extends EventDispatcher
 			{
 				file = reference;
 			}
-			else {
+			else
+			{
 				throw new ArgumentError("The reference argument is neither a String to a path or a File Object.");
 			}
 
@@ -405,7 +412,6 @@ class SQLConnection extends EventDispatcher
 
 	public function openAsync(reference:Object = null, openMode:SQLMode = CREATE, autoCompact:Bool = false, pageSize:Int = 1024):Void
 	{
-
 		__async = true;
 		__initSQLWorker();
 		__sqlMutex.acquire();
@@ -440,7 +446,8 @@ class SQLConnection extends EventDispatcher
 			__sqlQueue.add(__releaseSavePointAsync(name));
 			__sqlMutex.release;
 		}
-		else {
+		else
+		{
 			__connection.request('RELEASE $name;');
 			__dispatchSQLEvent(SQLEvent.RELEASE_SAVEPOINT);
 		}
@@ -473,7 +480,8 @@ class SQLConnection extends EventDispatcher
 			__sqlQueue.add(__rollbackAsync);
 			__sqlMutex.release;
 		}
-		else {
+		else
+		{
 			__connection.rollback();
 			__dispatchSQLEvent(SQLEvent.ROLLBACK);
 		}
@@ -509,7 +517,8 @@ class SQLConnection extends EventDispatcher
 			__sqlQueue.add(rollbackToSavepointAsync(name));
 			__sqlMutex.release;
 		}
-		else {
+		else
+		{
 			__connection.request('ROLLBACK TO $name;');
 			__dispatchSQLEvent(SQLEvent.ROLLBACK_TO_SAVEPOINT);
 		}
@@ -536,19 +545,23 @@ class SQLConnection extends EventDispatcher
 
 	public function setSavepoint(name:String = null):Void
 	{
-		if (__async){
+		if (__async)
+		{
 			__sqlMutex.acquire();
 			__sqlQueue.add(__setSavepointAsync(name));
 			__sqlMutex.release;
-		} else {
+		}
+		else
+		{
 			__connection.request('SAVEPOINT $name;');
 			__dispatchSQLEvent(SQLEvent.SET_SAVEPOINT);
 		}
-		
 	}
-	
-	private function __setSavepointAsync(name:String):Function{
-		return function(){
+
+	private function __setSavepointAsync(name:String):Function
+	{
+		return function()
+		{
 			var event:Event;
 
 			try
@@ -563,10 +576,11 @@ class SQLConnection extends EventDispatcher
 			__sqlWorker.sendProgress(event);
 		}
 	}
-	
+
 	private function __createConnection(path:String):Void
 	{
-		try{
+		try
+		{
 			__connection = Sqlite.open(path);
 		}
 		catch (e:Dynamic)
@@ -578,14 +592,17 @@ class SQLConnection extends EventDispatcher
 	private function get_autoCompact():Bool
 	{
 		var result:ResultSet;
-		if (__async){
+		if (__async)
+		{
 			__sqlMutex.acquire();
 			result = __connection.request("PRAGMA auto_vacuum;");
 			__sqlMutex.release();
-		} else {
+		}
+		else
+		{
 			result = __connection.request("PRAGMA auto_vacuum;");
 		}
-		
+
 		if (result.hasNext())
 		{
 			var autoVacuum:Int = result.next().auto_vacuum;
@@ -647,7 +664,8 @@ class SQLConnection extends EventDispatcher
 			return false;
 		}
 
-		try{
+		try
+		{
 			__connection.request("SELECT 1;");
 			return true;
 		}
@@ -678,8 +696,8 @@ class SQLConnection extends EventDispatcher
 	{
 		__dispatchEvent(new SQLEvent(type));
 	}
-	
-	private function __getTables(): Array<String>
+
+	private function __getTables():Array<String>
 	{
 		var result:ResultSet = __connection.request("SELECT name FROM sqlite_master WHERE type = 'table';");
 		var tables:Array<String> = [];

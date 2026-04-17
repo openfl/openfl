@@ -1129,7 +1129,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		softKeyboardRect = new Rectangle();
 		stageFocusRect = true;
 
-		#if mac
+		#if (mac || ios || tvos)
 		__macKeyboard = true;
 		#elseif (js && html5)
 		__macKeyboard = untyped #if haxe4 js.Syntax.code #else __js__ #end ("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
@@ -1381,7 +1381,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				#if openfl_dpi_aware
 				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 				#else
-				context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
+				var unscaledWindowWidth = Std.int(window.width);
+				var unscaledWindowHeight = Std.int(window.height);
+				context3D.configureBackBuffer(unscaledWindowWidth, unscaledWindowHeight, 0, true, true, true);
 				#end
 				context3D.present();
 				__renderer = new OpenGLRenderer(context3D);
@@ -3598,6 +3600,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var visibleY = 0.0;
 		switch (align)
 		{
+			case null:
+				// it is undocumented, but it is possible to align the stage in
+				// Flash to the center both horizontally and vertically by
+				// setting stage.align to an invalid value, such as an empty
+				// string ("")
+				visibleX = Math.round((__logicalWidth - visibleWidth) / 2);
+				visibleY = Math.round((__logicalHeight - visibleHeight) / 2);
 			case BOTTOM_RIGHT:
 				visibleX = Math.round(__logicalWidth - visibleWidth);
 				visibleY = Math.round(__logicalHeight - visibleHeight);
@@ -3705,7 +3714,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			#if openfl_dpi_aware
 			context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 			#else
-			context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
+			var unscaledWindowWidth = Std.int(window.width);
+			var unscaledWindowHeight = Std.int(window.height);
+			context3D.configureBackBuffer(unscaledWindowWidth, unscaledWindowHeight, 0, true, true, true);
 			#end
 		}
 

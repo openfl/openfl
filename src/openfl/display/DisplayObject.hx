@@ -2321,7 +2321,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			__scaleX = value;
 
-			if (__transform.b == 0)
+			if (__rotation == 0)
 			{
 				if (value != __transform.a) __setTransformDirty();
 				__transform.a = value;
@@ -2355,7 +2355,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			__scaleY = value;
 
-			if (__transform.c == 0)
+			if (__rotation == 0)
 			{
 				if (value != __transform.d) __setTransformDirty();
 				__transform.d = value;
