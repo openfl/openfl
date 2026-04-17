@@ -211,12 +211,12 @@ class DisplayObjectRenderer extends EventDispatcher
 		return null;
 	}
 
-	@:noCompletion private function __clipFilterCacheBounds(displayObject:DisplayObject, renderer:DisplayObjectRenderer, bitmapMatrix:Matrix,
+	@:noCompletion private function __clipCacheBounds(displayObject:DisplayObject, renderer:DisplayObjectRenderer, bitmapMatrix:Matrix,
 		rect:Rectangle):Bool
 	{
 		#if lime
 		if (renderer.__type != OPENGL) return false;
-		if (displayObject.__filters == null || rect.width <= 0 || rect.height <= 0) return false;
+		if (rect.width <= 0 || rect.height <= 0) return false;
 
 		// The filtered cache path assumes the cached bitmap uses the current
 		// render transform. Custom cache matrices need different coordinate
@@ -242,12 +242,15 @@ class DisplayObjectRenderer extends EventDispatcher
 		var rightExtension = 0.0;
 		var bottomExtension = 0.0;
 
-		for (filter in displayObject.__filters)
+		if (displayObject.__filters != null)
 		{
-			leftExtension += filter.__leftExtension;
-			topExtension += filter.__topExtension;
-			rightExtension += filter.__rightExtension;
-			bottomExtension += filter.__bottomExtension;
+			for (filter in displayObject.__filters)
+			{
+				leftExtension += filter.__leftExtension;
+				topExtension += filter.__topExtension;
+				rightExtension += filter.__rightExtension;
+				bottomExtension += filter.__bottomExtension;
+			}
 		}
 
 		if (rect.width <= clipRect.width && rect.height <= clipRect.height)
@@ -449,12 +452,12 @@ class DisplayObjectRenderer extends EventDispatcher
 				rect = Rectangle.__pool.get();
 
 				displayObject.__getFilterBounds(rect, displayObject.__cacheBitmapMatrix);
-				if (renderer.__type == OPENGL && hasFilters && bitmapMatrix == displayObject.__renderTransform)
+				if (renderer.__type == OPENGL && bitmapMatrix == displayObject.__renderTransform)
 				{
 					var clippedRect = Rectangle.__pool.get();
 					clippedRect.copyFrom(rect);
 
-					if (__clipFilterCacheBounds(displayObject, renderer, bitmapMatrix, clippedRect))
+					if (__clipCacheBounds(displayObject, renderer, bitmapMatrix, clippedRect))
 					{
 						desiredCacheBounds = Rectangle.__pool.get();
 						__getFilterCacheBounds(clippedRect, pixelRatio, desiredCacheBounds);
