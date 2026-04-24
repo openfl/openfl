@@ -564,65 +564,196 @@ abstract Dictionary<K, V>(IMap<K, V>)
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-abstract Dictionary<K, V>(Dynamic)
+abstract Dictionary<K, V>(DictionaryData<K, V>)
 {
 	public function new(weakKeys:Bool = false)
 	{
-		this = {};
+		this = new DictionaryData();
 	}
 
 	public inline function exists(key:K):Bool
 	{
-		return Reflect.hasField(this, cast key);
+		return this.exists(key);
 	}
 
 	@:arrayAccess public inline function get(key:K):V
 	{
-		return Reflect.field(this, cast key);
+		return this.get(key);
 	}
 
 	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
-		return new haxe.iterators.MapKeyValueIterator(this);
+		return this.keyValueIterator();
 	}
 	#end
 
 	public inline function remove(key:K):Bool
 	{
-		if (Reflect.hasField(this, cast key))
-		{
-			Reflect.deleteField(this, cast key);
-			return true;
-		}
-
-		return false;
+		return this.remove(key);
 	}
 
 	@:arrayAccess public inline function set(key:K, value:V):V
 	{
-		Reflect.setField(this, cast key, value);
+		this.set(key, value);
 		return value;
 	}
 
 	public inline function iterator():Iterator<K>
 	{
-		var fields = Reflect.fields(this);
-		if (fields != null) return cast fields.iterator();
-		return null;
+		return this.keys();
 	}
 
 	public inline function each():Iterator<V>
 	{
-		var values:Array<V> = [];
+		return this.iterator();
+	}
+}
 
-		for (field in Reflect.fields(this))
+@SuppressWarnings("checkstyle:FieldDocComment")
+@:noCompletion @:dox(hide) class DictionaryData<K, V> implements haxe.Constraints.IMap<K, V>
+{
+	#if haxe4
+	@:noCompletion private var jsMap:js.lib.Map<K, V>;
+	#else
+	@:noCompletion private var objectMap:ObjectMap<K, V>;
+	#end
+
+	public inline function new(weakKeys:Bool = false)
+	{
+		#if haxe4
+		jsMap = new js.lib.Map();
+		#else
+		objectMap = new ObjectMap();
+		#end
+	}
+
+	public inline function get(key:K):V
+	{
+		#if haxe4
+		return jsMap.get(key);
+		#else
+		return objectMap.get(key);
+		#end
+	}
+
+	public inline function set(key:K, value:V):Void
+	{
+		#if haxe4
+		jsMap.set(key, value);
+		#else
+		objectMap.set(key, value);
+		#end
+	}
+
+	public inline function exists(key:K):Bool
+	{
+		#if haxe4
+		return jsMap.has(key);
+		#else
+		return objectMap.exists(key);
+		#end
+	}
+
+	public inline function remove(key:K):Bool
+	{
+		#if haxe4
+		return jsMap.delete(key);
+		#else
+		return objectMap.remove(key);
+		#end
+	}
+
+	public inline function keys():Iterator<K>
+	{
+		#if haxe4
+		#if (haxe_ver >= 4.1)
+		return new js.lib.HaxeIterator(jsMap.keys());
+		#else
+		var a = [];
+		var jsIterator = jsMap.keys();
+		while (true)
 		{
-			var value:V = Reflect.field(this, field);
-			values.push(value);
+			var next = jsIterator.next();
+			if (next.done)
+			{
+				break;
+			}
+			a.push(next.value);
 		}
+		return a.iterator();
+		#end
+		#else
+		return objectMap.keys();
+		#end
+	}
 
-		return values.iterator();
+	public inline function iterator():Iterator<V>
+	{
+		#if haxe4
+		#if (haxe_ver >= 4.1)
+		return new js.lib.HaxeIterator(jsMap.values());
+		#else
+		var a = [];
+		var jsIterator = jsMap.values();
+		while (true)
+		{
+			var next = jsIterator.next();
+			if (next.done)
+			{
+				break;
+			}
+			a.push(next.value);
+		}
+		return a.iterator();
+		#end
+		#else
+		return objectMap.iterator(key);
+		#end
+	}
+
+	#if haxe4
+	public inline function keyValueIterator():KeyValueIterator<K, V>
+	{
+		return new haxe.iterators.MapKeyValueIterator(this);
+	}
+	#end
+
+	#if haxe4
+	public inline function clear():Void
+	{
+		#if haxe4
+		jsMap.clear();
+		#else
+		objectMap.clear();
+		#end
+	}
+	#end
+
+	#if haxe4
+	public inline function copy():DictionaryData<K, V>
+	{
+		var copied = new DictionaryData<K, V>();
+		for (key in keys())
+			copied.set(key, get(key));
+		return copied;
+	}
+	#end
+
+	public inline function toString():String
+	{
+		var s = new StringBuf();
+		s.add("[");
+		var it = keyValueIterator();
+		for (i in it)
+		{
+			s.add(Std.string(i.key));
+			s.add(" => ");
+			s.add(Std.string(i.value));
+			if (it.hasNext()) s.add(", ");
+		}
+		s.add("]");
+		return s.toString();
 	}
 }
 #end
