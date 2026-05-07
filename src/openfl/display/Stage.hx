@@ -1119,6 +1119,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 
 		this.stage = this;
+		__root = this;
 
 		align = StageAlign.TOP_LEFT;
 		allowsFullScreen = true;

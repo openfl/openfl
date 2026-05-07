@@ -480,6 +480,9 @@ class DisplayObjectTest extends Test
 			return;
 		}
 
+		Assert.equals(Lib.current, Lib.current.root);
+		Assert.equals(Lib.current.stage, Lib.current.stage.root);
+
 		var sprite = new Sprite();
 		Assert.isNull(sprite.root);
 
@@ -487,11 +490,29 @@ class DisplayObjectTest extends Test
 		sprite2.addChild(sprite);
 		// needs to be on stage!
 		Assert.isNull(sprite.root);
+		Assert.isNull(sprite2.root);
 
 		Lib.current.addChild(sprite2);
 		Assert.equals(Lib.current, sprite.root);
+		Assert.equals(Lib.current, sprite2.root);
 
 		sprite2.removeChild(sprite);
+		Assert.isNull(sprite.root);
+		Assert.equals(Lib.current, sprite2.root);
+
+		sprite2.addChild(sprite);
+		Lib.current.stage.addChild(sprite2);
+		Assert.equals(Lib.current.stage, sprite.root);
+		Assert.equals(Lib.current.stage, sprite2.root);
+		Lib.current.stage.removeChild(sprite2);
+		Assert.isNull(sprite.root);
+		Assert.isNull(sprite2.root);
+
+		Lib.current.stage.addChildAt(sprite, 0);
+		Assert.equals(Lib.current.stage, sprite.root);
+		Assert.equals(Lib.current, Lib.current.root);
+		Assert.equals(Lib.current.stage, Lib.current.stage.root);
+		Lib.current.stage.removeChild(sprite);
 		Assert.isNull(sprite.root);
 	}
 
