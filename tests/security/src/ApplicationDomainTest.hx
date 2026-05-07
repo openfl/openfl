@@ -6,9 +6,9 @@ import utest.Test;
 
 class ApplicationDomainTest extends Test
 {
-	private static final QNAME_INVALID = "this can't possibly exist!";
-	private static final QNAME_SPRITE_NS = #if flash "flash.display::Sprite" #else "openfl.display::Sprite" #end;
-	private static final QNAME_SPRITE_DOT = #if flash "flash.display.Sprite" #else "openfl.display.Sprite" #end;
+	private static inline var QNAME_INVALID = "this can't possibly exist!";
+	private static inline var QNAME_SPRITE_NS = #if flash "flash.display::Sprite" #else "openfl.display::Sprite" #end;
+	private static inline var QNAME_SPRITE_DOT = #if flash "flash.display.Sprite" #else "openfl.display.Sprite" #end;
 
 	public function test_new_()
 	{
