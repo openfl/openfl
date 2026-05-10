@@ -694,33 +694,29 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	@:keep public var rotation(get, set):Float;
 
-	#if false
 	/**
 		Indicates the x-axis rotation of the DisplayObject instance, in degrees, from its original orientation
 		relative to the 3D parent container. Values from 0 to 180 represent clockwise rotation; values from 0 to
 		-180 represent counterclockwise rotation. Values outside this range are added to or subtracted from 360 to
 		obtain a value within the range.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public var rotationX:Float;
-	#end
-	#if false
+	@:keep public var rotationX(get, set):Float;
+
 	/**
 		Indicates the y-axis rotation of the DisplayObject instance, in degrees, from its original orientation
 		relative to the 3D parent container. Values from 0 to 180 represent clockwise rotation; values from 0 to
 		-180 represent counterclockwise rotation. Values outside this range are added to or subtracted from 360 to
 		obtain a value within the range.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public var rotationY:Float;
-	#end
-	#if false
+	@:keep public var rotationY(get, set):Float;
+
 	/**
 		Indicates the z-axis rotation of the DisplayObject instance, in degrees, from its original orientation
 		relative to the 3D parent container. Values from 0 to 180 represent clockwise rotation; values from 0 to
 		-180 represent counterclockwise rotation. Values outside this range are added to or subtracted from 360 to
 		obtain a value within the range.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public var rotationZ:Float;
-	#end
+	@:keep public var rotationZ(get, set):Float;
 
 	/**
 		The current scaling grid that is in effect. If set to `null`,
@@ -811,7 +807,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	@:keep public var scaleY(get, set):Float;
 
-	#if false
 	/**
 		Indicates the depth scale (percentage) of an object as applied from the registration point of the object.
 		The default registration point is (0,0). 1.0 is 100% scale.
@@ -819,8 +814,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		Scaling the local coordinate system changes the `x`, `y` and `z` property values, which are defined in whole
 		pixels.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public var scaleZ:Float;
-	#end
+	@:keep public var scaleZ(get, set):Float;
 
 	/**
 		The scroll rectangle bounds of the display object. The display object is
@@ -998,10 +992,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __renderTransformChanged:Bool;
 	@:noCompletion private var __rotation:Float;
 	@:noCompletion private var __rotationCosine:Float;
+	@:noCompletion private var __rotationX:Float;
+	@:noCompletion private var __rotationY:Float;
 	@:noCompletion private var __rotationSine:Float;
 	@:noCompletion private var __scale9Grid:Rectangle;
 	@:noCompletion private var __scaleX:Float;
 	@:noCompletion private var __scaleY:Float;
+	@:noCompletion private var __scaleZ:Float;
 	@:noCompletion private var __scrollRect:Rectangle;
 	@:noCompletion private var __shader:Shader;
 	@:noCompletion private var __tempPoint:Point;
@@ -1138,8 +1135,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__rotation = 0;
 		__rotationSine = 0;
 		__rotationCosine = 1;
+		__rotationX = 0;
+		__rotationY = 0;
 		__scaleX = 1;
 		__scaleY = 1;
+		__scaleZ = 1;
 
 		__worldAlpha = 1;
 		__worldBlendMode = NORMAL;
@@ -2250,34 +2250,87 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		return __rotation;
 	}
 
+	@:noCompletion private function __normalizeRotation(value:Float):Float
+	{
+		value = value % 360.0;
+		if (value > 180.0)
+		{
+			value -= 360.0;
+		}
+		else if (value < -180.0)
+		{
+			value += 360.0;
+		}
+		return value;
+	}
+
+	@:noCompletion private function __updateTransformRotationScale():Void
+	{
+		var scaleX = __scaleX * Math.cos(__rotationY * (Math.PI / 180));
+		var scaleY = __scaleY * Math.cos(__rotationX * (Math.PI / 180));
+
+		__transform.a = __rotationCosine * scaleX;
+		__transform.b = __rotationSine * scaleX;
+		__transform.c = -__rotationSine * scaleY;
+		__transform.d = __rotationCosine * scaleY;
+		__setTransformDirty();
+	}
+
 	@:keep @:noCompletion private function set_rotation(value:Float):Float
 	{
+		value = __normalizeRotation(value);
 		if (value != __rotation)
 		{
-			value = value % 360.0;
-			if (value > 180.0)
-			{
-				value -= 360.0;
-			}
-			else if (value < -180.0)
-			{
-				value += 360.0;
-			}
-
 			__rotation = value;
 			var radians = __rotation * (Math.PI / 180);
 			__rotationSine = Math.sin(radians);
 			__rotationCosine = Math.cos(radians);
-
-			__transform.a = __rotationCosine * __scaleX;
-			__transform.b = __rotationSine * __scaleX;
-			__transform.c = -__rotationSine * __scaleY;
-			__transform.d = __rotationCosine * __scaleY;
-
-			__setTransformDirty();
+			__updateTransformRotationScale();
 		}
 
 		return value;
+	}
+
+	@:keep @:noCompletion private function get_rotationX():Float
+	{
+		return __rotationX;
+	}
+
+	@:keep @:noCompletion private function set_rotationX(value:Float):Float
+	{
+		value = __normalizeRotation(value);
+		if (value != __rotationX)
+		{
+			__rotationX = value;
+			__updateTransformRotationScale();
+		}
+		return value;
+	}
+
+	@:keep @:noCompletion private function get_rotationY():Float
+	{
+		return __rotationY;
+	}
+
+	@:keep @:noCompletion private function set_rotationY(value:Float):Float
+	{
+		value = __normalizeRotation(value);
+		if (value != __rotationY)
+		{
+			__rotationY = value;
+			__updateTransformRotationScale();
+		}
+		return value;
+	}
+
+	@:keep @:noCompletion private function get_rotationZ():Float
+	{
+		return __rotation;
+	}
+
+	@:keep @:noCompletion private function set_rotationZ(value:Float):Float
+	{
+		return set_rotation(value);
 	}
 
 	@:noCompletion private function get_scale9Grid():Rectangle
@@ -2320,25 +2373,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (value != __scaleX)
 		{
 			__scaleX = value;
-
-			if (__rotation == 0)
-			{
-				if (value != __transform.a) __setTransformDirty();
-				__transform.a = value;
-			}
-			else
-			{
-				var a = __rotationCosine * value;
-				var b = __rotationSine * value;
-
-				if (__transform.a != a || __transform.b != b)
-				{
-					__setTransformDirty();
-				}
-
-				__transform.a = a;
-				__transform.b = b;
-			}
+			__updateTransformRotationScale();
 		}
 
 		return value;
@@ -2354,28 +2389,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (value != __scaleY)
 		{
 			__scaleY = value;
-
-			if (__rotation == 0)
-			{
-				if (value != __transform.d) __setTransformDirty();
-				__transform.d = value;
-			}
-			else
-			{
-				var c = -__rotationSine * value;
-				var d = __rotationCosine * value;
-
-				if (__transform.d != d || __transform.c != c)
-				{
-					__setTransformDirty();
-				}
-
-				__transform.c = c;
-				__transform.d = d;
-			}
+			__updateTransformRotationScale();
 		}
 
 		return value;
+	}
+
+	@:keep @:noCompletion private function get_scaleZ():Float
+	{
+		return __scaleZ;
+	}
+
+	@:keep @:noCompletion private function set_scaleZ(value:Float):Float
+	{
+		return __scaleZ = value;
 	}
 
 	@:noCompletion private function get_scrollRect():Rectangle
