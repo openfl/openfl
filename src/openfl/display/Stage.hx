@@ -3252,7 +3252,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			var dropTarget:DisplayObject = null;
 
-			if (__mouseOverTarget == __dragObject)
+			if (__isDraggingMouseOverTarget())
 			{
 				var cacheMouseEnabled = __dragObject.mouseEnabled;
 				var cacheMouseChildren = __dragObject.mouseChildren;
@@ -3280,6 +3280,23 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		Point.__pool.release(targetPoint);
 		Point.__pool.release(localPoint);
+	}
+
+	@:noCompletion private function __isDraggingMouseOverTarget():Bool
+	{
+		var target = __mouseOverTarget;
+
+		while (target != null)
+		{
+			if (target == __dragObject)
+			{
+				return true;
+			}
+
+			target = target.parent;
+		}
+
+		return false;
 	}
 
 	#if lime
