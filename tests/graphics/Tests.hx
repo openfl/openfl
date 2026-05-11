@@ -6,6 +6,7 @@ class Tests
 	public static function main()
 	{
 		var runner = new Runner();
+		runner.addCase(new CairoTextBitmapScaleTest());
 		runner.addCase(new CapsStyleTest());
 		runner.addCase(new GradientTypeTest());
 		runner.addCase(new GraphicsBitmapFillTest());

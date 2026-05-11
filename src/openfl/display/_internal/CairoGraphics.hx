@@ -1849,6 +1849,22 @@ class CairoGraphics
 		// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
 		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 		#end
+		graphics.__update(renderer.__worldTransform, pixelRatio);
+
+		if (!graphics.__softwareDirty || graphics.__managed)
+		{
+			CairoGraphics.graphics = null;
+			return;
+		}
+
+		// __bitmapScaleX/Y must only be reset when we are actually re-rendering
+		// the Cairo commands. CairoTextField writes a non-1 bitmapScale (pixelRatio,
+		// e.g. 2 on Retina) when it owns the bitmap, and CairoShape uses that value
+		// to composite the text bitmap back into the framebuffer at 1:1. Resetting
+		// it to 1 on every render() call — including cache-hit early-returns —
+		// would leave the composite path with bitmapScale=1, displaying the
+		// 2x-pixel text bitmap without the matching 1/pixelRatio downscale, i.e.
+		// text appears 2x as large until the next full re-render.
 		if (hasScale9Grid)
 		{
 			graphics.__bitmapScaleX = graphics.__owner.scaleX;
@@ -1858,14 +1874,6 @@ class CairoGraphics
 		{
 			graphics.__bitmapScaleX = 1;
 			graphics.__bitmapScaleY = 1;
-		}
-
-		graphics.__update(renderer.__worldTransform, pixelRatio);
-
-		if (!graphics.__softwareDirty || graphics.__managed)
-		{
-			CairoGraphics.graphics = null;
-			return;
 		}
 
 		bounds = graphics.__bounds;
