@@ -87,9 +87,13 @@ class Context3DTextFieldPixelRatioTest extends Test
 	}
 }
 #else
+import utest.Assert;
 import utest.Test;
 class Context3DTextFieldPixelRatioTest extends Test
 {
-	public function test_skippedOnFlash() {}
+	public function test_skippedOnFlash()
+	{
+		Assert.isTrue(true);
+	}
 }
 #end
