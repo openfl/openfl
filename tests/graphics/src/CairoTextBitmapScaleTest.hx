@@ -80,9 +80,13 @@ class CairoTextBitmapScaleTest extends Test
 	}
 }
 #else
+import utest.Assert;
 import utest.Test;
 class CairoTextBitmapScaleTest extends Test
 {
-	public function test_skippedOnNonCairo() {}
+	public function test_skippedOnNonCairo()
+	{
+		Assert.isTrue(true);
+	}
 }
 #end
