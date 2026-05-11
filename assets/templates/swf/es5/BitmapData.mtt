@@ -1,0 +1,18 @@
+"use strict"
+var Assets = require ("openfl/utils/Assets").default;
+var BitmapData = require ("openfl/display/BitmapData").default;
+
+var ::NATIVE_CLASS_NAME:: = (function(width, height, transparent, background) {
+	width = width || 0;
+	height = height || 0;
+	transparent = transparent || false;
+	background = background || 0;
+	BitmapData.call (this, width, height, transparent, background);
+	Assets.initBinding("::NATIVE_CLASS_NAME::", this);
+})
+
+::NATIVE_CLASS_NAME::.prototype = Object.create(BitmapData.prototype);
+::NATIVE_CLASS_NAME::.prototype.constructor = ::NATIVE_CLASS_NAME::;
+
+module.exports.::NATIVE_CLASS_NAME:: = ::NATIVE_CLASS_NAME::;
+module.exports.default = ::NATIVE_CLASS_NAME::;
