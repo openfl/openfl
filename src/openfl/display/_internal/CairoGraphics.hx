@@ -36,6 +36,16 @@ import lime.math.Vector2;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CairoGraphics
 {
+	#if openfl_count_surface_allocs
+	/**
+	 * Diagnostic counter incremented every time `render()` allocates a new
+	 * BitmapData for the cached Cairo surface. Used by the visual repro in
+	 * `tests/cairo-surface-clip` to compare allocation churn between
+	 * strategies. No-op unless `-D openfl_count_surface_allocs` is set.
+	 */
+	public static var __surfaceAllocs:Int = 0;
+	#end
+
 	#if lime_cairo
 	private static var SIN45:Float = 0.70710678118654752440084436210485;
 	private static var TAN22:Float = 0.4142135623730950488016887242097;
@@ -1882,27 +1892,28 @@ class CairoGraphics
 		{
 			hitTesting = false;
 
+			// High-water-mark surface strategy: grow on demand, keep the peak size
+			// on shrink. Safe because `Context3DShape` composites only the painted
+			// sub-region `graphics.__width x graphics.__height` (see openfl/openfl#2866
+			// follow-up — `BitmapData.getVertexBuffer(..., paintedWidth, paintedHeight)`).
+			// Without the painted-region clamp the oversize bitmap's transparent
+			// padding ends up in world space; with it, padding is harmless and we
+			// avoid reallocations on every oscillating-bounds frame.
+			var bitmapWidth = width;
+			var bitmapHeight = height;
 			if (graphics.__cairo != null)
 			{
 				var surface:CairoImageSurface = cast graphics.__cairo.target;
-
-				// Surface must match width x height exactly. Context3DShape maps the
-				// full bitmap dimensions to world coords via __worldTransform — if the
-				// surface is oversized (from a previous high-scale render, or from the
-				// legacy 1.25x upscaling margin), Cairo fills only the width x height
-				// region and the empty padding visually clips content at the shape's
-				// right/bottom edges.
-				if (width != surface.width || height != surface.height)
+				if (width > surface.width || height > surface.height)
 				{
+					bitmapWidth = (surface.width > width) ? surface.width : width;
+					bitmapHeight = (surface.height > height) ? surface.height : height;
 					graphics.__cairo = null;
 				}
 			}
 
 			if (graphics.__cairo == null || graphics.__bitmap == null)
 			{
-				var bitmapWidth = width;
-				var bitmapHeight = height;
-
 				if (Graphics.maxTextureWidth != null && bitmapWidth > Graphics.maxTextureWidth)
 				{
 					bitmapWidth = Graphics.maxTextureWidth;
@@ -1917,6 +1928,9 @@ class CairoGraphics
 				var surface = bitmap.getSurface();
 				graphics.__cairo = new Cairo(surface);
 				graphics.__bitmap = bitmap;
+				#if openfl_count_surface_allocs
+				__surfaceAllocs++;
+				#end
 			}
 
 			cairo = graphics.__cairo;
