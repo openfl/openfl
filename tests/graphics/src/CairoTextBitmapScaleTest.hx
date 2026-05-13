@@ -86,7 +86,7 @@ class CairoTextBitmapScaleTest extends Test
 {
 	public function test_skippedOnNonCairo()
 	{
-		Assert.isTrue(true);
+		Assert.pass();
 	}
 }
 #end
