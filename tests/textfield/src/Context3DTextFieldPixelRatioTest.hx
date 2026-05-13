@@ -93,7 +93,7 @@ class Context3DTextFieldPixelRatioTest extends Test
 {
 	public function test_skippedOnFlash()
 	{
-		Assert.isTrue(true);
+		Assert.pass();
 	}
 }
 #end
