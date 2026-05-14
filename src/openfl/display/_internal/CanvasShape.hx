@@ -48,7 +48,19 @@ class CanvasShape
 					context.globalAlpha = alpha;
 
 					var renderTransform = Matrix.__pool.get();
-					renderTransform.scale(1 / graphics.__bitmapScaleX, 1 / graphics.__bitmapScaleY);
+					if (!graphics.__managed)
+					{
+						// scale(1/bitmapScale) is meaningful for scale9Grid graphics
+						// (where bitmapScale = owner.scaleX cancels the owner's scale)
+						// and a no-op for plain graphics (where bitmapScale = 1). For
+						// __managed graphics (i.e. those whose __canvas is owned by
+						// CanvasTextField at pixelRatio resolution), the source-to-
+						// destination scale is already encoded in drawImage's (width,
+						// height) destination args together with the renderer's
+						// pixelRatio-scaled __worldTransform; applying an additional
+						// 1/pixelRatio factor here would halve the rendered size.
+						renderTransform.scale(1 / graphics.__bitmapScaleX, 1 / graphics.__bitmapScaleY);
+					}
 					renderTransform.concat(transform);
 
 					renderer.setTransform(renderTransform, context);

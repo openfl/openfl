@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<app main="Main" path="bin"/>
+	<source path="src"/>
+	<haxelib name="openfl" path="../.."/>
+	<window width="480" height="360" background="#202028" allow-high-dpi="true" hardware="false"/>
+</project>

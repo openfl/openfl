@@ -96,12 +96,19 @@ class CanvasTextField
 		var pixelRatio = renderer.__pixelRatio;
 		#end
 
-		if (graphics.__bitmapScaleX != pixelRatio || graphics.__bitmapScaleY != pixelRatio)
+		// Detect a pixelRatio mismatch via the actual size of the glyph canvas
+		// rather than via graphics.__bitmapScaleX. On Canvas, `__bitmapScaleX`
+		// is the layout-scale divisor used by CanvasShape (and equals 1 for
+		// non-scale9-grid drawables), so it can't be reused to encode the
+		// glyph-bitmap's rasterization density.
+		if (graphics.__canvas != null)
 		{
-			// the TextField might have rendered in a context that requires a
-			// different pixel ratio than normal, such as when drawing to
-			// BitmapData.
-			graphics.__softwareDirty = true;
+			var expectedCanvasW = Std.int(graphics.__width * pixelRatio);
+			var expectedCanvasH = Std.int(graphics.__height * pixelRatio);
+			if (graphics.__canvas.width != expectedCanvasW || graphics.__canvas.height != expectedCanvasH)
+			{
+				graphics.__softwareDirty = true;
+			}
 		}
 
 		graphics.__update(renderer.__worldTransform, pixelRatio);
@@ -417,9 +424,20 @@ class CanvasTextField
 					graphics.__bitmap.image.version++;
 				}
 
-				graphics.__bitmapScaleX = pixelRatio;
-				graphics.__bitmapScaleY = pixelRatio;
+				// Don't write __bitmapScaleX/Y here. The Canvas composite path
+				// (CanvasShape.render) applies `scale(1 / __bitmapScale)` to the
+				// shape's renderTransform, so __bitmapScale acts as a
+				// layout-scale divisor and must stay at 1 for plain
+				// (non-scale9-grid) drawables. The glyph canvas's pixelRatio
+				// rasterization density is already encoded in canvas.width /
+				// graphics.__width (see the mismatch detection above).
 				graphics.__visible = true;
+				// Mark the graphics as externally managed so CanvasGraphics.render()
+				// will not try to redraw the empty __commands list or stomp on
+				// __bitmapScale — matches the CairoTextField/CairoGraphics
+				// __managed contract (see CairoTextField.hx and CairoGraphics
+				// early-return at !__softwareDirty || __managed).
+				graphics.__managed = true;
 				textField.__dirty = false;
 				graphics.__softwareDirty = false;
 				graphics.__dirty = false;

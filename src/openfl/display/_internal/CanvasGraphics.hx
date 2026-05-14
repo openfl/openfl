@@ -2001,21 +2001,31 @@ class CanvasGraphics
 		// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
 		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 		#end
-		if (hasScale9Grid)
-		{
-			graphics.__bitmapScaleX = graphics.__owner.scaleX;
-			graphics.__bitmapScaleY = graphics.__owner.scaleY;
-		}
-		else
-		{
-			graphics.__bitmapScaleX = 1;
-			graphics.__bitmapScaleY = 1;
-		}
 
 		graphics.__update(renderer.__worldTransform, pixelRatio);
 
-		if (graphics.__softwareDirty)
+		if (graphics.__softwareDirty && !graphics.__managed)
 		{
+			// __bitmapScaleX/Y must only be reset when we are actually
+			// re-rendering the Canvas commands. On a cache hit
+			// (__softwareDirty=false) or when the graphics is externally
+			// managed (e.g. by CanvasTextField, which paints glyphs into
+			// __canvas at pixelRatio resolution and sets __bitmapScale =
+			// pixelRatio for the CanvasShape composite step), clobbering
+			// these here would break the composite math and trigger a
+			// redundant re-render every frame via the CanvasTextField
+			// self-heal at __bitmapScale != pixelRatio.
+			if (hasScale9Grid)
+			{
+				graphics.__bitmapScaleX = graphics.__owner.scaleX;
+				graphics.__bitmapScaleY = graphics.__owner.scaleY;
+			}
+			else
+			{
+				graphics.__bitmapScaleX = 1;
+				graphics.__bitmapScaleY = 1;
+			}
+
 			hitTesting = false;
 
 			CanvasGraphics.graphics = graphics;
