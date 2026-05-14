@@ -10,6 +10,7 @@ package;
  *  - `cacheBitmapAllocs` -> `DisplayObjectRenderer.__cacheBitmapAllocs`
  *    (cacheAsBitmap / filters bitmap for `DisplayObject.__cacheBitmapData`)
  */
+#if (!flash && openfl_count_surface_allocs)
 @:access(openfl.display._internal.CairoGraphics)
 @:access(openfl.display.DisplayObjectRenderer)
 class AllocCounter
@@ -19,19 +20,22 @@ class AllocCounter
 
 	static function get_surfaceAllocs():Int
 	{
-		#if openfl_count_surface_allocs
 		return openfl.display._internal.CairoGraphics.__surfaceAllocs;
-		#else
-		return 0;
-		#end
 	}
 
 	static function get_cacheBitmapAllocs():Int
 	{
-		#if openfl_count_surface_allocs
 		return openfl.display.DisplayObjectRenderer.__cacheBitmapAllocs;
-		#else
-		return 0;
-		#end
 	}
 }
+#else
+class AllocCounter
+{
+	public static var surfaceAllocs(get, never):Int;
+	public static var cacheBitmapAllocs(get, never):Int;
+
+	static function get_surfaceAllocs():Int return 0;
+
+	static function get_cacheBitmapAllocs():Int return 0;
+}
+#end
