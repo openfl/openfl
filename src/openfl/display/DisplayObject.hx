@@ -1805,20 +1805,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		this.stage = stage;
 
-		__root = stage;
 		if (stage != null)
 		{
-			var mainRoot = Lib.current;
-			var current = this;
-			while (current != null)
-			{
-				if (mainRoot == current)
-				{
-					__root = mainRoot;
-					break;
-				}
-				current = current.parent;
-			}
+			__root = this == Lib.current && parent == stage ? this : parent.__root;
+		}
+		else
+		{
+			__root = null;
 		}
 	}
 
