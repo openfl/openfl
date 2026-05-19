@@ -1142,6 +1142,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 @:noDebug
 #end
 @SuppressWarnings("checkstyle:FieldDocComment")
+@:meta(JSDynamicOverride(getMethod = "get", setMethod = "set"))
 @:autoBuild(lime._internal.macros.AssetsMacro.embedByteArray())
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput
 {

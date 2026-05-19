@@ -610,6 +610,9 @@ abstract Dictionary<K, V>(DictionaryData<K, V>)
 	}
 }
 
+@:meta(JSDynamicOverride(getMethod = "get", setMethod = "set", deleteMethod = "remove", inMethod = "exists"))
+@:meta(JSForInOverride(iteratorMethod = "keys", iteratorHasNextMethod = "hasNext", iteratorNextMethod = "next"))
+@:meta(JSForEachOverride(iteratorMethod = "iterator", iteratorHasNextMethod = "hasNext", iteratorNextMethod = "next"))
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:noCompletion @:dox(hide) class DictionaryData<K, V> implements haxe.Constraints.IMap<K, V>
 {
