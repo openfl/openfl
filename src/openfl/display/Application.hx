@@ -60,6 +60,8 @@ class Application #if lime extends LimeApplication #end
 	public override function createWindow(attributes:WindowAttributes):Window
 	{
 		var window = new Window(this, attributes);
+		if (window.id == -1) return null;
+		__seedFrameConfiguration(attributes);
 
 		#if (!flash && !macro)
 		if (Lib.current.__loaderInfo.width == -1)
