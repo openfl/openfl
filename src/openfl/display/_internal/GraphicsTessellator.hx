@@ -1,10 +1,15 @@
 package openfl.display._internal;
 
 #if !flash
+import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.GraphicsPathWinding;
+import openfl.display.InterpolationMethod;
 import openfl.display.MovieClip;
+import openfl.display.SpreadMethod;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 import openfl.Vector;
 
 #if !openfl_debug
@@ -13,6 +18,7 @@ import openfl.Vector;
 #end
 @:access(openfl.display.Graphics)
 @:access(openfl.display.DisplayObject)
+@:access(openfl.geom.Matrix)
 @:access(openfl.display._internal.DrawCommandReader)
 class GraphicsTessellator
 {
@@ -22,8 +28,32 @@ class GraphicsTessellator
 	private static inline var FLATTEN_TOLERANCE_SQ = FLATTEN_TOLERANCE * FLATTEN_TOLERANCE;
 	private static inline var MAX_FLATTEN_DEPTH = 8;
 
+	public static function commandsContainGradient(graphics:Graphics):Bool
+	{
+		if (graphics.__commands == null) return false;
+
+		for (type in graphics.__commands.types)
+		{
+			switch (type)
+			{
+				case BEGIN_GRADIENT_FILL, LINE_GRADIENT_STYLE:
+					return true;
+				default:
+			}
+		}
+
+		return false;
+	}
+
 	public static function prepare(graphics:Graphics):Bool
 	{
+		// Gradient fills are not tessellated; use Cairo for correct rendering.
+		if (commandsContainGradient(graphics))
+		{
+			graphics.__tessellatedFillParts = null;
+			return false;
+		}
+
 		if (!graphics.__hardwareDirty && graphics.__tessellatedFillParts != null)
 		{
 			return graphics.__tessellatedFillParts.length > 0;
@@ -39,9 +69,14 @@ class GraphicsTessellator
 		var data = new DrawCommandReader(graphics.__commands);
 		var parts = new Array<GraphicsTessellatedFillPart>();
 		var currentFill:Null<Int> = null;
+		var currentBitmap:BitmapData = null;
+		var currentBitmapMatrix:Matrix = null;
+		var currentBitmapSmooth = true;
+		var currentBitmapRepeat = false;
 		var currentContours = new Array<Vector<Float>>();
 		var currentContour = new Vector<Float>();
 		var winding = GraphicsPathWinding.EVEN_ODD;
+		var skipStrokePaths = false;
 		var positionX = 0.0;
 		var positionY = 0.0;
 
@@ -82,7 +117,7 @@ class GraphicsTessellator
 				return false;
 			}
 
-			if (currentFill == null)
+			if (currentFill == null && currentBitmap == null)
 			{
 				currentContours = [];
 				return true;
@@ -91,6 +126,8 @@ class GraphicsTessellator
 			if (currentContours.length == 0)
 			{
 				currentFill = null;
+				currentBitmap = null;
+				currentBitmapMatrix = null;
 				currentContours = [];
 				return true;
 			}
@@ -113,10 +150,22 @@ class GraphicsTessellator
 
 			if (partIndices.length > 0)
 			{
-				parts.push(new GraphicsTessellatedFillPart(currentFill, partVertices, partIndices));
+				if (currentBitmap != null)
+				{
+					var uvtData = new Vector<Float>();
+					populateBitmapUvt(partVertices, currentBitmap, currentBitmapMatrix, uvtData);
+					parts.push(new GraphicsTessellatedFillPart(partVertices, partIndices, null, currentBitmap, currentBitmapMatrix,
+						currentBitmapSmooth, currentBitmapRepeat, uvtData));
+				}
+				else
+				{
+					parts.push(new GraphicsTessellatedFillPart(partVertices, partIndices, currentFill));
+				}
 			}
 
 			currentFill = null;
+			currentBitmap = null;
+			currentBitmapMatrix = null;
 			currentContours = [];
 			return true;
 		}
@@ -125,75 +174,153 @@ class GraphicsTessellator
 		{
 			switch (type)
 			{
+				case BEGIN_GRADIENT_FILL, LINE_GRADIENT_STYLE:
+					return reject("gradientFill");
+
+				case BEGIN_BITMAP_FILL:
+					if (!finalizeFill())
+					{
+						return reject("finalizeFill");
+					}
+
+					skipStrokePaths = false;
+
+					var bitmapCommand = data.readBeginBitmapFill();
+					if (bitmapCommand.bitmap == null)
+					{
+						return reject("bitmapNull");
+					}
+
+					if (bitmapCommand.matrix != null)
+					{
+						var m = bitmapCommand.matrix;
+						if (m.a * m.d - m.b * m.c == 0)
+						{
+							return reject("bitmapMatrixSingular");
+						}
+					}
+
+					currentBitmap = bitmapCommand.bitmap;
+					currentBitmapMatrix = bitmapCommand.matrix;
+					currentBitmapSmooth = bitmapCommand.smooth;
+					currentBitmapRepeat = bitmapCommand.repeat;
+					currentFill = null;
+					winding = GraphicsPathWinding.EVEN_ODD;
+
 				case BEGIN_FILL:
 					if (!finalizeFill())
 					{
 						return reject("finalizeFill");
 					}
 
+					skipStrokePaths = false;
+
 					var c = data.readBeginFill();
 					var color = Std.int(c.color);
 					var alpha = Std.int(c.alpha * 0xFF);
 					currentFill = (color & 0xFFFFFF) | (alpha << 24);
+					currentBitmap = null;
+					currentBitmapMatrix = null;
 					winding = GraphicsPathWinding.EVEN_ODD;
 
 				case END_FILL:
 					data.readEndFill();
-					if (!finalizeFill())
+					if (skipStrokePaths)
+					{
+						skipStrokePaths = false;
+						currentContours = [];
+						resetContour();
+					}
+					else if (!finalizeFill())
 					{
 						return reject("endFill");
 					}
 
 				case MOVE_TO:
-					if (currentFill == null)
-					{
-						return reject("moveWithoutFill");
-					}
+					var moveCommand = data.readMoveTo();
+					positionX = moveCommand.x;
+					positionY = moveCommand.y;
 
-					if (!finalizeContour())
+					if (skipStrokePaths)
 					{
-						return reject("contourFinalizeOnMove");
+						resetContour();
 					}
+					else
+					{
+						if (currentFill == null && currentBitmap == null)
+						{
+							return reject("moveWithoutFill");
+						}
 
-					var c = data.readMoveTo();
-					positionX = c.x;
-					positionY = c.y;
-					currentContour.push(positionX);
-					currentContour.push(positionY);
+						if (!finalizeContour())
+						{
+							return reject("contourFinalizeOnMove");
+						}
+
+						currentContour.push(positionX);
+						currentContour.push(positionY);
+					}
 
 				case LINE_TO:
-					if (currentFill == null || currentContour.length == 0)
-					{
-						return reject("lineWithoutContour");
-					}
+					var lineCommand = data.readLineTo();
+					positionX = lineCommand.x;
+					positionY = lineCommand.y;
 
-					var c = data.readLineTo();
-					positionX = c.x;
-					positionY = c.y;
-					currentContour.push(positionX);
-					currentContour.push(positionY);
+					if (skipStrokePaths)
+					{
+					}
+					else
+					{
+						if ((currentFill == null && currentBitmap == null) || currentContour.length == 0)
+						{
+							return reject("lineWithoutContour");
+						}
+
+						currentContour.push(positionX);
+						currentContour.push(positionY);
+					}
 
 				case CURVE_TO:
-					if (currentFill == null || currentContour.length == 0)
-					{
-						return reject("curveWithoutContour");
-					}
+					var curveCommand = data.readCurveTo();
 
-					var c = data.readCurveTo();
-					appendQuadraticCurve(currentContour, positionX, positionY, c.controlX, c.controlY, c.anchorX, c.anchorY, 0);
-					positionX = c.anchorX;
-					positionY = c.anchorY;
+					if (skipStrokePaths)
+					{
+						positionX = curveCommand.anchorX;
+						positionY = curveCommand.anchorY;
+					}
+					else
+					{
+						if ((currentFill == null && currentBitmap == null) || currentContour.length == 0)
+						{
+							return reject("curveWithoutContour");
+						}
+
+						appendQuadraticCurve(currentContour, positionX, positionY, curveCommand.controlX, curveCommand.controlY, curveCommand.anchorX,
+							curveCommand.anchorY, 0);
+						positionX = curveCommand.anchorX;
+						positionY = curveCommand.anchorY;
+					}
 
 				case CUBIC_CURVE_TO:
-					if (currentFill == null || currentContour.length == 0)
-					{
-						return reject("cubicWithoutContour");
-					}
+					var cubicCommand = data.readCubicCurveTo();
 
-					var c = data.readCubicCurveTo();
-					appendCubicCurve(currentContour, positionX, positionY, c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY, 0);
-					positionX = c.anchorX;
-					positionY = c.anchorY;
+					if (skipStrokePaths)
+					{
+						positionX = cubicCommand.anchorX;
+						positionY = cubicCommand.anchorY;
+					}
+					else
+					{
+						if ((currentFill == null && currentBitmap == null) || currentContour.length == 0)
+						{
+							return reject("cubicWithoutContour");
+						}
+
+						appendCubicCurve(currentContour, positionX, positionY, cubicCommand.controlX1, cubicCommand.controlY1, cubicCommand.controlX2,
+							cubicCommand.controlY2, cubicCommand.anchorX, cubicCommand.anchorY, 0);
+						positionX = cubicCommand.anchorX;
+						positionY = cubicCommand.anchorY;
+					}
 
 				case LINE_STYLE:
 					var c = data.readLineStyle();
@@ -214,7 +341,14 @@ class GraphicsTessellator
 					return reject(Type.enumConstructor(type));
 
 				default:
-					return reject(Type.enumConstructor(type));
+					if (skipStrokePaths)
+					{
+						data.skip(type);
+					}
+					else
+					{
+						return reject(Type.enumConstructor(type));
+					}
 			}
 		}
 
@@ -234,7 +368,6 @@ class GraphicsTessellator
 		{
 			return false;
 		}
-
 
 		graphics.__tessellatedFillParts = parts;
 		return true;
@@ -530,6 +663,55 @@ class GraphicsTessellator
 		return inside;
 	}
 
+	private static function populateBitmapUvt(vertices:Vector<Float>, bitmap:BitmapData, bitmapMatrix:Matrix, result:Vector<Float>):Void
+	{
+		if (bitmapMatrix == null)
+		{
+			result.length = vertices.length;
+			var minX = vertices[0];
+			var maxX = minX;
+			var minY = vertices[1];
+			var maxY = minY;
+			var i = 2;
+			var length = vertices.length;
+			while (i < length)
+			{
+				var x = vertices[i];
+				if (minX > x) minX = x;
+				else if (maxX < x) maxX = x;
+				var y = vertices[i + 1];
+				if (minY > y) minY = y;
+				else if (maxY < y) maxY = y;
+				i += 2;
+			}
+			var trianglesWidth = maxX - minX;
+			var trianglesHeight = maxY - minY;
+			i = 0;
+			while (i < length)
+			{
+				result[i] = trianglesWidth * (vertices[i] / trianglesWidth) / bitmap.width;
+				result[i + 1] = trianglesHeight * (vertices[i + 1] / trianglesHeight) / bitmap.height;
+				i += 2;
+			}
+			return;
+		}
+
+		var inverse = bitmapMatrix.clone();
+		inverse.invert();
+		result.length = vertices.length;
+
+		var i = 0;
+		var length = vertices.length;
+		while (i < length)
+		{
+			var tx = inverse.a * vertices[i] + inverse.c * vertices[i + 1] + inverse.tx;
+			var ty = inverse.b * vertices[i] + inverse.d * vertices[i + 1] + inverse.ty;
+			result[i] = tx / bitmap.width;
+			result[i + 1] = ty / bitmap.height;
+			i += 2;
+		}
+	}
+
 	private static function pushPoint(contour:Vector<Float>, x:Float, y:Float):Void
 	{
 		var length = contour.length;
@@ -647,15 +829,26 @@ class GraphicsTessellator
 
 class GraphicsTessellatedFillPart
 {
-	public var fill(default, null):Int;
+	public var fill(default, null):Null<Int>;
+	public var bitmap(default, null):Null<BitmapData>;
+	public var bitmapMatrix(default, null):Null<Matrix>;
+	public var smooth(default, null):Bool;
+	public var repeat(default, null):Bool;
+	public var uvtData(default, null):Null<Vector<Float>>;
 	public var indices(default, null):Vector<Int>;
 	public var vertices(default, null):Vector<Float>;
 
-	public function new(fill:Int, vertices:Vector<Float>, indices:Vector<Int>)
+	public function new(vertices:Vector<Float>, indices:Vector<Int>, fill:Null<Int> = null, ?bitmap:BitmapData,
+			?bitmapMatrix:Matrix, ?smooth:Bool, ?repeat:Bool, ?uvtData:Vector<Float>)
 	{
-		this.fill = fill;
 		this.vertices = vertices;
 		this.indices = indices;
+		this.fill = fill;
+		this.bitmap = bitmap;
+		this.bitmapMatrix = bitmapMatrix;
+		this.smooth = smooth;
+		this.repeat = repeat;
+		this.uvtData = uvtData;
 	}
 }
 #end
