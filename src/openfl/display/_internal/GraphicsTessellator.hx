@@ -132,7 +132,7 @@ class GraphicsTessellator
 				return true;
 			}
 
-			if (hasNestedContours(currentContours))
+			if (currentFill != null && currentBitmap == null && hasNestedContours(currentContours))
 			{
 				return false;
 			}
@@ -140,12 +140,9 @@ class GraphicsTessellator
 			var partVertices = new Vector<Float>();
 			var partIndices = new Vector<Int>();
 
-			for (contour in currentContours)
+			if (!appendTriangulatedContours(currentContours, partVertices, partIndices))
 			{
-				if (!appendTriangulatedContour(contour, partVertices, partIndices))
-				{
-					return false;
-				}
+				return false;
 			}
 
 			if (partIndices.length > 0)
@@ -484,6 +481,165 @@ class GraphicsTessellator
 		outIndices.push(vertexOffset + available[2]);
 		return true;
 	}
+	private static function appendTriangulatedContours(contours:Array<Vector<Float>>, outVertices:Vector<Float>, outIndices:Vector<Int>):Bool
+	{
+		if (contours.length == 1)
+		{
+			return appendTriangulatedContour(contours[0], outVertices, outIndices);
+		}
+
+		var infos = new Array<ContourInfo>();
+		for (i in 0...contours.length)
+		{
+			infos.push(new ContourInfo(contours[i], i));
+		}
+
+		for (info in infos)
+		{
+			var parent:ContourInfo = null;
+			var parentArea = Math.POSITIVE_INFINITY;
+
+			for (candidate in infos)
+			{
+				if (candidate == info)
+				{
+					continue;
+				}
+
+				if (contourContainsPoint(candidate.contour, info.contour[0], info.contour[1]))
+				{
+					info.depth++;
+					var area = Math.abs(signedArea(candidate.contour));
+					if (area < parentArea)
+					{
+						parent = candidate;
+						parentArea = area;
+					}
+				}
+			}
+
+			info.parent = parent;
+		}
+
+		for (outer in infos)
+		{
+			if ((outer.depth & 1) != 0)
+			{
+				continue;
+			}
+
+			var holes = new Array<Vector<Float>>();
+			for (hole in infos)
+			{
+				if (hole.parent == outer && (hole.depth & 1) != 0)
+				{
+					holes.push(hole.contour);
+				}
+			}
+
+			if (!appendTriangulatedCompoundContour(outer.contour, holes, outVertices, outIndices))
+			{
+				return false;
+			}
+		}
+
+		return outIndices.length > 0;
+	}
+
+	private static function appendTriangulatedCompoundContour(outer:Vector<Float>, holes:Array<Vector<Float>>, outVertices:Vector<Float>,
+			outIndices:Vector<Int>):Bool
+	{
+		var polygon = copyContour(outer);
+		if (signedArea(polygon) < 0)
+		{
+			reverseContour(polygon);
+		}
+
+		holes.sort(compareRightmostContour);
+		for (hole in holes)
+		{
+			var bridgeHole = copyContour(hole);
+			if (signedArea(bridgeHole) > 0)
+			{
+				reverseContour(bridgeHole);
+			}
+
+			polygon = bridgeContourHole(polygon, bridgeHole);
+			if (polygon == null)
+			{
+				return false;
+			}
+		}
+
+		return appendTriangulatedContour(polygon, outVertices, outIndices);
+	}
+
+	private static function bridgeContourHole(outer:Vector<Float>, hole:Vector<Float>):Vector<Float>
+	{
+		var holeIndex = findRightmostPoint(hole);
+		var hx = hole[holeIndex * 2];
+		var hy = hole[holeIndex * 2 + 1];
+		var outerIndex = -1;
+		var bestDistanceSq = Math.POSITIVE_INFINITY;
+		var outerCount = outer.length >> 1;
+
+		for (i in 0...outerCount)
+		{
+			var ox = outer[i * 2];
+			var oy = outer[i * 2 + 1];
+
+			if (!isBridgeVisible(hx, hy, ox, oy, outer, hole, i, holeIndex))
+			{
+				continue;
+			}
+
+			var dx = ox - hx;
+			var dy = oy - hy;
+			var distanceSq = dx * dx + dy * dy;
+			if (distanceSq < bestDistanceSq)
+			{
+				bestDistanceSq = distanceSq;
+				outerIndex = i;
+			}
+		}
+
+		if (outerIndex < 0)
+		{
+			return null;
+		}
+
+		var result = new Vector<Float>();
+		appendContourRange(result, outer, 0, outerIndex + 1);
+		pushRawPoint(result, hx, hy);
+
+		var holeCount = hole.length >> 1;
+		for (i in 1...holeCount)
+		{
+			var index = (holeIndex + i) % holeCount;
+			pushRawPoint(result, hole[index * 2], hole[index * 2 + 1]);
+		}
+
+		pushRawPoint(result, hx, hy);
+		pushRawPoint(result, outer[outerIndex * 2], outer[outerIndex * 2 + 1]);
+		appendContourRange(result, outer, outerIndex + 1, outerCount);
+		return result;
+	}
+
+	private static function appendContourRange(result:Vector<Float>, contour:Vector<Float>, start:Int, end:Int):Void
+	{
+		for (i in start...end)
+		{
+			pushRawPoint(result, contour[i * 2], contour[i * 2 + 1]);
+		}
+	}
+
+	private static function compareRightmostContour(a:Vector<Float>, b:Vector<Float>):Int
+	{
+		var ax = a[findRightmostPoint(a) * 2];
+		var bx = b[findRightmostPoint(b) * 2];
+		return ax > bx ? -1 : (ax < bx ? 1 : 0);
+	}
+
 
 	private static function copyContour(contour:Vector<Float>):Vector<Float>
 	{
@@ -522,13 +678,32 @@ class GraphicsTessellator
 		return dx * dx + dy * dy;
 	}
 
+	private static function findRightmostPoint(contour:Vector<Float>):Int
+	{
+		var best = 0;
+		var count = contour.length >> 1;
+		for (i in 1...count)
+		{
+			var x = contour[i * 2];
+			var y = contour[i * 2 + 1];
+			var bestX = contour[best * 2];
+			var bestY = contour[best * 2 + 1];
+			if (x > bestX || (almostEqual(x, bestX) && y < bestY))
+			{
+				best = i;
+			}
+		}
+		return best;
+	}
+
 	private static function hasNestedContours(contours:Array<Vector<Float>>):Bool
 	{
 		for (i in 0...contours.length)
 		{
 			for (j in i + 1...contours.length)
 			{
-				if (contourContainsPoint(contours[i], contours[j][0], contours[j][1]) || contourContainsPoint(contours[j], contours[i][0], contours[i][1]))
+				if (contourContainsPoint(contours[i], contours[j][0], contours[j][1])
+					|| contourContainsPoint(contours[j], contours[i][0], contours[i][1]))
 				{
 					return true;
 				}
@@ -591,7 +766,15 @@ class GraphicsTessellator
 				continue;
 			}
 
-			if (pointInTriangle(polygon[index * 2], polygon[index * 2 + 1], ax, ay, bx, by, cx, cy))
+			var px = polygon[index * 2];
+			var py = polygon[index * 2 + 1];
+			if ((almostEqual(px, ax) && almostEqual(py, ay)) || (almostEqual(px, bx) && almostEqual(py, by))
+				|| (almostEqual(px, cx) && almostEqual(py, cy)))
+			{
+				continue;
+			}
+
+			if (pointInTriangle(px, py, ax, ay, bx, by, cx, cy))
 			{
 				return false;
 			}
@@ -662,6 +845,18 @@ class GraphicsTessellator
 
 		return inside;
 	}
+	private static function isBridgeVisible(ax:Float, ay:Float, bx:Float, by:Float, outer:Vector<Float>, hole:Vector<Float>, outerIndex:Int,
+			holeIndex:Int):Bool
+	{
+		if (!contourContainsPoint(outer, (ax + bx) * 0.5, (ay + by) * 0.5))
+		{
+			return false;
+		}
+
+		return !segmentIntersectsContour(ax, ay, bx, by, outer, outerIndex)
+			&& !segmentIntersectsContour(ax, ay, bx, by, hole, holeIndex);
+	}
+
 
 	private static function populateBitmapUvt(vertices:Vector<Float>, bitmap:BitmapData, bitmapMatrix:Matrix, result:Vector<Float>):Void
 	{
@@ -723,6 +918,12 @@ class GraphicsTessellator
 		contour.push(x);
 		contour.push(y);
 	}
+	private static function pushRawPoint(contour:Vector<Float>, x:Float, y:Float):Void
+	{
+		contour.push(x);
+		contour.push(y);
+	}
+
 
 	private static function quadraticFlatnessSq(x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float):Float
 	{
@@ -794,6 +995,30 @@ class GraphicsTessellator
 			|| (Math.abs(cd1) <= COLLINEAR_EPSILON && isPointOnSegment(ax, ay, cx, cy, dx, dy))
 			|| (Math.abs(cd2) <= COLLINEAR_EPSILON && isPointOnSegment(bx, by, cx, cy, dx, dy));
 	}
+	private static function segmentIntersectsContour(ax:Float, ay:Float, bx:Float, by:Float, contour:Vector<Float>, allowedVertex:Int):Bool
+	{
+		var count = contour.length >> 1;
+		for (i in 0...count)
+		{
+			var next = (i + 1) % count;
+			if (i == allowedVertex || next == allowedVertex)
+			{
+				continue;
+			}
+
+			var cx = contour[i * 2];
+			var cy = contour[i * 2 + 1];
+			var dx = contour[next * 2];
+			var dy = contour[next * 2 + 1];
+			if (segmentsIntersect(ax, ay, bx, by, cx, cy, dx, dy))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 
 	private static function signedArea(contour:Vector<Float>):Float
 	{
@@ -826,6 +1051,21 @@ class GraphicsTessellator
 	}
 
 }
+private class ContourInfo
+{
+	public var contour:Vector<Float>;
+	public var depth:Int;
+	public var index:Int;
+	public var parent:ContourInfo;
+
+	public function new(contour:Vector<Float>, index:Int)
+	{
+		this.contour = contour;
+		this.index = index;
+		this.depth = 0;
+	}
+}
+
 
 class GraphicsTessellatedFillPart
 {
