@@ -3381,7 +3381,7 @@ class TextField extends InteractiveObject
 
 		stage.removeEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
+		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp, true);
 
 		if (this.stage != stage) return;
 
@@ -3528,7 +3528,9 @@ class TextField extends InteractiveObject
 		stage.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		#end
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.addEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
+		// Capture phase: target listeners may call stopImmediatePropagation() on mouseUp
+		// (common in UI wrappers); Flash Player still ended selection in that case.
+		stage.addEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp, true);
 	}
 
 	@:noCompletion private function this_onMouseWheel(event:MouseEvent):Void
