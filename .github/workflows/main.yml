@@ -39,7 +39,7 @@ jobs:
   unit-test-neko:
     strategy:
       matrix:
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.6]
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.7]
     runs-on: ubuntu-latest
     env:
       SDL_VIDEODRIVER: "dummy"
@@ -83,7 +83,7 @@ jobs:
       matrix:
         # Lime doesn't support Haxe 3 with HashLink
         # and Haxe threads in HashLink don't seem to stabilize until 4.2
-        haxe-version: [4.2.5, 4.3.6]
+        haxe-version: [4.2.5, 4.3.7]
     runs-on: macos-latest
     env:
       SDL_VIDEODRIVER: "dummy"
@@ -140,7 +140,7 @@ jobs:
 
       - uses: krdlab/setup-haxe@v2
         with:
-          haxe-version: 4.3.6
+          haxe-version: 4.3.7
 
       - uses: joshtynjala/setup-adobe-air-action@v2
         with:
@@ -209,7 +209,7 @@ jobs:
   unit-test-air:
     strategy:
       matrix:
-        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.6]
+        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.7]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v6
@@ -327,7 +327,7 @@ jobs:
     needs: package-haxelib
     strategy:
       matrix:
-        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.6]
+        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.7]
     runs-on: ubuntu-latest
     steps:
 
