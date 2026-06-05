@@ -1250,6 +1250,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			app.addModule(this);
 			app.exec();
 		}
+
+		Lib.current.__loaderInfo.dispatchEvent(new openfl.events.Event(openfl.events.Event.INIT));
+		Lib.current.__loaderInfo.dispatchEvent(new openfl.events.Event(openfl.events.Event.COMPLETE));
 		#end
 	}
 
