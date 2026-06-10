@@ -791,6 +791,12 @@ class Sound extends EventDispatcher
 				var samples = (__buffer.data.length * 8.0) / (__buffer.channels * __buffer.bitsPerSample);
 				return Std.int(samples / __buffer.sampleRate * 1000);
 			}
+			#if (lime >= "8.4.0")
+			else if (__buffer.__srcSDLSoundDuration > 0)
+			{
+				return __buffer.__srcSDLSoundDuration;
+			}
+			#end
 			else if (__buffer.__srcVorbisFile != null)
 			{
 				var samples = Int64.toInt(__buffer.__srcVorbisFile.pcmTotal());
