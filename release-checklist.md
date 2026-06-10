@@ -60,6 +60,7 @@
 - Run **`npm install`**.
 	- On macOS, **`arch -x86_64 npm install`** may be required
 - Commit new _package.json_ and _package-lock.json_
+- Update openfl, lime, and swf versions in _scripts/build.hxml_.
 - Tag release and push
 	```sh
 	git tag -s x.y.z -m "version x.y.z"
