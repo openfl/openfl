@@ -627,6 +627,28 @@ class TextField extends InteractiveObject
 	public var textColor(get, set):Int;
 
 	/**
+		The color of the text within the selection range in a text field, in
+		hexadecimal format. The hexadecimal color system uses six digits to
+		represent color values. Each digit has 16 possible values or characters.
+		The characters range from 0-9 and then A-F. For example, black is
+		`0x000000`; white is `0xFFFFFF`.
+
+		@default 0xffffff
+	**/
+	public var selectionTextColor(get, set):Int;
+
+	/**
+		The color of the highlight that appears around the text within the
+		selection range in a text field, in hexadecimal format. The hexadecimal
+		color system uses six digits to represent color values. Each digit has
+		16 possible values or characters. The characters range from 0-9 and then
+		A-F. For example, black is `0x000000`; white is `0xFFFFFF`.
+
+		@default 0(0x000000)
+	**/
+	public var selectionHighlightColor(get, set):Int;
+
+	/**
 		The height of the text in pixels.
 	**/
 	public var textHeight(get, never):Float;
@@ -829,6 +851,14 @@ class TextField extends InteractiveObject
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_textColor (v); }")
 			},
 			"textHeight": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textHeight (); }")},
+			"selectionHighlightColor": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_selectionHighlightColor (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_selectionHighlightColor (v); }")
+			},
+			"selectionTextColor": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_selectionTextColor (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_selectionTextColor (v); }")
+			},
 			"textWidth": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textWidth (); }")},
 			"type": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_type (); }"),
@@ -3218,6 +3248,42 @@ class TextField extends InteractiveObject
 		}
 
 		return __textFormat.color = value;
+	}
+
+	@:noCompletion private var __selectionHighlightColor:Int = 0x000000;
+
+	@:noCompletion private function get_selectionHighlightColor():Int
+	{
+		return __selectionHighlightColor;
+	}
+
+	@:noCompletion private function set_selectionHighlightColor(value:Int):Int
+	{
+		if (value != __selectionHighlightColor)
+		{
+			__dirty = true;
+			__setRenderDirty();
+		}
+
+		return __selectionHighlightColor = value;
+	}
+
+	@:noCompletion private var __selectionTextColor:Int = 0xffffff;
+
+	@:noCompletion private function get_selectionTextColor():Int
+	{
+		return __selectionTextColor;
+	}
+
+	@:noCompletion private function set_selectionTextColor(value:Int):Int
+	{
+		if (value != __selectionTextColor)
+		{
+			__dirty = true;
+			__setRenderDirty();
+		}
+
+		return __selectionTextColor = value;
 	}
 
 	@:noCompletion private function get_textWidth():Float

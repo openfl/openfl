@@ -313,9 +313,9 @@ class CanvasTextField
 
 								if (start != null && end != null)
 								{
-									context.fillStyle = "#000000";
+									context.fillStyle = "#" + StringTools.hex(textField.selectionHighlightColor & 0xFFFFFF, 6);
 									context.fillRect(start.x + scrollX - bounds.x, start.y + scrollY, end.x - start.x, group.height);
-									context.fillStyle = "#FFFFFF";
+									context.fillStyle = "#" + StringTools.hex(textField.selectionTextColor & 0xFFFFFF, 6);
 
 									// TODO: fill only once
 

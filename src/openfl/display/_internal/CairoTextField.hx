@@ -393,10 +393,19 @@ class CairoTextField
 
 							if (start != null && end != null)
 							{
-								cairo.setSourceRGB(0, 0, 0);
+								var selectionHighlightColor = textField.selectionHighlightColor;
+								var r = ((selectionHighlightColor & 0xFF0000) >>> 16) / 0xFF;
+								var g = ((selectionHighlightColor & 0x00FF00) >>> 8) / 0xFF;
+								var b = (selectionHighlightColor & 0x0000FF) / 0xFF;
+								cairo.setSourceRGB(r, g, b);
 								cairo.rectangle(scrollX + start.x - bounds.x, start.y + scrollY, end.x - start.x, group.height);
 								cairo.fill();
-								cairo.setSourceRGB(1, 1, 1);
+
+								var selectionTextColor = textField.selectionTextColor;
+								var r = ((selectionTextColor & 0xFF0000) >>> 16) / 0xFF;
+								var g = ((selectionTextColor & 0x00FF00) >>> 8) / 0xFF;
+								var b = (selectionTextColor & 0x0000FF) / 0xFF;
+								cairo.setSourceRGB(r, g, b);
 
 								// TODO: draw only once
 
