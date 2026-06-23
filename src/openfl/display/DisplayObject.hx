@@ -2420,7 +2420,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		__setTransformDirty();
 
-		if (__supportDOM)
+		if (__supportDOM || cacheAsBitmap)
 		{
 			__setRenderDirty();
 		}

@@ -1,6 +1,24 @@
 Changelog
 =========
 
+9.5.2 (05/13/2026)
+------------------
+
+- Fixed blurry text on native platforms that use Cairo.
+- Fixed `blendMode` being ignored when calling `draw()` on `BitmapData` when the source is also `BitmapData` instead of a `DisplayObject`.
+- Fixed FPS rounding its value up to the next integer sometimes by switching to `Std.int()`.
+- Fixed ignored `scale9Grid` for `Graphics` for certain rotation values that Flash supports.
+- Fixed `draw()` on `BitmapData` not accounting for `x` and `y` values of `scrollRect`.
+- Fixed `stage.align` and `stage.scaleMode` when rendering in OpenGL.
+- Fixed `stage.align` parsing to match the abbreviated values that Flash supports.
+- Fixed rest argument for `formatToString()` on `Event` class when targeting Haxe 4.2 or newer.
+- Fixed Cairo rendering when graphics content is larger than the maximum texture dimensions.
+- Fixed Command key keyboard shortcuts for actions like copy and paste on iOS, iPadOS, and tvOS.
+- Fixed reading text from clipboard too frequently on paste into `TextField`.
+- Fixed `Sprite` container failing to update its cached bitmap when final child is removed.
+- Fixed `scrollRect` failing to update rendered display object when `cacheAsBitmap` is also true.
+- Fixed webassembly compilation issues with shaders.
+
 9.5.1 (02/16/2026)
 ------------------
 
