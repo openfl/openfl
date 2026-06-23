@@ -1984,7 +1984,7 @@ class CanvasGraphics
 		#end
 	}
 
-	public static function render(graphics:Graphics, renderer:CanvasRenderer):Void
+	public static function render(graphics:Graphics, renderer:CanvasRenderer, allowRenderSizeReuse:Bool = false):Void
 	{
 		#if (js && html5)
 		#if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
@@ -2012,7 +2012,31 @@ class CanvasGraphics
 			graphics.__bitmapScaleY = 1;
 		}
 
-		graphics.__update(renderer.__worldTransform, pixelRatio);
+		graphics.__update(renderer.__worldTransform, pixelRatio, allowRenderSizeReuse);
+
+		var width = graphics.__renderWidth;
+		var height = graphics.__renderHeight;
+
+		if (!graphics.__softwareDirty)
+		{
+			if (graphics.__canvas == null || graphics.__bitmap == null)
+			{
+				graphics.__softwareDirty = true;
+			}
+			else if (renderer.__isDOM)
+			{
+				var scaledWidth = Std.int(width * renderer.__pixelRatio);
+				var scaledHeight = Std.int(height * renderer.__pixelRatio);
+				if (graphics.__canvas.width != scaledWidth || graphics.__canvas.height != scaledHeight)
+				{
+					graphics.__softwareDirty = true;
+				}
+			}
+			else if (graphics.__canvas.width != width || graphics.__canvas.height != height)
+			{
+				graphics.__softwareDirty = true;
+			}
+		}
 
 		if (graphics.__softwareDirty)
 		{
@@ -2022,9 +2046,6 @@ class CanvasGraphics
 			CanvasGraphics.allowSmoothing = renderer.__allowSmoothing;
 			CanvasGraphics.worldAlpha = renderer.__getAlpha(graphics.__owner.__worldAlpha);
 			bounds = graphics.__bounds;
-
-			var width = graphics.__width;
-			var height = graphics.__height;
 
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1)
 			{
@@ -2060,8 +2081,8 @@ class CanvasGraphics
 					{
 						canvas.width = scaledWidth;
 						canvas.height = scaledHeight;
-						canvas.style.width = width + "px";
-						canvas.style.height = height + "px";
+						canvas.style.width = graphics.__width + "px";
+						canvas.style.height = graphics.__height + "px";
 					}
 
 					var transform = graphics.__renderTransform;

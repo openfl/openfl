@@ -1828,7 +1828,7 @@ class CairoGraphics
 	}
 	#end
 
-	public static function render(graphics:Graphics, renderer:CairoRenderer):Void
+	public static function render(graphics:Graphics, renderer:CairoRenderer, allowRenderSizeReuse:Bool = false):Void
 	{
 		#if lime_cairo
 		CairoGraphics.graphics = graphics;
@@ -1860,7 +1860,26 @@ class CairoGraphics
 			graphics.__bitmapScaleY = 1;
 		}
 
-		graphics.__update(renderer.__worldTransform, pixelRatio);
+		graphics.__update(renderer.__worldTransform, pixelRatio, allowRenderSizeReuse);
+
+		var width = graphics.__renderWidth;
+		var height = graphics.__renderHeight;
+
+		if (!graphics.__softwareDirty)
+		{
+			if (graphics.__cairo == null || graphics.__bitmap == null)
+			{
+				graphics.__softwareDirty = true;
+			}
+			else
+			{
+				var existingSurface:CairoImageSurface = cast graphics.__cairo.target;
+				if (existingSurface == null || existingSurface.width != width || existingSurface.height != height)
+				{
+					graphics.__softwareDirty = true;
+				}
+			}
+		}
 
 		if (!graphics.__softwareDirty || graphics.__managed)
 		{
@@ -1870,9 +1889,6 @@ class CairoGraphics
 
 		bounds = graphics.__bounds;
 
-		var width = graphics.__width;
-		var height = graphics.__height;
-
 		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1)
 		{
 			graphics.__cairo = null;
@@ -1881,35 +1897,19 @@ class CairoGraphics
 		else
 		{
 			hitTesting = false;
-			var needsUpscaling = false;
-
 			if (graphics.__cairo != null)
 			{
 				var surface:CairoImageSurface = cast graphics.__cairo.target;
 
-				if (width > surface.width || height > surface.height)
+				if (surface == null || width != surface.width || height != surface.height)
 				{
 					graphics.__cairo = null;
-					needsUpscaling = true;
 				}
 			}
 
-			if (graphics.__cairo == null || graphics.__bitmap == null)
+			if (graphics.__cairo == null || graphics.__bitmap == null || graphics.__bitmap.width != width || graphics.__bitmap.height != height)
 			{
-				var bitmapWidth = needsUpscaling ? Std.int(width * 1.25) : width;
-				var bitmapHeight = needsUpscaling ? Std.int(height * 1.25) : height;
-
-				if (Graphics.maxTextureWidth != null && bitmapWidth > Graphics.maxTextureWidth)
-				{
-					bitmapWidth = Graphics.maxTextureWidth;
-				}
-
-				if (Graphics.maxTextureHeight != null && bitmapHeight > Graphics.maxTextureHeight)
-				{
-					bitmapHeight = Graphics.maxTextureHeight;
-				}
-
-				var bitmap = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
+				var bitmap = new BitmapData(width, height, true, 0);
 				var surface = bitmap.getSurface();
 				graphics.__cairo = new Cairo(surface);
 				graphics.__bitmap = bitmap;

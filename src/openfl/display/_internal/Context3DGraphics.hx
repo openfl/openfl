@@ -648,9 +648,9 @@ class Context3DGraphics
 			}
 
 			#if (js && html5)
-			CanvasGraphics.render(graphics, cast renderer.__softwareRenderer);
+			CanvasGraphics.render(graphics, cast renderer.__softwareRenderer, true);
 			#elseif lime_cairo
-			CairoGraphics.render(graphics, cast renderer.__softwareRenderer);
+			CairoGraphics.render(graphics, cast renderer.__softwareRenderer, true);
 			#end
 
 			renderer.__softwareRenderer.__worldTransform = cacheTransform;
