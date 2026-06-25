@@ -962,8 +962,6 @@ private class SamplerRegister
 		var filter:Context3DTextureFilter;
 		var mipfilter:Context3DMipFilter;
 
-		// TODO: anisotropic support?
-
 		// translate texture filter
 		switch (f)
 		{
@@ -971,6 +969,14 @@ private class SamplerRegister
 				filter = NEAREST;
 			case 1:
 				filter = LINEAR;
+			case 2:
+				filter = ANISOTROPIC2X;
+			case 3:
+				filter = ANISOTROPIC4X;
+			case 4:
+				filter = ANISOTROPIC8X;
+			case 5:
+				filter = ANISOTROPIC16X;
 			default:
 				throw new IllegalOperationError();
 		}
