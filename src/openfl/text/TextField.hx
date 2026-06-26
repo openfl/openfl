@@ -3528,8 +3528,10 @@ class TextField extends InteractiveObject
 		stage.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		#end
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		// Capture phase: target listeners may call stopImmediatePropagation() on mouseUp
-		// (common in UI wrappers); Flash Player still ended selection in that case.
+		// use capture phase so that other mouseUp listeners may call
+		// stopImmediatePropagation() without affecting this listener.
+		// prevents an issue where the selection continues to follow mouseMove
+		// events after mouseUp.
 		stage.addEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp, true);
 	}
 
