@@ -1212,7 +1212,7 @@ class CanvasGraphics
 
 					// bottom-right corner of the rectangle, above the radius
 					positionX = c.x + c.width;
-					positionY = c.y + c.height - c.ellipseHeight;
+					positionY = c.y + c.height - (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
 
 					// treat the position after drawRoundRect() similarly to
 					// when moveTo() is called: it's the start of a new shape!
