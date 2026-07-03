@@ -509,33 +509,6 @@ class CairoGraphics
 		cairo.closePath();
 	}
 
-	private static function normalizeHitTestPositionForScale9Grid(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
-	{
-		if (scale <= 0.0)
-		{
-			// doesn't render if scaled with negative value
-			return 0.0;
-		}
-
-		var scale9End = unscaledSize - scale9Start - scale9Center;
-		var start = scale9Start / scale;
-		var end = scale9End / scale;
-
-		if (pos <= start)
-		{
-			// start region
-			return pos * scale;
-		}
-		else if (pos >= (unscaledSize - end))
-		{
-			// end region
-			return (unscaledSize - scale9End) + ((start - (unscaledSize - pos)) * scale);
-		}
-		// center region
-		var ratio = (pos - start) / (unscaledSize - end - start);
-		return scale9Start + (ratio * scale9Center);
-	}
-
 	private static function toScale9Position(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
 	{
 		if (scale <= 0.0)
@@ -635,23 +608,6 @@ class CairoGraphics
 		else
 		{
 			hitTesting = true;
-
-			var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
-			#if (openfl_legacy_scale9grid && !cairo)
-			var hasScale9Grid:Bool = false;
-			#else
-			// no scale9Grid for masks
-			// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
-			var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
-			#end
-			if (hasScale9Grid)
-			{
-				x = normalizeHitTestPositionForScale9Grid(x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-				y = normalizeHitTestPositionForScale9Grid(y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-
-				x = toScale9Position(x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-				y = toScale9Position(y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-			}
 
 			x -= bounds.x;
 			y -= bounds.y;
