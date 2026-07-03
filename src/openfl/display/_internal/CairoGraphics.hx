@@ -646,8 +646,6 @@ class CairoGraphics
 			#end
 			if (hasScale9Grid)
 			{
-				trace("x:" + x, bounds.width, graphics.__owner.scaleX);
-				trace("y:" + y, bounds.height, graphics.__owner.scaleY);
 				x = normalizeHitTestPositionForScale9Grid(x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
 				y = normalizeHitTestPositionForScale9Grid(y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
 
