@@ -771,6 +771,20 @@ class CanvasGraphics
 		{
 			hitTesting = true;
 
+			var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
+			#if (openfl_legacy_scale9grid && !canvas)
+			var hasScale9Grid:Bool = false;
+			#else
+			// no scale9Grid for masks
+			// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+			var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
+			#end
+			if (hasScale9Grid)
+			{
+				x *= graphics.__owner.scaleX;
+				y *= graphics.__owner.scaleY;
+			}
+
 			var transform = graphics.__renderTransform;
 
 			var px = transform.__transformX(x, y);
