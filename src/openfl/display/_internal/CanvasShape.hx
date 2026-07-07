@@ -53,7 +53,7 @@ class CanvasShape
 
 					renderer.setTransform(renderTransform, context);
 
-					context.drawImage(canvas, 0, 0, width, height);
+					context.drawImage(canvas, 0, 0);
 
 					Matrix.__pool.release(renderTransform);
 

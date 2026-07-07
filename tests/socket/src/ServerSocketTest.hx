@@ -131,6 +131,7 @@ class ServerSocketTest extends Test
 			Assert.notNull(serverClientSocket);
 			Assert.isTrue(serverClientSocket.connected);
 			serverClientSocket.writeUTFBytes("PING\r\n");
+			serverClientSocket.flush();
 		});
 		serverSocket.listen();
 		var loadedData = "";
@@ -203,6 +204,7 @@ class ServerSocketTest extends Test
 			}
 			Assert.isTrue(clientSocket.connected);
 			clientSocket.writeUTFBytes("PING\r\n");
+			clientSocket.flush();
 		});
 		Assert.isFalse(clientSocket.connected);
 		clientSocket.connect(serverSocket.localAddress, serverSocket.localPort);

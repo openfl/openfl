@@ -33,54 +33,37 @@ class EventDispatcherTest extends Test
 		// Standard
 
 		var caughtEvent = false;
+		var correctPhase = true;
 		var dispatcher = new EventDispatcher();
 
-		var listener = function(_)
+		var listener = function(event)
 		{
 			caughtEvent = true;
+			correctPhase = EventPhase.AT_TARGET == event.eventPhase;
 		};
 
 		dispatcher.addEventListener("event", listener);
-		dispatcher.dispatchEvent(new Event("event"));
-
+		var result = dispatcher.dispatchEvent(new Event("event"));
+		Assert.isTrue(result);
 		Assert.isTrue(caughtEvent);
+		Assert.isTrue(correctPhase);
 
-		// Capture is true
+		// Capture is true, but not on display list
 
-		var correctPhase = false; // fail unless we see correct event
-		var dispatcher = new EventDispatcher();
-
-		var listener = function(event:Event)
-		{
-			correctPhase = (event.eventPhase == EventPhase.CAPTURING_PHASE);
-		}
-
-		dispatcher.addEventListener("event", listener, true);
-		dispatcher.dispatchEvent(new Event("event"));
-
-		// TODO: this dispatchEvent will never go through CAPTURING_PHASE.
-		// It needs to come from Stage
-		// (or possibly through e.g. DisplayObject.__dispatchStack)
-		// See FocusEventTest for an example.
-		// DISABLED//Assert.isTrue (correctPhase);
-
-		// Capture is false
-
+		var caughtEvent = false;
 		var correctPhase = true;
 		var dispatcher = new EventDispatcher();
 
 		var listener = function(event:Event)
 		{
-			if (event.eventPhase == EventPhase.CAPTURING_PHASE)
-			{
-				correctPhase = false;
-			}
+			caughtEvent = true;
+			// doesn't get called because capture phase
 		}
 
-		dispatcher.addEventListener("event", listener, false);
-		dispatcher.dispatchEvent(new Event("event"));
-
-		Assert.isTrue(correctPhase);
+		dispatcher.addEventListener("event", listener, true);
+		var result = dispatcher.dispatchEvent(new Event("event"));
+		Assert.isTrue(result);
+		Assert.isFalse(caughtEvent);
 
 		// First in, first out standard order
 
@@ -282,5 +265,167 @@ class EventDispatcherTest extends Test
 
 		// Assert.equals("a(abc)bc", test02Sequence);
 		Assert.equals("a(abc)c", test02Sequence);
+	}
+
+	public function test_dispatchEventWithCancelableEventAndPreventDefaultCall()
+	{
+		var eventType = "myCustomEvent";
+
+		var dispatcher = new EventDispatcher();
+		dispatcher.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the AT_TARGET because it was added first.
+			Assert.isFalse(event.isDefaultPrevented());
+			event.preventDefault();
+			Assert.isTrue(event.isDefaultPrevented());
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+		dispatcher.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called second in the AT_TARGET because it was added second.
+			Assert.isTrue(event.isDefaultPrevented());
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+		var event = new Event(eventType, false, true);
+		var result = dispatcher.dispatchEvent(event);
+
+		// not successful because preventDefault() was called
+		Assert.isFalse(result);
+		Assert.isTrue(event.isDefaultPrevented());
+	}
+
+	public function test_dispatchEventWithCancelableEventAndNoPreventDefaultCall()
+	{
+		var eventType = "myCustomEvent";
+
+		var dispatcher = new EventDispatcher();
+		dispatcher.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the AT_TARGET because it was added first.
+			Assert.isFalse(event.isDefaultPrevented());
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+		dispatcher.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called second in the AT_TARGET because it was added second.
+			Assert.isFalse(event.isDefaultPrevented());
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+		var event = new Event(eventType, false, true);
+		var result = dispatcher.dispatchEvent(event);
+
+		// successful because preventDefault() was not called
+		Assert.isTrue(result);
+		Assert.isFalse(event.isDefaultPrevented());
+	}
+
+	public function test_dispatchEventWithStopPropagation()
+	{
+		var eventType = "myCustomEvent";
+
+		var calledListener1 = false;
+		var calledListener2 = false;
+		var dispatcher = new EventDispatcher();
+		dispatcher.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the AT_TARGET because it was added first.
+			Assert.isFalse(calledListener1);
+			Assert.isFalse(calledListener2);
+			calledListener1 = true;
+			event.stopPropagation();
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+		dispatcher.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopPropagation() does not stop the current phase, so this
+			// listener will be called.
+			// listeners without priority are called in order, so this listener
+			// is called second in the AT_TARGET because it was added second.
+			Assert.isTrue(calledListener1);
+			Assert.isFalse(calledListener2);
+			calledListener2 = true;
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+		var event = new Event(eventType, false, true);
+		var result = dispatcher.dispatchEvent(event);
+		// successful because preventDefault() was not called
+		Assert.isTrue(result);
+
+		Assert.isTrue(calledListener1);
+		Assert.isTrue(calledListener2);
+	}
+
+	public function test_dispatchEventWithStopImmediatePropagation()
+	{
+		var eventType = "myCustomEvent";
+
+		var calledListener1 = false;
+		var calledListener2 = false;
+		var dispatcher = new EventDispatcher();
+		dispatcher.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the AT_TARGET because it was added first.
+			Assert.isFalse(calledListener1);
+			Assert.isFalse(calledListener2);
+			calledListener1 = true;
+			event.stopImmediatePropagation();
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+		dispatcher.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopImmediatePropagation() prevents this listener from being called
+			Assert.fail();
+		});
+		var event = new Event(eventType, false, true);
+		var result = dispatcher.dispatchEvent(event);
+		// successful because preventDefault() was not called
+		Assert.isTrue(result);
+
+		Assert.isTrue(calledListener1);
+		Assert.isFalse(calledListener2);
+	}
+
+	public function test_dispatchEventWithPreventDefaultAndStopPropagation()
+	{
+		var eventType = "myCustomEvent";
+
+		var dispatcher = new EventDispatcher();
+		dispatcher.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the AT_TARGET because it was added first.
+			event.preventDefault();
+			event.stopPropagation();
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+		var event = new Event(eventType, false, true);
+		var result = dispatcher.dispatchEvent(event);
+		// not successful because preventDefault() was called
+		Assert.isFalse(result);
+	}
+
+	public function test_dispatchEventWithPreventDefaultAndStopImmediatePropagation()
+	{
+		var eventType = "myCustomEvent";
+
+		var dispatcher = new EventDispatcher();
+		dispatcher.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the AT_TARGET because it was added first.
+			event.preventDefault();
+			event.stopImmediatePropagation();
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+		var event = new Event(eventType, false, true);
+		var result = dispatcher.dispatchEvent(event);
+		// not successful because preventDefault() was called
+		Assert.isFalse(result);
 	}
 }

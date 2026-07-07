@@ -1498,14 +1498,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		if (__eventMap != null && hasEventListener(event.type))
 		{
-			var result = super.__dispatchEvent(event);
-
-			if (event.__isCanceled)
-			{
-				return true;
-			}
-
-			return result;
+			return super.__dispatchEvent(event);
 		}
 
 		return true;
@@ -1516,13 +1509,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private override function __dispatchEvent(event:Event):Bool
 	{
 		var parent = event.bubbles ? this.parent : null;
-		var result = super.__dispatchEvent(event);
+		var atTargetResult = super.__dispatchEvent(event);
 
 		if (event.__isCanceled)
 		{
-			return true;
+			return atTargetResult;
 		}
 
+		var bubblingResult = true;
 		if (parent != null && parent != this)
 		{
 			event.eventPhase = EventPhase.BUBBLING_PHASE;
@@ -1532,10 +1526,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				event.target = this;
 			}
 
-			parent.__dispatchEvent(event);
+			bubblingResult = parent.__dispatchEvent(event);
 		}
 
-		return result;
+		return atTargetResult && bubblingResult;
 	}
 
 	@:noCompletion private function __dispatchWithCapture(event:Event):Bool
@@ -1545,13 +1539,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			event.target = this;
 		}
 
+		var capturingResult = true;
 		if (parent != null)
 		{
 			event.eventPhase = CAPTURING_PHASE;
 
 			if (parent == stage)
 			{
-				parent.__dispatch(event);
+				capturingResult = parent.__dispatch(event);
 			}
 			else
 			{
@@ -1568,16 +1563,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 				for (j in 0...i)
 				{
-					stack[i - j - 1].__dispatch(event);
+					capturingResult = stack[i - j - 1].__dispatch(event) && capturingResult;
 				}
 
 				__tempStack.release(stack);
+			}
+
+			if (event.__isCanceled)
+			{
+				return capturingResult;
 			}
 		}
 
 		event.eventPhase = AT_TARGET;
 
-		return __dispatchEvent(event);
+		var atTargetResult = __dispatchEvent(event);
+
+		return capturingResult && atTargetResult;
 	}
 
 	@:noCompletion private function __enterFrame(deltaTime:Int):Void {}

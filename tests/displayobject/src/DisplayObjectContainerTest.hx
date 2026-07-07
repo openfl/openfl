@@ -1,5 +1,6 @@
 package;
 
+import openfl.Lib;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
@@ -7,6 +8,7 @@ import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 import openfl.errors.RangeError;
 import openfl.events.Event;
+import openfl.events.EventPhase;
 import openfl.geom.Point;
 import utest.Assert;
 import utest.Test;
@@ -547,5 +549,1005 @@ class DisplayObjectContainerTest extends Test
 		Assert.equals(0, bounds.y);
 		Assert.equals(150, bounds.width);
 		Assert.equals(0, bounds.height);
+	}
+
+	public function test_dispatchEventPhasesWithBubbling()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatch event phases with bubbling test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		var captured = false;
+		var dispatchedToTarget = false;
+		var bubbled = false;
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.isFalse(bubbled);
+			bubbled = true;
+			Assert.isTrue(captured);
+			Assert.isTrue(dispatchedToTarget);
+			Assert.notEquals(childSprite, parentSprite);
+			Assert.equals(childSprite, event.target);
+			Assert.equals(parentSprite, event.currentTarget);
+			Assert.equals(EventPhase.BUBBLING_PHASE, event.eventPhase);
+		});
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.isFalse(captured);
+			captured = true;
+			Assert.isFalse(dispatchedToTarget);
+			Assert.isFalse(bubbled);
+			Assert.notEquals(childSprite, parentSprite);
+			Assert.equals(childSprite, event.target);
+			Assert.equals(parentSprite, event.currentTarget);
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+		}, true);
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.isFalse(dispatchedToTarget);
+			dispatchedToTarget = true;
+			Assert.isTrue(captured);
+			Assert.isFalse(bubbled);
+			Assert.equals(childSprite, event.target);
+			Assert.equals(childSprite, event.currentTarget);
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+			Assert.isTrue(event.bubbles);
+			Assert.isFalse(event.cancelable);
+		});
+
+		childSprite.dispatchEvent(new Event(eventType, true, false));
+
+		Assert.isTrue(dispatchedToTarget);
+		Assert.isTrue(bubbled);
+		Assert.isTrue(captured);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventPhasesWithoutBubbling()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatch event phases without bubbling test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		var captured = false;
+		var dispatchedToTarget = false;
+		var bubbled = false;
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.isFalse(bubbled);
+			bubbled = true;
+			Assert.isTrue(captured);
+			Assert.isTrue(dispatchedToTarget);
+			Assert.notEquals(childSprite, parentSprite);
+			Assert.equals(childSprite, event.target);
+			Assert.equals(parentSprite, event.currentTarget);
+			Assert.equals(EventPhase.BUBBLING_PHASE, event.eventPhase);
+		});
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.isFalse(captured);
+			captured = true;
+			Assert.isFalse(dispatchedToTarget);
+			Assert.isFalse(bubbled);
+			Assert.notEquals(childSprite, parentSprite);
+			Assert.equals(childSprite, event.target);
+			Assert.equals(parentSprite, event.currentTarget);
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+		}, true);
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.isFalse(dispatchedToTarget);
+			dispatchedToTarget = true;
+			Assert.isTrue(captured);
+			Assert.isFalse(bubbled);
+			Assert.equals(childSprite, event.target);
+			Assert.equals(childSprite, event.currentTarget);
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+			Assert.isFalse(event.bubbles);
+			Assert.isFalse(event.cancelable);
+		});
+
+		childSprite.dispatchEvent(new Event(eventType, false, false));
+
+		Assert.isTrue(dispatchedToTarget);
+		Assert.isFalse(bubbled);
+		Assert.isTrue(captured);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithCancelableEventAndPreventDefaultCall()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with cancelable and preventDefault() test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.isTrue(event.isDefaultPrevented());
+			Assert.equals(EventPhase.BUBBLING_PHASE, event.eventPhase);
+		});
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.isFalse(event.isDefaultPrevented());
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+		}, true);
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the AT_TARGET because it was added first.
+			Assert.isFalse(event.isDefaultPrevented());
+			event.preventDefault();
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called second in the AT_TARGET because it was added second.
+			Assert.isTrue(event.isDefaultPrevented());
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		Assert.isTrue(event.isDefaultPrevented());
+		// not successful because preventDefault() was called
+		Assert.isFalse(result);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithCancelableEventAndNoPreventDefaultCall()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with cancelable and no preventDefault() test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.isFalse(event.isDefaultPrevented());
+			Assert.equals(EventPhase.BUBBLING_PHASE, event.eventPhase);
+		});
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.isFalse(event.isDefaultPrevented());
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+		}, true);
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the AT_TARGET because it was added first.
+			Assert.isFalse(event.isDefaultPrevented());
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called second in the AT_TARGET because it was added second.
+			Assert.isFalse(event.isDefaultPrevented());
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		Assert.isFalse(event.isDefaultPrevented());
+		// successful because preventDefault() was not called
+		Assert.isTrue(result);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithStopPropagationInAtTargetPhase()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with stopPropagation() in AT_TARGET phase");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		var captured = false;
+		var bubbled = false;
+		var dispatchedToTarget1 = false;
+		var dispatchedToTarget2 = false;
+
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopPropagation() in the AT_TARGET phase means that no listeners
+			// in the BUBBLING_PHASE phase will be called.
+			Assert.isFalse(bubbled);
+			bubbled = true;
+			Assert.fail();
+		});
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopPropagation() in the AT_TARGET phase is after the
+			// CAPTURING_PHASE, so this listener will be called normally.
+			Assert.isFalse(captured);
+			captured = true;
+			Assert.isFalse(dispatchedToTarget1);
+			Assert.isFalse(dispatchedToTarget2);
+			Assert.isFalse(bubbled);
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+		}, true);
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the AT_TARGET because it was added first.
+			Assert.isFalse(dispatchedToTarget1);
+			Assert.isFalse(dispatchedToTarget2);
+			dispatchedToTarget1 = true;
+			Assert.isTrue(captured);
+			Assert.isFalse(bubbled);
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+			event.stopPropagation();
+		});
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopPropagation() does not stop the current phase, so this
+			// listener will be called.
+			// listeners without priority are called in order, so this listener
+			// is called second in the AT_TARGET phase because it was added
+			// second.
+			Assert.isTrue(dispatchedToTarget1);
+			Assert.isFalse(dispatchedToTarget2);
+			dispatchedToTarget2 = true;
+			Assert.isTrue(captured);
+			Assert.isFalse(bubbled);
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		// successful because preventDefault() was not called
+		Assert.isTrue(result);
+
+		Assert.isTrue(captured);
+		Assert.isTrue(dispatchedToTarget1);
+		Assert.isTrue(dispatchedToTarget2);
+		Assert.isFalse(bubbled);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithStopPropagationInCapturingPhase()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with stopPropagation() in CAPTURING_PHASE");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		var captured1 = false;
+		var captured2 = false;
+		var bubbled = false;
+		var dispatchedToTarget = false;
+
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopPropagation() in the CAPTURING_PHASE means that no listeners
+			// in the AT_TARGET or BUBBLING_PHASE phase will be called.
+			Assert.isFalse(bubbled);
+			bubbled = true;
+			Assert.fail();
+		});
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the CAPTURING_PHASE because it was added
+			// first.
+			Assert.isFalse(captured1);
+			Assert.isFalse(captured2);
+			captured1 = true;
+			Assert.isFalse(dispatchedToTarget);
+			Assert.isFalse(bubbled);
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+			event.stopPropagation();
+		}, true);
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopPropagation() does not stop the current phase, so this
+			// listener will be called.
+			// listeners without priority are called in order, so this listener
+			// is called second in the CAPTURING_PHASE because it was added
+			// second.
+			Assert.isTrue(captured1);
+			Assert.isFalse(captured2);
+			captured2 = true;
+			Assert.isFalse(dispatchedToTarget);
+			Assert.isFalse(bubbled);
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+		}, true);
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopPropagation() in the CAPTURING_PHASE means that no listeners
+			// in the AT_TARGET or BUBBLING_PHASE will be called.
+			Assert.isFalse(dispatchedToTarget);
+			dispatchedToTarget = true;
+			Assert.fail();
+		});
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		// successful because preventDefault() was not called
+		Assert.isTrue(result);
+
+		Assert.isTrue(captured1);
+		Assert.isTrue(captured2);
+		Assert.isFalse(dispatchedToTarget);
+		Assert.isFalse(bubbled);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithStopPropagationInBubblingPhase()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with stopPropagation() in BUBBLING_PHASE");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		var captured = false;
+		var bubbled1 = false;
+		var bubbled2 = false;
+		var dispatchedToTarget = false;
+
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the BUBBLING_PHASE because it was added first.
+			Assert.isFalse(bubbled1);
+			Assert.isFalse(bubbled2);
+			bubbled1 = true;
+			Assert.isTrue(captured);
+			Assert.isTrue(dispatchedToTarget);
+			Assert.equals(EventPhase.BUBBLING_PHASE, event.eventPhase);
+			event.stopPropagation();
+		});
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopPropagation() does not stop the current phase, so this
+			// listener will be called.
+			// listeners without priority are called in order, so this listener
+			// is called first in the BUBBLING_PHASE because it was added first.
+			Assert.isTrue(bubbled1);
+			Assert.isFalse(bubbled2);
+			bubbled2 = true;
+			Assert.isTrue(captured);
+			Assert.isTrue(dispatchedToTarget);
+			Assert.equals(EventPhase.BUBBLING_PHASE, event.eventPhase);
+		});
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopPropagation() in the BUBBLING_PHASE phase is after the
+			// CAPTURING_PHASE, so this listener will be called normally.
+			Assert.isFalse(captured);
+			captured = true;
+			Assert.isFalse(dispatchedToTarget);
+			Assert.isFalse(bubbled1);
+			Assert.isFalse(bubbled2);
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+		}, true);
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopPropagation() in the BUBBLING_PHASE phase is after the
+			// AT_TARGET phase, so this listener will be called normally.
+			Assert.isFalse(dispatchedToTarget);
+			dispatchedToTarget = true;
+			Assert.isTrue(captured);
+			Assert.isFalse(bubbled1);
+			Assert.isFalse(bubbled2);
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		// successful because preventDefault() was not called
+		Assert.isTrue(result);
+
+		Assert.isTrue(dispatchedToTarget);
+		Assert.isTrue(bubbled1);
+		Assert.isTrue(bubbled2);
+		Assert.isTrue(captured);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithStopImmediatePropagationInAtTargetPhase()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with stopImmediatePropagation() in AT_TARGET phase");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		var captured = false;
+		var bubbled = false;
+		var dispatchedToTarget1 = false;
+		var dispatchedToTarget2 = false;
+
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopImmediatePropagation() in the AT_TARGET phase means that no
+			// listeners in the BUBBLING_PHASE phase will be called.
+			Assert.isFalse(bubbled);
+			bubbled = true;
+			Assert.fail();
+		});
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopImmediatePropagation() in the AT_TARGET phase is after the
+			// CAPTURING_PHASE, so this listener will be called normally.
+			Assert.isFalse(captured);
+			captured = true;
+			Assert.isFalse(dispatchedToTarget1);
+			Assert.isFalse(dispatchedToTarget2);
+			Assert.isFalse(bubbled);
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+		}, true);
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the AT_TARGET phase because it was added
+			// first.
+			Assert.isFalse(dispatchedToTarget1);
+			Assert.isFalse(dispatchedToTarget2);
+			dispatchedToTarget1 = true;
+			Assert.isTrue(captured);
+			Assert.isFalse(bubbled);
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+			event.stopImmediatePropagation();
+		});
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopImmediatePropagation() prevents this listener from being called
+			Assert.isFalse(dispatchedToTarget2);
+			dispatchedToTarget2 = true;
+			Assert.fail();
+		});
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		// successful because preventDefault() was not called
+		Assert.isTrue(result);
+
+		Assert.isTrue(captured);
+		Assert.isTrue(dispatchedToTarget1);
+		Assert.isFalse(dispatchedToTarget2);
+		Assert.isFalse(bubbled);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithStopImmediatePropagationInCapturingPhase()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with stopImmediatePropagation() in CAPTURING_PHASE");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		var captured1 = false;
+		var captured2 = false;
+		var bubbled = false;
+		var dispatchedToTarget = false;
+
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopImmediatePropagation() in the CAPTURING_PHASE means that no
+			// listeners in the AT_TARGET or BUBBLING_PHASE phase will be called.
+			Assert.isFalse(bubbled);
+			bubbled = true;
+			Assert.fail();
+		});
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the CAPTURING_PHASE because it was added
+			// first.
+			Assert.isFalse(captured1);
+			Assert.isFalse(captured2);
+			captured1 = true;
+			Assert.isFalse(dispatchedToTarget);
+			Assert.isFalse(bubbled);
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+			event.stopImmediatePropagation();
+		}, true);
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopImmediatePropagation() prevents this listener from being called
+			Assert.isFalse(captured2);
+			captured2 = true;
+			Assert.fail();
+		}, true);
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopImmediatePropagation() in the CAPTURING_PHASE means that no
+			// listeners in the AT_TARGET or BUBBLING_PHASE will be called.
+			Assert.isFalse(dispatchedToTarget);
+			dispatchedToTarget = true;
+			Assert.fail();
+		});
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		// successful because preventDefault() was not called
+		Assert.isTrue(result);
+
+		Assert.isTrue(captured1);
+		Assert.isFalse(captured2);
+		Assert.isFalse(dispatchedToTarget);
+		Assert.isFalse(bubbled);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithStopImmediatePropagationInBubblingPhase()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with stopImmediatePropagation() in BUBBLING_PHASE");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		var captured = false;
+		var bubbled1 = false;
+		var bubbled2 = false;
+		var dispatchedToTarget = false;
+
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// listeners without priority are called in order, so this listener
+			// is called first in the BUBBLING_PHASE because it was added first.
+			Assert.isFalse(bubbled1);
+			Assert.isFalse(bubbled2);
+			bubbled1 = true;
+			Assert.isTrue(captured);
+			Assert.isTrue(dispatchedToTarget);
+			Assert.equals(EventPhase.BUBBLING_PHASE, event.eventPhase);
+			event.stopImmediatePropagation();
+		});
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopImmediatePropagation() prevents this listener from being called
+			Assert.isFalse(bubbled2);
+			bubbled2 = true;
+			Assert.fail();
+		});
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopImmediatePropagation() in the BUBBLING_PHASE phase is after
+			// the CAPTURING_PHASE, so this listener will be called normally.
+			Assert.isFalse(captured);
+			captured = true;
+			Assert.isFalse(dispatchedToTarget);
+			Assert.isFalse(bubbled1);
+			Assert.isFalse(bubbled2);
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+		}, true);
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			// stopImmediatePropagation() in the BUBBLING_PHASE phase is after
+			// the AT_TARGET phase, so this listener will be called normally.
+			Assert.isFalse(dispatchedToTarget);
+			dispatchedToTarget = true;
+			Assert.isTrue(captured);
+			Assert.isFalse(bubbled1);
+			Assert.isFalse(bubbled2);
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		});
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		// successful because preventDefault() was not called
+		Assert.isTrue(result);
+
+		Assert.isTrue(captured);
+		Assert.isTrue(dispatchedToTarget);
+		Assert.isTrue(bubbled1);
+		Assert.isFalse(bubbled2);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithPreventDefaultAndStopPropagationInAtTargetPhase()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with preventDefault() and stopPropagation() in AT_TARGET phase");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+			event.preventDefault();
+			event.stopPropagation();
+		});
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		// not successful because preventDefault() was called
+		Assert.isFalse(result);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithPreventDefaultAndStopPropagationInCapturingPhase()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with preventDefault() and stopPropagation() in CAPTURING_PHASE");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+			event.preventDefault();
+			event.stopPropagation();
+		}, true);
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		// not successful because preventDefault() was called
+		Assert.isFalse(result);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithPreventDefaultAndStopPropagationInBubblingPhase()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with preventDefault() and stopPropagation() in BUBBLING_PHASE");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.equals(EventPhase.BUBBLING_PHASE, event.eventPhase);
+			event.preventDefault();
+			event.stopPropagation();
+		});
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		// not successful because preventDefault() was called
+		Assert.isFalse(result);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithPreventDefaultAndStopImmediatePropagationInAtTargetPhase()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with preventDefault() and stopImmediatePropagation() in AT_TARGET phase");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		childSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+			event.preventDefault();
+			event.stopImmediatePropagation();
+		});
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		// not successful because preventDefault() was called
+		Assert.isFalse(result);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithPreventDefaultAndStopImmediatePropagationInCapturingPhase()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with preventDefault() and stopImmediatePropagation() in CAPTURING_PHASE");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+			event.preventDefault();
+			event.stopImmediatePropagation();
+		}, true);
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		// not successful because preventDefault() was called
+		Assert.isFalse(result);
+
+		parentSprite.parent.removeChild(parentSprite);
+	}
+
+	public function test_dispatchEventWithPreventDefaultAndStopImmediatePropagationInBubblingPhase()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping dispatchEvent() with preventDefault() and stopImmediatePropagation() in BUBBLING_PHASE");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var parentSprite = new Sprite();
+		parentSprite.x = 20.0;
+		parentSprite.y = 30.0;
+		Lib.current.addChild(parentSprite);
+
+		var childSprite = new Sprite();
+		childSprite.graphics.beginFill(0xff0000);
+		childSprite.graphics.drawRect(0.0, 0.0, 100.0, 50.0);
+		childSprite.graphics.endFill();
+		parentSprite.addChild(childSprite);
+
+		var eventType = "myCustomEvent";
+
+		parentSprite.addEventListener(eventType, function(event:Event):Void
+		{
+			Assert.equals(EventPhase.BUBBLING_PHASE, event.eventPhase);
+			event.preventDefault();
+			event.stopImmediatePropagation();
+		});
+
+		var event = new Event(eventType, true, true);
+		var result = childSprite.dispatchEvent(event);
+
+		// not successful because preventDefault() was called
+		Assert.isFalse(result);
+
+		parentSprite.parent.removeChild(parentSprite);
 	}
 }

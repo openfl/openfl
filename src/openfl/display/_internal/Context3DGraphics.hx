@@ -597,6 +597,15 @@ class Context3DGraphics
 						return false;
 					}
 
+				case LINE_STYLE:
+					var c = data.readLineStyle();
+					if (c.thickness != null)
+					{
+						data.destroy();
+						return false;
+					}
+					data.skip(type);
+
 				case END_FILL:
 					hasBitmapFill = false;
 					hasColorFill = false;

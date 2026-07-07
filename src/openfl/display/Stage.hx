@@ -1508,13 +1508,23 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					event.eventPhase = EventPhase.CAPTURING_PHASE;
 					event.target = stack[stack.length - 1];
 
-					for (i in 0...length - 1)
+					if (event.target == this)
 					{
-						stack[i].__dispatch(event);
-
-						if (event.__isCanceled)
+						// special case: even when the stage is the target, it
+						// dispatches for both CAPTURING_PHASE and AT_TARGET.
+						target = cast event.target;
+						target.__dispatch(event);
+					}
+					else
+					{
+						for (i in 0...length - 1)
 						{
-							return;
+							stack[i].__dispatch(event);
+
+							if (event.__isCanceled)
+							{
+								return;
+							}
 						}
 					}
 
@@ -3304,7 +3314,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			var dropTarget:DisplayObject = null;
 
-			if (__mouseOverTarget == __dragObject)
+			if (__dragObject.contains(__mouseOverTarget))
 			{
 				var cacheMouseEnabled = __dragObject.mouseEnabled;
 				var cacheMouseChildren = __dragObject.mouseChildren;
