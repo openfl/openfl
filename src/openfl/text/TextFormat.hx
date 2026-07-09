@@ -358,6 +358,17 @@ class TextFormat
 
 	@:noCompletion private function set_size(value:Null<Int>):Null<Int>
 	{
+		#if commonjs
+		// Flash types the size property as Object, and it will call toString()
+		// on any value passed in that isn't an integer or null. Then, it
+		// converts the String to an integer.
+		// the Haxe compiler already enforces a more specific type, so this
+		// check should be needed in the npm version only.
+		if (value != null && untyped #if haxe4 js.Syntax.code #else __js__ #end ("typeof value !== 'number'"))
+		{
+			size = Std.parseInt(Std.string(value));
+		}
+		#end
 		if (size != value)
 		{
 			size = value;
