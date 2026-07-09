@@ -528,6 +528,9 @@ class Context3DGraphics
 
 		var data = new DrawCommandReader(graphics.__commands);
 		var hasColorFill = false, hasBitmapFill = false, hasShaderFill = false;
+		// for each fill, allow drawing one shape only because the two shapes
+		// might intersect and require a cutout. fall back to software for that.
+		var hasDrawnFilledShape = false;
 
 		for (type in graphics.__commands.types)
 		{
@@ -543,23 +546,27 @@ class Context3DGraphics
 					hasBitmapFill = true;
 					hasColorFill = false;
 					hasShaderFill = false;
+					hasDrawnFilledShape = false;
 					data.skip(type);
 
 				case BEGIN_FILL:
 					hasBitmapFill = false;
 					hasColorFill = true;
 					hasShaderFill = false;
+					hasDrawnFilledShape = false;
 					data.skip(type);
 
 				case BEGIN_SHADER_FILL:
 					hasBitmapFill = false;
 					hasColorFill = false;
 					hasShaderFill = true;
+					hasDrawnFilledShape = false;
 					data.skip(type);
 
 				case DRAW_QUADS:
-					if (hasColorFill || hasBitmapFill || hasShaderFill)
+					if (!hasDrawnFilledShape && (hasColorFill || hasBitmapFill || hasShaderFill))
 					{
+						hasDrawnFilledShape = true;
 						data.skip(type);
 					}
 					else
@@ -569,8 +576,9 @@ class Context3DGraphics
 					}
 
 				case DRAW_RECT:
-					if (hasColorFill || hasBitmapFill || hasShaderFill)
+					if (!hasDrawnFilledShape && (hasColorFill || hasBitmapFill || hasShaderFill))
 					{
+						hasDrawnFilledShape = true;
 						data.skip(type);
 					}
 					else
@@ -580,8 +588,9 @@ class Context3DGraphics
 					}
 
 				case DRAW_TRIANGLES:
-					if (hasColorFill || hasBitmapFill || hasShaderFill)
+					if (!hasDrawnFilledShape && (hasColorFill || hasBitmapFill || hasShaderFill))
 					{
+						hasDrawnFilledShape = true;
 						data.skip(type);
 					}
 					else
@@ -603,6 +612,7 @@ class Context3DGraphics
 					hasBitmapFill = false;
 					hasColorFill = false;
 					hasShaderFill = false;
+					hasDrawnFilledShape = false;
 					data.skip(type);
 
 				case MOVE_TO:
