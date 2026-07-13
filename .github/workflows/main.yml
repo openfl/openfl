@@ -5,11 +5,14 @@ jobs:
 
   unit-test-neko-haxe3:
     runs-on: ubuntu-latest
+    env:
+      SDL_VIDEODRIVER: "dummy"
+      SDL_AUDIODRIVER: "disk"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
-      - uses: krdlab/setup-haxe@v1
+      - uses: krdlab/setup-haxe@v2
         with:
           haxe-version: 3.4.7
       - name: Set HAXEPATH
@@ -36,14 +39,17 @@ jobs:
   unit-test-neko:
     strategy:
       matrix:
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.6]
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.7]
     runs-on: ubuntu-latest
+    env:
+      SDL_VIDEODRIVER: "dummy"
+      SDL_AUDIODRIVER: "disk"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
-      - uses: krdlab/setup-haxe@v1
+      - uses: krdlab/setup-haxe@v2
         with:
           haxe-version: ${{ matrix.haxe-version }}
 
@@ -76,16 +82,18 @@ jobs:
     strategy:
       matrix:
         # Lime doesn't support Haxe 3 with HashLink
-        haxe-version: [4.0.5, 4.1.5, 4.2.5]
-    # AL init fails on both windows and ubuntu
-    # macos-14 is arm64, which setup-haxe doesn't support yet
-    runs-on: macos-13
+        # and Haxe threads in HashLink don't seem to stabilize until 4.2
+        haxe-version: [4.2.5, 4.3.7]
+    runs-on: macos-latest
+    env:
+      SDL_VIDEODRIVER: "dummy"
+      SDL_AUDIODRIVER: "disk"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
-      - uses: krdlab/setup-haxe@v1
+      - uses: krdlab/setup-haxe@v2
         with:
           haxe-version: ${{ matrix.haxe-version }}
 
@@ -115,25 +123,27 @@ jobs:
           haxelib run hxp test -Dtarget=hl -Duse-lime-tools -verbose --install-hxp-alias
 
   unit-test-lime-develop:
-    runs-on: macos-13
+    runs-on: macos-latest
+    env:
+      SDL_AUDIODRIVER: "disk"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           repository: openfl/lime
           path: lime-develop
           submodules: true
 
-      - uses: krdlab/setup-haxe@master
+      - uses: krdlab/setup-haxe@v2
         with:
-          haxe-version: 4.3.6
+          haxe-version: 4.3.7
 
       - uses: joshtynjala/setup-adobe-air-action@v2
         with:
-          air-version: "33.1"
+          air-version: "51.2"
           accept-license: true
 
       - name: Set HAXEPATH
@@ -142,10 +152,12 @@ jobs:
 
       - name: Install Haxe dependencies
         run: |
-          haxelib install hxcpp --quiet
+          curl --output ../hxcpp-4.3.143.zip --location https://github.com/HaxeFoundation/hxcpp/releases/download/v4.3.143/hxcpp-4.3.143.zip
+          haxelib install ../hxcpp-4.3.143.zip --quiet
           haxelib install format --quiet
           haxelib install hxp --quiet
           haxelib install utest --quiet
+          haxelib install dox --quiet
 
       - name: Setup environment
         run: |
@@ -154,14 +166,17 @@ jobs:
 
       - name: Install HashLink dependencies with Homebrew
         run: |
+          if [ ! -x /usr/local/bin/brew ]; then
+            NONINTERACTIVE=1 arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+          fi
           pushd ${{ github.workspace }}/lime-develop/project/lib/hashlink
-          brew update
+          arch -x86_64 /usr/local/bin/brew update
           rm /usr/local/bin/2to3*
           rm /usr/local/bin/idle3*
           rm /usr/local/bin/pydoc3*
           rm /usr/local/bin/python3*
           rm /usr/local/bin/pip3*
-          brew bundle
+          HOMEBREW_BUNDLE_BREW_SKIP="cmake" arch -x86_64 /usr/local/bin/brew bundle
           popd
 
       - name: Rebuild Lime
@@ -187,23 +202,28 @@ jobs:
         run: |
           haxelib run hxp test -Dtarget=air -Duse-lime-tools -verbose --install-hxp-alias
 
+      - name: Build docs
+        working-directory: scripts
+        run: |
+          haxe docs.hxml
+
   unit-test-air:
     strategy:
       matrix:
-        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.6]
+        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.7]
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
-      - uses: krdlab/setup-haxe@v1
+      - uses: krdlab/setup-haxe@v2
         with:
           haxe-version: ${{ matrix.haxe-version }}
 
       - uses: joshtynjala/setup-adobe-air-action@v2
         with:
-          air-version: "33.1"
+          air-version: "51.2"
           accept-license: true
 
       - name: Set HAXEPATH
@@ -236,11 +256,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
-      - uses: krdlab/setup-haxe@v1
+      - uses: krdlab/setup-haxe@v2
         with:
           haxe-version: 4.2.5
 
@@ -257,7 +277,7 @@ jobs:
         run: |
           haxe run.hxml
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: openfl-haxelib
           path: |
@@ -272,11 +292,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
-      - uses: krdlab/setup-haxe@v1
+      - uses: krdlab/setup-haxe@v2
         with:
           haxe-version: 4.2.5
 
@@ -298,7 +318,7 @@ jobs:
         run: |
           haxe docs.hxml
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: openfl-docs
           path: docs
@@ -308,11 +328,11 @@ jobs:
     needs: package-haxelib
     strategy:
       matrix:
-        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.6]
+        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.7]
     runs-on: ubuntu-latest
     steps:
 
-      - uses: krdlab/setup-haxe@v1
+      - uses: krdlab/setup-haxe@v2
         with:
           haxe-version: ${{ matrix.haxe-version }}
 
@@ -326,7 +346,7 @@ jobs:
           haxelib install actuate --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: openfl-haxelib
           path: openfl-haxelib
@@ -358,7 +378,7 @@ jobs:
     runs-on: windows-latest
     steps:
 
-      - uses: krdlab/setup-haxe@v1
+      - uses: krdlab/setup-haxe@v2
         with:
           haxe-version: 4.1.5
 
@@ -373,7 +393,7 @@ jobs:
           haxelib install genes --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: openfl-haxelib
           path: openfl-haxelib
@@ -413,7 +433,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: krdlab/setup-haxe@v1
+      - uses: krdlab/setup-haxe@v2
         with:
           haxe-version: 4.2.5
 
@@ -427,7 +447,7 @@ jobs:
           haxelib install actuate --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: openfl-haxelib
           path: openfl-haxelib
@@ -459,7 +479,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: krdlab/setup-haxe@v1
+      - uses: krdlab/setup-haxe@v2
         with:
           haxe-version: 4.2.5
 
@@ -473,7 +493,7 @@ jobs:
           haxelib install actuate --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: openfl-haxelib
           path: openfl-haxelib

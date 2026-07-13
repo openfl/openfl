@@ -81,7 +81,7 @@ import js.Browser;
 	`Sound.id3` property to read metadata from the sound file.
 
 	@event asyncError       Dispatched when an exception is thrown
-							asynchronously נthat is, from native
+							asynchronously — that is, from native
 							asynchronous code. This event is dispatched when a
 							server calls a method on the client that is not
 							defined.
@@ -603,7 +603,7 @@ class NetStream extends EventDispatcher
 	/**
 		The number of seconds of data currently in the buffer. You can use
 		this property with the `bufferTime` property to estimate how close the
-		buffer is to being full נfor example, to display feedback to a user
+		buffer is to being full — for example, to display feedback to a user
 		who is waiting for data to be loaded into the buffer.
 	**/
 	public var bufferLength(default, null):Float;
@@ -710,7 +710,7 @@ class NetStream extends EventDispatcher
 	/**
 		The number of bytes of data that have been loaded into the
 		application. You can use this property with the `bytesTotal` property
-		to estimate how close the buffer is to being full נfor example, to
+		to estimate how close the buffer is to being full — for example, to
 		display feedback to a user who is waiting for data to be loaded into
 		the buffer.
 	**/
@@ -1208,7 +1208,7 @@ class NetStream extends EventDispatcher
 		__video.addEventListener("timeupdate", video_onTimeUpdate, false);
 		__video.addEventListener("loadstart", video_onLoadStart, false);
 		__video.addEventListener("stalled", video_onStalled, false);
-		__video.addEventListener("durationchanged", video_onDurationChanged, false);
+		__video.addEventListener("durationchange", video_onDurationChange, false);
 		__video.addEventListener("canplay", video_onCanPlay, false);
 		__video.addEventListener("canplaythrough", video_onCanPlayThrough, false);
 		__video.addEventListener("loadedmetadata", video_onLoadMetaData, false);
@@ -1347,8 +1347,8 @@ class NetStream extends EventDispatcher
 		display the video on the stage.
 
 		You can use `snapshotMilliseconds` to send a single snapshot (by
-		providing a value of 0) or a series of snapshots נin effect,
-		time-lapse footage נby providing a positive number that adds a
+		providing a value of 0) or a series of snapshots — in effect,
+		time-lapse footage — by providing a positive number that adds a
 		trailer of the specified number of milliseconds to the video feed. The
 		trailer extends the display time of the video message. By repeatedly
 		calling `attachCamera()` with a positive value for
@@ -1376,7 +1376,7 @@ class NetStream extends EventDispatcher
 		1/300 (one per 300 seconds, or one every 5 minutes), and then issue a
 		`NetStream.attachCamera(source)` command, letting the camera capture
 		continuously for 500 minutes. The resulting file will play back in 500
-		minutes נthe same length of time that it took to record נwith
+		minutes — the same length of time that it took to record — with
 		each frame being displayed for 5 minutes.
 
 		Both techniques capture the same 500 frames, and both approaches are
@@ -2129,9 +2129,9 @@ class NetStream extends EventDispatcher
 		__playStatus("NetStream.Play.canplaythrough");
 	}
 
-	@:noCompletion private function video_onDurationChanged(event:Dynamic):Void
+	@:noCompletion private function video_onDurationChange(event:Dynamic):Void
 	{
-		__playStatus("NetStream.Play.durationchanged");
+		__playStatus("NetStream.Play.durationchange");
 	}
 
 	@:noCompletion private function video_onEnd(event:Dynamic):Void

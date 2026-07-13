@@ -58,7 +58,7 @@ abstract URLVariables(Dynamic) from Dynamic to Dynamic
 			Reflect.deleteField(this, f);
 		}
 
-		var fields = source.split(";").join("&").split("&");
+		var fields = source.split("&");
 
 		for (f in fields)
 		{

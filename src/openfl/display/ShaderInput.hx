@@ -13,7 +13,7 @@ import openfl.display3D.Context3D;
 	that are used in the kernel execution. A ShaderInput instance provides a
 	mechanism for specifying the input image that is used when the shader
 	executes. To specify a value for the input, create a BitmapData,
-	ByteArray, or Vector.<Number> instance containing the image data and
+	ByteArray, or Vector<Float> instance containing the image data and
 	assign it to the `input` property.
 	The ShaderInput instance representing a Shader instance's input image is
 	accessed as a property of the Shader instance's `data` property. The
@@ -60,7 +60,7 @@ import openfl.display3D.Context3D;
 {
 	/**
 		The number of channels that a shader input expects. This property must
-		be accounted for when the input data is a ByteArray or Vector.<Number>
+		be accounted for when the input data is a ByteArray or Vector<Float>
 		instance.
 	**/
 	public var channels(default, null):Int;
@@ -74,7 +74,7 @@ import openfl.display3D.Context3D;
 
 	/**
 		The height of the shader input. This property is only used when the
-		input data is a ByteArray or Vector.<Number> instance. When the input
+		input data is a ByteArray or Vector<Float> instance. When the input
 		is a BitmapData instance the height is automatically determined.
 	**/
 	public var height:Int;
@@ -88,7 +88,7 @@ import openfl.display3D.Context3D;
 	/**
 		The input data that is used when the shader executes. This property
 		can be a BitmapData instance, a ByteArray instance, or a
-		Vector.<Number> instance.
+		Vector<Float> instance.
 		If a ByteArray value is assigned to the `input` property, the
 		following conditions must be met:
 
@@ -100,7 +100,7 @@ import openfl.display3D.Context3D;
 		times `height` times `channels` times 4.
 		* The byte array's `endian` property must be `Endian.LITTLE_ENDIAN`.
 
-		If a Vector.<Number> instance is assigned to the `input` property, the
+		If a Vector<Float> instance is assigned to the `input` property, the
 		length of the Vector must be equal to `width` times `height` times
 		`channels`.
 	**/
@@ -117,7 +117,7 @@ import openfl.display3D.Context3D;
 
 	/**
 		The width of the shader input. This property is only used when the
-		input data is a ByteArray or Vector.<Number> instance. When the input
+		input data is a ByteArray or Vector<Float> instance. When the input
 		is a BitmapData instance the width is automatically determined.
 	**/
 	public var width:Int;

@@ -250,16 +250,18 @@ class DisplayObjectRenderer extends EventDispatcher
 		if (renderer.__worldColorTransform != null) colorTransform.__combine(renderer.__worldColorTransform);
 		var updated = false;
 
-		// TODO: Do not force cacheAsBitmap on OpenGL once Scale-9 is properly supported in Context3DShape
 		if (displayObject.cacheAsBitmap
 			|| (renderer.__type != OPENGL
-				&& !colorTransform.__isDefault(true) #if openfl_force_gl_cacheasbitmap_for_scale9grid
+				&& !colorTransform.__isDefault(true) #if (openfl_legacy_scale9grid && openfl_force_gl_cacheasbitmap_for_scale9grid)
 					|| (renderer.__type == OPENGL && displayObject.scale9Grid != null) #end))
 		{
 			var rect:Rectangle = null;
 
 			var needRender = (displayObject.__cacheBitmap == null
-				|| (displayObject.__renderDirty && (force || (displayObject.__children != null && displayObject.__children.length > 0)))
+				|| (displayObject.__renderDirty
+					&& (force
+						|| displayObject.__cacheBitmap != null
+						|| (displayObject.__children != null && displayObject.__children.length > 0)))
 				|| displayObject.opaqueBackground != displayObject.__cacheBitmapBackground);
 			var softwareDirty = needRender
 				|| (displayObject.__graphics != null && displayObject.__graphics.__softwareDirty)
@@ -519,7 +521,10 @@ class DisplayObjectRenderer extends EventDispatcher
 			displayObject.__cacheBitmap.__worldShader = displayObject.__worldShader;
 			// displayObject.__cacheBitmap.__scrollRect = displayObject.__scrollRect;
 			// displayObject.__cacheBitmap.filters = displayObject.filters;
-			displayObject.__cacheBitmap.mask = displayObject.__mask;
+
+			// the cache bitmap should not take ownership of the mask, so take
+			// advantage of the fact that clipping layers can be shared
+			displayObject.__cacheBitmap.clippingLayer = displayObject.__mask;
 
 			if (needRender)
 			{

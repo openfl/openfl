@@ -771,6 +771,9 @@ class Event
 		this.bubbles = bubbles;
 		this.cancelable = cancelable;
 		eventPhase = EventPhase.AT_TARGET;
+		__isCanceled = false;
+		__isCanceledNow = false;
+		__preventDefault = false;
 	}
 
 	/**
@@ -829,6 +832,12 @@ class Event
 		@return The name of your custom Event class and the String value of
 				your `...arguments` parameter.
 	**/
+	#if (haxe_ver >= 4.2)
+	public function formatToString(className:String, args:haxe.Rest<String>):String
+	{
+		return __formatToString(className, args);
+	}
+	#else
 	public function formatToString(className:String, p1:String = null, p2:String = null, p3:String = null, p4:String = null, p5:String = null):String
 	{
 		var parameters:Array<String> = [];
@@ -840,6 +849,7 @@ class Event
 
 		return Reflect.callMethod(this, __formatToString, [className, parameters]);
 	}
+	#end
 
 	/**
 		Checks whether the `preventDefault()` method has been called on

@@ -63,6 +63,11 @@ import openfl.geom.Point;
 	NativeWindow objects will not be garbage collected after the window
 	constructor has been called and before `close()` has been called. It is the
 	responsibility of the application to close its own windows.
+
+	Important: In OpenFL 9.5.1+, only the main application window supports hardware 
+	acceleration (OpenGL). Additional NativeWindow instances are currently limited 
+	to software rendering (Cairo) to ensure stability. This limitation applies only 
+	to non-AIR targets.
 **/
 @:access(openfl.desktop.NativeApplication)
 @:access(openfl.display.NativeWindowInitOptions)
@@ -141,6 +146,7 @@ class NativeWindow extends EventDispatcher
 	@:noCompletion private var __pendingWidth:Int = 400;
 	@:noCompletion private var __pendingHeight:Int = 228;
 	#end
+	@:noCompletion private var __type:NativeWindowType = NORMAL;
 	@:noCompletion private var __closed:Bool = false;
 	@:noCompletion private var __previousX:Int;
 	@:noCompletion private var __previousY:Int;
@@ -149,6 +155,7 @@ class NativeWindow extends EventDispatcher
 	@:noCompletion private var __previousDisplayState:NativeWindowDisplayState;
 	@:noCompletion private var __active:Bool = false;
 	@:noCompletion private var __ownedWindows:Vector<NativeWindow> = new Vector();
+	@:noCompletion private var __skipClosingEvent:Bool = false;
 
 	/**
 		Creates a new NativeWindow instance and a corresponding operating system
@@ -166,6 +173,9 @@ class NativeWindow extends EventDispatcher
 		windows are created in an invisible state. To prevent changes to the
 		window from being visible, do not change the window `visible` property
 		to `true` or call `activate()` until the window changes are finished.
+
+		Note: Only the main application window supports hardware acceleration; 
+		additional windows are currently limited to software rendering.
 	**/
 	public function new(initOptions:NativeWindowInitOptions)
 	{
@@ -195,6 +205,10 @@ class NativeWindow extends EventDispatcher
 				fullscreen: false,
 				frameRate: app.window.stage.frameRate,
 				borderless: __initOptions.systemChrome == NONE,
+				context:
+				{
+					hardware:false
+				},
 				width: #if (lime < "8.1.0") 0 #else 400 #end,
 				height: #if (lime < "8.1.0") 0 #else 228 #end
 			});
@@ -225,6 +239,25 @@ class NativeWindow extends EventDispatcher
 		__window.onMaximize.add(window_onMaximize);
 		__window.onRestore.add(window_onRestore);
 		__window.onClose.add(window_onClose);
+	}
+
+	/**
+		 Reports the window `type` setting used to create this window.
+
+		The values returned by `NativeWindow.type` will be one of the constants
+		defined in the `NativeWindowType` class.
+
+		The `type` setting cannot be changed after a window is created.
+	**/
+	public var type(get, never):NativeWindowType;
+
+	@:noCompletion private function get_type():NativeWindowType
+	{
+		if (__closed)
+		{
+			throw new Error(ERROR_CLOSED, 3200);
+		}
+		return __type;
 	}
 
 	/**
@@ -575,7 +608,8 @@ class NativeWindow extends EventDispatcher
 		#if (lime < "8.1.0")
 		return __opened;
 		#else
-		return __window.visible;
+		// visible may be null instead of false in some versions of Lime
+		return __window.visible == true;
 		#end
 	}
 
@@ -970,6 +1004,7 @@ class NativeWindow extends EventDispatcher
 		{
 			throw new Error(ERROR_CLOSED, 3200);
 		}
+		__skipClosingEvent = true;
 		__window.close();
 	}
 
@@ -1191,7 +1226,18 @@ class NativeWindow extends EventDispatcher
 
 	@:noCompletion private function window_onClose():Void
 	{
+		if (!__skipClosingEvent)
+		{
+			var result = dispatchEvent(new Event(Event.CLOSING, false, true));
+			if (!result)
+			{
+				__window.onClose.cancel();
+				return;
+			}
+		}
+
 		// all child windows are closed when their owner is closed
+		// the child windows do not dispatch Event.CLOSING
 		while (__ownedWindows.length > 0)
 		{
 			var childWindow = __ownedWindows.pop();

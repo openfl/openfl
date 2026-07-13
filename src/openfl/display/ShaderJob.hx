@@ -57,7 +57,7 @@ class ShaderJob extends EventDispatcher
 {
 	/**
 		The height of the result data in the `target` if it is a ByteArray or
-		Vector.<Number> instance. The size of the ByteArray or Vector.<Number>
+		Vector<Float> instance. The size of the ByteArray or Vector<Float>
 		instance is enlarged if necessary and existing data is overwritten.
 	**/
 	public var height:Int;
@@ -88,14 +88,14 @@ class ShaderJob extends EventDispatcher
 
 	/**
 		The object into which the result of the shader operation is written.
-		This object must be a BitmapData, ByteArray, or Vector.<Number>
+		This object must be a BitmapData, ByteArray, or Vector<Float>
 		instance.
 	**/
 	@SuppressWarnings("checkstyle:Dynamic") public var target:Dynamic;
 
 	/**
 		The width of the result data in the `target` if it is a ByteArray or
-		Vector.<Number> instance. The size of the ByteArray or Vector.<Number>
+		Vector<Float> instance. The size of the ByteArray or Vector<Float>
 		instance is enlarged if necessary and existing data is overwritten.
 	**/
 	public var width:Int;
@@ -104,14 +104,14 @@ class ShaderJob extends EventDispatcher
 		@param shader The shader to use for the operation.
 		@param target The object into which the result of the shader operation
 					  is written. This argument must be a BitmapData,
-					  ByteArray, or Vector.<Number> instance.
+					  ByteArray, or Vector<Float> instance.
 		@param width  The width of the result data in the `target` if it is a
-					  ByteArray or Vector.<Number> instance. The size of the
-					  ByteArray or Vector.<Number> instance is enlarged if
+					  ByteArray or Vector<Float> instance. The size of the
+					  ByteArray or Vector<Float> instance is enlarged if
 					  necessary and existing data is overwritten.
 		@param height The height of the result data in the `target` if it is a
-					  ByteArray or Vector.<Number> instance. The size of the
-					  ByteArray or Vector.<Number> instance is enlarged if
+					  ByteArray or Vector<Float> instance. The size of the
+					  ByteArray or Vector<Float> instance is enlarged if
 					  necessary and existing data is overwritten.
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
@@ -179,11 +179,11 @@ class ShaderJob extends EventDispatcher
 								 the background (`false`, the default) or in
 								 the main program execution (`true`).
 		@throws ArgumentError When the `target` property is `null` or is not a
-							  BitmapData, ByteArray, or Vector.<Number>
+							  BitmapData, ByteArray, or Vector<Float>
 							  instance.
 		@throws ArgumentError When the shader specifies an image input that
 							  isn't provided.
-		@throws ArgumentError When a ByteArray or Vector.<Number> instance is
+		@throws ArgumentError When a ByteArray or Vector<Float> instance is
 							  used as an input and the `width` and `height`
 							  properties aren't specified for the ShaderInput,
 							  or the specified values don't match the amount

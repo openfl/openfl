@@ -36,14 +36,7 @@ import js.html.DivElement;
 
 /**
 	The TextField class is used to create display objects for text display and
-	input. <ph outputclass="flexonly">You can use the TextField class to
-	perform low-level text rendering. However, in Flex, you typically use the
-	Label, Text, TextArea, and TextInput controls to process text. <ph
-	outputclass="flashonly">You can give a text field an instance name in the
-	Property inspector and use the methods and properties of the TextField
-	class to manipulate it with Haxe code. TextField instance names are
-	displayed in the Movie Explorer and in the Insert Target Path dialog box in
-	the Actions panel.
+	input.
 
 	To create a text field dynamically, use the `TextField()`
 	constructor.
@@ -459,8 +452,7 @@ class TextField extends InteractiveObject
 		enter only characters in the string into the text field. The string is
 		scanned from left to right. You can specify a range by using the hyphen
 		(-) character. Only user interaction is restricted; a script can put any
-		text into the text field. <ph outputclass="flashonly">This property does
-		not synchronize with the Embed font options in the Property inspector.
+		text into the text field.
 
 		If the string begins with a caret(^) character, all characters are
 		initially accepted and succeeding characters in the string are excluded
@@ -698,6 +690,14 @@ class TextField extends InteractiveObject
 	**/
 	public var wordWrap(get, set):Bool;
 
+	/**
+		The character to be displayed when displayAsPassword is set to true.
+		The default value is `*`.
+
+		The `passwordChar` property is ignored in Flash Player and AIR targets.
+	**/
+	public var passwordChar(get, set):String;
+
 	@:noCompletion private var __wordSelection:Bool;
 	@:noCompletion private var __lineSelection:Bool;
 	@:noCompletion private var __specialSelectionInitialIndex:Int;
@@ -706,6 +706,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private var __cursorTimer:Timer;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __displayAsPassword:Bool;
+	@:noCompletion private var __passwordChar:String;
 	@:noCompletion private var __domRender:Bool;
 	@:noCompletion private var __inputEnabled:Bool;
 	@:noCompletion private var __isHTML:Bool;
@@ -763,6 +764,10 @@ class TextField extends InteractiveObject
 			"displayAsPassword": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_displayAsPassword (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_displayAsPassword (v); }")
+			},
+			"passwordChar": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_passwordChar (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_passwordChar (v); }")
 			},
 			"embedFonts": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_embedFonts (); }"),
@@ -850,10 +855,18 @@ class TextField extends InteractiveObject
 
 		__wordSelection = false;
 		__drawableType = TEXT_FIELD;
-		__caretIndex = -1;
-		__selectionIndex = -1;
+		__caretIndex = 0;
+		__selectionIndex = 0;
 		__displayAsPassword = false;
+		__passwordChar = "*";
 		__graphics = new Graphics(this);
+		#if (js && html5)
+		// Graphics adds an implicit moveTo(0, 0) for HTML Canvas, but we need
+		// an empty command buffer for TextField or it won't render correctly.
+		// calling clear() adds moveTo(0, 0) as the first command again, so just
+		// clear the command buffer directly.
+		__graphics.__commands.clear();
+		#end
 		__textEngine = new TextEngine(this);
 		__layoutDirty = true;
 		__offsetX = 0;
@@ -1164,7 +1177,11 @@ class TextField extends InteractiveObject
 	{
 		__updateLayout();
 
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return -1;
+		if (lineIndex < 0)
+		{
+			throw new RangeError();
+		}
+		if (lineIndex > __textEngine.numLines - 1) return -1;
 
 		for (group in __textEngine.layoutGroups)
 		{
@@ -1190,7 +1207,11 @@ class TextField extends InteractiveObject
 	{
 		__updateLayout();
 
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return null;
+		if (lineIndex < 0)
+		{
+			throw new RangeError();
+		}
+		if (lineIndex > __textEngine.numLines - 1) return null;
 
 		var startIndex = -1;
 		var endIndex = -1;
@@ -2372,6 +2393,9 @@ class TextField extends InteractiveObject
 	{
 		if (stage == null) return;
 
+		var oldScrollH = scrollH;
+		var oldScrollV = scrollV;
+
 		var bounds:Rectangle = this.getBounds(this);
 
 		if (mouseX > bounds.width - 1)
@@ -2397,7 +2421,15 @@ class TextField extends InteractiveObject
 			}
 			__mouseScrollVCounter = 0;
 		}
-		stage_onMouseMove(null);
+
+		// if the scroll position changed, then we may need to update selection.
+		// however, we shouldn't call it if the scroll position hasn't changed
+		// because that might overwrite the values of a recent call to the
+		// setSelection() method.
+		if (scrollH != oldScrollH || scrollV != oldScrollV)
+		{
+			stage_onMouseMove(null);
+		}
 	}
 
 	@:noCompletion private function __updateScrollH():Void
@@ -2589,7 +2621,7 @@ class TextField extends InteractiveObject
 
 			for (i in 0...length)
 			{
-				mask += "*";
+				mask += __passwordChar;
 			}
 
 			__textEngine.text = mask;
@@ -2804,11 +2836,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function get_htmlText():String
 	{
-		// #if (js && html5)
 		return __isHTML ? __htmlText : __text;
-		// #else
-		// return __text;
-		// #end
 	}
 
 	@:noCompletion private function set_htmlText(value:String):String
@@ -3252,6 +3280,23 @@ class TextField extends InteractiveObject
 		return __textEngine.wordWrap = value;
 	}
 
+	@:noCompletion private function get_passwordChar():String
+	{
+		return __passwordChar;
+	}
+
+	@:noCompletion private function set_passwordChar(value:String):String
+	{
+		if (value != __passwordChar)
+		{
+			__passwordChar = value;
+			__setRenderDirty();
+			__updateText(__text);
+		}
+
+		return value;
+	}
+
 	@:noCompletion private override function get_x():Float
 	{
 		return __transform.tx + __offsetX;
@@ -3285,8 +3330,19 @@ class TextField extends InteractiveObject
 		{
 			__updateLayout();
 
-			var position = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY,
-				true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else __getPosition(mouseX + scrollH, mouseY);
+			var position:Int;
+			if (__lineSelection)
+			{
+				position = __getPositionByIdentifier(mouseX + scrollH, mouseY, true);
+			}
+			else if (__wordSelection)
+			{
+				position = __getPositionByIdentifier(mouseX + scrollH, mouseY, false);
+			}
+			else
+			{
+				position = __getPosition(mouseX + scrollH, mouseY);
+			}
 
 			if (position != __caretIndex)
 			{
@@ -3325,7 +3381,7 @@ class TextField extends InteractiveObject
 
 		stage.removeEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
+		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp, true);
 
 		if (this.stage != stage) return;
 
@@ -3334,18 +3390,26 @@ class TextField extends InteractiveObject
 			__getWorldTransform();
 			__updateLayout();
 
-			var upPos:Int = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY,
-				true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else __getPosition(mouseX + scrollH, mouseY);
-			var leftPos:Int;
-			var rightPos:Int;
+			if (__lineSelection || __wordSelection)
+			{
+				var upPos:Int = 0;
+				if (__lineSelection)
+				{
+					upPos = __getPositionByIdentifier(mouseX + scrollH, mouseY, true);
+				}
+				else if (__wordSelection)
+				{
+					upPos = __getPositionByIdentifier(mouseX + scrollH, mouseY, false);
+				}
+				var leftPos:Int = Std.int(Math.min(__selectionIndex, upPos));
+				var rightPos:Int = Std.int(Math.max(__selectionIndex, upPos));
 
-			leftPos = Std.int(Math.min(__selectionIndex, upPos));
-			rightPos = Std.int(Math.max(__selectionIndex, upPos));
+				__selectionIndex = leftPos;
+				__caretIndex = rightPos;
+			}
 
-			__selectionIndex = leftPos;
-			__caretIndex = rightPos;
-
-			__wordSelection = __lineSelection = false;
+			__wordSelection = false;
+			__lineSelection = false;
 
 			if (__inputEnabled)
 			{
@@ -3464,7 +3528,11 @@ class TextField extends InteractiveObject
 		stage.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		#end
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.addEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
+		// use capture phase so that other mouseUp listeners may call
+		// stopImmediatePropagation() without affecting this listener.
+		// prevents an issue where the selection continues to follow mouseMove
+		// events after mouseUp.
+		stage.addEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp, true);
 	}
 
 	@:noCompletion private function this_onMouseWheel(event:MouseEvent):Void
@@ -3479,7 +3547,15 @@ class TextField extends InteractiveObject
 	@:noCompletion private function window_onKeyDown(key:KeyCode, modifier:KeyModifier):Void
 	{
 		inline function isModifierPressed()
-			return #if mac modifier.metaKey #elseif js(modifier.metaKey || modifier.ctrlKey) #else (modifier.ctrlKey && !modifier.altKey) #end;
+		{
+			#if (mac || ios || tvos)
+			return modifier.metaKey;
+			#elseif js
+			return modifier.metaKey || modifier.ctrlKey;
+			#else
+			return modifier.ctrlKey && !modifier.altKey;
+			#end
+		}
 
 		switch (key)
 		{
@@ -3671,17 +3747,18 @@ class TextField extends InteractiveObject
 			#if !js
 			case V:
 				#if lime
-				if (#if mac modifier.metaKey #else modifier.ctrlKey && !modifier.altKey #end)
+				if (isModifierPressed())
 				{
-					if (Clipboard.text != null)
+					var clipboardText = Clipboard.text;
+					if (clipboardText != null)
 					{
-						var te = new TextEvent(TextEvent.TEXT_INPUT, true, true, Clipboard.text);
+						var te = new TextEvent(TextEvent.TEXT_INPUT, true, true, clipboardText);
 
 						dispatchEvent(te);
 
 						if (!te.isDefaultPrevented())
 						{
-							__replaceSelectedText(Clipboard.text, true);
+							__replaceSelectedText(clipboardText, true);
 
 							dispatchEvent(new Event(Event.CHANGE, true));
 						}

@@ -480,7 +480,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 							  and the shader specifies an image input that isn't
 							  provided.
 		@throws ArgumentError When `filters` includes a ShaderFilter, a
-							  ByteArray or Vector.<Number> instance as a shader
+							  ByteArray or Vector<Float> instance as a shader
 							  input, and the `width` and
 							  `height` properties aren't specified for
 							  the ShaderInput object, or the specified values
@@ -553,6 +553,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		@see [Masking display objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/masking-display-objects.html)
 	**/
 	public var mask(get, set):DisplayObject;
+
+	/**
+		Obtains the meta data object of the DisplayObject instance if meta data
+		was stored alongside the the instance of this DisplayObject in the SWF
+		file through a PlaceObject4 tag.
+	**/
+	public var metaData(get, set):Dynamic;
+
+	// normal masks cannot be shared by multiple display objects, but swfs may
+	// define clipping layers, which involve depth checks where multiple display
+	// objects are allowed to be masked.
+	@:noCompletion private var clippingLayer(get, set):DisplayObject;
+
+	@:noCompletion private var __hasClippingLayer:Bool = false;
 
 	/**
 		Indicates the x coordinate of the mouse or user input device position, in
@@ -860,10 +874,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	/**
 		An object with properties pertaining to a display object's matrix, color
-		transform, and pixel bounds. The specific properties  -  matrix,
+		transform, and pixel bounds. The specific properties — matrix,
 		colorTransform, and three read-only properties
 		(`concatenatedMatrix`, `concatenatedColorTransform`,
-		and `pixelBounds`)  -  are described in the entry for the
+		and `pixelBounds`) — are described in the entry for the
 		Transform class.
 
 		Each of the transform object's properties is itself an object. This
@@ -973,6 +987,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __loaderInfo:LoaderInfo;
 	@:noCompletion private var __mask:DisplayObject;
 	@:noCompletion private var __maskTarget:DisplayObject;
+	@:noCompletion private var __metaData:Dynamic;
 	@:noCompletion private var __name:String;
 	@:noCompletion private var __objectTransform:Transform;
 	@:noCompletion private var __renderable:Bool;
@@ -1046,6 +1061,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			"mask": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mask (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mask (v); }")
+			},
+			"metaData": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_metaData (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_metaData (v); }")
 			},
 			"mouseX": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mouseX (); }")
@@ -1458,20 +1477,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__cacheBitmapData.dispose();
 			__cacheBitmapData = null;
 		}
+
+		if (__cacheBitmapData2 != null)
+		{
+			__cacheBitmapData2.dispose();
+			__cacheBitmapData2 = null;
+		}
+
+		if (__cacheBitmapData3 != null)
+		{
+			__cacheBitmapData3.dispose();
+			__cacheBitmapData3 = null;
+		}
 	}
 
 	@:noCompletion private function __dispatch(event:Event):Bool
 	{
 		if (__eventMap != null && hasEventListener(event.type))
 		{
-			var result = super.__dispatchEvent(event);
-
-			if (event.__isCanceled)
-			{
-				return true;
-			}
-
-			return result;
+			return super.__dispatchEvent(event);
 		}
 
 		return true;
@@ -1482,13 +1506,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private override function __dispatchEvent(event:Event):Bool
 	{
 		var parent = event.bubbles ? this.parent : null;
-		var result = super.__dispatchEvent(event);
+		var atTargetResult = super.__dispatchEvent(event);
 
 		if (event.__isCanceled)
 		{
-			return true;
+			return atTargetResult;
 		}
 
+		var bubblingResult = true;
 		if (parent != null && parent != this)
 		{
 			event.eventPhase = EventPhase.BUBBLING_PHASE;
@@ -1498,10 +1523,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				event.target = this;
 			}
 
-			parent.__dispatchEvent(event);
+			bubblingResult = parent.__dispatchEvent(event);
 		}
 
-		return result;
+		return atTargetResult && bubblingResult;
 	}
 
 	@:noCompletion private function __dispatchWithCapture(event:Event):Bool
@@ -1511,13 +1536,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			event.target = this;
 		}
 
+		var capturingResult = true;
 		if (parent != null)
 		{
 			event.eventPhase = CAPTURING_PHASE;
 
 			if (parent == stage)
 			{
-				parent.__dispatch(event);
+				capturingResult = parent.__dispatch(event);
 			}
 			else
 			{
@@ -1534,16 +1560,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 				for (j in 0...i)
 				{
-					stack[i - j - 1].__dispatch(event);
+					capturingResult = stack[i - j - 1].__dispatch(event) && capturingResult;
 				}
 
 				__tempStack.release(stack);
+			}
+
+			if (event.__isCanceled)
+			{
+				return capturingResult;
 			}
 		}
 
 		event.eventPhase = AT_TARGET;
 
-		return __dispatchEvent(event);
+		var atTargetResult = __dispatchEvent(event);
+
+		return capturingResult && atTargetResult;
 	}
 
 	@:noCompletion private function __enterFrame(deltaTime:Int):Void {}
@@ -1958,6 +1991,39 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
+	@:noCompletion private function __setMask(value:DisplayObject):Void
+	{
+		if (value != __mask)
+		{
+			__setTransformDirty();
+			__setRenderDirty();
+		}
+
+		if (__mask != null)
+		{
+			__mask.__isMask = false;
+			__mask.__maskTarget = null;
+			__mask.__setTransformDirty();
+			__mask.__setRenderDirty();
+		}
+
+		if (value != null)
+		{
+			value.__isMask = true;
+			value.__maskTarget = this;
+			value.__setWorldTransformInvalid();
+		}
+
+		if (__cacheBitmap != null && __cacheBitmap.clippingLayer != value)
+		{
+			// the cache bitmap should not take ownership of the mask, so take
+			// advantage of the fact that clipping layers can be shared
+			__cacheBitmap.clippingLayer = value;
+		}
+
+		__mask = value;
+	}
+
 	// Get & Set Methods
 	@:keep @:noCompletion private function get_alpha():Float
 	{
@@ -2114,33 +2180,35 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			value.__maskTarget.mask = null;
 		}
 
-		if (value != __mask)
-		{
-			__setTransformDirty();
-			__setRenderDirty();
-		}
+		__setMask(value);
 
-		if (__mask != null)
-		{
-			__mask.__isMask = false;
-			__mask.__maskTarget = null;
-			__mask.__setTransformDirty();
-			__mask.__setRenderDirty();
-		}
+		return __mask;
+	}
 
-		if (value != null)
-		{
-			value.__isMask = true;
-			value.__maskTarget = this;
-			value.__setWorldTransformInvalid();
-		}
+	@:noCompletion private function get_metaData():Dynamic
+	{
+		return __metaData;
+	}
 
-		if (__cacheBitmap != null && __cacheBitmap.mask != value)
-		{
-			__cacheBitmap.mask = value;
-		}
+	@:noCompletion private function set_metaData(value:Dynamic):Dynamic
+	{
+		return __metaData = value;
+	}
 
-		return __mask = value;
+	@:noCompletion private function get_clippingLayer():DisplayObject
+	{
+		if (!__hasClippingLayer)
+		{
+			return null;
+		}
+		return __mask;
+	}
+
+	@:noCompletion private function set_clippingLayer(value:DisplayObject):DisplayObject
+	{
+		__hasClippingLayer = value != null;
+		__setMask(value);
+		return __mask;
 	}
 
 	@:noCompletion private function get_mouseX():Float
@@ -2255,7 +2323,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			__scaleX = value;
 
-			if (__transform.b == 0)
+			if (__rotation == 0)
 			{
 				if (value != __transform.a) __setTransformDirty();
 				__transform.a = value;
@@ -2289,7 +2357,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			__scaleY = value;
 
-			if (__transform.c == 0)
+			if (__rotation == 0)
 			{
 				if (value != __transform.d) __setTransformDirty();
 				__transform.d = value;
@@ -2347,7 +2415,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		__setTransformDirty();
 
-		if (__supportDOM)
+		if (__supportDOM || cacheAsBitmap)
 		{
 			__setRenderDirty();
 		}

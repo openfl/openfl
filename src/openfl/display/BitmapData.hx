@@ -140,6 +140,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private static var __textureInternalFormat:Int;
 	#if lime
 	@:noCompletion private static var __tempVector:Vector2 = new Vector2();
+	@:noCompletion private static var __fillRectRectangle:Rectangle = new Rectangle();
 	#end
 
 	/**
@@ -154,8 +155,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
 	public var image(default, null):#if lime Image #else Dynamic #end;
-
-	// #if !flash_doc_gen
 
 	/**
 		Defines whether the bitmap image is readable. Hardware-only bitmap images
@@ -172,8 +171,6 @@ class BitmapData implements IBitmapDrawable
 		will need to be recreated if the current hardware rendering context is lost.
 	**/
 	@:beta public var readable(default, null):Bool;
-
-	// #end
 
 	/**
 		The rectangle that defines the size and location of the bitmap image. The
@@ -932,6 +929,11 @@ class BitmapData implements IBitmapDrawable
 		if (matrix != null)
 		{
 			transform.concat(matrix);
+		}
+
+		if (sourceAsDisplayObject != null && sourceAsDisplayObject.__scrollRect != null)
+		{
+			transform.translate(-sourceAsDisplayObject.__scrollRect.x, -sourceAsDisplayObject.__scrollRect.y);
 		}
 
 		var clipMatrix:Matrix = null;
@@ -2400,12 +2402,10 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (!readable) return false;
 
-		// #if !openfljs
 		if ((secondObject is Bitmap))
 		{
 			secondObject = cast(secondObject, Bitmap).__bitmapData;
 		}
-		// #end
 
 		if ((secondObject is Point))
 		{
@@ -3229,10 +3229,24 @@ class BitmapData implements IBitmapDrawable
 
 			if (useScissor)
 			{
-				context.setScissorRectangle(rect);
+				var x = Math.floor(rect.x);
+				var y = Math.floor(rect.y);
+				var width = (rect.width > 0 ? Math.ceil(rect.right) - x : 0);
+				var height = (rect.height > 0 ? Math.ceil(rect.bottom) - y : 0);
+				#if !openfl_dpi_aware
+				if (context.__backBufferWantsBestResolution)
+				{
+					x = Math.floor(rect.x / context.__stage.window.scale);
+					y = Math.floor(rect.y / context.__stage.window.scale);
+					width = (rect.width > 0 ? Math.ceil(rect.right / context.__stage.window.scale) - x : 0);
+					height = (rect.height > 0 ? Math.ceil(rect.bottom / context.__stage.window.scale) - y : 0);
+				}
+				#end
+				__fillRectRectangle.setTo(x, y, width, height);
+				context.setScissorRectangle(__fillRectRectangle);
 			}
 
-			context.clear(color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, transparent ? color.a / 0xFF : 1, 0, 0, Context3DClearMask.COLOR);
+			context.__clear(useScissor, color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, transparent ? color.a / 0xFF : 1, 0, 0, Context3DClearMask.COLOR);
 
 			if (useScissor)
 			{

@@ -1,6 +1,8 @@
 package;
 
 import openfl.display.Stage;
+import openfl.events.EventPhase;
+import openfl.events.MouseEvent;
 import openfl.Lib;
 import utest.Assert;
 import utest.Test;
@@ -246,4 +248,53 @@ class StageTest extends Test
 		Assert.notNull(exists);
 		#end
 	}
+
+	#if !flash
+	public function test_mouseDownEventStageTargetPhases()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseDown capture phase event test");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
+		var captured = false;
+		var dispatchedToTarget = false;
+		function stage_mouseDownHandler(event:MouseEvent):Void
+		{
+			Assert.isFalse(dispatchedToTarget);
+			dispatchedToTarget = true;
+			Assert.isTrue(captured);
+			Assert.equals(stage, event.target);
+			Assert.equals(stage, event.currentTarget);
+			Assert.equals(EventPhase.AT_TARGET, event.eventPhase);
+		}
+		stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_mouseDownHandler);
+		function stage_mouseDownCaptureHandler(event:MouseEvent):Void
+		{
+			Assert.isFalse(captured);
+			captured = true;
+			Assert.isFalse(dispatchedToTarget);
+			Assert.equals(stage, event.target);
+			Assert.equals(stage, event.currentTarget);
+			Assert.equals(EventPhase.CAPTURING_PHASE, event.eventPhase);
+		}
+		stage.addEventListener(MouseEvent.MOUSE_DOWN, stage_mouseDownCaptureHandler, true);
+
+		stage.window.onMouseDown.dispatch(25.0, 35.0, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(dispatchedToTarget);
+		Assert.isTrue(captured);
+
+		stage.removeEventListener(MouseEvent.MOUSE_DOWN, stage_mouseDownHandler);
+		stage.removeEventListener(MouseEvent.MOUSE_DOWN, stage_mouseDownCaptureHandler, true);
+	}
+	#end
 }

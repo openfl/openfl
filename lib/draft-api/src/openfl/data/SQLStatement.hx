@@ -1,4 +1,5 @@
 package openfl.data;
+
 import openfl.utils.Object;
 import openfl.errors.SQLError;
 import openfl.events.Event;
@@ -17,7 +18,6 @@ import sys.thread.Deque;
 @:access(openfl.data.SQLConnection)
 class SQLStatement extends EventDispatcher
 {
-
 	public var executing(get, null):Bool;
 	public var itemClass:Class<Dynamic>;
 	public var parameters(get, null):Object;
@@ -69,12 +69,12 @@ class SQLStatement extends EventDispatcher
 		{
 			__sqlConnection.__addToQue(__executeAsync(text, this, prefetch));
 		}
-		else {
+		else
+		{
 			__prefetch = prefetch;
 			__resultSet = __connection.request(text);
 			__queueResult();
 		}
-
 	}
 
 	private function __executeAsync(sql:String, statement:SQLStatement, prefetch:Int):Function
@@ -158,7 +158,8 @@ class SQLStatement extends EventDispatcher
 		{
 			__sqlConnection.__addToQue(__nextAsync(this, prefetch));
 		}
-		else {
+		else
+		{
 			if (__resultSet != null)
 			{
 				__prefetch = prefetch;
@@ -173,7 +174,8 @@ class SQLStatement extends EventDispatcher
 					__prefetch = 0;
 				}
 			}
-			else {
+			else
+			{
 				throw "SQLite Error - invalid result set";
 			}
 		}
@@ -192,7 +194,7 @@ class SQLStatement extends EventDispatcher
 				if (__resultSet != null)
 				{
 					var hasNext:Bool = __resultSet.hasNext();
-					
+
 					if (hasNext)
 					{
 						isExecuting = true;
@@ -216,7 +218,7 @@ class SQLStatement extends EventDispatcher
 			message.event = event;
 			message.prefetch = prefetch;
 			message.executing = isExecuting;
-			
+
 			__sqlConnection.__sqlWorker.sendProgress(message);
 		}
 	}
@@ -238,7 +240,8 @@ class SQLStatement extends EventDispatcher
 			__async = value.__async;
 			__connection = value.__connection;
 		}
-		else {
+		else
+		{
 			__connection = null;
 			__async = false;
 		}
@@ -249,5 +252,4 @@ class SQLStatement extends EventDispatcher
 	{
 		return __sqlConnection;
 	}
-
 }

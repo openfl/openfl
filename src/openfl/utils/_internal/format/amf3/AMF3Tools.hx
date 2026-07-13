@@ -35,6 +35,7 @@ import haxe.ds.ObjectMap;
 import haxe.ds.Vector as HaxeVector;
 import haxe.Constraints.IMap;
 import openfl.Lib;
+import openfl.Lib;
 import openfl.Vector;
 
 class AMF3Tools
@@ -150,7 +151,7 @@ class AMF3Tools
 			case AArray(_, _): array(a);
 			case AIntVector(_): intVector(a);
 			case AFloatVector(_): floatVector(a);
-			case AObjectVector(_): objectVector(a);
+			case AObjectVector(_, _): objectVector(a);
 			case AObject(_, _, _): object(a);
 			case AExternal(_): external(a);
 			case AXml(_): xml(a);
@@ -225,7 +226,7 @@ class AMF3Tools
 	// 	return switch (a)
 	// 	{
 	// 		case AArray(a, m):
-	// 			var b = [];
+	// 			var b:Array<Dynamic> = [];
 	// 			for (f in a)
 	// 				b.push(decode(f));
 	// 			var c = new Map<String, Dynamic>();
@@ -242,7 +243,7 @@ class AMF3Tools
 		return switch (a)
 		{
 			case AArray(a, m):
-				var b = [];
+				var b:Array<Dynamic> = [];
 				for (f in a)
 					b.push(decode(f));
 				b;
@@ -292,7 +293,7 @@ class AMF3Tools
 		return switch (a)
 		{
 			case AObject(f, _, className):
-				var o = null;
+				var o:Dynamic = null;
 				if (className != null && className != "")
 				{
 					var cls = Lib.getClassByAlias(className);

@@ -39,14 +39,16 @@ class CairoGraphics
 	#if lime_cairo
 	private static var SIN45:Float = 0.70710678118654752440084436210485;
 	private static var TAN22:Float = 0.4142135623730950488016887242097;
+	private static var KAPPA = 0.5522848;
 	private static var allowSmoothing:Bool;
-	private static var bitmapFill:BitmapData;
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
 	private static var cairo:Cairo;
 	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
 	private static var fillPattern:CairoPattern;
-	private static var fillPatternMatrix:Matrix;
+	private static var bitmapFill:BitmapData;
+	private static var bitmapFillMatrix:Matrix;
+	private static var fillScale9Bounds:Scale9GridBounds;
 	private static var graphics:Graphics;
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
@@ -55,6 +57,9 @@ class CairoGraphics
 	private static var pendingMatrix:Matrix;
 	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
 	private static var strokePattern:CairoPattern;
+	private static var bitmapStroke:BitmapData;
+	private static var bitmapStrokeMatrix:Matrix;
+	private static var strokeScale9Bounds:Scale9GridBounds;
 	private static var tempMatrix3 = new Matrix3();
 	private static var worldAlpha:Float;
 
@@ -70,6 +75,44 @@ class CairoGraphics
 			cairo.closePath();
 		}
 
+		if (!hitTesting)
+		{
+			var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
+			#if (openfl_legacy_scale9grid && !cairo)
+			var hasScale9Grid:Bool = false;
+			#else
+			// no scale9Grid for masks
+			// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+			var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
+			#end
+
+			if (bitmapStrokeMatrix != null || (hasScale9Grid && strokeScale9Bounds != null && bitmapStroke != null))
+			{
+				var matrix = Matrix.__pool.get();
+				if (bitmapStrokeMatrix != null)
+				{
+					matrix.copyFrom(bitmapStrokeMatrix);
+				}
+				else
+				{
+					matrix.identity();
+				}
+				if (hasScale9Grid && strokeScale9Bounds != null && bitmapStroke != null)
+				{
+					var scaleX = strokeScale9Bounds.getScaleX();
+					var scaleY = strokeScale9Bounds.getScaleY();
+					if (scaleX > 0.0 && scaleY > 0.0)
+					{
+						matrix.scale(scaleX, scaleY);
+					}
+				}
+
+				matrix.invert();
+				strokePattern.matrix = matrix.__toMatrix3();
+				Matrix.__pool.release(matrix);
+			}
+		}
+
 		cairo.source = strokePattern;
 		if (!hitTesting) cairo.strokePreserve();
 
@@ -81,7 +124,7 @@ class CairoGraphics
 		cairo.newPath();
 	}
 
-	private static function createImagePattern(bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool, smooth:Bool):CairoPattern
+	private static function createImagePattern(bitmapFill:BitmapData, bitmapRepeat:Bool, smooth:Bool):CairoPattern
 	{
 		var pattern = CairoPattern.createForSurface(bitmapFill.getSurface());
 		pattern.filter = (smooth && allowSmoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
@@ -90,8 +133,13 @@ class CairoGraphics
 		{
 			pattern.extend = CairoExtend.REPEAT;
 		}
-
-		fillPatternMatrix = matrix;
+		else
+		{
+			// when flash doesn't repeat the image, it extends the pixels on the
+			// edges to fill the remaining space, which is equivalent to the
+			// CairoExtend.PAD option.
+			pattern.extend = CairoExtend.PAD;
+		}
 
 		return pattern;
 	}
@@ -107,20 +155,67 @@ class CairoGraphics
 		if (matrix == null)
 		{
 			matrix = Matrix.__pool.get();
+			matrix.identity();
 			releaseMatrix = true;
 		}
 
 		switch (type)
 		{
 			case RADIAL:
+				focalPointRatio = focalPointRatio > 1.0 ? 1.0 : focalPointRatio < -1.0 ? -1.0 : focalPointRatio;
+
+				// focal center
 				point = Point.__pool.get();
-				point.setTo(1638.4, 0);
+				point.x = focalPointRatio * 819.2;
+				point.y = 0.0;
 				matrix.__transformPoint(point);
 
-				var x = matrix.tx + graphics.__bounds.x;
-				var y = matrix.ty + graphics.__bounds.y;
+				// center
+				point2 = Point.__pool.get();
+				point2.setTo(0.0, 0.0);
+				matrix.__transformPoint(point2);
 
-				pattern = CairoPattern.createRadial(x, y, 0, x, y, Math.abs((point.x - matrix.tx) / 2));
+				// end
+				var point3 = Point.__pool.get();
+				point3.x = 819.2;
+				point3.y = 0.0;
+				matrix.__transformPoint(point3);
+
+				var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
+				#if (openfl_legacy_scale9grid && !cairo)
+				var hasScale9Grid:Bool = false;
+				#else
+				// no scale9Grid for masks
+				// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
+				#end
+				if (hasScale9Grid)
+				{
+					point.x = toScale9Position(point.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+					point.y = toScale9Position(point.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+					point2.x = toScale9Position(point2.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+					point2.y = toScale9Position(point2.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+					point3.x = toScale9Position(point3.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+					point3.y = toScale9Position(point3.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+				}
+
+				var dx = point3.x - point2.x;
+				var dy = point3.y - point2.y;
+
+				Point.__pool.release(point3);
+
+				// cairo can't draw ellipical radial gradients; they must be
+				// circular. in other words, the same radius in both directions.
+				// we basically take the average and use that. not ideal, but
+				// probably as close as we can get to flash.
+				var radius = Math.sqrt(dx * dx + dy * dy);
+
+				point.x += graphics.__bounds.x;
+				point2.x += graphics.__bounds.x;
+				point.y += graphics.__bounds.y;
+				point2.y += graphics.__bounds.y;
+
+				pattern = CairoPattern.createRadial(point.x, point.y, 0.0, point2.x, point2.y, radius);
 
 			case LINEAR:
 				point = Point.__pool.get();
@@ -130,6 +225,22 @@ class CairoGraphics
 				point2 = Point.__pool.get();
 				point2.setTo(819.2, 0);
 				matrix.__transformPoint(point2);
+
+				var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
+				#if (openfl_legacy_scale9grid && !cairo)
+				var hasScale9Grid:Bool = false;
+				#else
+				// no scale9Grid for masks
+				// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+				var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
+				#end
+				if (hasScale9Grid)
+				{
+					point.x = toScale9Position(point.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+					point.y = toScale9Position(point.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+					point2.x = toScale9Position(point2.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+					point2.y = toScale9Position(point2.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+				}
 
 				point.x += graphics.__bounds.x;
 				point2.x += graphics.__bounds.x;
@@ -170,7 +281,12 @@ class CairoGraphics
 		return pattern;
 	}
 
-	private static function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>):Void
+	/**
+		Draws a rounded rectangle that starts and stops at the bottom-right
+		corner, just above the ellipse height.
+	**/
+	private static function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>, ?scale9Grid:Rectangle,
+			?scale9UnscaledWidth:Float, ?scale9UnscaledHeight:Float, ?scaleX:Float, ?scaleY:Float):Void
 	{
 		if (ellipseHeight == null) ellipseHeight = ellipseWidth;
 
@@ -187,26 +303,203 @@ class CairoGraphics
 			cy1 = -ellipseHeight + (ellipseHeight * SIN45),
 			cy2 = -ellipseHeight + (ellipseHeight * TAN22);
 
-		cairo.moveTo(xe, ye - ellipseHeight);
-		quadraticCurveTo(xe, ye + cy2, xe + cx1, ye + cy1);
-		quadraticCurveTo(xe + cx2, ye, xe - ellipseWidth, ye);
-		cairo.lineTo(x + ellipseWidth, ye);
-		quadraticCurveTo(x - cx2, ye, x - cx1, ye + cy1);
-		quadraticCurveTo(x, ye + cy2, x, ye - ellipseHeight);
-		cairo.lineTo(x, y + ellipseHeight);
-		quadraticCurveTo(x, y - cy2, x - cx1, y - cy1);
-		quadraticCurveTo(x - cx2, y, x + ellipseWidth, y);
-		cairo.lineTo(xe - ellipseWidth, y);
-		quadraticCurveTo(xe + cx2, y, xe + cx1, y - cy1);
-		quadraticCurveTo(xe, y - cy2, xe, y + ellipseHeight);
-		cairo.lineTo(xe, ye - ellipseHeight);
+		if (scale9Grid != null)
+		{
+			var scaledX = toScale9Position(x, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledY = toScale9Position(y, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+
+			var scaledXe = toScale9Position(xe, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYe = toScale9Position(ye, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+
+			var scaledXeMinusEw = toScale9Position(xe - ellipseWidth, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYeMinusEh = toScale9Position(ye - ellipseHeight, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+
+			var scaledXePlusCx1 = toScale9Position(xe + cx1, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYePlusCy1 = toScale9Position(ye + cy1, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXePlusCx2 = toScale9Position(xe + cx2, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYePlusCy2 = toScale9Position(ye + cy2, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+
+			var scaledXPlusEw = toScale9Position(x + ellipseWidth, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYPlusEh = toScale9Position(y + ellipseHeight, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+
+			var scaledXMinusCx1 = toScale9Position(x - cx1, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYMinusCy1 = toScale9Position(y - cy1, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXMinusCx2 = toScale9Position(x - cx2, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYMinusCy2 = toScale9Position(y - cy2, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+
+			if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
+			{
+				applyScale9GridUnscaledX(x);
+				applyScale9GridUnscaledY(y);
+				applyScale9GridUnscaledX(xe);
+				applyScale9GridUnscaledY(ye);
+				applyScale9GridScaledX(scaledX);
+				applyScale9GridScaledY(scaledY);
+				applyScale9GridScaledX(scaledXe);
+				applyScale9GridScaledY(scaledYe);
+			}
+
+			cairo.moveTo(scaledXe, scaledYeMinusEh);
+			quadraticCurveTo(scaledXe, scaledYePlusCy2, scaledXePlusCx1, scaledYePlusCy1);
+			quadraticCurveTo(scaledXePlusCx2, scaledYe, scaledXeMinusEw, scaledYe);
+			cairo.lineTo(scaledXPlusEw, scaledYe);
+			quadraticCurveTo(scaledXMinusCx2, scaledYe, scaledXMinusCx1, scaledYePlusCy1);
+			quadraticCurveTo(scaledX, scaledYePlusCy2, scaledX, scaledYeMinusEh);
+			cairo.lineTo(scaledX, scaledYPlusEh);
+			quadraticCurveTo(scaledX, scaledYMinusCy2, scaledXMinusCx1, scaledYMinusCy1);
+			quadraticCurveTo(scaledXMinusCx2, scaledY, scaledXPlusEw, scaledY);
+			cairo.lineTo(scaledXeMinusEw, scaledY);
+			quadraticCurveTo(scaledXePlusCx2, scaledY, scaledXePlusCx1, scaledYMinusCy1);
+			quadraticCurveTo(scaledXe, scaledYMinusCy2, scaledXe, scaledYPlusEh);
+			cairo.lineTo(scaledXe, scaledYeMinusEh);
+		}
+		else
+		{
+			cairo.moveTo(xe, ye - ellipseHeight);
+			quadraticCurveTo(xe, ye + cy2, xe + cx1, ye + cy1);
+			quadraticCurveTo(xe + cx2, ye, xe - ellipseWidth, ye);
+			cairo.lineTo(x + ellipseWidth, ye);
+			quadraticCurveTo(x - cx2, ye, x - cx1, ye + cy1);
+			quadraticCurveTo(x, ye + cy2, x, ye - ellipseHeight);
+			cairo.lineTo(x, y + ellipseHeight);
+			quadraticCurveTo(x, y - cy2, x - cx1, y - cy1);
+			quadraticCurveTo(x - cx2, y, x + ellipseWidth, y);
+			cairo.lineTo(xe - ellipseWidth, y);
+			quadraticCurveTo(xe + cx2, y, xe + cx1, y - cy1);
+			quadraticCurveTo(xe, y - cy2, xe, y + ellipseHeight);
+			cairo.lineTo(xe, ye - ellipseHeight);
+		}
+	}
+
+	/**
+		Draws an ellipse that starts and stops at the right-most point, centered
+		vertically.
+	**/
+	private static function drawEllipse(x:Float, y:Float, width:Float, height:Float, ?scale9Grid:Rectangle, ?scale9UnscaledWidth:Float,
+			?scale9UnscaledHeight:Float, ?scaleX:Float, ?scaleY:Float):Void
+	{
+		if (width == 0.0 && height == 0.0)
+		{
+			// flash doesn't draw the ellipse if both the width and height are zero
+			return;
+		}
+
+		var ox = (width / 2) * KAPPA; // control point offset horizontal
+		var oy = (height / 2) * KAPPA; // control point offset vertical
+		var xe = x + width; // x-end
+		var ye = y + height; // y-end
+		var xm = x + width / 2; // x-middle
+		var ym = y + height / 2; // y-middle
+
+		if (scale9Grid != null)
+		{
+			var scaledX = toScale9Position(x, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledY = toScale9Position(y, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXe = toScale9Position(xe, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYe = toScale9Position(ye, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXm = toScale9Position(xm, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYm = toScale9Position(ym, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXmPlusOx = toScale9Position(xm + ox, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYmPlusOy = toScale9Position(ym + oy, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXmMinuxOx = toScale9Position(xm - ox, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYmMinuxOy = toScale9Position(ym - oy, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+
+			if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
+			{
+				applyScale9GridUnscaledX(x);
+				applyScale9GridUnscaledY(y);
+				applyScale9GridUnscaledX(xe);
+				applyScale9GridUnscaledY(ye);
+				applyScale9GridScaledX(scaledX);
+				applyScale9GridScaledY(scaledY);
+				applyScale9GridScaledX(scaledXe);
+				applyScale9GridScaledY(scaledYe);
+			}
+
+			// TODO: Flash seems to use more curves than this
+			cairo.moveTo(scaledXe, scaledYm);
+			cairo.curveTo(scaledXe, scaledYmPlusOy, scaledXmPlusOx, scaledYe, scaledXm, scaledYe);
+			cairo.curveTo(scaledXmMinuxOx, scaledYe, scaledX, scaledYmPlusOy, scaledX, scaledYm);
+			cairo.curveTo(scaledX, scaledYmMinuxOy, scaledXmMinuxOx, scaledY, scaledXm, scaledY);
+			cairo.curveTo(scaledXmPlusOx, scaledY, scaledXe, scaledYmMinuxOy, scaledXe, scaledYm);
+		}
+		else
+		{
+			cairo.moveTo(xe, ym);
+			cairo.curveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+			cairo.curveTo(xm - ox, ye, x, ym + oy, x, ym);
+			cairo.curveTo(x, ym - oy, xm - ox, y, xm, y);
+			cairo.curveTo(xm + ox, y, xe, ym - oy, xe, ym);
+		}
+	}
+
+	/**
+		Draws a circle that starts and stops at the right-most point, centered
+		vertically.
+	**/
+	private static function drawCircle(x:Float, y:Float, radius:Float, ?scale9Grid:Rectangle, ?scale9UnscaledWidth:Float, ?scale9UnscaledHeight:Float,
+			?scaleX:Float, ?scaleY:Float):Void
+	{
+		if (radius == 0.0)
+		{
+			// flash doesn't draw the circle if the radius is zero
+			return;
+		}
+
+		if (scale9Grid != null)
+		{
+			x -= radius;
+			y -= radius;
+			var width = radius * 2;
+			var height = radius * 2;
+			var ox = radius * KAPPA; // control point offset horizontal
+			var oy = radius * KAPPA; // control point offset vertical
+			var xe = x + width; // x-end
+			var ye = y + height; // y-end
+			var xm = x + radius; // x-middle
+			var ym = y + radius; // y-middle
+
+			var scaledX = toScale9Position(x, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledY = toScale9Position(y, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXe = toScale9Position(xe, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYe = toScale9Position(ye, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXm = toScale9Position(xm, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYm = toScale9Position(ym, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXmPlusOx = toScale9Position(xm + ox, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYmPlusOy = toScale9Position(ym + oy, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXmMinuxOx = toScale9Position(xm - ox, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
+			var scaledYmMinuxOy = toScale9Position(ym - oy, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+
+			if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
+			{
+				applyScale9GridUnscaledX(x);
+				applyScale9GridUnscaledY(y);
+				applyScale9GridUnscaledX(xe);
+				applyScale9GridUnscaledY(ye);
+				applyScale9GridScaledX(scaledX);
+				applyScale9GridScaledY(scaledY);
+				applyScale9GridScaledX(scaledXe);
+				applyScale9GridScaledY(scaledYe);
+			}
+
+			// TODO: Flash seems to use more curves than this
+			cairo.moveTo(scaledXe, scaledYm);
+			cairo.curveTo(scaledXe, scaledYmPlusOy, scaledXmPlusOx, scaledYe, scaledXm, scaledYe);
+			cairo.curveTo(scaledXmMinuxOx, scaledYe, scaledX, scaledYmPlusOy, scaledX, scaledYm);
+			cairo.curveTo(scaledX, scaledYmMinuxOy, scaledXmMinuxOx, scaledY, scaledXm, scaledY);
+			cairo.curveTo(scaledXmPlusOx, scaledY, scaledXe, scaledYmMinuxOy, scaledXe, scaledYm);
+		}
+		else
+		{
+			cairo.moveTo(x + radius, y);
+			cairo.arc(x, y, radius, 0, Math.PI * 2);
+		}
 	}
 
 	private static function endFill():Void
 	{
 		cairo.newPath();
 		playCommands(fillCommands, false);
-		fillCommands.clear();
 	}
 
 	private static function endStroke():Void
@@ -214,7 +507,90 @@ class CairoGraphics
 		cairo.newPath();
 		playCommands(strokeCommands, true);
 		cairo.closePath();
-		strokeCommands.clear();
+	}
+
+	private static function toScale9Position(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
+	{
+		if (scale <= 0.0)
+		{
+			// doesn't render if scaled with negative value
+			return 0.0;
+		}
+		var scale9End = unscaledSize - scale9Center - scale9Start;
+		var size = unscaledSize * scale;
+		var center = size - scale9Start - scale9End;
+		if (pos <= scale9Start)
+		{
+			// start region
+			if (center < 0.0)
+			{
+				return pos * (scale9Start + scale9End + center) / (scale9Start + scale9End);
+			}
+			return pos;
+		}
+		if (pos >= (scale9Start + scale9Center))
+		{
+			// end region
+			if (center < 0.0)
+			{
+				return (scale9Start + (pos - scale9Start - scale9Center)) * (scale9Start + scale9End + center) / (scale9Start + scale9End);
+			}
+			return scale9Start + center + (pos - scale9Start - scale9Center);
+		}
+		// center region
+		if (center < 0.0)
+		{
+			return scale9Start * (scale9Start + scale9End + center) / (scale9Start + scale9End);
+		}
+		return scale9Start + center * (pos - scale9Start) / scale9Center;
+	}
+
+	private static function applyScale9GridUnscaledX(x:Float):Void
+	{
+		if (fillScale9Bounds != null && bitmapFill != null)
+		{
+			fillScale9Bounds.applyUnscaledX(x);
+		}
+		if (strokeScale9Bounds != null && bitmapStroke != null)
+		{
+			strokeScale9Bounds.applyUnscaledX(x);
+		}
+	}
+
+	private static function applyScale9GridUnscaledY(y:Float):Void
+	{
+		if (fillScale9Bounds != null && bitmapFill != null)
+		{
+			fillScale9Bounds.applyUnscaledY(y);
+		}
+		if (strokeScale9Bounds != null && bitmapStroke != null)
+		{
+			strokeScale9Bounds.applyUnscaledY(y);
+		}
+	}
+
+	private static function applyScale9GridScaledX(x:Float):Void
+	{
+		if (fillScale9Bounds != null && bitmapFill != null)
+		{
+			fillScale9Bounds.applyScaledX(x);
+		}
+		if (strokeScale9Bounds != null && bitmapStroke != null)
+		{
+			strokeScale9Bounds.applyScaledX(x);
+		}
+	}
+
+	private static function applyScale9GridScaledY(y:Float):Void
+	{
+		if (fillScale9Bounds != null && bitmapFill != null)
+		{
+			fillScale9Bounds.applyScaledY(y);
+		}
+		if (strokeScale9Bounds != null && bitmapStroke != null)
+		{
+			strokeScale9Bounds.applyScaledY(y);
+		}
 	}
 	#end
 
@@ -232,6 +608,20 @@ class CairoGraphics
 		else
 		{
 			hitTesting = true;
+
+			var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
+			#if (openfl_legacy_scale9grid && !cairo)
+			var hasScale9Grid:Bool = false;
+			#else
+			// no scale9Grid for masks
+			// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+			var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
+			#end
+			if (hasScale9Grid)
+			{
+				x *= graphics.__owner.scaleX;
+				y *= graphics.__owner.scaleY;
+			}
 
 			x -= bounds.x;
 			y -= bounds.y;
@@ -328,6 +718,7 @@ class CairoGraphics
 
 						hasFill = false;
 						bitmapFill = null;
+						bitmapFillMatrix = null;
 
 					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
 						endFill();
@@ -509,19 +900,29 @@ class CairoGraphics
 
 		var hasPath:Bool = false;
 
+		var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
+		#if (openfl_legacy_scale9grid && !cairo)
+		var hasScale9Grid:Bool = false;
+		#else
+		// no scale9Grid for masks
+		// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
+		#end
+		if (!hasScale9Grid)
+		{
+			scale9Grid = null;
+			if (fillScale9Bounds != null)
+			{
+				fillScale9Bounds.clear();
+			}
+			if (strokeScale9Bounds != null)
+			{
+				strokeScale9Bounds.clear();
+			}
+		}
+
 		var data = new DrawCommandReader(commands);
 
-		var x:Float;
-		var y:Float;
-		var width:Float;
-		var height:Float;
-		var kappa = 0.5522848;
-		var ox:Float;
-		var oy:Float;
-		var xe:Float;
-		var ye:Float;
-		var xm:Float;
-		var ym:Float;
 		var r:Float;
 		var g:Float;
 		var b:Float;
@@ -533,14 +934,44 @@ class CairoGraphics
 				case CUBIC_CURVE_TO:
 					var c = data.readCubicCurveTo();
 					hasPath = true;
-					cairo.curveTo(c.controlX1
-						- offsetX, c.controlY1
-						- offsetY, c.controlX2
-						- offsetX, c.controlY2
-						- offsetY, c.anchorX
-						- offsetX,
-						c.anchorY
-						- offsetY);
+
+					if (hasScale9Grid)
+					{
+						var scaledControlX1 = toScale9Position(c.controlX1, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledControlY1 = toScale9Position(c.controlY1, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						var scaledControlX2 = toScale9Position(c.controlX2, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledControlY2 = toScale9Position(c.controlY2, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						var scaledAnchorX = toScale9Position(c.anchorX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledAnchorY = toScale9Position(c.anchorY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+
+						if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
+						{
+							applyScale9GridUnscaledX(c.anchorX);
+							applyScale9GridUnscaledY(c.anchorY);
+							applyScale9GridScaledX(scaledAnchorX);
+							applyScale9GridScaledY(scaledAnchorY);
+						}
+
+						cairo.curveTo(scaledControlX1
+							- offsetX, scaledControlY1
+							- offsetY, scaledControlX2
+							- offsetX, scaledControlY2
+							- offsetY,
+							scaledAnchorX
+							- offsetX, scaledAnchorY
+							- offsetY);
+					}
+					else
+					{
+						cairo.curveTo(c.controlX1
+							- offsetX, c.controlY1
+							- offsetY, c.controlX2
+							- offsetX, c.controlY2
+							- offsetY, c.anchorX
+							- offsetX,
+							c.anchorY
+							- offsetY);
+					}
 
 					positionX = c.anchorX;
 					positionY = c.anchorY;
@@ -548,7 +979,28 @@ class CairoGraphics
 				case CURVE_TO:
 					var c = data.readCurveTo();
 					hasPath = true;
-					quadraticCurveTo(c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+
+					if (hasScale9Grid)
+					{
+						var scaledControlX = toScale9Position(c.controlX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledControlY = toScale9Position(c.controlY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						var scaledAnchorX = toScale9Position(c.anchorX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledAnchorY = toScale9Position(c.anchorY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+
+						if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
+						{
+							applyScale9GridUnscaledX(c.anchorX);
+							applyScale9GridUnscaledY(c.anchorY);
+							applyScale9GridScaledX(scaledAnchorX);
+							applyScale9GridScaledY(scaledAnchorY);
+						}
+
+						quadraticCurveTo(scaledControlX - offsetX, scaledControlY - offsetY, scaledAnchorX - offsetX, scaledAnchorY - offsetY);
+					}
+					else
+					{
+						quadraticCurveTo(c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+					}
 
 					positionX = c.anchorX;
 					positionY = c.anchorY;
@@ -556,43 +1008,82 @@ class CairoGraphics
 				case DRAW_CIRCLE:
 					var c = data.readDrawCircle();
 					hasPath = true;
-					cairo.moveTo(c.x - offsetX + c.radius, c.y - offsetY);
-					cairo.arc(c.x - offsetX, c.y - offsetY, c.radius, 0, Math.PI * 2);
+					drawCircle(c.x - offsetX, c.y - offsetY, c.radius, scale9Grid, bounds.width, bounds.height, graphics.__owner.scaleX,
+						graphics.__owner.scaleY);
+
+					// the right-most point of the circle, centered vertically
+					positionX = c.x + c.radius;
+					positionY = c.y;
+
+					// treat the position after drawCircle() similarly to
+					// when moveTo() is called: it's the start of a new shape!
+					startX = positionX;
+					startY = positionY;
+					setStart = true;
 
 				case DRAW_ELLIPSE:
 					var c = data.readDrawEllipse();
 					hasPath = true;
+					drawEllipse(c.x - offsetX, c.y - offsetY, c.width, c.height, scale9Grid, bounds.width, bounds.height, graphics.__owner.scaleX,
+						graphics.__owner.scaleY);
 
-					x = c.x;
-					y = c.y;
-					width = c.width;
-					height = c.height;
+					// the right-most point of the ellipse, centered vertically
+					positionX = c.x + c.width;
+					positionY = c.y + c.height / 2;
 
-					x -= offsetX;
-					y -= offsetY;
-
-					ox = (width / 2) * kappa; // control point offset horizontal
-					oy = (height / 2) * kappa; // control point offset vertical
-					xe = x + width; // x-end
-					ye = y + height; // y-end
-					xm = x + width / 2; // x-middle
-					ym = y + height / 2; // y-middle
-
-					cairo.moveTo(x, ym);
-					cairo.curveTo(x, ym - oy, xm - ox, y, xm, y);
-					cairo.curveTo(xm + ox, y, xe, ym - oy, xe, ym);
-					cairo.curveTo(xe, ym + oy, xm + ox, ye, xm, ye);
-					cairo.curveTo(xm - ox, ye, x, ym + oy, x, ym);
+					// treat the position after drawEllipse() similarly to
+					// when moveTo() is called: it's the start of a new shape!
+					startX = positionX;
+					startY = positionY;
+					setStart = true;
 
 				case DRAW_ROUND_RECT:
 					var c = data.readDrawRoundRect();
 					hasPath = true;
-					drawRoundRect(c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+					drawRoundRect(c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight, scale9Grid, bounds.width, bounds.height,
+						graphics.__owner.scaleX, graphics.__owner.scaleY);
+
+					// bottom-right corner of the rectangle, above the radius
+					positionX = c.x + c.width;
+					positionY = c.y + c.height - (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
+
+					// treat the position after drawRoundRect() similarly to
+					// when moveTo() is called: it's the start of a new shape!
+					startX = positionX;
+					startY = positionY;
+					setStart = true;
 
 				case LINE_TO:
 					var c = data.readLineTo();
 					hasPath = true;
-					cairo.lineTo(c.x - offsetX, c.y - offsetY);
+
+					if (hasScale9Grid)
+					{
+						var scaledX = toScale9Position(c.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledY = toScale9Position(c.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+
+						if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
+						{
+							applyScale9GridUnscaledX(c.x);
+							applyScale9GridUnscaledY(c.y);
+							applyScale9GridScaledX(scaledX);
+							applyScale9GridScaledY(scaledY);
+						}
+
+						if (positionX != c.x || positionY != c.y)
+						{
+							cairo.lineTo(scaledX - offsetX, scaledY - offsetY);
+						}
+					}
+					else
+					{
+						if (positionX != c.x || positionY != c.y)
+						{
+							// flash doesn't draw the line if the previous
+							// position is equal to the new position
+							cairo.lineTo(c.x - offsetX, c.y - offsetY);
+						}
+					}
 
 					positionX = c.x;
 					positionY = c.y;
@@ -604,18 +1095,37 @@ class CairoGraphics
 
 				case MOVE_TO:
 					var c = data.readMoveTo();
-					cairo.moveTo(c.x - offsetX, c.y - offsetY);
+
+					if (hasScale9Grid)
+					{
+						var scaledX = toScale9Position(c.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledY = toScale9Position(c.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+
+						if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
+						{
+							applyScale9GridUnscaledX(c.x);
+							applyScale9GridUnscaledY(c.y);
+							applyScale9GridScaledX(scaledX);
+							applyScale9GridScaledY(scaledY);
+						}
+
+						cairo.moveTo(scaledX - offsetX, scaledY - offsetY);
+					}
+					else
+					{
+						cairo.moveTo(c.x - offsetX, c.y - offsetY);
+					}
 
 					positionX = c.x;
 					positionY = c.y;
 
-					if (setStart && c.x != startX && c.y != startY)
+					if (setStart && positionX != startX && positionY != startY)
 					{
 						closeGap = true;
 					}
 
-					startX = c.x;
-					startY = c.y;
+					startX = positionX;
+					startY = positionY;
 					setStart = true;
 
 				case LINE_STYLE:
@@ -625,7 +1135,16 @@ class CairoGraphics
 						closePath(true);
 					}
 
-					cairo.moveTo(positionX - offsetX, positionY - offsetY);
+					if (hasScale9Grid)
+					{
+						var scaledX = toScale9Position(positionX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledY = toScale9Position(positionY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						cairo.moveTo(scaledX - offsetX, scaledY - offsetY);
+					}
+					else
+					{
+						cairo.moveTo(positionX - offsetX, positionY - offsetY);
+					}
 
 					if (c.thickness == null)
 					{
@@ -681,6 +1200,9 @@ class CairoGraphics
 						}
 					}
 
+					bitmapStroke = null;
+					bitmapStrokeMatrix = null;
+
 				case LINE_GRADIENT_STYLE:
 					var c = data.readLineGradientStyle();
 					if (stroke && hasStroke)
@@ -688,11 +1210,24 @@ class CairoGraphics
 						closePath(true);
 					}
 
-					cairo.moveTo(positionX - offsetX, positionY - offsetY);
+					if (hasScale9Grid)
+					{
+						var scaledX = toScale9Position(positionX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledY = toScale9Position(positionY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						cairo.moveTo(scaledX - offsetX, scaledY - offsetY);
+					}
+					else
+					{
+						cairo.moveTo(positionX - offsetX, positionY - offsetY);
+					}
+
 					strokePattern = createGradientPattern(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
 						c.focalPointRatio);
 
 					hasStroke = true;
+
+					bitmapStroke = null;
+					bitmapStrokeMatrix = null;
 
 				case LINE_BITMAP_STYLE:
 					var c = data.readLineBitmapStyle();
@@ -701,11 +1236,22 @@ class CairoGraphics
 						closePath(true);
 					}
 
-					cairo.moveTo(positionX - offsetX, positionY - offsetY);
+					if (hasScale9Grid)
+					{
+						var scaledX = toScale9Position(positionX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledY = toScale9Position(positionY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						cairo.moveTo(scaledX - offsetX, scaledY - offsetY);
+					}
+					else
+					{
+						cairo.moveTo(positionX - offsetX, positionY - offsetY);
+					}
 
 					if (c.bitmap.readable)
 					{
-						strokePattern = createImagePattern(c.bitmap, c.matrix, c.repeat, c.smooth);
+						strokePattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
+						bitmapStroke = c.bitmap;
+						bitmapStrokeMatrix = c.matrix;
 					}
 					else
 					{
@@ -713,6 +1259,17 @@ class CairoGraphics
 						// drawing solid black because we have no software
 						// pixels to work with
 						strokePattern = CairoPattern.createRGB(0, 0, 0);
+						bitmapStroke = null;
+						bitmapStrokeMatrix = null;
+					}
+
+					if (strokeScale9Bounds != null)
+					{
+						strokeScale9Bounds.clear();
+					}
+					else if (hasScale9Grid && bitmapStroke != null)
+					{
+						strokeScale9Bounds = new Scale9GridBounds();
 					}
 
 					hasStroke = true;
@@ -722,7 +1279,9 @@ class CairoGraphics
 
 					if (c.bitmap.readable)
 					{
-						fillPattern = createImagePattern(c.bitmap, c.matrix, c.repeat, c.smooth);
+						fillPattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
+						bitmapFill = c.bitmap;
+						bitmapFillMatrix = c.matrix;
 					}
 					else
 					{
@@ -730,12 +1289,22 @@ class CairoGraphics
 						// drawing solid black because we have no software
 						// pixels to work with
 						fillPattern = CairoPattern.createRGB(0, 0, 0);
+						bitmapFill = null;
+						bitmapFillMatrix = null;
 					}
 
-					bitmapFill = c.bitmap;
 					bitmapRepeat = c.repeat;
 
 					hasFill = true;
+
+					if (fillScale9Bounds != null)
+					{
+						fillScale9Bounds.clear();
+					}
+					else if (hasScale9Grid && bitmapFill != null)
+					{
+						fillScale9Bounds = new Scale9GridBounds();
+					}
 
 				case BEGIN_FILL:
 					var c = data.readBeginFill();
@@ -745,30 +1314,33 @@ class CairoGraphics
 					}
 					else
 					{
-						if (fillPattern != null)
-						{
-							fillPatternMatrix = null;
-						}
-
 						fillPattern = CairoPattern.createRGBA(((c.color & 0xFF0000) >>> 16) / 0xFF, ((c.color & 0x00FF00) >>> 8) / 0xFF,
 							(c.color & 0x0000FF) / 0xFF, c.alpha);
 						hasFill = true;
 					}
 
 					bitmapFill = null;
+					bitmapFillMatrix = null;
+
+					if (fillScale9Bounds != null)
+					{
+						fillScale9Bounds.clear();
+					}
 
 				case BEGIN_GRADIENT_FILL:
 					var c = data.readBeginGradientFill();
-					if (fillPattern != null)
-					{
-						fillPatternMatrix = null;
-					}
 
 					fillPattern = createGradientPattern(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
 						c.focalPointRatio);
 
 					hasFill = true;
 					bitmapFill = null;
+					bitmapFillMatrix = null;
+
+					if (fillScale9Bounds != null)
+					{
+						fillScale9Bounds.clear();
+					}
 
 				case BEGIN_SHADER_FILL:
 					var c = data.readBeginShaderFill();
@@ -776,10 +1348,10 @@ class CairoGraphics
 
 					if (shaderBuffer.inputCount > 0)
 					{
-						var bitmap = shaderBuffer.inputs[0];
-						if (bitmap.readable)
+						bitmapFill = shaderBuffer.inputs[0];
+						if (bitmapFill.readable)
 						{
-							fillPattern = createImagePattern(bitmap, null, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
+							fillPattern = createImagePattern(bitmapFill, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer.inputFilter[0] != NEAREST);
 						}
 						else
 						{
@@ -788,11 +1360,15 @@ class CairoGraphics
 							// pixels to work with
 							fillPattern = CairoPattern.createRGB(0, 0, 0);
 						}
-
-						bitmapFill = bitmap;
-						bitmapRepeat = false;
-
 						hasFill = true;
+
+						bitmapFillMatrix = null;
+						bitmapRepeat = false;
+					}
+
+					if (fillScale9Bounds != null)
+					{
+						fillScale9Bounds.clear();
 					}
 
 				case DRAW_QUADS:
@@ -837,6 +1413,14 @@ class CairoGraphics
 					// var roundPixels = renderer.__roundPixels;
 					var alpha = CairoGraphics.worldAlpha;
 
+					var scaledPositionX = positionX;
+					var scaledPositionY = positionY;
+					if (hasScale9Grid)
+					{
+						scaledPositionX = toScale9Position(scaledPositionX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						scaledPositionY = toScale9Position(scaledPositionY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+					}
+
 					var ri:Int;
 					var ti:Int;
 
@@ -844,6 +1428,8 @@ class CairoGraphics
 					{
 						ri = (hasIndices ? (indices[i] * 4) : i * 4);
 						if (ri < 0) continue;
+
+						// TODO: scale9Grid
 						tileRect.setTo(rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
 
 						if (tileRect.width <= 0 || tileRect.height <= 0)
@@ -874,8 +1460,8 @@ class CairoGraphics
 							tileTransform.ty = tileRect.y;
 						}
 
-						tileTransform.tx += positionX - offsetX;
-						tileTransform.ty += positionY - offsetY;
+						tileTransform.tx += scaledPositionX - offsetX;
+						tileTransform.ty += scaledPositionY - offsetY;
 						tileTransform.concat(transform);
 
 						// if (roundPixels) {
@@ -929,7 +1515,7 @@ class CairoGraphics
 					var c = data.readDrawTriangles();
 					var v = c.vertices;
 					var ind = c.indices;
-					var uvt:Vector<Float> = c.uvtData;
+					var uvt = c.uvtData;
 					var colorFill = bitmapFill == null;
 
 					if (colorFill && uvt != null)
@@ -941,21 +1527,8 @@ class CairoGraphics
 					var height = 0;
 					var currentMatrix = graphics.__renderTransform.__toMatrix3();
 
-					if (!colorFill)
+					if (!colorFill && uvt != null)
 					{
-						// TODO move this to Graphics?
-
-						if (uvt == null)
-						{
-							uvt = new Vector<Float>();
-
-							for (i in 0...(Std.int(v.length / 2)))
-							{
-								uvt.push(v[i * 2] - offsetX / bitmapFill.width);
-								uvt.push(v[i * 2 + 1] - offsetY / bitmapFill.height);
-							}
-						}
-
 						var skipT = c.uvtData.length != v.length;
 						var normalizedUVT = normalizeUVT(uvt, skipT);
 						var maxUVT = normalizedUVT.max;
@@ -999,12 +1572,47 @@ class CairoGraphics
 						icx = ind[c_] * 2;
 						icy = ind[c_] * 2 + 1;
 
-						x1 = v[iax] - offsetX;
-						y1 = v[iay] - offsetY;
-						x2 = v[ibx] - offsetX;
-						y2 = v[iby] - offsetY;
-						x3 = v[icx] - offsetX;
-						y3 = v[icy] - offsetY;
+						if (hasScale9Grid)
+						{
+							var scaledX1 = toScale9Position(v[iax], scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+							var scaledY1 = toScale9Position(v[iay], scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+							var scaledX2 = toScale9Position(v[ibx], scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+							var scaledY2 = toScale9Position(v[iby], scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+							var scaledX3 = toScale9Position(v[icx], scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+							var scaledY3 = toScale9Position(v[icy], scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+
+							if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
+							{
+								applyScale9GridUnscaledX(v[iax]);
+								applyScale9GridUnscaledY(v[iay]);
+								applyScale9GridUnscaledX(v[ibx]);
+								applyScale9GridUnscaledY(v[iby]);
+								applyScale9GridUnscaledX(v[icx]);
+								applyScale9GridUnscaledY(v[icy]);
+								applyScale9GridScaledX(scaledX1);
+								applyScale9GridScaledY(scaledY1);
+								applyScale9GridScaledX(scaledX2);
+								applyScale9GridScaledY(scaledY2);
+								applyScale9GridScaledX(scaledX3);
+								applyScale9GridScaledY(scaledY3);
+							}
+
+							x1 = scaledX1 - offsetX;
+							y1 = scaledY1 - offsetY;
+							x2 = scaledX2 - offsetX;
+							y2 = scaledY2 - offsetY;
+							x3 = scaledX3 - offsetX;
+							y3 = scaledY3 - offsetY;
+						}
+						else
+						{
+							x1 = v[iax] - offsetX;
+							y1 = v[iay] - offsetY;
+							x2 = v[ibx] - offsetX;
+							y2 = v[iby] - offsetY;
+							x3 = v[icx] - offsetX;
+							y3 = v[icy] - offsetY;
+						}
 
 						switch (c.culling)
 						{
@@ -1025,15 +1633,52 @@ class CairoGraphics
 							default:
 						}
 
-						if (colorFill)
+						if (colorFill || uvt == null)
 						{
 							cairo.newPath();
 							cairo.moveTo(x1, y1);
 							cairo.lineTo(x2, y2);
 							cairo.lineTo(x3, y3);
 							cairo.closePath();
+
+							var inverseTranslateX = 0.0;
+							var inverseTranslateY = 0.0;
+							var inverseScaleX = 1.0;
+							var inverseScaleY = 1.0;
+							if (!hitTesting && hasScale9Grid && fillScale9Bounds != null && bitmapFill != null)
+							{
+								var scaleX = fillScale9Bounds.getScaleX();
+								var scaleY = fillScale9Bounds.getScaleY();
+
+								if (scaleX > 0.0 && scaleY > 0.0)
+								{
+									cairo.scale(scaleX, scaleY);
+									inverseScaleX = 1.0 / scaleX;
+									inverseScaleY = 1.0 / scaleY;
+
+									var remX = fillScale9Bounds.unscaledMinX % bitmapFill.width;
+									var remY = fillScale9Bounds.unscaledMinY % bitmapFill.height;
+
+									var adjustedRemX = (fillScale9Bounds.scale9MinX % (bitmapFill.width * scaleX)) / scaleX;
+									var adjustedRemY = (fillScale9Bounds.scale9MinY % (bitmapFill.height * scaleY)) / scaleY;
+
+									var translateX = adjustedRemX - remX;
+									var translateY = adjustedRemY - remY;
+									cairo.translate(translateX, translateY);
+									inverseTranslateX = -translateX;
+									inverseTranslateY = -translateY;
+								}
+							}
+
 							cairo.source = fillPattern;
 							if (!hitTesting) cairo.fillPreserve();
+
+							if (!hitTesting && hasScale9Grid && fillScale9Bounds != null && bitmapFill != null)
+							{
+								cairo.translate(inverseTranslateX, inverseTranslateY);
+								cairo.scale(inverseScaleX, inverseScaleY);
+							}
+
 							i += 3;
 							continue;
 						}
@@ -1091,7 +1736,49 @@ class CairoGraphics
 				case DRAW_RECT:
 					var c = data.readDrawRect();
 					hasPath = true;
-					cairo.rectangle(c.x - offsetX, c.y - offsetY, c.width, c.height);
+
+					if (hasScale9Grid)
+					{
+						var scaledLeft = toScale9Position(c.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledTop = toScale9Position(c.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						var scaledRight = toScale9Position(c.x + c.width, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledBottom = toScale9Position(c.y + c.height, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+
+						if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
+						{
+							applyScale9GridUnscaledX(c.x);
+							applyScale9GridUnscaledY(c.y);
+							applyScale9GridUnscaledX(c.x + c.width);
+							applyScale9GridUnscaledY(c.y + c.height);
+							applyScale9GridScaledX(scaledLeft);
+							applyScale9GridScaledY(scaledTop);
+							applyScale9GridScaledX(scaledRight);
+							applyScale9GridScaledY(scaledBottom);
+						}
+
+						var scaledWidth = scaledRight - scaledLeft;
+						var scaledHeight = scaledBottom - scaledTop;
+						if (scaledWidth != 0.0 || scaledHeight != 0.0)
+						{
+							cairo.rectangle(scaledLeft - offsetX, scaledTop - offsetY, scaledWidth, scaledHeight);
+						}
+					}
+					else if (c.width != 0.0 || c.height != 0.0)
+					{
+						// flash doesn't draw the rectangle if both the width
+						// and height are zero
+						cairo.rectangle(c.x - offsetX, c.y - offsetY, c.width, c.height);
+					}
+
+					// top-left corner of the rectangle
+					positionX = c.x;
+					positionY = c.y;
+
+					// treat the position after drawRect() similarly to
+					// when moveTo() is called: it's the start of a new shape!
+					startX = positionX;
+					startY = positionY;
+					setStart = true;
 
 				case WINDING_EVEN_ODD:
 					data.readWindingEvenOdd();
@@ -1127,6 +1814,32 @@ class CairoGraphics
 					closePath(true);
 				}
 
+				if (!hitTesting && (bitmapStrokeMatrix != null || (hasScale9Grid && strokeScale9Bounds != null && bitmapStroke != null)))
+				{
+					var matrix = Matrix.__pool.get();
+					if (bitmapStrokeMatrix != null)
+					{
+						matrix.copyFrom(bitmapStrokeMatrix);
+					}
+					else
+					{
+						matrix.identity();
+					}
+					if (hasScale9Grid && strokeScale9Bounds != null && bitmapStroke != null)
+					{
+						var scaleX = strokeScale9Bounds.getScaleX();
+						var scaleY = strokeScale9Bounds.getScaleY();
+						if (scaleX > 0.0 && scaleY > 0.0)
+						{
+							matrix.scale(scaleX, scaleY);
+						}
+					}
+
+					matrix.invert();
+					strokePattern.matrix = matrix.__toMatrix3();
+					Matrix.__pool.release(matrix);
+				}
+
 				cairo.source = strokePattern;
 				if (!hitTesting) cairo.strokePreserve();
 			}
@@ -1135,10 +1848,39 @@ class CairoGraphics
 			{
 				cairo.translate(-bounds.x, -bounds.y);
 
-				if (fillPatternMatrix != null)
+				var inverseTranslateX = 0.0;
+				var inverseTranslateY = 0.0;
+				var inverseScaleX = 1.0;
+				var inverseScaleY = 1.0;
+				if (!hitTesting && hasScale9Grid && fillScale9Bounds != null && bitmapFill != null)
+				{
+					var scaleX = fillScale9Bounds.getScaleX();
+					var scaleY = fillScale9Bounds.getScaleY();
+
+					if (scaleX > 0.0 && scaleY > 0.0)
+					{
+						cairo.scale(scaleX, scaleY);
+						inverseScaleX = 1.0 / scaleX;
+						inverseScaleY = 1.0 / scaleY;
+
+						var remX = fillScale9Bounds.unscaledMinX % bitmapFill.width;
+						var remY = fillScale9Bounds.unscaledMinY % bitmapFill.height;
+
+						var adjustedRemX = (fillScale9Bounds.scale9MinX % (bitmapFill.width * scaleX)) / scaleX;
+						var adjustedRemY = (fillScale9Bounds.scale9MinY % (bitmapFill.height * scaleY)) / scaleY;
+
+						var translateX = adjustedRemX - remX;
+						var translateY = adjustedRemY - remY;
+						cairo.translate(translateX, translateY);
+						inverseTranslateX = -translateX;
+						inverseTranslateY = -translateY;
+					}
+				}
+
+				if (bitmapFillMatrix != null)
 				{
 					var matrix = Matrix.__pool.get();
-					matrix.copyFrom(fillPatternMatrix);
+					matrix.copyFrom(bitmapFillMatrix);
 					matrix.invert();
 
 					if (pendingMatrix != null)
@@ -1164,9 +1906,21 @@ class CairoGraphics
 					if (!hitTesting) cairo.fillPreserve();
 				}
 
+				if (!hitTesting && hasScale9Grid && fillScale9Bounds != null && bitmapFill != null)
+				{
+					cairo.translate(inverseTranslateX, inverseTranslateY);
+					cairo.scale(inverseScaleX, inverseScaleY);
+				}
+
 				cairo.translate(bounds.x, bounds.y);
 				cairo.closePath();
 			}
+		}
+
+		commands.clear();
+		if (positionX != 0.0 || positionY != 0.0)
+		{
+			commands.moveTo(positionX, positionY);
 		}
 	}
 
@@ -1214,6 +1968,25 @@ class CairoGraphics
 			return;
 		}
 
+		var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
+		#if (openfl_legacy_scale9grid && !cairo)
+		var hasScale9Grid:Bool = false;
+		#else
+		// no scale9Grid for masks
+		// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+		var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
+		#end
+		if (hasScale9Grid)
+		{
+			graphics.__bitmapScaleX = graphics.__owner.scaleX;
+			graphics.__bitmapScaleY = graphics.__owner.scaleY;
+		}
+		else
+		{
+			graphics.__bitmapScaleX = 1;
+			graphics.__bitmapScaleY = 1;
+		}
+
 		bounds = graphics.__bounds;
 
 		var width = graphics.__width;
@@ -1242,7 +2015,20 @@ class CairoGraphics
 
 			if (graphics.__cairo == null || graphics.__bitmap == null)
 			{
-				var bitmap = needsUpscaling ? new BitmapData(Std.int(width * 1.25), Std.int(height * 1.25), true, 0) : new BitmapData(width, height, true, 0);
+				var bitmapWidth = needsUpscaling ? Std.int(width * 1.25) : width;
+				var bitmapHeight = needsUpscaling ? Std.int(height * 1.25) : height;
+
+				if (Graphics.maxTextureWidth != null && bitmapWidth > Graphics.maxTextureWidth)
+				{
+					bitmapWidth = Graphics.maxTextureWidth;
+				}
+
+				if (Graphics.maxTextureHeight != null && bitmapHeight > Graphics.maxTextureHeight)
+				{
+					bitmapHeight = Graphics.maxTextureHeight;
+				}
+
+				var bitmap = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 				var surface = bitmap.getSurface();
 				graphics.__cairo = new Cairo(surface);
 				graphics.__bitmap = bitmap;
@@ -1338,6 +2124,7 @@ class CairoGraphics
 						endStroke();
 						hasFill = false;
 						bitmapFill = null;
+						bitmapFillMatrix = null;
 						initStrokeX = 0;
 						initStrokeY = 0;
 
@@ -1513,18 +2300,6 @@ class CairoGraphics
 
 			var data = new DrawCommandReader(graphics.__commands);
 
-			var x:Float;
-			var y:Float;
-			var width:Float;
-			var height:Float;
-			var kappa = 0.5522848;
-			var ox:Float;
-			var oy:Float;
-			var xe:Float;
-			var ye:Float;
-			var xm:Float;
-			var ym:Float;
-
 			for (type in graphics.__commands.types)
 			{
 				switch (type)
@@ -1552,40 +2327,33 @@ class CairoGraphics
 						var c = data.readDrawCircle();
 						cairo.arc(c.x - offsetX, c.y - offsetY, c.radius, 0, Math.PI * 2);
 
+						// the right-most point of the circle, centered vertically
+						positionX = c.x + c.radius;
+						positionY = c.y;
+
 					case DRAW_ELLIPSE:
 						var c = data.readDrawEllipse();
+						drawEllipse(c.x - offsetX, c.y - offsetY, c.width, c.height);
 
-						x = c.x;
-						y = c.y;
-						width = c.width;
-						height = c.height;
-
-						x -= offsetX;
-						y -= offsetY;
-
-						ox = (width / 2) * kappa; // control point offset horizontal
-						oy = (height / 2) * kappa; // control point offset vertical
-						xe = x + width; // x-end
-						ye = y + height; // y-end
-						xm = x + width / 2; // x-middle
-						ym = y + height / 2; // y-middle
-
-						// closePath (false);
-						// beginPath ();
-						cairo.moveTo(x, ym);
-						cairo.curveTo(x, ym - oy, xm - ox, y, xm, y);
-						cairo.curveTo(xm + ox, y, xe, ym - oy, xe, ym);
-						cairo.curveTo(xe, ym + oy, xm + ox, ye, xm, ye);
-						cairo.curveTo(xm - ox, ye, x, ym + oy, x, ym);
-					// closePath (false);
+						// the right-most point of the ellipse, centered vertically
+						positionX = c.x + c.width;
+						positionY = c.y + c.height / 2;
 
 					case DRAW_RECT:
 						var c = data.readDrawRect();
 						cairo.rectangle(c.x - offsetX, c.y - offsetY, c.width, c.height);
 
+						// top-left corner of the rectangle
+						positionX = c.x;
+						positionY = c.y;
+
 					case DRAW_ROUND_RECT:
 						var c = data.readDrawRoundRect();
 						drawRoundRect(c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+
+						// bottom-right corner of the rectangle, above the radius
+						positionX = c.x + c.width;
+						positionY = c.y + c.height - c.ellipseHeight;
 
 					case LINE_TO:
 						var c = data.readLineTo();
@@ -1614,5 +2382,110 @@ private typedef NormalizedUVT =
 {
 	max:Float,
 	uvt:Vector<Float>
+}
+
+private class Scale9GridBounds
+{
+	public var scale9MinX(default, null):Null<Float> = null;
+	public var scale9MinY(default, null):Null<Float> = null;
+
+	private var scale9MaxX:Null<Float> = null;
+	private var scale9MaxY:Null<Float> = null;
+
+	public var unscaledMinX(default, null):Null<Float> = null;
+	public var unscaledMinY(default, null):Null<Float> = null;
+
+	private var unscaledMaxX:Null<Float> = null;
+	private var unscaledMaxY:Null<Float> = null;
+
+	public function new() {}
+
+	public function getScaleX():Float
+	{
+		if (scale9MaxX == null || unscaledMaxX == null)
+		{
+			return 1.0;
+		}
+		var unscaledWidth = unscaledMaxX - unscaledMinX;
+		if (unscaledWidth == 0.0)
+		{
+			return 1.0;
+		}
+		return (scale9MaxX - scale9MinX) / unscaledWidth;
+	}
+
+	public function getScaleY():Float
+	{
+		if (scale9MaxY == null || unscaledMaxY == null)
+		{
+			return 1.0;
+		}
+		var unscaledHeight = unscaledMaxY - unscaledMinY;
+		if (unscaledHeight == 0.0)
+		{
+			return 1.0;
+		}
+		return (scale9MaxY - scale9MinY) / unscaledHeight;
+	}
+
+	public function clear():Void
+	{
+		unscaledMinX = null;
+		unscaledMaxX = null;
+		unscaledMinY = null;
+		unscaledMaxY = null;
+		scale9MinX = null;
+		scale9MaxX = null;
+		scale9MinY = null;
+		scale9MaxY = null;
+	}
+
+	public function applyUnscaledX(value:Float):Void
+	{
+		if (unscaledMinX == null || unscaledMinX > value)
+		{
+			unscaledMinX = value;
+		}
+		if (unscaledMaxX == null || unscaledMaxX < value)
+		{
+			unscaledMaxX = value;
+		}
+	}
+
+	public function applyUnscaledY(value:Float):Void
+	{
+		if (unscaledMinY == null || unscaledMinY > value)
+		{
+			unscaledMinY = value;
+		}
+		if (unscaledMaxY == null || unscaledMaxY < value)
+		{
+			unscaledMaxY = value;
+		}
+	}
+
+	public function applyScaledX(value:Float):Void
+	{
+		if (scale9MinX == null || scale9MinX > value)
+		{
+			scale9MinX = value;
+		}
+		if (scale9MaxX == null || scale9MaxX < value)
+		{
+			scale9MaxX = value;
+		}
+	}
+
+	public function applyScaledY(value:Float):Void
+	{
+		if (scale9MinY == null || scale9MinY > value)
+		{
+			scale9MinY = value;
+		}
+		if (scale9MaxY == null || scale9MaxY < value)
+		{
+			scale9MaxY = value;
+		}
+	}
 }
 #end

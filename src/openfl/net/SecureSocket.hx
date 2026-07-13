@@ -371,7 +371,6 @@ class SecureSocket extends Socket
 			try
 			{
 				secureSocket.handshake();
-				blocked = false;
 			}
 			catch (e:Error)
 			{

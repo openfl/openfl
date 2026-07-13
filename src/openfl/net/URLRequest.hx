@@ -323,7 +323,7 @@ import haxe.macro.Compiler;
 		see the description of the URLRequest class.
 
 		For content running in Adobe AIR, files in the application security
-		sandbox  -  files installed with the AIR application  -  can access URLs
+		sandbox — files installed with the AIR application — can access URLs
 		using any of the following URL schemes:
 
 		* `http` and `https`

@@ -162,6 +162,9 @@ class NativeWindowInitOptions
 		such as combo-boxes that open a short-lived display area. When the
 		lightweight type is used, `systemChrome` must be set to
 		`NativeWindowSystemChrome.NONE`.
+
+		_OpenFL target support:_ This property is not currently supported on
+		any target, except Adobe AIR.
 	**/
 	public var type:NativeWindowType = NativeWindowType.NORMAL;
 
