@@ -1641,7 +1641,7 @@ class DisplayObjectContainerTest extends Test
 
 		var sprite = new SpriteWithCallCounts();
 		sprite.addChild(new Sprite());
-		sprite.numChildren;
+		var numChildren:Int = sprite.numChildren;
 
 		Assert.equals(1, sprite.addChildCallCount);
 		Assert.equals(0, sprite.addChildAtCallCount);
