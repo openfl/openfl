@@ -73,6 +73,12 @@
 		<li><a href="https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/capturing-text-input.html" target="_blank">Capturing text input</a></li>
 		<li><a href="https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/formatting-text.html" target="_blank">Formatting text</a></li>
 	</ul>
+	::elseif full == "openfl.xml"::
+	<p><strong>Warning!</strong> These legacy <code>openfl.xml</code> classes should be avoided in new OpenFL projects. Developers should prefer Haxe's <code>Xml</code> class to parse and generate XML data. The classes in the <code>openfl.xml</code> package are provided as a convenience to assist developers porting legacy code from either ActionScript 2.0 or ActionScript 3.0 to OpenFL and Haxe.</p>
+	<ul>
+		<li><a href="https://haxe.org/manual/std-Xml-getting-started.html" target="_blank">Haxe Manual: Getting started with Xml</a></li>
+		<li><a href="https://api.haxe.org/Xml.html" target="_blank">Haxe API Reference: Xml</a></li>
+	</ul>
 	::end::
 
 ::end::
