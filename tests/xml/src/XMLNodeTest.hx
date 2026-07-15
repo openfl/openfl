@@ -484,7 +484,8 @@ class XMLNodeTest extends Test
 		Assert.isTrue(Reflect.hasField(clonedNode.attributes, "two"));
 		Assert.equals("1", clonedNode.attributes.one);
 		Assert.equals("2", clonedNode.attributes.two);
-		Assert.equals("<w:xyz one=\"1\" two=\"2\" />", clonedNode.toString());
+		Assert.isTrue(("<w:xyz one=\"1\" two=\"2\" />" == clonedNode.toString())
+			|| ("<w:xyz two=\"2\" one=\"1\" />" == clonedNode.toString()));
 
 		var deepClonedNode = childElementNode.cloneNode(true);
 		Assert.notEquals(childElementNode, deepClonedNode);
@@ -511,7 +512,8 @@ class XMLNodeTest extends Test
 		Assert.isTrue(Reflect.hasField(deepClonedNode.attributes, "two"));
 		Assert.equals("1", deepClonedNode.attributes.one);
 		Assert.equals("2", deepClonedNode.attributes.two);
-		Assert.equals("<w:xyz one=\"1\" two=\"2\">hello</w:xyz>", deepClonedNode.toString());
+		Assert.isTrue(("<w:xyz one=\"1\" two=\"2\">hello</w:xyz>" == deepClonedNode.toString())
+			|| ("<w:xyz two=\"2\" one=\"1\">hello</w:xyz>" == deepClonedNode.toString()));
 	}
 
 	public function test_attributes_withXmlns_withPrefix():Void

@@ -204,6 +204,8 @@ class XMLDocumentTest extends Test
 		Assert.equals("abc", Reflect.field(rootElement.attributes, "attr1"));
 		Assert.equals("xyz", Reflect.field(rootElement.attributes, "attr2"));
 		Assert.isNull(Reflect.field(rootElement.attributes, "attr3"));
+		Assert.isTrue(("<root attr1=\"abc\" attr2=\"xyz\" />" == rootElement.toString())
+			|| ("<root attr2=\"xyz\" attr1=\"abc\" />" == rootElement.toString()));
 	}
 
 	public function test_createElement():Void
