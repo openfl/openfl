@@ -1781,7 +1781,7 @@ class SpriteWithCallCounts extends Sprite
 
 	public var numChildrenCallCount:Int = 0;
 
-	override private function get_numChildren():Int
+	#if (flash && haxe_ver < 4.3) @:getter(numChildren) #else override #end private function get_numChildren():Int
 	{
 		numChildrenCallCount++;
 		return super.numChildren;
