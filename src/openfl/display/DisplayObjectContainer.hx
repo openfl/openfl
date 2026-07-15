@@ -165,7 +165,12 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function addChild(child:DisplayObject):DisplayObject
 	{
-		return addChildAt(child, numChildren);
+		return __addChildAt(child, __children.length);
+	}
+
+	@:noCompletion private function __addChild(child:DisplayObject):DisplayObject
+	{
+		return __addChildAt(child, __children.length);
 	}
 
 	/**
@@ -202,6 +207,11 @@ class DisplayObjectContainer extends InteractiveObject
 		@see [Adding display objects to the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/adding-display-objects-to-the-display-list.html)
 	**/
 	public function addChildAt(child:DisplayObject, index:Int):DisplayObject
+	{
+		return __addChildAt(child, index);
+	}
+
+	@:noCompletion private function __addChildAt(child:DisplayObject, index:Int):DisplayObject
 	{
 		if (child == null)
 		{
@@ -243,7 +253,7 @@ class DisplayObjectContainer extends InteractiveObject
 		{
 			if (child.parent != null)
 			{
-				child.parent.removeChild(child);
+				child.parent.__removeChild(child);
 			}
 
 			__children.insert(index, child);
@@ -464,6 +474,11 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function removeChild(child:DisplayObject):DisplayObject
 	{
+		return __removeChild(child);
+	}
+
+	@:noCompletion private function __removeChild(child:DisplayObject):DisplayObject
+	{
 		if (child != null && child.parent == this)
 		{
 			child.__setTransformDirty();
@@ -541,9 +556,15 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function removeChildAt(index:Int):DisplayObject
 	{
+		return __removeChildAt(index);
+	}
+
+	@:noCompletion private function __removeChildAt(index:Int):DisplayObject
+	{
 		if (index >= 0 && index < __children.length)
 		{
-			return removeChild(__children[index]);
+			// don't call removeChild() directly because it might be overridden
+			return __removeChild(__children[index]);
 		}
 
 		return null;
@@ -584,7 +605,7 @@ class DisplayObjectContainer extends InteractiveObject
 		var numRemovals = endIndex - beginIndex;
 		while (numRemovals >= 0)
 		{
-			removeChildAt(beginIndex);
+			__removeChildAt(beginIndex);
 			numRemovals--;
 		}
 	}

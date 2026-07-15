@@ -1550,4 +1550,328 @@ class DisplayObjectContainerTest extends Test
 
 		parentSprite.parent.removeChild(parentSprite);
 	}
+
+	// if any of these methods are overridden, the overrides should not be
+	// called for things that happen internally.
+	public function test_overrideDisplayListMethods()
+	{
+		var sprite = new SpriteWithCallCounts();
+		sprite.addChild(new Sprite());
+
+		Assert.equals(1, sprite.addChildCallCount);
+		Assert.equals(0, sprite.addChildAtCallCount);
+		Assert.equals(0, sprite.removeChildCallCount);
+		Assert.equals(0, sprite.removeChildAtCallCount);
+		Assert.equals(0, sprite.removeChildrenCallCount);
+		Assert.equals(0, sprite.numChildrenCallCount);
+		Assert.equals(0, sprite.getChildAtCallCount);
+		Assert.equals(0, sprite.getChildByNameCallCount);
+		Assert.equals(0, sprite.setChildIndexCallCount);
+		Assert.equals(0, sprite.swapChildrenCallCount);
+		Assert.equals(0, sprite.swapChildrenAtCallCount);
+		Assert.equals(0, sprite.containsCallCount);
+
+		var sprite = new SpriteWithCallCounts();
+		sprite.addChildAt(new Sprite(), 0);
+
+		Assert.equals(0, sprite.addChildCallCount);
+		Assert.equals(1, sprite.addChildAtCallCount);
+		Assert.equals(0, sprite.removeChildCallCount);
+		Assert.equals(0, sprite.removeChildAtCallCount);
+		Assert.equals(0, sprite.removeChildrenCallCount);
+		Assert.equals(0, sprite.numChildrenCallCount);
+		Assert.equals(0, sprite.getChildAtCallCount);
+		Assert.equals(0, sprite.getChildByNameCallCount);
+		Assert.equals(0, sprite.setChildIndexCallCount);
+		Assert.equals(0, sprite.swapChildrenCallCount);
+		Assert.equals(0, sprite.swapChildrenAtCallCount);
+		Assert.equals(0, sprite.containsCallCount);
+
+		var sprite = new SpriteWithCallCounts();
+		var child = new Sprite();
+		sprite.addChild(child);
+		sprite.removeChild(child);
+
+		Assert.equals(1, sprite.addChildCallCount);
+		Assert.equals(0, sprite.addChildAtCallCount);
+		Assert.equals(1, sprite.removeChildCallCount);
+		Assert.equals(0, sprite.removeChildAtCallCount);
+		Assert.equals(0, sprite.removeChildrenCallCount);
+		Assert.equals(0, sprite.numChildrenCallCount);
+		Assert.equals(0, sprite.getChildAtCallCount);
+		Assert.equals(0, sprite.getChildByNameCallCount);
+		Assert.equals(0, sprite.setChildIndexCallCount);
+		Assert.equals(0, sprite.swapChildrenCallCount);
+		Assert.equals(0, sprite.swapChildrenAtCallCount);
+		Assert.equals(0, sprite.containsCallCount);
+
+		var sprite = new SpriteWithCallCounts();
+		sprite.addChild(new Sprite());
+		sprite.removeChildAt(0);
+
+		Assert.equals(1, sprite.addChildCallCount);
+		Assert.equals(0, sprite.addChildAtCallCount);
+		Assert.equals(0, sprite.removeChildCallCount);
+		Assert.equals(1, sprite.removeChildAtCallCount);
+		Assert.equals(0, sprite.removeChildrenCallCount);
+		Assert.equals(0, sprite.numChildrenCallCount);
+		Assert.equals(0, sprite.getChildAtCallCount);
+		Assert.equals(0, sprite.getChildByNameCallCount);
+		Assert.equals(0, sprite.setChildIndexCallCount);
+		Assert.equals(0, sprite.swapChildrenCallCount);
+		Assert.equals(0, sprite.swapChildrenAtCallCount);
+		Assert.equals(0, sprite.containsCallCount);
+
+		var sprite = new SpriteWithCallCounts();
+		sprite.addChild(new Sprite());
+		sprite.removeChildren();
+
+		Assert.equals(1, sprite.addChildCallCount);
+		Assert.equals(0, sprite.addChildAtCallCount);
+		Assert.equals(0, sprite.removeChildCallCount);
+		Assert.equals(0, sprite.removeChildAtCallCount);
+		Assert.equals(1, sprite.removeChildrenCallCount);
+		Assert.equals(0, sprite.numChildrenCallCount);
+		Assert.equals(0, sprite.getChildAtCallCount);
+		Assert.equals(0, sprite.getChildByNameCallCount);
+		Assert.equals(0, sprite.setChildIndexCallCount);
+		Assert.equals(0, sprite.swapChildrenCallCount);
+		Assert.equals(0, sprite.swapChildrenAtCallCount);
+		Assert.equals(0, sprite.containsCallCount);
+
+		var sprite = new SpriteWithCallCounts();
+		sprite.addChild(new Sprite());
+		sprite.numChildren;
+
+		Assert.equals(1, sprite.addChildCallCount);
+		Assert.equals(0, sprite.addChildAtCallCount);
+		Assert.equals(0, sprite.removeChildCallCount);
+		Assert.equals(0, sprite.removeChildAtCallCount);
+		Assert.equals(0, sprite.removeChildrenCallCount);
+		Assert.equals(1, sprite.numChildrenCallCount);
+		Assert.equals(0, sprite.getChildAtCallCount);
+		Assert.equals(0, sprite.getChildByNameCallCount);
+		Assert.equals(0, sprite.setChildIndexCallCount);
+		Assert.equals(0, sprite.swapChildrenCallCount);
+		Assert.equals(0, sprite.swapChildrenAtCallCount);
+		Assert.equals(0, sprite.containsCallCount);
+
+		var sprite = new SpriteWithCallCounts();
+		sprite.addChild(new Sprite());
+		sprite.getChildAt(0);
+
+		Assert.equals(1, sprite.addChildCallCount);
+		Assert.equals(0, sprite.addChildAtCallCount);
+		Assert.equals(0, sprite.removeChildCallCount);
+		Assert.equals(0, sprite.removeChildAtCallCount);
+		Assert.equals(0, sprite.removeChildrenCallCount);
+		Assert.equals(0, sprite.numChildrenCallCount);
+		Assert.equals(1, sprite.getChildAtCallCount);
+		Assert.equals(0, sprite.getChildByNameCallCount);
+		Assert.equals(0, sprite.setChildIndexCallCount);
+		Assert.equals(0, sprite.swapChildrenCallCount);
+		Assert.equals(0, sprite.swapChildrenAtCallCount);
+		Assert.equals(0, sprite.containsCallCount);
+
+		var sprite = new SpriteWithCallCounts();
+		var child = new Sprite();
+		child.name = "abc";
+		sprite.addChild(child);
+		sprite.getChildByName("abc");
+
+		Assert.equals(1, sprite.addChildCallCount);
+		Assert.equals(0, sprite.addChildAtCallCount);
+		Assert.equals(0, sprite.removeChildCallCount);
+		Assert.equals(0, sprite.removeChildAtCallCount);
+		Assert.equals(0, sprite.removeChildrenCallCount);
+		Assert.equals(0, sprite.numChildrenCallCount);
+		Assert.equals(0, sprite.getChildAtCallCount);
+		Assert.equals(1, sprite.getChildByNameCallCount);
+		Assert.equals(0, sprite.setChildIndexCallCount);
+		Assert.equals(0, sprite.swapChildrenCallCount);
+		Assert.equals(0, sprite.swapChildrenAtCallCount);
+		Assert.equals(0, sprite.containsCallCount);
+
+		var sprite = new SpriteWithCallCounts();
+		var child1 = new Sprite();
+		var child2 = new Sprite();
+		sprite.addChild(child1);
+		sprite.addChild(child2);
+		sprite.setChildIndex(child1, 1);
+
+		Assert.equals(2, sprite.addChildCallCount);
+		Assert.equals(0, sprite.addChildAtCallCount);
+		Assert.equals(0, sprite.removeChildCallCount);
+		Assert.equals(0, sprite.removeChildAtCallCount);
+		Assert.equals(0, sprite.removeChildrenCallCount);
+		Assert.equals(0, sprite.numChildrenCallCount);
+		Assert.equals(0, sprite.getChildAtCallCount);
+		Assert.equals(0, sprite.getChildByNameCallCount);
+		Assert.equals(1, sprite.setChildIndexCallCount);
+		Assert.equals(0, sprite.swapChildrenCallCount);
+		Assert.equals(0, sprite.swapChildrenAtCallCount);
+		Assert.equals(0, sprite.containsCallCount);
+
+		var sprite = new SpriteWithCallCounts();
+		var child1 = new Sprite();
+		var child2 = new Sprite();
+		sprite.addChild(child1);
+		sprite.addChild(child2);
+		sprite.swapChildren(child1, child2);
+
+		Assert.equals(2, sprite.addChildCallCount);
+		Assert.equals(0, sprite.addChildAtCallCount);
+		Assert.equals(0, sprite.removeChildCallCount);
+		Assert.equals(0, sprite.removeChildAtCallCount);
+		Assert.equals(0, sprite.removeChildrenCallCount);
+		Assert.equals(0, sprite.numChildrenCallCount);
+		Assert.equals(0, sprite.getChildAtCallCount);
+		Assert.equals(0, sprite.getChildByNameCallCount);
+		Assert.equals(0, sprite.setChildIndexCallCount);
+		Assert.equals(1, sprite.swapChildrenCallCount);
+		Assert.equals(0, sprite.swapChildrenAtCallCount);
+		Assert.equals(0, sprite.containsCallCount);
+
+		var sprite = new SpriteWithCallCounts();
+		var child1 = new Sprite();
+		var child2 = new Sprite();
+		sprite.addChild(child1);
+		sprite.addChild(child2);
+		sprite.swapChildrenAt(0, 1);
+
+		Assert.equals(2, sprite.addChildCallCount);
+		Assert.equals(0, sprite.addChildAtCallCount);
+		Assert.equals(0, sprite.removeChildCallCount);
+		Assert.equals(0, sprite.removeChildAtCallCount);
+		Assert.equals(0, sprite.removeChildrenCallCount);
+		Assert.equals(0, sprite.numChildrenCallCount);
+		Assert.equals(0, sprite.getChildAtCallCount);
+		Assert.equals(0, sprite.getChildByNameCallCount);
+		Assert.equals(0, sprite.setChildIndexCallCount);
+		Assert.equals(0, sprite.swapChildrenCallCount);
+		Assert.equals(1, sprite.swapChildrenAtCallCount);
+		Assert.equals(0, sprite.containsCallCount);
+
+		var sprite = new SpriteWithCallCounts();
+		var child = new Sprite();
+		sprite.addChild(child);
+		sprite.contains(child);
+
+		Assert.equals(1, sprite.addChildCallCount);
+		Assert.equals(0, sprite.addChildAtCallCount);
+		Assert.equals(0, sprite.removeChildCallCount);
+		Assert.equals(0, sprite.removeChildAtCallCount);
+		Assert.equals(0, sprite.removeChildrenCallCount);
+		Assert.equals(0, sprite.numChildrenCallCount);
+		Assert.equals(0, sprite.getChildAtCallCount);
+		Assert.equals(0, sprite.getChildByNameCallCount);
+		Assert.equals(0, sprite.setChildIndexCallCount);
+		Assert.equals(0, sprite.swapChildrenCallCount);
+		Assert.equals(0, sprite.swapChildrenAtCallCount);
+		Assert.equals(1, sprite.containsCallCount);
+	}
+}
+
+class SpriteWithCallCounts extends Sprite
+{
+	public function new()
+	{
+		super();
+	}
+
+	public var numChildrenCallCount:Int = 0;
+
+	override private function get_numChildren():Int
+	{
+		numChildrenCallCount++;
+		return super.numChildren;
+	}
+
+	public var addChildCallCount:Int = 0;
+
+	override public function addChild(child:DisplayObject):DisplayObject
+	{
+		addChildCallCount++;
+		return super.addChild(child);
+	}
+
+	public var addChildAtCallCount:Int = 0;
+
+	override public function addChildAt(child:DisplayObject, index:Int):DisplayObject
+	{
+		addChildAtCallCount++;
+		return super.addChildAt(child, index);
+	}
+
+	public var removeChildCallCount:Int = 0;
+
+	override public function removeChild(child:DisplayObject):DisplayObject
+	{
+		removeChildCallCount++;
+		return super.removeChild(child);
+	}
+
+	public var removeChildAtCallCount:Int = 0;
+
+	override public function removeChildAt(index:Int):DisplayObject
+	{
+		removeChildAtCallCount++;
+		return super.removeChildAt(index);
+	}
+
+	public var removeChildrenCallCount:Int = 0;
+
+	override public function removeChildren(beginIndex:Int = 0, endIndex:Int = 0x7FFFFFFF):Void
+	{
+		removeChildrenCallCount++;
+		return super.removeChildren(beginIndex, endIndex);
+	}
+
+	public var getChildAtCallCount:Int = 0;
+
+	override public function getChildAt(index:Int):DisplayObject
+	{
+		getChildAtCallCount++;
+		return super.getChildAt(index);
+	}
+
+	public var setChildIndexCallCount:Int = 0;
+
+	override public function setChildIndex(child:DisplayObject, index:Int):Void
+	{
+		setChildIndexCallCount++;
+		super.setChildIndex(child, index);
+	}
+
+	public var getChildByNameCallCount:Int = 0;
+
+	override public function getChildByName(name:String):DisplayObject
+	{
+		getChildByNameCallCount++;
+		return super.getChildByName(name);
+	}
+
+	public var swapChildrenCallCount:Int = 0;
+
+	override public function swapChildren(child1:DisplayObject, child2:DisplayObject):Void
+	{
+		swapChildrenCallCount++;
+		return super.swapChildren(child1, child2);
+	}
+
+	public var swapChildrenAtCallCount:Int = 0;
+
+	override public function swapChildrenAt(index1:Int, index2:Int):Void
+	{
+		swapChildrenAtCallCount++;
+		return super.swapChildrenAt(index1, index2);
+	}
+
+	public var containsCallCount:Int = 0;
+
+	override public function contains(child:DisplayObject):Bool
+	{
+		containsCallCount++;
+		return super.contains(child);
+	}
 }

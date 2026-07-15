@@ -1233,7 +1233,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (Lib.current.stage == null)
 		{
-			stage.addChild(Lib.current);
+			stage.__addChild(Lib.current);
 		}
 
 		#if commonjs
@@ -1241,7 +1241,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			DisplayObject.__initStage = this;
 			var sprite:Sprite = cast Type.createInstance(documentClass, []);
-			// addChild (sprite); // done by init stage
+			// __addChild (sprite); // done by init stage
 			sprite.dispatchEvent(new Event(Event.ADDED_TO_STAGE, false, false));
 		}
 
@@ -1877,16 +1877,16 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 								var currentParent = current.parent;
 								if (currentParent != null && currentParent.tabChildren)
 								{
-									var currentIndex = currentParent.getChildIndex(current);
+									var currentIndex = currentParent.__children.indexOf(current);
 									if (currentIndex == -1)
 									{
 										current = currentParent;
 										continue;
 									}
 									var i = currentIndex + nextOffset;
-									while (modifier.shiftKey ? (i >= 0) : (i < currentParent.numChildren))
+									while (modifier.shiftKey ? (i >= 0) : (i < currentParent.__children.length))
 									{
-										var sibling = currentParent.getChildAt(i);
+										var sibling = currentParent.__children[i];
 										if ((sibling is InteractiveObject))
 										{
 											var interactiveSibling = cast(sibling, InteractiveObject);

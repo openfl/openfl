@@ -74,6 +74,7 @@ import openfl.text.engine.FontWeight;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.display.DisplayObjectContainer)
 @:access(openfl.events.Event)
 class StageText extends EventDispatcher
 {
@@ -498,12 +499,12 @@ class StageText extends EventDispatcher
 		}
 		if (__textField.stage != null)
 		{
-			__textField.parent.removeChild(__textField);
+			__textField.parent.__removeChild(__textField);
 			__complete = false;
 		}
 		if (value != null)
 		{
-			value.addChild(__textField);
+			value.__addChild(__textField);
 			__dispatchComplete();
 		}
 		return __textField.stage;
