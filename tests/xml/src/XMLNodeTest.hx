@@ -576,13 +576,19 @@ class XMLNodeTest extends Test
 		Assert.equals("https://ns.example.com/b", parentElementNode.getNamespaceForPrefix(""));
 		Assert.isNull(parentElementNode.getNamespaceForPrefix("q"));
 		Assert.isNull(parentElementNode.getNamespaceForPrefix("x"));
-		Assert.raises(() -> parentElementNode.getNamespaceForPrefix(null), TypeError);
+		Assert.raises(function():Void
+		{
+			parentElementNode.getNamespaceForPrefix(null);
+		}, TypeError);
 
 		Assert.equals("https://ns.example.com/a", childElementNode.getNamespaceForPrefix("z"));
 		Assert.equals("https://ns.example.com/b", childElementNode.getNamespaceForPrefix(""));
 		Assert.isNull(childElementNode.getNamespaceForPrefix("q"));
 		Assert.isNull(childElementNode.getNamespaceForPrefix("x"));
-		Assert.raises(() -> childElementNode.getNamespaceForPrefix(null), TypeError);
+		Assert.raises(function():Void
+		{
+			childElementNode.getNamespaceForPrefix(null);
+		}, TypeError);
 	}
 
 	public function test_getPrefixForNamespace():Void
