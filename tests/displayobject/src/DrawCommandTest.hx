@@ -446,7 +446,7 @@ class DrawCommandTest extends Test
 		var bitmapData = new BitmapData(10, 10, false, 0xffff0000);
 		var matrix = new Matrix(2.0, 1.0, 0.75, 0.5, 10.0, 20.0);
 
-		var readCommands:Array<() -> Dynamic> = [];
+		var readCommands:Array<Void->Dynamic> = [];
 		var buffer = new DrawCommandBuffer();
 		var reader = new DrawCommandReader(buffer);
 		for (i in 0...2)
