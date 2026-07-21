@@ -608,6 +608,9 @@ class CairoGraphics
 		{
 			hitTesting = true;
 
+			x -= bounds.x;
+			y -= bounds.y;
+
 			var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
 			#if (openfl_legacy_scale9grid && !cairo)
 			var hasScale9Grid:Bool = false;
@@ -621,9 +624,6 @@ class CairoGraphics
 				x *= graphics.__owner.scaleX;
 				y *= graphics.__owner.scaleY;
 			}
-
-			x -= bounds.x;
-			y -= bounds.y;
 
 			if (graphics.__cairo == null)
 			{

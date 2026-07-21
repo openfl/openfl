@@ -770,6 +770,9 @@ class CanvasGraphics
 		{
 			hitTesting = true;
 
+			x -= bounds.x;
+			y -= bounds.y;
+
 			var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
 			#if (openfl_legacy_scale9grid && !canvas)
 			var hasScale9Grid:Bool = false;
@@ -791,9 +794,6 @@ class CanvasGraphics
 
 			x = px;
 			y = py;
-
-			x -= transform.__transformX(bounds.x, bounds.y);
-			y -= transform.__transformY(bounds.x, bounds.y);
 
 			var cacheCanvas = graphics.__canvas;
 			var cacheContext = graphics.__context;
