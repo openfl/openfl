@@ -528,9 +528,77 @@ class Context3DGraphics
 
 		var data = new DrawCommandReader(graphics.__commands);
 		var hasColorFill = false, hasBitmapFill = false, hasShaderFill = false;
-		// for each fill, allow drawing one shape only because the two shapes
-		// might intersect and require a cutout. fall back to software for that.
-		var hasDrawnFilledShape = false;
+		// Multiple axis-aligned rectangles are safe on the legacy hardware path
+		// when their interiors do not overlap. Other shape combinations remain
+		// conservative and fall back to software.
+		var filledRectBounds = new Vector<Float>();
+		var hasUntrackedFilledShape = false;
+
+		inline function resetFilledShapeCompatibility():Void
+		{
+			filledRectBounds.length = 0;
+			hasUntrackedFilledShape = false;
+		}
+
+		function addFilledRectCompatibility(x:Float, y:Float, width:Float, height:Float):Bool
+		{
+			if (hasUntrackedFilledShape)
+			{
+				return false;
+			}
+
+			var right = x + width;
+			var bottom = y + height;
+			var left = Math.min(x, right);
+			var top = Math.min(y, bottom);
+			right = Math.max(x, right);
+			bottom = Math.max(y, bottom);
+
+			if (Math.isNaN(left) || Math.isNaN(top) || Math.isNaN(right) || Math.isNaN(bottom))
+			{
+				return false;
+			}
+
+			// Empty rectangles have no filled interior and cannot create a cutout.
+			if (right <= left || bottom <= top)
+			{
+				return true;
+			}
+
+			var i = 0;
+			while (i < filledRectBounds.length)
+			{
+				var otherLeft = filledRectBounds[i];
+				var otherTop = filledRectBounds[i + 1];
+				var otherRight = filledRectBounds[i + 2];
+				var otherBottom = filledRectBounds[i + 3];
+
+				// Touching edges have no shared interior, so they cannot create a cutout.
+				if (left < otherRight && right > otherLeft && top < otherBottom && bottom > otherTop)
+				{
+					return false;
+				}
+
+				i += 4;
+			}
+
+			filledRectBounds.push(left);
+			filledRectBounds.push(top);
+			filledRectBounds.push(right);
+			filledRectBounds.push(bottom);
+			return true;
+		}
+
+		inline function addUntrackedFilledShapeCompatibility():Bool
+		{
+			if (hasUntrackedFilledShape || filledRectBounds.length > 0)
+			{
+				return false;
+			}
+
+			hasUntrackedFilledShape = true;
+			return true;
+		}
 
 		for (type in graphics.__commands.types)
 		{
@@ -546,27 +614,26 @@ class Context3DGraphics
 					hasBitmapFill = true;
 					hasColorFill = false;
 					hasShaderFill = false;
-					hasDrawnFilledShape = false;
+					resetFilledShapeCompatibility();
 					data.skip(type);
 
 				case BEGIN_FILL:
 					hasBitmapFill = false;
 					hasColorFill = true;
 					hasShaderFill = false;
-					hasDrawnFilledShape = false;
+					resetFilledShapeCompatibility();
 					data.skip(type);
 
 				case BEGIN_SHADER_FILL:
 					hasBitmapFill = false;
 					hasColorFill = false;
 					hasShaderFill = true;
-					hasDrawnFilledShape = false;
+					resetFilledShapeCompatibility();
 					data.skip(type);
 
 				case DRAW_QUADS:
-					if (!hasDrawnFilledShape && (hasColorFill || hasBitmapFill || hasShaderFill))
+					if ((hasColorFill || hasBitmapFill || hasShaderFill) && addUntrackedFilledShapeCompatibility())
 					{
-						hasDrawnFilledShape = true;
 						data.skip(type);
 					}
 					else
@@ -576,10 +643,14 @@ class Context3DGraphics
 					}
 
 				case DRAW_RECT:
-					if (!hasDrawnFilledShape && (hasColorFill || hasBitmapFill || hasShaderFill))
+					if (hasColorFill || hasBitmapFill || hasShaderFill)
 					{
-						hasDrawnFilledShape = true;
-						data.skip(type);
+						var c = data.readDrawRect();
+						if (!addFilledRectCompatibility(c.x, c.y, c.width, c.height))
+						{
+							data.destroy();
+							return false;
+						}
 					}
 					else
 					{
@@ -588,9 +659,8 @@ class Context3DGraphics
 					}
 
 				case DRAW_TRIANGLES:
-					if (!hasDrawnFilledShape && (hasColorFill || hasBitmapFill || hasShaderFill))
+					if ((hasColorFill || hasBitmapFill || hasShaderFill) && addUntrackedFilledShapeCompatibility())
 					{
-						hasDrawnFilledShape = true;
 						data.skip(type);
 					}
 					else
@@ -612,7 +682,7 @@ class Context3DGraphics
 					hasBitmapFill = false;
 					hasColorFill = false;
 					hasShaderFill = false;
-					hasDrawnFilledShape = false;
+					resetFilledShapeCompatibility();
 					data.skip(type);
 
 				case MOVE_TO:
