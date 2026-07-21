@@ -439,7 +439,7 @@ class CanvasGraphics
 		corner, just above the ellipse height.
 	**/
 	private static function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>, ?scale9Grid:Rectangle,
-			?scale9UnscaledWidth:Float, ?scale9UnscaledHeight:Float, ?scaleX:Float, ?scaleY:Float):Void
+			?bounds:Rectangle, ?scaleX:Float, ?scaleY:Float):Void
 	{
 		#if (js && html5)
 		if (ellipseHeight == null) ellipseHeight = ellipseWidth;
@@ -459,27 +459,27 @@ class CanvasGraphics
 
 		if (scale9Grid != null)
 		{
-			var scaledX = toScale9Position(x, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledY = toScale9Position(y, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledX = toScale9Position(x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledY = toScale9Position(y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
 
-			var scaledXe = toScale9Position(xe, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYe = toScale9Position(ye, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXe = toScale9Position(xe, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYe = toScale9Position(ye, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
 
-			var scaledXeMinusEw = toScale9Position(xe - ellipseWidth, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYeMinusEh = toScale9Position(ye - ellipseHeight, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXeMinusEw = toScale9Position(xe - ellipseWidth, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYeMinusEh = toScale9Position(ye - ellipseHeight, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
 
-			var scaledXePlusCx1 = toScale9Position(xe + cx1, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYePlusCy1 = toScale9Position(ye + cy1, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
-			var scaledXePlusCx2 = toScale9Position(xe + cx2, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYePlusCy2 = toScale9Position(ye + cy2, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXePlusCx1 = toScale9Position(xe + cx1, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYePlusCy1 = toScale9Position(ye + cy1, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
+			var scaledXePlusCx2 = toScale9Position(xe + cx2, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYePlusCy2 = toScale9Position(ye + cy2, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
 
-			var scaledXPlusEw = toScale9Position(x + ellipseWidth, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYPlusEh = toScale9Position(y + ellipseHeight, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXPlusEw = toScale9Position(x + ellipseWidth, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYPlusEh = toScale9Position(y + ellipseHeight, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
 
-			var scaledXMinusCx1 = toScale9Position(x - cx1, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYMinusCy1 = toScale9Position(y - cy1, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
-			var scaledXMinusCx2 = toScale9Position(x - cx2, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYMinusCy2 = toScale9Position(y - cy2, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledXMinusCx1 = toScale9Position(x - cx1, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYMinusCy1 = toScale9Position(y - cy1, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
+			var scaledXMinusCx2 = toScale9Position(x - cx2, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYMinusCy2 = toScale9Position(y - cy2, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
 
 			if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
 			{
@@ -530,8 +530,8 @@ class CanvasGraphics
 		Draws an ellipse that starts and stops at the right-most point, centered
 		vertically.
 	**/
-	private static function drawEllipse(x:Float, y:Float, width:Float, height:Float, ?scale9Grid:Rectangle, ?scale9UnscaledWidth:Float,
-			?scale9UnscaledHeight:Float, ?scaleX:Float, ?scaleY:Float):Void
+	private static function drawEllipse(x:Float, y:Float, width:Float, height:Float, ?scale9Grid:Rectangle, ?bounds:Rectangle, ?scaleX:Float,
+			?scaleY:Float):Void
 	{
 		#if (js && html5)
 		if (width == 0.0 && height == 0.0)
@@ -549,16 +549,16 @@ class CanvasGraphics
 
 		if (scale9Grid != null)
 		{
-			var scaledX = toScale9Position(x, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledY = toScale9Position(y, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
-			var scaledXe = toScale9Position(xe, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYe = toScale9Position(ye, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
-			var scaledXm = toScale9Position(xm, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYm = toScale9Position(ym, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
-			var scaledXmPlusOx = toScale9Position(xm + ox, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYmPlusOy = toScale9Position(ym + oy, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
-			var scaledXmMinuxOx = toScale9Position(xm - ox, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYmMinuxOy = toScale9Position(ym - oy, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledX = toScale9Position(x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledY = toScale9Position(y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
+			var scaledXe = toScale9Position(xe, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYe = toScale9Position(ye, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
+			var scaledXm = toScale9Position(xm, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYm = toScale9Position(ym, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
+			var scaledXmPlusOx = toScale9Position(xm + ox, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYmPlusOy = toScale9Position(ym + oy, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
+			var scaledXmMinuxOx = toScale9Position(xm - ox, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYmMinuxOy = toScale9Position(ym - oy, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
 
 			if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
 			{
@@ -594,8 +594,7 @@ class CanvasGraphics
 		Draws a circle that starts and stops at the right-most point, centered
 		vertically.
 	**/
-	private static function drawCircle(x:Float, y:Float, radius:Float, ?scale9Grid:Rectangle, ?scale9UnscaledWidth:Float, ?scale9UnscaledHeight:Float,
-			?scaleX:Float, ?scaleY:Float):Void
+	private static function drawCircle(x:Float, y:Float, radius:Float, ?scale9Grid:Rectangle, ?bounds:Rectangle, ?scaleX:Float, ?scaleY:Float):Void
 	{
 		#if (js && html5)
 		if (radius == 0.0)
@@ -617,16 +616,16 @@ class CanvasGraphics
 			var xm = x + radius; // x-middle
 			var ym = y + radius; // y-middle
 
-			var scaledX = toScale9Position(x, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledY = toScale9Position(y, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
-			var scaledXe = toScale9Position(xe, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYe = toScale9Position(ye, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
-			var scaledXm = toScale9Position(xm, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYm = toScale9Position(ym, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
-			var scaledXmPlusOx = toScale9Position(xm + ox, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYmPlusOy = toScale9Position(ym + oy, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
-			var scaledXmMinuxOx = toScale9Position(xm - ox, scale9Grid.x, scale9Grid.width, scale9UnscaledWidth, scaleX);
-			var scaledYmMinuxOy = toScale9Position(ym - oy, scale9Grid.y, scale9Grid.height, scale9UnscaledHeight, scaleY);
+			var scaledX = toScale9Position(x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledY = toScale9Position(y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
+			var scaledXe = toScale9Position(xe, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYe = toScale9Position(ye, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
+			var scaledXm = toScale9Position(xm, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYm = toScale9Position(ym, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
+			var scaledXmPlusOx = toScale9Position(xm + ox, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYmPlusOy = toScale9Position(ym + oy, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
+			var scaledXmMinuxOx = toScale9Position(xm - ox, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, scaleX);
+			var scaledYmMinuxOy = toScale9Position(ym - oy, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, scaleY);
 
 			if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
 			{
@@ -1189,8 +1188,7 @@ class CanvasGraphics
 				case DRAW_CIRCLE:
 					var c = data.readDrawCircle();
 					hasPath = true;
-					drawCircle(c.x - offsetX, c.y - offsetY, c.radius, scale9Grid, bounds.width, bounds.height, graphics.__owner.scaleX,
-						graphics.__owner.scaleY);
+					drawCircle(c.x - offsetX, c.y - offsetY, c.radius, scale9Grid, bounds, graphics.__owner.scaleX, graphics.__owner.scaleY);
 
 					// the right-most point of the circle, centered vertically
 					positionX = c.x + c.radius;
@@ -1205,8 +1203,7 @@ class CanvasGraphics
 				case DRAW_ELLIPSE:
 					var c = data.readDrawEllipse();
 					hasPath = true;
-					drawEllipse(c.x - offsetX, c.y - offsetY, c.width, c.height, scale9Grid, bounds.width, bounds.height, graphics.__owner.scaleX,
-						graphics.__owner.scaleY);
+					drawEllipse(c.x - offsetX, c.y - offsetY, c.width, c.height, scale9Grid, bounds, graphics.__owner.scaleX, graphics.__owner.scaleY);
 
 					// the right-most point of the ellipse, centered vertically
 					positionX = c.x + c.width;
@@ -1221,7 +1218,7 @@ class CanvasGraphics
 				case DRAW_ROUND_RECT:
 					var c = data.readDrawRoundRect();
 					hasPath = true;
-					drawRoundRect(c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight, scale9Grid, bounds.width, bounds.height,
+					drawRoundRect(c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight, scale9Grid, bounds,
 						graphics.__owner.scaleX, graphics.__owner.scaleY);
 
 					// bottom-right corner of the rectangle, above the radius
