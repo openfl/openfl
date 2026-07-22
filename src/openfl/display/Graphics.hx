@@ -6,6 +6,7 @@ import openfl.display._internal.CanvasGraphics;
 import openfl.display._internal.Context3DBuffer;
 import openfl.display._internal.DrawCommandBuffer;
 import openfl.display._internal.DrawCommandReader;
+import openfl.display._internal.GraphicsTessellator.GraphicsTessellatedFillPart;
 import openfl.display._internal.ShaderBuffer;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
@@ -66,6 +67,8 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __commands:DrawCommandBuffer;
 	@:noCompletion private var __dirty(default, set):Bool = true;
 	@:noCompletion private var __hardwareDirty:Bool;
+	@:noCompletion private var __hardwareCompatible:Bool = false;
+	@:noCompletion private var __hardwareCompatibilityKnown:Bool = false;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __managed:Bool;
 	@:noCompletion private var __positionX:Float;
@@ -79,6 +82,7 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __triangleIndexBuffer:IndexBuffer3D;
 	@:noCompletion private var __triangleIndexBufferCount:Int;
 	@:noCompletion private var __triangleIndexBufferData:UInt16Array;
+	@:noCompletion private var __tessellatedFillParts:Array<GraphicsTessellatedFillPart>;
 	@:noCompletion private var __usedShaderBuffers:List<ShaderBuffer>;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
 	@:noCompletion private var __vertexBufferCount:Int;
@@ -2090,6 +2094,9 @@ import js.html.CanvasRenderingContext2D;
 		{
 			__softwareDirty = true;
 			__hardwareDirty = true;
+			__hardwareCompatible = false;
+			__hardwareCompatibilityKnown = false;
+			__tessellatedFillParts = null;
 		}
 
 		return __dirty = value;
