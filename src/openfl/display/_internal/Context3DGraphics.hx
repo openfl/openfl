@@ -42,8 +42,276 @@ class Context3DGraphics
 	private static var tempUvtVector:Vector<Float> = new Vector<Float>();
 	private static var tempScale9VerticesVector:Vector<Float>;
 
+	private static function buildEvenOddRectangles(source:Vector<Float>):Vector<Float>
+	{
+		var normalized = new Vector<Float>();
+		var xCoordinates = new Array<Float>();
+		var yCoordinates = new Array<Float>();
+		var i = 0;
+
+		while (i < source.length)
+		{
+			var x = source[i];
+			var y = source[i + 1];
+			var right = x + source[i + 2];
+			var bottom = y + source[i + 3];
+			var left = Math.min(x, right);
+			var top = Math.min(y, bottom);
+			right = Math.max(x, right);
+			bottom = Math.max(y, bottom);
+
+			if (Math.isFinite(left) && Math.isFinite(top) && Math.isFinite(right) && Math.isFinite(bottom) && right > left && bottom > top)
+			{
+				normalized.push(left);
+				normalized.push(top);
+				normalized.push(right);
+				normalized.push(bottom);
+				xCoordinates.push(left);
+				xCoordinates.push(right);
+				yCoordinates.push(top);
+				yCoordinates.push(bottom);
+			}
+
+			i += 4;
+		}
+
+		var result = new Vector<Float>();
+		if (normalized.length == 0)
+		{
+			return result;
+		}
+
+		function compareCoordinates(a:Float, b:Float):Int
+		{
+			return a < b ? -1 : (a > b ? 1 : 0);
+		}
+
+		function sortAndDeduplicate(values:Array<Float>):Array<Float>
+		{
+			values.sort(compareCoordinates);
+			var unique = new Array<Float>();
+			for (value in values)
+			{
+				if (unique.length == 0 || unique[unique.length - 1] != value)
+				{
+					unique.push(value);
+				}
+			}
+			return unique;
+		}
+
+		function findCoordinate(values:Array<Float>, value:Float):Int
+		{
+			var low = 0;
+			var high = values.length - 1;
+			while (low <= high)
+			{
+				var middle = (low + high) >> 1;
+				var current = values[middle];
+				if (current < value)
+				{
+					low = middle + 1;
+				}
+				else if (current > value)
+				{
+					high = middle - 1;
+				}
+				else
+				{
+					return middle;
+				}
+			}
+			return -1;
+		}
+
+		xCoordinates = sortAndDeduplicate(xCoordinates);
+		yCoordinates = sortAndDeduplicate(yCoordinates);
+
+		var finished = new Array<Array<Float>>();
+		var active = new Map<String, Array<Float>>();
+		var toggles = new Array<Bool>();
+
+		for (yIndex in 0...yCoordinates.length - 1)
+		{
+			var top = yCoordinates[yIndex];
+			var bottom = yCoordinates[yIndex + 1];
+			toggles.resize(xCoordinates.length);
+			for (xIndex in 0...toggles.length)
+			{
+				toggles[xIndex] = false;
+			}
+
+			i = 0;
+			while (i < normalized.length)
+			{
+				if (normalized[i + 1] < bottom && normalized[i + 3] > top)
+				{
+					var leftIndex = findCoordinate(xCoordinates, normalized[i]);
+					var rightIndex = findCoordinate(xCoordinates, normalized[i + 2]);
+					toggles[leftIndex] = !toggles[leftIndex];
+					toggles[rightIndex] = !toggles[rightIndex];
+				}
+				i += 4;
+			}
+
+			var row = new Map<String, Array<Float>>();
+			var parity = false;
+			var spanStart = -1;
+			for (xIndex in 0...xCoordinates.length)
+			{
+				var previousParity = parity;
+				if (toggles[xIndex])
+				{
+					parity = !parity;
+				}
+
+				if (!previousParity && parity)
+				{
+					spanStart = xIndex;
+				}
+				else if (previousParity && !parity)
+				{
+					var key = spanStart + ":" + xIndex;
+					var rectangle = active.get(key);
+					if (rectangle == null)
+					{
+						rectangle = [xCoordinates[spanStart], top, xCoordinates[xIndex] - xCoordinates[spanStart], bottom - top];
+					}
+					else
+					{
+						rectangle[3] = bottom - rectangle[1];
+					}
+					row.set(key, rectangle);
+				}
+			}
+
+			for (key => rectangle in active)
+			{
+				if (!row.exists(key))
+				{
+					finished.push(rectangle);
+				}
+			}
+			active = row;
+		}
+
+		for (rectangle in active)
+		{
+			finished.push(rectangle);
+		}
+
+		finished.sort(function(a:Array<Float>, b:Array<Float>):Int
+		{
+			var comparison = compareCoordinates(a[1], b[1]);
+			if (comparison == 0) comparison = compareCoordinates(a[0], b[0]);
+			if (comparison == 0) comparison = compareCoordinates(a[3], b[3]);
+			if (comparison == 0) comparison = compareCoordinates(a[2], b[2]);
+			return comparison;
+		});
+
+		for (rectangle in finished)
+		{
+			for (value in rectangle)
+			{
+				result.push(value);
+			}
+		}
+
+		return result;
+	}
+
+	private static function prepareRectangleBatches(graphics:Graphics):Void
+	{
+		graphics.__rectangleBatchStarts = new Vector<Int>();
+		graphics.__rectangleBatchEnds = new Vector<Int>();
+		graphics.__rectangleBatchFills = new Vector<Int>();
+		graphics.__rectangleBatchRects = [];
+		graphics.__solidRectangleBatchesOnly = true;
+
+		var data = new DrawCommandReader(graphics.__commands);
+		var source = new Vector<Float>();
+		var sourceCount = 0;
+		var firstCommand = -1;
+		var commandIndex = 0;
+		var hasSolidFill = false;
+		var solidFill = 0;
+
+		function finalize(endCommand:Int):Void
+		{
+			if (sourceCount > 1)
+			{
+				graphics.__rectangleBatchStarts.push(firstCommand);
+				graphics.__rectangleBatchEnds.push(endCommand);
+				graphics.__rectangleBatchFills.push(solidFill);
+				graphics.__rectangleBatchRects.push(buildEvenOddRectangles(source));
+			}
+			else if (sourceCount == 1)
+			{
+				graphics.__solidRectangleBatchesOnly = false;
+			}
+
+			source = new Vector<Float>();
+			sourceCount = 0;
+			firstCommand = -1;
+		}
+
+		for (type in graphics.__commands.types)
+		{
+			switch (type)
+			{
+				case BEGIN_FILL:
+					finalize(commandIndex);
+					var fill = data.readBeginFill();
+					var color = Std.int(fill.color);
+					var alpha = Std.int(fill.alpha * 0xFF);
+					solidFill = (color & 0xFFFFFF) | (alpha << 24);
+					hasSolidFill = true;
+
+				case BEGIN_BITMAP_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
+					finalize(commandIndex);
+					hasSolidFill = false;
+					graphics.__solidRectangleBatchesOnly = false;
+					data.skip(type);
+
+				case DRAW_RECT:
+					var rectangle = data.readDrawRect();
+					if (!hasSolidFill)
+					{
+						graphics.__solidRectangleBatchesOnly = false;
+					}
+					if (firstCommand == -1)
+					{
+						firstCommand = commandIndex;
+					}
+					sourceCount++;
+					source.push(rectangle.x);
+					source.push(rectangle.y);
+					source.push(rectangle.width);
+					source.push(rectangle.height);
+
+				case END_FILL:
+					finalize(commandIndex);
+					hasSolidFill = false;
+					data.skip(type);
+
+				default:
+					graphics.__solidRectangleBatchesOnly = false;
+					data.skip(type);
+			}
+			commandIndex++;
+		}
+
+		finalize(commandIndex);
+		if (graphics.__rectangleBatchRects.length == 0)
+		{
+			graphics.__solidRectangleBatchesOnly = false;
+		}
+		data.destroy();
+	}
+
 	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
+		prepareRectangleBatches(graphics);
 		var quadBufferPosition = 0;
 		var triangleIndexBufferPosition = 0;
 		var vertexBufferPosition = 0;
@@ -170,8 +438,91 @@ class Context3DGraphics
 			}
 		}
 
+		function buildRectangleBatchBuffer(rectangles:Vector<Float>):Void
+		{
+			var length = rectangles.length >> 2;
+			if (length == 0)
+			{
+				return;
+			}
+
+			var dataPerVertex = 4;
+			var stride = dataPerVertex * 4;
+			if (graphics.__quadBuffer == null)
+			{
+				graphics.__quadBuffer = new Context3DBuffer(context, QUADS, quadBufferPosition + length, dataPerVertex);
+			}
+			else
+			{
+				graphics.__quadBuffer.resize(quadBufferPosition + length, dataPerVertex);
+			}
+
+			var bitmapWidth = 1;
+			var bitmapHeight = 1;
+			if (bitmap != null)
+			{
+				#if openfl_power_of_two
+				while (bitmapWidth < bitmap.width)
+				{
+					bitmapWidth <<= 1;
+				}
+				while (bitmapHeight < bitmap.height)
+				{
+					bitmapHeight <<= 1;
+				}
+				#else
+				bitmapWidth = bitmap.width;
+				bitmapHeight = bitmap.height;
+				#end
+			}
+
+			var vertexBufferData = graphics.__quadBuffer.vertexBufferData;
+			var rectangleOffset = 0;
+			for (i in 0...length)
+			{
+				var vertexOffset = (quadBufferPosition + i) * stride;
+				var left = rectangles[rectangleOffset];
+				var top = rectangles[rectangleOffset + 1];
+				var right = left + rectangles[rectangleOffset + 2];
+				var bottom = top + rectangles[rectangleOffset + 3];
+				var uvLeft = left / bitmapWidth;
+				var uvTop = top / bitmapHeight;
+				var uvRight = right / bitmapWidth;
+				var uvBottom = bottom / bitmapHeight;
+
+				vertexBufferData[vertexOffset] = left;
+				vertexBufferData[vertexOffset + 1] = top;
+				vertexBufferData[vertexOffset + 2] = uvLeft;
+				vertexBufferData[vertexOffset + 3] = uvTop;
+				vertexBufferData[vertexOffset + dataPerVertex] = right;
+				vertexBufferData[vertexOffset + dataPerVertex + 1] = top;
+				vertexBufferData[vertexOffset + dataPerVertex + 2] = uvRight;
+				vertexBufferData[vertexOffset + dataPerVertex + 3] = uvTop;
+				vertexBufferData[vertexOffset + dataPerVertex * 2] = left;
+				vertexBufferData[vertexOffset + dataPerVertex * 2 + 1] = bottom;
+				vertexBufferData[vertexOffset + dataPerVertex * 2 + 2] = uvLeft;
+				vertexBufferData[vertexOffset + dataPerVertex * 2 + 3] = uvBottom;
+				vertexBufferData[vertexOffset + dataPerVertex * 3] = right;
+				vertexBufferData[vertexOffset + dataPerVertex * 3 + 1] = bottom;
+				vertexBufferData[vertexOffset + dataPerVertex * 3 + 2] = uvRight;
+				vertexBufferData[vertexOffset + dataPerVertex * 3 + 3] = uvBottom;
+
+				rectangleOffset += 4;
+			}
+
+			quadBufferPosition += length;
+		}
+
+		var commandIndex = 0;
+		var rectangleBatchIndex = 0;
 		for (type in graphics.__commands.types)
 		{
+			while (rectangleBatchIndex < graphics.__rectangleBatchEnds.length
+				&& commandIndex >= graphics.__rectangleBatchEnds[rectangleBatchIndex])
+			{
+				rectangleBatchIndex++;
+			}
+
 			switch (type)
 			{
 				case BEGIN_BITMAP_FILL:
@@ -427,10 +778,20 @@ class Context3DGraphics
 					buildDrawTrianglesBuffer(tempVerticesVector, tempIndicesVector, null, NONE);
 
 				case DRAW_RECT:
-					if (bitmap != null)
-					{
-						var c = data.readDrawRect();
+					var c = data.readDrawRect();
+					var isBatched = rectangleBatchIndex < graphics.__rectangleBatchStarts.length
+						&& commandIndex >= graphics.__rectangleBatchStarts[rectangleBatchIndex]
+						&& commandIndex < graphics.__rectangleBatchEnds[rectangleBatchIndex];
 
+					if (isBatched)
+					{
+						if (commandIndex == graphics.__rectangleBatchStarts[rectangleBatchIndex])
+						{
+							buildRectangleBatchBuffer(graphics.__rectangleBatchRects[rectangleBatchIndex]);
+						}
+					}
+					else if (bitmap != null)
+					{
 						tempVerticesVector.length = 8;
 						tempVerticesVector[0] = c.x;
 						tempVerticesVector[1] = c.y;
@@ -458,6 +819,7 @@ class Context3DGraphics
 				default:
 					data.skip(type);
 			}
+			commandIndex++;
 		}
 
 		// TODO: Should we use static data specific to Context3DGraphics instead of each Graphics instance?
@@ -521,31 +883,48 @@ class Context3DGraphics
 		return true;
 		#end
 
+		// The owner's scale9 state can change without changing the Graphics
+		// command stream, so it must not be part of the cached result.
 		if (graphics.__owner.__worldScale9Grid != null)
 		{
 			return false;
 		}
 
+		if (!graphics.__hardwareDirty && graphics.__hardwareCompatibilityKnown)
+		{
+			return graphics.__hardwareCompatible;
+		}
+
+		inline function cacheCompatibility(result:Bool):Bool
+		{
+			graphics.__hardwareCompatible = result;
+			graphics.__hardwareCompatibilityKnown = true;
+			return result;
+		}
+
 		var data = new DrawCommandReader(graphics.__commands);
 		var hasColorFill = false, hasBitmapFill = false, hasShaderFill = false;
-		// Multiple axis-aligned rectangles are safe on the legacy hardware path
-		// when their interiors do not overlap. Other shape combinations remain
-		// conservative and fall back to software.
-		var filledRectBounds = new Vector<Float>();
+		// Multiple axis-aligned rectangles are converted to a single batched mesh
+		// that preserves the even-odd fill rule. Combinations with other filled
+		// primitives remain conservative and fall back to software.
+		var filledRectCount = 0;
+		var filledRectCommandCount = 0;
 		var hasUntrackedFilledShape = false;
 
 		inline function resetFilledShapeCompatibility():Void
 		{
-			filledRectBounds.length = 0;
+			filledRectCount = 0;
+			filledRectCommandCount = 0;
 			hasUntrackedFilledShape = false;
 		}
 
 		function addFilledRectCompatibility(x:Float, y:Float, width:Float, height:Float):Bool
 		{
-			if (hasUntrackedFilledShape)
+			if (hasUntrackedFilledShape || (hasShaderFill && filledRectCommandCount > 0))
 			{
 				return false;
 			}
+			filledRectCommandCount++;
 
 			var right = x + width;
 			var bottom = y + height;
@@ -554,7 +933,7 @@ class Context3DGraphics
 			right = Math.max(x, right);
 			bottom = Math.max(y, bottom);
 
-			if (Math.isNaN(left) || Math.isNaN(top) || Math.isNaN(right) || Math.isNaN(bottom))
+			if (!Math.isFinite(left) || !Math.isFinite(top) || !Math.isFinite(right) || !Math.isFinite(bottom))
 			{
 				return false;
 			}
@@ -565,33 +944,13 @@ class Context3DGraphics
 				return true;
 			}
 
-			var i = 0;
-			while (i < filledRectBounds.length)
-			{
-				var otherLeft = filledRectBounds[i];
-				var otherTop = filledRectBounds[i + 1];
-				var otherRight = filledRectBounds[i + 2];
-				var otherBottom = filledRectBounds[i + 3];
-
-				// Touching edges have no shared interior, so they cannot create a cutout.
-				if (left < otherRight && right > otherLeft && top < otherBottom && bottom > otherTop)
-				{
-					return false;
-				}
-
-				i += 4;
-			}
-
-			filledRectBounds.push(left);
-			filledRectBounds.push(top);
-			filledRectBounds.push(right);
-			filledRectBounds.push(bottom);
+			filledRectCount++;
 			return true;
 		}
 
 		inline function addUntrackedFilledShapeCompatibility():Bool
 		{
-			if (hasUntrackedFilledShape || filledRectBounds.length > 0)
+			if (hasUntrackedFilledShape || filledRectCount > 0)
 			{
 				return false;
 			}
@@ -609,7 +968,7 @@ class Context3DGraphics
 					if (c.matrix != null)
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 					hasBitmapFill = true;
 					hasColorFill = false;
@@ -639,7 +998,7 @@ class Context3DGraphics
 					else
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 
 				case DRAW_RECT:
@@ -649,13 +1008,13 @@ class Context3DGraphics
 						if (!addFilledRectCompatibility(c.x, c.y, c.width, c.height))
 						{
 							data.destroy();
-							return false;
+							return cacheCompatibility(false);
 						}
 					}
 					else
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 
 				case DRAW_TRIANGLES:
@@ -666,7 +1025,7 @@ class Context3DGraphics
 					else
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 
 				case LINE_STYLE:
@@ -674,7 +1033,7 @@ class Context3DGraphics
 					if (c.thickness != null)
 					{
 						data.destroy();
-						return false;
+						return cacheCompatibility(false);
 					}
 					data.skip(type);
 
@@ -693,12 +1052,12 @@ class Context3DGraphics
 
 				default:
 					data.destroy();
-					return false;
+					return cacheCompatibility(false);
 			}
 		}
 
 		data.destroy();
-		return true;
+		return cacheCompatibility(true);
 	}
 
 	public static function render(graphics:Graphics, renderer:OpenGLRenderer):Void
@@ -777,8 +1136,6 @@ class Context3DGraphics
 				{
 					scale9Grid = null;
 				}
-
-				var data = new DrawCommandReader(graphics.__commands);
 
 				var context = renderer.__context3D;
 				var gl = context.gl;
@@ -915,10 +1272,93 @@ class Context3DGraphics
 					}
 				}
 
-				for (type in graphics.__commands.types)
+				function renderRectangleBatch(length:Int):Void
 				{
-					switch (type)
+					if (length == 0 || (bitmap == null && fill == null))
 					{
+						return;
+					}
+
+					var uMatrix = renderer.__getMatrix(graphics.__owner.__renderTransform, AUTO);
+					var shader:Shader;
+
+					if (bitmap != null)
+					{
+						shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+						renderer.setShader(shader);
+						renderer.applyMatrix(uMatrix);
+						renderer.applyBitmapData(bitmap, smooth, repeat);
+						renderer.applyAlpha(graphics.__owner.__worldAlpha);
+						renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+						renderer.updateShader();
+					}
+					else
+					{
+						shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+						renderer.setShader(shader);
+						renderer.applyMatrix(uMatrix);
+						renderer.applyBitmapData(blankBitmapData, true, repeat);
+						#if lime
+						var color:ARGB = (fill : ARGB);
+						tempColorTransform.redOffset = color.r;
+						tempColorTransform.greenOffset = color.g;
+						tempColorTransform.blueOffset = color.b;
+						tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
+						renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
+						renderer.applyColorTransform(tempColorTransform);
+						#else
+						renderer.applyAlpha(graphics.__owner.__worldAlpha);
+						renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+						#end
+						renderer.updateShader();
+					}
+
+					var end = quadBufferPosition + length;
+					while (quadBufferPosition < end)
+					{
+						var drawLength = Std.int(Math.min(end - quadBufferPosition, context.__quadIndexBufferElements));
+						if (drawLength <= 0) break;
+
+						if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, graphics.__quadBuffer.vertexBuffer,
+							quadBufferPosition * 16, FLOAT_2);
+						if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, graphics.__quadBuffer.vertexBuffer,
+							(quadBufferPosition * 16) + 2, FLOAT_2);
+
+						context.drawTriangles(context.__quadIndexBuffer, 0, drawLength * 2);
+						quadBufferPosition += drawLength;
+
+						#if gl_stats
+						Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+						#end
+					}
+
+					renderer.__clearShader();
+				}
+
+				if (graphics.__solidRectangleBatchesOnly)
+				{
+					for (rectangleBatchIndex in 0...graphics.__rectangleBatchRects.length)
+					{
+						fill = graphics.__rectangleBatchFills[rectangleBatchIndex];
+						renderRectangleBatch(graphics.__rectangleBatchRects[rectangleBatchIndex].length >> 2);
+					}
+					context.setCulling(NONE);
+				}
+				else
+				{
+					var data = new DrawCommandReader(graphics.__commands);
+					var commandIndex = 0;
+					var rectangleBatchIndex = 0;
+					for (type in graphics.__commands.types)
+					{
+						while (rectangleBatchIndex < graphics.__rectangleBatchEnds.length
+							&& commandIndex >= graphics.__rectangleBatchEnds[rectangleBatchIndex])
+						{
+							rectangleBatchIndex++;
+						}
+
+						switch (type)
+						{
 						case BEGIN_BITMAP_FILL:
 							var c = data.readBeginBitmapFill();
 							bitmap = c.bitmap;
@@ -1091,8 +1531,18 @@ class Context3DGraphics
 
 						case DRAW_RECT:
 							var c = data.readDrawRect();
+							var isBatched = rectangleBatchIndex < graphics.__rectangleBatchStarts.length
+								&& commandIndex >= graphics.__rectangleBatchStarts[rectangleBatchIndex]
+								&& commandIndex < graphics.__rectangleBatchEnds[rectangleBatchIndex];
 
-							if (bitmap != null)
+							if (isBatched)
+							{
+								if (commandIndex == graphics.__rectangleBatchStarts[rectangleBatchIndex])
+								{
+									renderRectangleBatch(graphics.__rectangleBatchRects[rectangleBatchIndex].length >> 2);
+								}
+							}
+							else if (bitmap != null)
 							{
 								renderDrawTriangles(8, 6, 0, NONE);
 							}
@@ -1184,7 +1634,10 @@ class Context3DGraphics
 
 						default:
 							data.skip(type);
+						}
+						commandIndex++;
 					}
+					data.destroy();
 				}
 
 				Matrix.__pool.release(matrix);
