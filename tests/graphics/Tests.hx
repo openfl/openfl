@@ -7,7 +7,9 @@ class Tests
 	{
 		var runner = new Runner();
 		runner.addCase(new CapsStyleTest());
+		#if !flash
 		runner.addCase(new Context3DGraphicsTest());
+		#end
 		runner.addCase(new GradientTypeTest());
 		runner.addCase(new GraphicsBitmapFillTest());
 		runner.addCase(new GraphicsEndFillTest());
