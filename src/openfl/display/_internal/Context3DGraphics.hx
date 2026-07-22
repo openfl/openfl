@@ -129,16 +129,15 @@ class Context3DGraphics
 
 		var finished = new Array<Array<Float>>();
 		var active = new Map<String, Array<Float>>();
-		var toggles = new Array<Bool>();
 
 		for (yIndex in 0...yCoordinates.length - 1)
 		{
 			var top = yCoordinates[yIndex];
 			var bottom = yCoordinates[yIndex + 1];
-			toggles.resize(xCoordinates.length);
-			for (xIndex in 0...toggles.length)
+			var toggles = new Array<Bool>();
+			for (xIndex in 0...xCoordinates.length)
 			{
-				toggles[xIndex] = false;
+				toggles.push(false);
 			}
 
 			i = 0;
@@ -185,19 +184,19 @@ class Context3DGraphics
 				}
 			}
 
-			for (key => rectangle in active)
+			for (key in active.keys())
 			{
 				if (!row.exists(key))
 				{
-					finished.push(rectangle);
+					finished.push(active.get(key));
 				}
 			}
 			active = row;
 		}
 
-		for (rectangle in active)
+		for (key in active.keys())
 		{
-			finished.push(rectangle);
+			finished.push(active.get(key));
 		}
 
 		finished.sort(function(a:Array<Float>, b:Array<Float>):Int
