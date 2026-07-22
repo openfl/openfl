@@ -15,6 +15,7 @@ class Tests
 		runner.addCase(new GraphicsPathTest());
 		runner.addCase(new GraphicsPathWindingTest());
 		runner.addCase(new GraphicsSolidFillTest());
+		runner.addCase(new GraphicsSoftwareRenderBoundsTest());
 		runner.addCase(new GraphicsStrokeTest());
 		runner.addCase(new GraphicsTest());
 		runner.addCase(new InterpolationMethodTest());

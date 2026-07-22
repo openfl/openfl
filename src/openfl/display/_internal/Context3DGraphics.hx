@@ -27,7 +27,9 @@ import openfl.display._internal.stats.DrawCallContext;
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
+@:access(openfl.display.OpenGLRenderer)
 @:access(openfl.display.Shader)
+@:access(openfl.display.Stage)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
@@ -631,6 +633,81 @@ class Context3DGraphics
 		return true;
 	}
 
+	private static function getClippedRenderBounds(graphicsBounds:Rectangle, transform:Matrix, clipBounds:Rectangle):Rectangle
+	{
+		if ((transform.a * transform.d - transform.b * transform.c) == 0)
+		{
+			return null;
+		}
+
+		var inverseTransform = Matrix.__pool.get();
+		inverseTransform.copyFrom(transform);
+		inverseTransform.invert();
+		var renderBounds = Rectangle.__pool.get();
+		clipBounds.__transform(renderBounds, inverseTransform);
+		renderBounds.__contract(graphicsBounds.x, graphicsBounds.y, graphicsBounds.width, graphicsBounds.height);
+		if (renderBounds.width < 0) renderBounds.width = 0;
+		if (renderBounds.height < 0) renderBounds.height = 0;
+
+		Matrix.__pool.release(inverseTransform);
+
+		if (renderBounds.equals(graphicsBounds))
+		{
+			Rectangle.__pool.release(renderBounds);
+			return null;
+		}
+
+		return renderBounds;
+	}
+
+	private static function getSoftwareRenderBounds(graphics:Graphics, renderer:OpenGLRenderer):Rectangle
+	{
+		var graphicsBounds = graphics.__bounds;
+		if (graphicsBounds == null || graphics.__owner.__worldScale9Grid != null)
+		{
+			return null;
+		}
+
+		var clipBounds = Rectangle.__pool.get();
+		if (renderer.__stage != null && renderer.__defaultRenderTarget == null)
+		{
+			clipBounds.copyFrom(renderer.__stage.__displayRect);
+			if (renderer.__worldTransform != null)
+			{
+				var transformedClipBounds = Rectangle.__pool.get();
+				clipBounds.__transform(transformedClipBounds, renderer.__worldTransform);
+				clipBounds.copyFrom(transformedClipBounds);
+				Rectangle.__pool.release(transformedClipBounds);
+			}
+		}
+		else
+		{
+			var pixelRatio = renderer.__pixelRatio > 0 ? renderer.__pixelRatio : 1;
+			clipBounds.setTo(renderer.__offsetX / pixelRatio, renderer.__offsetY / pixelRatio, renderer.__displayWidth / pixelRatio,
+				renderer.__displayHeight / pixelRatio);
+		}
+
+		if (renderer.__numClipRects > 0)
+		{
+			var activeClipBounds = renderer.__clipRects[renderer.__numClipRects - 1];
+			clipBounds.__contract(activeClipBounds.x, activeClipBounds.y, activeClipBounds.width, activeClipBounds.height);
+			if (clipBounds.width < 0) clipBounds.width = 0;
+			if (clipBounds.height < 0) clipBounds.height = 0;
+		}
+
+		var transform = Matrix.__pool.get();
+		transform.copyFrom(graphics.__owner.__renderTransform);
+		if (renderer.__worldTransform != null)
+		{
+			transform.concat(renderer.__worldTransform);
+		}
+
+		var renderBounds = getClippedRenderBounds(graphicsBounds, transform, clipBounds);
+		Matrix.__pool.release(transform);
+		Rectangle.__pool.release(clipBounds);
+		return renderBounds;
+	}
+
 	public static function render(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
 		if (!graphics.__visible || graphics.__commands.length == 0) return;
@@ -666,11 +743,15 @@ class Context3DGraphics
 				renderer.__softwareRenderer.__worldTransform = renderer.__worldTransform;
 			}
 
+			var renderBounds = getSoftwareRenderBounds(graphics, renderer);
+
 			#if (js && html5)
-			CanvasGraphics.render(graphics, cast renderer.__softwareRenderer);
+			CanvasGraphics.render(graphics, cast renderer.__softwareRenderer, renderBounds);
 			#elseif lime_cairo
-			CairoGraphics.render(graphics, cast renderer.__softwareRenderer);
+			CairoGraphics.render(graphics, cast renderer.__softwareRenderer, renderBounds);
 			#end
+
+			if (renderBounds != null) Rectangle.__pool.release(renderBounds);
 
 			renderer.__softwareRenderer.__worldTransform = cacheTransform;
 		}

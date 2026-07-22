@@ -1056,8 +1056,9 @@ class CanvasGraphics
 		#if (js && html5)
 		bounds = graphics.__bounds;
 
-		var offsetX = bounds.x;
-		var offsetY = bounds.y;
+		var renderBounds = graphics.__softwareRenderBounds != null ? graphics.__softwareRenderBounds : bounds;
+		var offsetX = renderBounds.x;
+		var offsetY = renderBounds.y;
 
 		var positionX = 0.0;
 		var positionY = 0.0;
@@ -2042,7 +2043,7 @@ class CanvasGraphics
 			{
 				if (hasFill || bitmapFill != null)
 				{
-					context.translate(-bounds.x, -bounds.y);
+					context.translate(-offsetX, -offsetY);
 
 					var inverseTranslateX = 0.0;
 					var inverseTranslateY = 0.0;
@@ -2091,7 +2092,7 @@ class CanvasGraphics
 						context.scale(inverseScaleX, inverseScaleY);
 					}
 
-					context.translate(bounds.x, bounds.y);
+					context.translate(offsetX, offsetY);
 					context.closePath();
 				}
 			}
@@ -2105,7 +2106,7 @@ class CanvasGraphics
 		#end
 	}
 
-	public static function render(graphics:Graphics, renderer:CanvasRenderer):Void
+	public static function render(graphics:Graphics, renderer:CanvasRenderer, renderBounds:Rectangle = null):Void
 	{
 		#if (js && html5)
 		CanvasGraphics.graphics = graphics;
@@ -2118,7 +2119,8 @@ class CanvasGraphics
 		var pixelRatio = renderer.__pixelRatio;
 		#end
 
-		graphics.__update(renderer.__worldTransform, pixelRatio);
+		graphics.__setSoftwareRenderBounds(renderBounds);
+		graphics.__update(renderer.__worldTransform, pixelRatio, renderBounds);
 
 		if (!graphics.__softwareDirty || graphics.__managed)
 		{

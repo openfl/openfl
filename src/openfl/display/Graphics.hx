@@ -74,6 +74,7 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __softwareDirty:Bool;
+	@:noCompletion private var __softwareRenderBounds:Rectangle;
 	@:noCompletion private var __strokePadding:Float;
 	@:noCompletion private var __transformDirty:Bool;
 	@:noCompletion private var __triangleIndexBuffer:IndexBuffer3D;
@@ -1909,9 +1910,32 @@ import js.html.CanvasRenderingContext2D;
 		}
 	}
 
-	@:noCompletion private function __update(displayMatrix:Matrix, pixelRatio:Float):Void
+	@:noCompletion private function __setSoftwareRenderBounds(value:Rectangle):Void
 	{
-		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0)
+		if (value == null)
+		{
+			if (__softwareRenderBounds != null)
+			{
+				__softwareRenderBounds = null;
+				__softwareDirty = true;
+			}
+		}
+		else if (__softwareRenderBounds == null || !__softwareRenderBounds.equals(value))
+		{
+			if (__softwareRenderBounds == null)
+			{
+				__softwareRenderBounds = new Rectangle();
+			}
+			__softwareRenderBounds.copyFrom(value);
+			__softwareDirty = true;
+		}
+	}
+
+	@:noCompletion private function __update(displayMatrix:Matrix, pixelRatio:Float, renderBounds:Rectangle = null):Void
+	{
+		var bounds = renderBounds != null ? renderBounds : __bounds;
+
+		if (bounds == null || bounds.width <= 0 || bounds.height <= 0)
 		{
 			if (__width >= 1 || __height >= 1) __dirty = true;
 			__width = 0;
@@ -1981,8 +2005,8 @@ import js.html.CanvasRenderingContext2D;
 		}
 		#end
 
-		var width = Math.abs(__bounds.width * scaleX);
-		var height = Math.abs(__bounds.height * scaleY);
+		var width = Math.abs(bounds.width * scaleX);
+		var height = Math.abs(bounds.height * scaleY);
 
 		if (width < 1 || height < 1)
 		{
@@ -1995,13 +2019,13 @@ import js.html.CanvasRenderingContext2D;
 		if (maxTextureWidth != null && width > maxTextureWidth)
 		{
 			width = maxTextureWidth;
-			scaleX = maxTextureWidth / __bounds.width;
+			scaleX = maxTextureWidth / bounds.width;
 		}
 
 		if (maxTextureWidth != null && height > maxTextureHeight)
 		{
 			height = maxTextureHeight;
-			scaleY = maxTextureHeight / __bounds.height;
+			scaleY = maxTextureHeight / bounds.height;
 		}
 
 		var inverseA:Float;
@@ -2016,8 +2040,8 @@ import js.html.CanvasRenderingContext2D;
 		}
 		else
 		{
-			__renderTransform.a = width / __bounds.width;
-			__renderTransform.d = height / __bounds.height;
+			__renderTransform.a = width / bounds.width;
+			__renderTransform.d = height / bounds.height;
 			inverseA = (1 / __renderTransform.a);
 			inverseD = (1 / __renderTransform.d);
 		}
@@ -2028,8 +2052,8 @@ import js.html.CanvasRenderingContext2D;
 		__worldTransform.c = inverseD * parentTransform.c;
 		__worldTransform.d = inverseD * parentTransform.d;
 
-		var x = __bounds.x;
-		var y = __bounds.y;
+		var x = bounds.x;
+		var y = bounds.y;
 		var tx = x * parentTransform.a + y * parentTransform.c + parentTransform.tx;
 		var ty = x * parentTransform.b + y * parentTransform.d + parentTransform.ty;
 
