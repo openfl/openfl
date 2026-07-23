@@ -10,6 +10,9 @@ class Tests
 		runner.addCase(new BlendModeTest());
 		runner.addCase(new DisplayObjectContainerTest());
 		runner.addCase(new DisplayObjectTest());
+		#if !flash
+		runner.addCase(new DrawCommandTest());
+		#end
 		runner.addCase(new FocusEventTest());
 		runner.addCase(new InteractiveObjectTest());
 		runner.addCase(new PixelSnappingTest());

@@ -154,7 +154,24 @@ class DrawCommandBuffer
 
 		types.push(BEGIN_BITMAP_FILL);
 		o.push(bitmap);
-		o.push(matrix);
+		if (matrix != null)
+		{
+			o.push(matrix.a);
+			o.push(matrix.b);
+			o.push(matrix.c);
+			o.push(matrix.d);
+			o.push(matrix.tx);
+			o.push(matrix.ty);
+		}
+		else
+		{
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+		}
 		b.push(repeat);
 		b.push(smooth);
 	}
@@ -178,7 +195,24 @@ class DrawCommandBuffer
 		ii.push(colors);
 		ff.push(alphas);
 		ii.push(ratios);
-		o.push(matrix);
+		if (matrix != null)
+		{
+			o.push(matrix.a);
+			o.push(matrix.b);
+			o.push(matrix.c);
+			o.push(matrix.d);
+			o.push(matrix.tx);
+			o.push(matrix.ty);
+		}
+		else
+		{
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+		}
 		o.push(spreadMethod);
 		o.push(interpolationMethod);
 		f.push(focalPointRatio);
@@ -350,7 +384,24 @@ class DrawCommandBuffer
 
 		types.push(LINE_BITMAP_STYLE);
 		o.push(bitmap);
-		o.push(matrix);
+		if (matrix != null)
+		{
+			o.push(matrix.a);
+			o.push(matrix.b);
+			o.push(matrix.c);
+			o.push(matrix.d);
+			o.push(matrix.tx);
+			o.push(matrix.ty);
+		}
+		else
+		{
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+		}
 		b.push(repeat);
 		b.push(smooth);
 	}
@@ -365,7 +416,24 @@ class DrawCommandBuffer
 		ii.push(colors);
 		ff.push(alphas);
 		ii.push(ratios);
-		o.push(matrix);
+		if (matrix != null)
+		{
+			o.push(matrix.a);
+			o.push(matrix.b);
+			o.push(matrix.c);
+			o.push(matrix.d);
+			o.push(matrix.tx);
+			o.push(matrix.ty);
+		}
+		else
+		{
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+		}
 		o.push(spreadMethod);
 		o.push(interpolationMethod);
 		f.push(focalPointRatio);
@@ -434,7 +502,24 @@ class DrawCommandBuffer
 		prepareWrite();
 
 		types.push(OVERRIDE_MATRIX);
-		o.push(matrix);
+		if (matrix != null)
+		{
+			o.push(matrix.a);
+			o.push(matrix.b);
+			o.push(matrix.c);
+			o.push(matrix.d);
+			o.push(matrix.tx);
+			o.push(matrix.ty);
+		}
+		else
+		{
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+		}
 	}
 
 	public function windingEvenOdd():Void
