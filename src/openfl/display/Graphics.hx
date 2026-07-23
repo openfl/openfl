@@ -73,6 +73,7 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __quadBuffer:Context3DBuffer;
+	@:noCompletion private var __rectangleBatchesRequired:Bool;
 	@:noCompletion private var __rectangleBatchEnds:Vector<Int>;
 	@:noCompletion private var __rectangleBatchFills:Vector<Int>;
 	@:noCompletion private var __rectangleBatchRects:Array<Vector<Float>>;

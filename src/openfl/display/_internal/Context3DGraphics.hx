@@ -310,7 +310,18 @@ class Context3DGraphics
 
 	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
-		prepareRectangleBatches(graphics);
+		if (graphics.__rectangleBatchesRequired)
+		{
+			prepareRectangleBatches(graphics);
+		}
+		else if (graphics.__rectangleBatchRects != null)
+		{
+			graphics.__rectangleBatchStarts = null;
+			graphics.__rectangleBatchEnds = null;
+			graphics.__rectangleBatchFills = null;
+			graphics.__rectangleBatchRects = null;
+			graphics.__solidRectangleBatchesOnly = false;
+		}
 		var quadBufferPosition = 0;
 		var triangleIndexBufferPosition = 0;
 		var vertexBufferPosition = 0;
@@ -894,6 +905,11 @@ class Context3DGraphics
 			return graphics.__hardwareCompatible;
 		}
 
+		// Most hardware-compatible Graphics do not contain a multi-rectangle
+		// fill. Keep their buffer build on the original path without allocating
+		// rectangle batch metadata or walking the commands a second time.
+		graphics.__rectangleBatchesRequired = false;
+
 		inline function cacheCompatibility(result:Bool):Bool
 		{
 			graphics.__hardwareCompatible = result;
@@ -924,6 +940,10 @@ class Context3DGraphics
 				return false;
 			}
 			filledRectCommandCount++;
+			if (filledRectCommandCount > 1)
+			{
+				graphics.__rectangleBatchesRequired = true;
+			}
 
 			var right = x + width;
 			var bottom = y + height;
