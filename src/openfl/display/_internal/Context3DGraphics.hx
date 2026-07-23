@@ -525,9 +525,11 @@ class Context3DGraphics
 
 		var commandIndex = 0;
 		var rectangleBatchIndex = 0;
+		var hasRectangleBatches = graphics.__rectangleBatchEnds != null;
 		for (type in graphics.__commands.types)
 		{
-			while (rectangleBatchIndex < graphics.__rectangleBatchEnds.length
+			while (hasRectangleBatches
+				&& rectangleBatchIndex < graphics.__rectangleBatchEnds.length
 				&& commandIndex >= graphics.__rectangleBatchEnds[rectangleBatchIndex])
 			{
 				rectangleBatchIndex++;
@@ -789,7 +791,8 @@ class Context3DGraphics
 
 				case DRAW_RECT:
 					var c = data.readDrawRect();
-					var isBatched = rectangleBatchIndex < graphics.__rectangleBatchStarts.length
+					var isBatched = hasRectangleBatches
+						&& rectangleBatchIndex < graphics.__rectangleBatchStarts.length
 						&& commandIndex >= graphics.__rectangleBatchStarts[rectangleBatchIndex]
 						&& commandIndex < graphics.__rectangleBatchEnds[rectangleBatchIndex];
 
@@ -1368,9 +1371,11 @@ class Context3DGraphics
 					var data = new DrawCommandReader(graphics.__commands);
 					var commandIndex = 0;
 					var rectangleBatchIndex = 0;
+					var hasRectangleBatches = graphics.__rectangleBatchEnds != null;
 					for (type in graphics.__commands.types)
 					{
-						while (rectangleBatchIndex < graphics.__rectangleBatchEnds.length
+						while (hasRectangleBatches
+							&& rectangleBatchIndex < graphics.__rectangleBatchEnds.length
 							&& commandIndex >= graphics.__rectangleBatchEnds[rectangleBatchIndex])
 						{
 							rectangleBatchIndex++;
@@ -1550,7 +1555,8 @@ class Context3DGraphics
 
 						case DRAW_RECT:
 							var c = data.readDrawRect();
-							var isBatched = rectangleBatchIndex < graphics.__rectangleBatchStarts.length
+							var isBatched = hasRectangleBatches
+								&& rectangleBatchIndex < graphics.__rectangleBatchStarts.length
 								&& commandIndex >= graphics.__rectangleBatchStarts[rectangleBatchIndex]
 								&& commandIndex < graphics.__rectangleBatchEnds[rectangleBatchIndex];
 
