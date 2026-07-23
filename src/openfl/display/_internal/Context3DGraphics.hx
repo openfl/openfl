@@ -219,34 +219,25 @@ class Context3DGraphics
 		return result;
 	}
 
-	private static function prepareRectangleBatches(graphics:Graphics):Void
+	private static function buildHardwareCommands(graphics:Graphics):DrawCommandBuffer
 	{
-		graphics.__rectangleBatchStarts = new Vector<Int>();
-		graphics.__rectangleBatchEnds = new Vector<Int>();
-		graphics.__rectangleBatchFills = new Vector<Int>();
-		graphics.__rectangleBatchRects = [];
-		graphics.__solidRectangleBatchesOnly = true;
+		var batchStarts = new Vector<Int>();
+		var batchEnds = new Vector<Int>();
+		var batchRects = new Array<Vector<Float>>();
 
 		var data = new DrawCommandReader(graphics.__commands);
 		var source = new Vector<Float>();
 		var sourceCount = 0;
 		var firstCommand = -1;
 		var commandIndex = 0;
-		var hasSolidFill = false;
-		var solidFill = 0;
 
 		function finalize(endCommand:Int):Void
 		{
 			if (sourceCount > 1)
 			{
-				graphics.__rectangleBatchStarts.push(firstCommand);
-				graphics.__rectangleBatchEnds.push(endCommand);
-				graphics.__rectangleBatchFills.push(solidFill);
-				graphics.__rectangleBatchRects.push(buildEvenOddRectangles(source));
-			}
-			else if (sourceCount == 1)
-			{
-				graphics.__solidRectangleBatchesOnly = false;
+				batchStarts.push(firstCommand);
+				batchEnds.push(endCommand);
+				batchRects.push(buildEvenOddRectangles(source));
 			}
 
 			source = new Vector<Float>();
@@ -258,26 +249,12 @@ class Context3DGraphics
 		{
 			switch (type)
 			{
-				case BEGIN_FILL:
+				case BEGIN_FILL, BEGIN_BITMAP_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
 					finalize(commandIndex);
-					var fill = data.readBeginFill();
-					var color = Std.int(fill.color);
-					var alpha = Std.int(fill.alpha * 0xFF);
-					solidFill = (color & 0xFFFFFF) | (alpha << 24);
-					hasSolidFill = true;
-
-				case BEGIN_BITMAP_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
-					finalize(commandIndex);
-					hasSolidFill = false;
-					graphics.__solidRectangleBatchesOnly = false;
 					data.skip(type);
 
 				case DRAW_RECT:
 					var rectangle = data.readDrawRect();
-					if (!hasSolidFill)
-					{
-						graphics.__solidRectangleBatchesOnly = false;
-					}
 					if (firstCommand == -1)
 					{
 						firstCommand = commandIndex;
@@ -290,45 +267,108 @@ class Context3DGraphics
 
 				case END_FILL:
 					finalize(commandIndex);
-					hasSolidFill = false;
+					data.skip(type);
+
+				case OVERRIDE_BLEND_MODE:
+					// A batch must not move rectangles across a blend-state change.
+					finalize(commandIndex);
 					data.skip(type);
 
 				default:
-					graphics.__solidRectangleBatchesOnly = false;
 					data.skip(type);
 			}
 			commandIndex++;
 		}
 
 		finalize(commandIndex);
-		if (graphics.__rectangleBatchRects.length == 0)
+		data.destroy();
+
+		var result = new DrawCommandBuffer();
+		data = new DrawCommandReader(graphics.__commands);
+		commandIndex = 0;
+		var batchIndex = 0;
+
+		for (type in graphics.__commands.types)
 		{
-			graphics.__solidRectangleBatchesOnly = false;
+			while (batchIndex < batchEnds.length && commandIndex >= batchEnds[batchIndex])
+			{
+				batchIndex++;
+			}
+
+			switch (type)
+			{
+				case BEGIN_BITMAP_FILL:
+					var c = data.readBeginBitmapFill();
+					result.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
+
+				case BEGIN_FILL:
+					var c = data.readBeginFill();
+					result.beginFill(Std.int(c.color), c.alpha);
+
+				case BEGIN_SHADER_FILL:
+					var c = data.readBeginShaderFill();
+					result.beginShaderFill(c.shaderBuffer);
+
+				case DRAW_QUADS:
+					var c = data.readDrawQuads();
+					result.drawQuads(c.rects, c.indices, c.transforms);
+
+				case DRAW_RECT:
+					var c = data.readDrawRect();
+					var isBatched = batchIndex < batchStarts.length
+						&& commandIndex >= batchStarts[batchIndex]
+						&& commandIndex < batchEnds[batchIndex];
+					if (isBatched)
+					{
+						if (commandIndex == batchStarts[batchIndex])
+						{
+							result.drawQuads(batchRects[batchIndex], null, null);
+						}
+					}
+					else
+					{
+						result.drawRect(c.x, c.y, c.width, c.height);
+					}
+
+				case DRAW_TRIANGLES:
+					var c = data.readDrawTriangles();
+					result.drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
+
+				case END_FILL:
+					data.readEndFill();
+					result.endFill();
+
+				case LINE_STYLE:
+					var c = data.readLineStyle();
+					result.lineStyle(c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+
+				case MOVE_TO:
+					var c = data.readMoveTo();
+					result.moveTo(c.x, c.y);
+
+				case OVERRIDE_BLEND_MODE:
+					var c = data.readOverrideBlendMode();
+					result.overrideBlendMode(c.blendMode);
+
+				default:
+					data.skip(type);
+			}
+			commandIndex++;
 		}
 		data.destroy();
+		return result;
 	}
 
 	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
-		if (graphics.__rectangleBatchesRequired)
-		{
-			prepareRectangleBatches(graphics);
-		}
-		else if (graphics.__rectangleBatchRects != null)
-		{
-			graphics.__rectangleBatchStarts = null;
-			graphics.__rectangleBatchEnds = null;
-			graphics.__rectangleBatchFills = null;
-			graphics.__rectangleBatchRects = null;
-			graphics.__solidRectangleBatchesOnly = false;
-		}
 		var quadBufferPosition = 0;
 		var triangleIndexBufferPosition = 0;
 		var vertexBufferPosition = 0;
 		var vertexBufferPositionUVT = 0;
 		var bounds = graphics.__bounds;
 
-		var data = new DrawCommandReader(graphics.__commands);
+		var commands = graphics.__hardwareCommands != null ? graphics.__hardwareCommands : graphics.__commands;
+		var data = new DrawCommandReader(commands);
 
 		var context = renderer.__context3D;
 
@@ -448,93 +488,8 @@ class Context3DGraphics
 			}
 		}
 
-		function buildRectangleBatchBuffer(rectangles:Vector<Float>):Void
+		for (type in commands.types)
 		{
-			var length = rectangles.length >> 2;
-			if (length == 0)
-			{
-				return;
-			}
-
-			var dataPerVertex = 4;
-			var stride = dataPerVertex * 4;
-			if (graphics.__quadBuffer == null)
-			{
-				graphics.__quadBuffer = new Context3DBuffer(context, QUADS, quadBufferPosition + length, dataPerVertex);
-			}
-			else
-			{
-				graphics.__quadBuffer.resize(quadBufferPosition + length, dataPerVertex);
-			}
-
-			var bitmapWidth = 1;
-			var bitmapHeight = 1;
-			if (bitmap != null)
-			{
-				#if openfl_power_of_two
-				while (bitmapWidth < bitmap.width)
-				{
-					bitmapWidth <<= 1;
-				}
-				while (bitmapHeight < bitmap.height)
-				{
-					bitmapHeight <<= 1;
-				}
-				#else
-				bitmapWidth = bitmap.width;
-				bitmapHeight = bitmap.height;
-				#end
-			}
-
-			var vertexBufferData = graphics.__quadBuffer.vertexBufferData;
-			var rectangleOffset = 0;
-			for (i in 0...length)
-			{
-				var vertexOffset = (quadBufferPosition + i) * stride;
-				var left = rectangles[rectangleOffset];
-				var top = rectangles[rectangleOffset + 1];
-				var right = left + rectangles[rectangleOffset + 2];
-				var bottom = top + rectangles[rectangleOffset + 3];
-				var uvLeft = left / bitmapWidth;
-				var uvTop = top / bitmapHeight;
-				var uvRight = right / bitmapWidth;
-				var uvBottom = bottom / bitmapHeight;
-
-				vertexBufferData[vertexOffset] = left;
-				vertexBufferData[vertexOffset + 1] = top;
-				vertexBufferData[vertexOffset + 2] = uvLeft;
-				vertexBufferData[vertexOffset + 3] = uvTop;
-				vertexBufferData[vertexOffset + dataPerVertex] = right;
-				vertexBufferData[vertexOffset + dataPerVertex + 1] = top;
-				vertexBufferData[vertexOffset + dataPerVertex + 2] = uvRight;
-				vertexBufferData[vertexOffset + dataPerVertex + 3] = uvTop;
-				vertexBufferData[vertexOffset + dataPerVertex * 2] = left;
-				vertexBufferData[vertexOffset + dataPerVertex * 2 + 1] = bottom;
-				vertexBufferData[vertexOffset + dataPerVertex * 2 + 2] = uvLeft;
-				vertexBufferData[vertexOffset + dataPerVertex * 2 + 3] = uvBottom;
-				vertexBufferData[vertexOffset + dataPerVertex * 3] = right;
-				vertexBufferData[vertexOffset + dataPerVertex * 3 + 1] = bottom;
-				vertexBufferData[vertexOffset + dataPerVertex * 3 + 2] = uvRight;
-				vertexBufferData[vertexOffset + dataPerVertex * 3 + 3] = uvBottom;
-
-				rectangleOffset += 4;
-			}
-
-			quadBufferPosition += length;
-		}
-
-		var commandIndex = 0;
-		var rectangleBatchIndex = 0;
-		var hasRectangleBatches = graphics.__rectangleBatchEnds != null;
-		for (type in graphics.__commands.types)
-		{
-			while (hasRectangleBatches
-				&& rectangleBatchIndex < graphics.__rectangleBatchEnds.length
-				&& commandIndex >= graphics.__rectangleBatchEnds[rectangleBatchIndex])
-			{
-				rectangleBatchIndex++;
-			}
-
 			switch (type)
 			{
 				case BEGIN_BITMAP_FILL:
@@ -791,19 +746,7 @@ class Context3DGraphics
 
 				case DRAW_RECT:
 					var c = data.readDrawRect();
-					var isBatched = hasRectangleBatches
-						&& rectangleBatchIndex < graphics.__rectangleBatchStarts.length
-						&& commandIndex >= graphics.__rectangleBatchStarts[rectangleBatchIndex]
-						&& commandIndex < graphics.__rectangleBatchEnds[rectangleBatchIndex];
-
-					if (isBatched)
-					{
-						if (commandIndex == graphics.__rectangleBatchStarts[rectangleBatchIndex])
-						{
-							buildRectangleBatchBuffer(graphics.__rectangleBatchRects[rectangleBatchIndex]);
-						}
-					}
-					else if (bitmap != null)
+					if (bitmap != null)
 					{
 						tempVerticesVector.length = 8;
 						tempVerticesVector[0] = c.x;
@@ -832,7 +775,6 @@ class Context3DGraphics
 				default:
 					data.skip(type);
 			}
-			commandIndex++;
 		}
 
 		// TODO: Should we use static data specific to Context3DGraphics instead of each Graphics instance?
@@ -917,6 +859,10 @@ class Context3DGraphics
 		{
 			graphics.__hardwareCompatible = result;
 			graphics.__hardwareCompatibilityKnown = true;
+			if (!result)
+			{
+				graphics.__hardwareCommands = null;
+			}
 			return result;
 		}
 
@@ -925,61 +871,8 @@ class Context3DGraphics
 		// Multiple axis-aligned rectangles are converted to a single batched mesh
 		// that preserves the even-odd fill rule. Combinations with other filled
 		// primitives remain conservative and fall back to software.
-		var filledRectCount = 0;
-		var filledRectCommandCount = 0;
-		var hasUntrackedFilledShape = false;
-
-		inline function resetFilledShapeCompatibility():Void
-		{
-			filledRectCount = 0;
-			filledRectCommandCount = 0;
-			hasUntrackedFilledShape = false;
-		}
-
-		function addFilledRectCompatibility(x:Float, y:Float, width:Float, height:Float):Bool
-		{
-			if (hasUntrackedFilledShape || (hasShaderFill && filledRectCommandCount > 0))
-			{
-				return false;
-			}
-			filledRectCommandCount++;
-			if (filledRectCommandCount > 1)
-			{
-				graphics.__rectangleBatchesRequired = true;
-			}
-
-			var right = x + width;
-			var bottom = y + height;
-			var left = Math.min(x, right);
-			var top = Math.min(y, bottom);
-			right = Math.max(x, right);
-			bottom = Math.max(y, bottom);
-
-			if (!Math.isFinite(left) || !Math.isFinite(top) || !Math.isFinite(right) || !Math.isFinite(bottom))
-			{
-				return false;
-			}
-
-			// Empty rectangles have no filled interior and cannot create a cutout.
-			if (right <= left || bottom <= top)
-			{
-				return true;
-			}
-
-			filledRectCount++;
-			return true;
-		}
-
-		inline function addUntrackedFilledShapeCompatibility():Bool
-		{
-			if (hasUntrackedFilledShape || filledRectCount > 0)
-			{
-				return false;
-			}
-
-			hasUntrackedFilledShape = true;
-			return true;
-		}
+		var hasDrawnFilledShape = false;
+		var hasDrawnFilledRectangle = false;
 
 		for (type in graphics.__commands.types)
 		{
@@ -995,26 +888,30 @@ class Context3DGraphics
 					hasBitmapFill = true;
 					hasColorFill = false;
 					hasShaderFill = false;
-					resetFilledShapeCompatibility();
+					hasDrawnFilledShape = false;
+					hasDrawnFilledRectangle = false;
 					data.skip(type);
 
 				case BEGIN_FILL:
 					hasBitmapFill = false;
 					hasColorFill = true;
 					hasShaderFill = false;
-					resetFilledShapeCompatibility();
+					hasDrawnFilledShape = false;
+					hasDrawnFilledRectangle = false;
 					data.skip(type);
 
 				case BEGIN_SHADER_FILL:
 					hasBitmapFill = false;
 					hasColorFill = false;
 					hasShaderFill = true;
-					resetFilledShapeCompatibility();
+					hasDrawnFilledShape = false;
+					hasDrawnFilledRectangle = false;
 					data.skip(type);
 
 				case DRAW_QUADS:
-					if ((hasColorFill || hasBitmapFill || hasShaderFill) && addUntrackedFilledShapeCompatibility())
+					if (!hasDrawnFilledShape && (hasColorFill || hasBitmapFill || hasShaderFill))
 					{
+						hasDrawnFilledShape = true;
 						data.skip(type);
 					}
 					else
@@ -1024,14 +921,16 @@ class Context3DGraphics
 					}
 
 				case DRAW_RECT:
-					if (hasColorFill || hasBitmapFill || hasShaderFill)
+					if (!hasDrawnFilledShape && (hasColorFill || hasBitmapFill || hasShaderFill))
 					{
-						var c = data.readDrawRect();
-						if (!addFilledRectCompatibility(c.x, c.y, c.width, c.height))
-						{
-							data.destroy();
-							return cacheCompatibility(false);
-						}
+						hasDrawnFilledShape = true;
+						hasDrawnFilledRectangle = true;
+						data.skip(type);
+					}
+					else if (hasDrawnFilledRectangle && !hasShaderFill)
+					{
+						graphics.__rectangleBatchesRequired = true;
+						data.skip(type);
 					}
 					else
 					{
@@ -1040,8 +939,9 @@ class Context3DGraphics
 					}
 
 				case DRAW_TRIANGLES:
-					if ((hasColorFill || hasBitmapFill || hasShaderFill) && addUntrackedFilledShapeCompatibility())
+					if (!hasDrawnFilledShape && (hasColorFill || hasBitmapFill || hasShaderFill))
 					{
+						hasDrawnFilledShape = true;
 						data.skip(type);
 					}
 					else
@@ -1063,7 +963,8 @@ class Context3DGraphics
 					hasBitmapFill = false;
 					hasColorFill = false;
 					hasShaderFill = false;
-					resetFilledShapeCompatibility();
+					hasDrawnFilledShape = false;
+					hasDrawnFilledRectangle = false;
 					data.skip(type);
 
 				case MOVE_TO:
@@ -1079,6 +980,7 @@ class Context3DGraphics
 		}
 
 		data.destroy();
+		graphics.__hardwareCommands = graphics.__rectangleBatchesRequired ? buildHardwareCommands(graphics) : null;
 		return cacheCompatibility(true);
 	}
 
@@ -1294,95 +1196,12 @@ class Context3DGraphics
 					}
 				}
 
-				function renderRectangleBatch(length:Int):Void
+				var commands = graphics.__hardwareCommands != null ? graphics.__hardwareCommands : graphics.__commands;
+				var data = new DrawCommandReader(commands);
+				for (type in commands.types)
 				{
-					if (length == 0 || (bitmap == null && fill == null))
+					switch (type)
 					{
-						return;
-					}
-
-					var uMatrix = renderer.__getMatrix(graphics.__owner.__renderTransform, AUTO);
-					var shader:Shader;
-
-					if (bitmap != null)
-					{
-						shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
-						renderer.setShader(shader);
-						renderer.applyMatrix(uMatrix);
-						renderer.applyBitmapData(bitmap, smooth, repeat);
-						renderer.applyAlpha(graphics.__owner.__worldAlpha);
-						renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
-						renderer.updateShader();
-					}
-					else
-					{
-						shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
-						renderer.setShader(shader);
-						renderer.applyMatrix(uMatrix);
-						renderer.applyBitmapData(blankBitmapData, true, repeat);
-						#if lime
-						var color:ARGB = (fill : ARGB);
-						tempColorTransform.redOffset = color.r;
-						tempColorTransform.greenOffset = color.g;
-						tempColorTransform.blueOffset = color.b;
-						tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
-						renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
-						renderer.applyColorTransform(tempColorTransform);
-						#else
-						renderer.applyAlpha(graphics.__owner.__worldAlpha);
-						renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
-						#end
-						renderer.updateShader();
-					}
-
-					var end = quadBufferPosition + length;
-					while (quadBufferPosition < end)
-					{
-						var drawLength = Std.int(Math.min(end - quadBufferPosition, context.__quadIndexBufferElements));
-						if (drawLength <= 0) break;
-
-						if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, graphics.__quadBuffer.vertexBuffer,
-							quadBufferPosition * 16, FLOAT_2);
-						if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, graphics.__quadBuffer.vertexBuffer,
-							(quadBufferPosition * 16) + 2, FLOAT_2);
-
-						context.drawTriangles(context.__quadIndexBuffer, 0, drawLength * 2);
-						quadBufferPosition += drawLength;
-
-						#if gl_stats
-						Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-						#end
-					}
-
-					renderer.__clearShader();
-				}
-
-				if (graphics.__solidRectangleBatchesOnly)
-				{
-					for (rectangleBatchIndex in 0...graphics.__rectangleBatchRects.length)
-					{
-						fill = graphics.__rectangleBatchFills[rectangleBatchIndex];
-						renderRectangleBatch(graphics.__rectangleBatchRects[rectangleBatchIndex].length >> 2);
-					}
-					context.setCulling(NONE);
-				}
-				else
-				{
-					var data = new DrawCommandReader(graphics.__commands);
-					var commandIndex = 0;
-					var rectangleBatchIndex = 0;
-					var hasRectangleBatches = graphics.__rectangleBatchEnds != null;
-					for (type in graphics.__commands.types)
-					{
-						while (hasRectangleBatches
-							&& rectangleBatchIndex < graphics.__rectangleBatchEnds.length
-							&& commandIndex >= graphics.__rectangleBatchEnds[rectangleBatchIndex])
-						{
-							rectangleBatchIndex++;
-						}
-
-						switch (type)
-						{
 						case BEGIN_BITMAP_FILL:
 							var c = data.readBeginBitmapFill();
 							bitmap = c.bitmap;
@@ -1555,19 +1374,7 @@ class Context3DGraphics
 
 						case DRAW_RECT:
 							var c = data.readDrawRect();
-							var isBatched = hasRectangleBatches
-								&& rectangleBatchIndex < graphics.__rectangleBatchStarts.length
-								&& commandIndex >= graphics.__rectangleBatchStarts[rectangleBatchIndex]
-								&& commandIndex < graphics.__rectangleBatchEnds[rectangleBatchIndex];
-
-							if (isBatched)
-							{
-								if (commandIndex == graphics.__rectangleBatchStarts[rectangleBatchIndex])
-								{
-									renderRectangleBatch(graphics.__rectangleBatchRects[rectangleBatchIndex].length >> 2);
-								}
-							}
-							else if (bitmap != null)
+							if (bitmap != null)
 							{
 								renderDrawTriangles(8, 6, 0, NONE);
 							}
@@ -1659,11 +1466,9 @@ class Context3DGraphics
 
 						default:
 							data.skip(type);
-						}
-						commandIndex++;
 					}
-					data.destroy();
 				}
+				data.destroy();
 
 				Matrix.__pool.release(matrix);
 			}

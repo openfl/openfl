@@ -2,6 +2,8 @@ package;
 
 import openfl.display.Shape;
 import openfl.display._internal.Context3DGraphics;
+import openfl.display._internal.DrawCommandReader;
+import openfl.display._internal.DrawCommandType;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 import utest.Assert;
@@ -95,10 +97,7 @@ class Context3DGraphicsTest extends Test
 
 		Assert.isTrue(Context3DGraphics.isCompatible(shape.graphics));
 		Assert.isFalse(shape.graphics.__rectangleBatchesRequired);
-		Assert.isNull(shape.graphics.__rectangleBatchStarts);
-		Assert.isNull(shape.graphics.__rectangleBatchEnds);
-		Assert.isNull(shape.graphics.__rectangleBatchFills);
-		Assert.isNull(shape.graphics.__rectangleBatchRects);
+		Assert.isNull(shape.graphics.__hardwareCommands);
 	}
 
 	public function testSingleDrawRectDoesNotRequireRectangleBatchPreparation():Void
@@ -110,10 +109,7 @@ class Context3DGraphicsTest extends Test
 
 		Assert.isTrue(Context3DGraphics.isCompatible(shape.graphics));
 		Assert.isFalse(shape.graphics.__rectangleBatchesRequired);
-		Assert.isNull(shape.graphics.__rectangleBatchStarts);
-		Assert.isNull(shape.graphics.__rectangleBatchEnds);
-		Assert.isNull(shape.graphics.__rectangleBatchFills);
-		Assert.isNull(shape.graphics.__rectangleBatchRects);
+		Assert.isNull(shape.graphics.__hardwareCommands);
 	}
 
 	public function testDisjointDrawRectsAreCompatible():Void
@@ -203,10 +199,12 @@ class Context3DGraphicsTest extends Test
 		Assert.isTrue(Context3DGraphics.isCompatible(shape.graphics));
 		shape.graphics.__hardwareDirty = false;
 		Assert.isTrue(shape.graphics.__hardwareCompatibilityKnown);
+		Assert.notNull(shape.graphics.__hardwareCommands);
 		Assert.isTrue(Context3DGraphics.isCompatible(shape.graphics));
 		shape.graphics.lineStyle(1);
 		shape.graphics.lineTo(30, 10);
 		Assert.isFalse(shape.graphics.__hardwareCompatibilityKnown);
+		Assert.isNull(shape.graphics.__hardwareCommands);
 		Assert.isFalse(Context3DGraphics.isCompatible(shape.graphics));
 	}
 
@@ -226,7 +224,7 @@ class Context3DGraphicsTest extends Test
 		Assert.isTrue(Context3DGraphics.isCompatible(shape.graphics));
 	}
 
-	public function testSolidRectangleBatchMetadataAvoidsCommandTraversal():Void
+	public function testMultipleRectanglesUsePreparedHardwareCommands():Void
 	{
 		var shape = new Shape();
 		shape.graphics.beginFill(0x123456, 0.5);
@@ -234,24 +232,27 @@ class Context3DGraphicsTest extends Test
 		shape.graphics.drawRect(10, 0, 10, 10);
 		shape.graphics.endFill();
 
-		Context3DGraphics.prepareRectangleBatches(shape.graphics);
+		Assert.isTrue(Context3DGraphics.isCompatible(shape.graphics));
+		Assert.notNull(shape.graphics.__hardwareCommands);
+		Assert.equals(3, shape.graphics.__hardwareCommands.types.length);
+		Assert.equals(DrawCommandType.DRAW_QUADS, shape.graphics.__hardwareCommands.types[1]);
 
-		Assert.isTrue(shape.graphics.__solidRectangleBatchesOnly);
-		Assert.equals(1, shape.graphics.__rectangleBatchRects.length);
-		Assert.equals(4, shape.graphics.__rectangleBatchRects[0].length);
-		Assert.equals(0x7F123456, shape.graphics.__rectangleBatchFills[0]);
+		var data = new DrawCommandReader(shape.graphics.__hardwareCommands);
+		data.skip(DrawCommandType.BEGIN_FILL);
+		var quads = data.readDrawQuads();
+		Assert.equals(4, quads.rects.length);
+		data.destroy();
 	}
 
-	public function testSingleRectangleDoesNotUseBatchOnlyFastPath():Void
+	public function testSingleRectangleKeepsOriginalHardwareCommands():Void
 	{
 		var shape = new Shape();
 		shape.graphics.beginFill(0xFF0000);
 		shape.graphics.drawRect(0, 0, 10, 10);
 		shape.graphics.endFill();
 
-		Context3DGraphics.prepareRectangleBatches(shape.graphics);
-
-		Assert.isFalse(shape.graphics.__solidRectangleBatchesOnly);
+		Assert.isTrue(Context3DGraphics.isCompatible(shape.graphics));
+		Assert.isNull(shape.graphics.__hardwareCommands);
 	}
 
 	public function testTouchingDrawRectsMergeIntoOneQuad():Void
