@@ -4,7 +4,9 @@ import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
+#if (lime && !flash)
 import openfl.display.GraphicsShader;
+#end
 import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.geom.Matrix;
@@ -26,9 +28,9 @@ class GraphicsTest extends Test
 		Assert.notNull(graphics);
 	}
 
+	#if !flash
 	public function testShaderStateIsLazy()
 	{
-		#if !flash
 		var graphics = new Shape().graphics;
 
 		Assert.isNull(graphics.__shaderBufferPool);
@@ -38,12 +40,12 @@ class GraphicsTest extends Test
 
 		Assert.isNull(graphics.__shaderBufferPool);
 		Assert.isNull(graphics.__usedShaderBuffers);
-		#end
 	}
+	#end
 
+	#if (lime && !flash)
 	public function testBeginShaderFillInitializesShaderState()
 	{
-		#if (lime && !flash)
 		var graphics = new Shape().graphics;
 
 		graphics.beginShaderFill(new GraphicsShader());
@@ -62,8 +64,8 @@ class GraphicsTest extends Test
 
 		Assert.equals(shaderBufferPool, graphics.__shaderBufferPool);
 		Assert.equals(1, graphics.__usedShaderBuffers.length);
-		#end
 	}
+	#end
 
 	#if flash
 	@Ignored
