@@ -10,6 +10,7 @@ import openfl.geom.Matrix;
 import utest.Assert;
 import utest.Test;
 
+@:access(openfl.display.Graphics)
 class GraphicsTest extends Test
 {
 	public function test_new_()
@@ -22,6 +23,32 @@ class GraphicsTest extends Test
 		Assert.notNull(graphics);
 	}
 
+	#if !flash
+	public function testRenderStateIsLazy()
+	{
+		var graphics = new Shape().graphics;
+
+		Assert.isNull(graphics.__renderTransform);
+		Assert.isNull(graphics.__worldTransform);
+
+		graphics.clear();
+
+		Assert.isNull(graphics.__renderTransform);
+		Assert.isNull(graphics.__worldTransform);
+	}
+
+	public function testUpdateInitializesRenderState()
+	{
+		var graphics = new Shape().graphics;
+
+		graphics.beginFill(0xFF0000);
+		graphics.drawRect(0, 0, 100, 100);
+		graphics.__update(new Matrix(), 1);
+
+		Assert.notNull(graphics.__renderTransform);
+		Assert.notNull(graphics.__worldTransform);
+	}
+	#end
 	#if flash
 	@Ignored
 	#end
