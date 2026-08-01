@@ -47,6 +47,28 @@ class DisplayObjectTest extends Test
 		Assert.notNull(child.__worldTransform);
 	}
 
+	public function testUpdateTransformsInitializesNullParentTransforms()
+	{
+		var parent = new Sprite();
+		var child = new Sprite();
+		parent.x = 10;
+		child.x = 5;
+		parent.addChild(child);
+
+		// Parent may still have lazily-null transforms (e.g. Stage before first render).
+		parent.__worldTransform = null;
+		parent.__renderTransform = null;
+
+		child.__updateTransforms();
+
+		Assert.notNull(parent.__worldTransform);
+		Assert.notNull(parent.__renderTransform);
+		Assert.notNull(child.__worldTransform);
+		Assert.notNull(child.__renderTransform);
+		Assert.equals(15, child.__worldTransform.tx);
+		Assert.equals(0, child.__worldTransform.ty);
+	}
+
 	public function testRendererInitializesRenderStateBeforeRendering()
 	{
 		var renderer = new TestDisplayObjectRenderer();
