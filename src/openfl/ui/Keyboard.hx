@@ -692,19 +692,20 @@ import lime.ui.KeyCode;
 			case KeyCode.F13: Keyboard.F13;
 			case KeyCode.F14: Keyboard.F14;
 			case KeyCode.F15: Keyboard.F15;
-			// case KeyCode.F16: 0x4000006B;
-			// case KeyCode.F17: 0x4000006C;
-			// case KeyCode.F18: 0x4000006D;
-			// case KeyCode.F19: 0x4000006E;
-			// case KeyCode.F20: 0x4000006F;
-			// case KeyCode.F21: 0x40000070;
-			// case KeyCode.F22: 0x40000071;
-			// case KeyCode.F23: 0x40000072;
-			// case KeyCode.F24: 0x40000073;
+			// Windows VK_F16–VK_F24 (keep values in 0–255 Flash keyCode range)
+			case KeyCode.F16: 0x7F;
+			case KeyCode.F17: 0x80;
+			case KeyCode.F18: 0x81;
+			case KeyCode.F19: 0x82;
+			case KeyCode.F20: 0x83;
+			case KeyCode.F21: 0x84;
+			case KeyCode.F22: 0x85;
+			case KeyCode.F23: 0x86;
+			case KeyCode.F24: 0x87;
 			// case KeyCode.EXECUTE: 0x40000074;
-			// case KeyCode.HELP: 0x40000075;
+			case KeyCode.HELP: 0x2F; // VK_HELP
 			// case KeyCode.MENU: 0x40000076;
-			// case KeyCode.SELECT: 0x40000077;
+			case KeyCode.SELECT: 0x29; // VK_SELECT
 			// case KeyCode.STOP: 0x40000078;
 			// case KeyCode.AGAIN: 0x40000079;
 			// case KeyCode.UNDO: 0x4000007A;
@@ -712,15 +713,16 @@ import lime.ui.KeyCode;
 			// case KeyCode.COPY: 0x4000007C;
 			// case KeyCode.PASTE: 0x4000007D;
 			// case KeyCode.FIND: 0x4000007E;
-			// case KeyCode.MUTE: 0x4000007F;
-			// case KeyCode.VOLUME_UP: 0x40000080;
-			// case KeyCode.VOLUME_DOWN: 0x40000081;
+			// Media / volume: Windows VK_* (also what desktop AIR reports)
+			case KeyCode.MUTE: 0xAD; // VK_VOLUME_MUTE
+			case KeyCode.VOLUME_UP: 0xAF; // VK_VOLUME_UP
+			case KeyCode.VOLUME_DOWN: 0xAE; // VK_VOLUME_DOWN
 			// case KeyCode.NUMPAD_COMMA: 0x40000085;
 			////case KeyCode.NUMPAD_EQUALS_AS400: 0x40000086;
 			// case KeyCode.ALT_ERASE: 0x40000099;
-			// case KeyCode.SYSTEM_REQUEST: 0x4000009A;
+			case KeyCode.SYSTEM_REQUEST: 0x2C; // VK_SNAPSHOT
 			// case KeyCode.CANCEL: 0x4000009B;
-			// case KeyCode.CLEAR: 0x4000009C;
+			case KeyCode.CLEAR: 0x0C; // VK_CLEAR
 			// case KeyCode.PRIOR: 0x4000009D;
 			case KeyCode.RETURN2: Keyboard.ENTER;
 			// case KeyCode.SEPARATOR: 0x4000009F;
@@ -784,23 +786,23 @@ import lime.ui.KeyCode;
 			case KeyCode.RIGHT_ALT: Keyboard.ALTERNATE;
 			case KeyCode.RIGHT_META: Keyboard.COMMAND;
 			// case KeyCode.MODE: 0x40000101;
-			// case KeyCode.AUDIO_NEXT: 0x40000102;
-			// case KeyCode.AUDIO_PREVIOUS: 0x40000103;
-			// case KeyCode.AUDIO_STOP: 0x40000104;
-			// case KeyCode.AUDIO_PLAY: 0x40000105;
-			// case KeyCode.AUDIO_MUTE: 0x40000106;
-			// case KeyCode.MEDIA_SELECT: 0x40000107;
-			// case KeyCode.WWW: 0x40000108;
-			// case KeyCode.MAIL: 0x40000109;
+			case KeyCode.AUDIO_NEXT: 0xB0; // VK_MEDIA_NEXT_TRACK
+			case KeyCode.AUDIO_PREVIOUS: 0xB1; // VK_MEDIA_PREV_TRACK
+			case KeyCode.AUDIO_STOP: 0xB2; // VK_MEDIA_STOP
+			case KeyCode.AUDIO_PLAY: 0xB3; // VK_MEDIA_PLAY_PAUSE
+			case KeyCode.AUDIO_MUTE: 0xAD; // VK_VOLUME_MUTE
+			case KeyCode.MEDIA_SELECT: 0xB5; // VK_LAUNCH_MEDIA_SELECT
+			case KeyCode.WWW: 0xAC; // VK_BROWSER_HOME (closest)
+			case KeyCode.MAIL: 0xB4; // VK_LAUNCH_MAIL
 			// case KeyCode.CALCULATOR: 0x4000010A;
 			// case KeyCode.COMPUTER: 0x4000010B;
-			// case KeyCode.APP_CONTROL_SEARCH: 0x4000010C;
-			// case KeyCode.APP_CONTROL_HOME: 0x4000010D;
-			// case KeyCode.APP_CONTROL_BACK: 0x4000010E;
-			// case KeyCode.APP_CONTROL_FORWARD: 0x4000010F;
-			// case KeyCode.APP_CONTROL_STOP: 0x40000110;
-			// case KeyCode.APP_CONTROL_REFRESH: 0x40000111;
-			// case KeyCode.APP_CONTROL_BOOKMARKS: 0x40000112;
+			case KeyCode.APP_CONTROL_SEARCH: 0xAA; // VK_BROWSER_SEARCH
+			case KeyCode.APP_CONTROL_HOME: 0xAC; // VK_BROWSER_HOME
+			case KeyCode.APP_CONTROL_BACK: 0xA6; // VK_BROWSER_BACK
+			case KeyCode.APP_CONTROL_FORWARD: 0xA7; // VK_BROWSER_FORWARD
+			case KeyCode.APP_CONTROL_STOP: 0xA9; // VK_BROWSER_STOP
+			case KeyCode.APP_CONTROL_REFRESH: 0xA8; // VK_BROWSER_REFRESH
+			case KeyCode.APP_CONTROL_BOOKMARKS: 0xAB; // VK_BROWSER_FAVORITES
 			// case KeyCode.BRIGHTNESS_DOWN: 0x40000113;
 			// case KeyCode.BRIGHTNESS_UP: 0x40000114;
 			// case KeyCode.DISPLAY_SWITCH: 0x40000115;
@@ -808,8 +810,14 @@ import lime.ui.KeyCode;
 			// case KeyCode.BACKLIGHT_DOWN: 0x40000117;
 			// case KeyCode.BACKLIGHT_UP: 0x40000118;
 			// case KeyCode.EJECT: 0x40000119;
-			// case KeyCode.SLEEP: 0x4000011A;
-			default: cast key;
+			case KeyCode.SLEEP: 0x5F; // VK_SLEEP
+			default:
+				// SDL keycodes use bit 30 (0x40000000). Passing them through as
+				// KeyboardEvent.keyCode is not Flash-compatible and can make
+				// Flash-style key tables (e.g. Vector length 256) allocate ~1 GiB.
+				var code:Int = cast key;
+				if ((code & 0x40000000) != 0) return 0;
+				return code;
 		}
 	}
 	#end
