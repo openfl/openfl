@@ -354,4 +354,33 @@ class XMLDocumentTest extends Test
 		Assert.equals(0, Reflect.fields(textNode.attributes).length);
 		Assert.equals("   ", textNode.toString());
 	}
+
+	private function test_docTypeDecl():Void
+	{
+		var xmlDocument = new XMLDocument();
+		xmlDocument.parseXML("<!DOCTYPE html><!DOCTYPE greeting SYSTEM \"hello.dtd\">hello");
+		Assert.isTrue(xmlDocument.hasChildNodes());
+		Assert.equals(1, xmlDocument.childNodes.length); // only the text node
+		Assert.equals("<!DOCTYPE greeting SYSTEM \"hello.dtd\">", xmlDocument.docTypeDecl);
+		Assert.equals("<!DOCTYPE greeting SYSTEM \"hello.dtd\">hello", xmlDocument.toString());
+	}
+
+	private function test_xmlDecl():Void
+	{
+		var xmlDocument = new XMLDocument();
+		xmlDocument.parseXML("<?xml version=\"1.0\" encoding=\"utf-8\"?><?xml version=\"1.0\"?>hello<?xml?><?xml ?>");
+		Assert.isTrue(xmlDocument.hasChildNodes());
+		Assert.equals(1, xmlDocument.childNodes.length); // only the text node
+		Assert.equals("<?xml version=\"1.0\" encoding=\"utf-8\"?><?xml version=\"1.0\"?><?xml ?>", xmlDocument.xmlDecl);
+		Assert.equals("<?xml version=\"1.0\" encoding=\"utf-8\"?><?xml version=\"1.0\"?><?xml ?>hello", xmlDocument.toString());
+	}
+
+	private function test_comments():Void
+	{
+		var xmlDocument = new XMLDocument();
+		xmlDocument.parseXML("<!-- comment before --><root><!-- comment between --></root><!-- comment after -->");
+		Assert.isTrue(xmlDocument.hasChildNodes());
+		Assert.equals(1, xmlDocument.childNodes.length); // only the element node
+		Assert.equals("<root />", xmlDocument.toString());
+	}
 }

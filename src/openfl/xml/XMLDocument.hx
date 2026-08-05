@@ -44,8 +44,40 @@ class XMLDocument extends XMLNode
 	**/
 	public var ignoreWhite:Bool = false;
 
-	// public var docTypeDecl:Dynamic = null;
-	// public var xmlDecl:Dynamic = null;
+	/**
+		Specifies information about the XML document's `DOCTYPE` declaration.
+		After the XML text has been parsed into an XMLDocument object, the
+		`XMLDocument.docTypeDecl` property of the XMLDocument object is set to
+		the text of the XML document's `DOCTYPE` declaration (for example,
+		`<!DOCTYPE greeting SYSTEM "hello.dtd">`). This property is set using a
+		string representation of the `DOCTYPE` declaration, not an XMLNode
+		object.
+
+		The legacy ActionScript XML parser is not a validating parser. The
+		`DOCTYPE` declaration is read by the parser and stored in the
+		`XMLDocument.docTypeDecl` property, but no DTD validation is performed.
+
+		If no `DOCTYPE` declaration was encountered during a parse operation,
+		the `XMLDocument.docTypeDecl` property is set to `null`. The
+		`XML.toString()` method outputs the contents of `XML.docTypeDecl`
+		immediately after the XML declaration stored in `XML.xmlDecl`, and
+		before any other text in the XML object. If `XMLDocument.docTypeDecl` is
+		null, no `DOCTYPE` declaration is output.
+	**/
+	public var docTypeDecl:Dynamic = null;
+
+	/**
+		A string that specifies information about a document's XML declaration.
+		After the XML document is parsed into an XMLDocument object, this
+		property is set to the text of the document's XML declaration. This
+		property is set using a string representation of the XML declaration,
+		not an XMLNode object. If no XML declaration is encountered during a
+		parse operation, the property is set to null. The
+		`XMLDocument.toString()` method outputs the contents of the
+		`XML.xmlDecl` property before any other text in the XML object. If the
+		`XML.xmlDecl` property contains `null`, no XML declaration is output.
+	**/
+	public var xmlDecl:Dynamic = null;
 
 	/**
 		Creates a new XMLDocument object. You must use the constructor to create
@@ -105,23 +137,49 @@ class XMLDocument extends XMLNode
 		previousSibling = null;
 		nextSibling = null;
 		parentNode = null;
+		xmlDecl = null;
+		docTypeDecl = null;
 		#if haxe4
 		__childNodes.resize(0);
 		#else
 		__childNodes = [];
 		#end
 
-		xml = xml.firstChild();
-		switch (xml.nodeType)
+		for (xml in xml.iterator())
 		{
-			case Element:
-				var elementNode = parseElement(xml);
-				appendChild(elementNode);
-			case PCData:
-				var textNode = new XMLNode(TEXT_NODE, xml.nodeValue);
-				appendChild(textNode);
-			default:
-				throw new ArgumentError();
+			switch (xml.nodeType)
+			{
+				case Element:
+					var elementNode = parseElement(xml);
+					appendChild(elementNode);
+				case PCData:
+					var textNode = new XMLNode(TEXT_NODE, xml.nodeValue);
+					appendChild(textNode);
+				case DocType:
+					// replace any previous values
+					docTypeDecl = "<!DOCTYPE " + xml.nodeValue + ">";
+				case ProcessingInstruction:
+					var instrValue = xml.nodeValue;
+					// ignore all other processing instructions
+					// they don't even appear in the result of toString()
+					if (StringTools.startsWith(instrValue, "xml "))
+					{
+						if (xmlDecl == null)
+						{
+							xmlDecl = "<?" + instrValue + "?>";
+						}
+						else
+						{
+							// append to any previous values
+							xmlDecl += "<?" + instrValue + "?>";
+						}
+					}
+				case Comment:
+					// ignore all comments
+					// they don't even appear in the result of toString()
+				default:
+					throw new ArgumentError();
+			}
 		}
 	}
 
@@ -130,11 +188,28 @@ class XMLDocument extends XMLNode
 	**/
 	override public function toString():String
 	{
+		var result = "";
+		if (xmlDecl != null)
+		{
+			result += xmlDecl;
+		}
+		if (docTypeDecl != null)
+		{
+			result += docTypeDecl;
+		}
+		if (firstChild == null && __childNodes.length == 0)
+		{
+			return result + "<>";
+		}
+		for (xmlNode in __childNodes)
+		{
+			result += xmlNode.toString();
+		}
 		if (firstChild == null)
 		{
-			return "<>";
+			return result + "<>";
 		}
-		return firstChild.toString();
+		return result;
 	}
 
 	@:noCompletion private function parseElement(element:Xml):XMLNode
