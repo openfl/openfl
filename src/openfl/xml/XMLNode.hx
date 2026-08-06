@@ -20,6 +20,30 @@ import openfl.errors.TypeError;
 **/
 class XMLNode
 {
+	#if openfljs
+	@:noCompletion private static function __init__()
+	{
+		untyped Object.defineProperties(XMLNode.prototype, {
+			"localName": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_localName (); }")
+			},
+			"namespaceURI": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_namespaceURI (); }")
+			},
+			"prefix": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_prefix (); }")
+			},
+			"attributes": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_attributes (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_attributes (v); }")
+			},
+			"childNodes": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_childNodes (); }")
+			},
+		});
+	}
+	#end
+
 	/**
 		Creates a new XMLNode object. You must use the constructor to create an
 		XMLNode object before you call any of the methods of the XMLNode class.
