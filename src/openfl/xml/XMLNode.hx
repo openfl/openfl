@@ -1,8 +1,8 @@
 package openfl.xml;
 
+#if !flash
 import openfl.errors.TypeError;
 
-#if !flash
 /**
 	The XMLNode class represents the legacy XML object that was present in
 	ActionScript 2.0 and that was renamed in ActionScript 3.0. In Haxe, consider
