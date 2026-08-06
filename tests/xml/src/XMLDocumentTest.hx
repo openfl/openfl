@@ -1,5 +1,6 @@
 package;
 
+import openfl.errors.Error;
 import openfl.xml.XMLDocument;
 import openfl.xml.XMLNode;
 import openfl.xml.XMLNodeType;
@@ -158,6 +159,46 @@ class XMLDocumentTest extends Test
 	public function test_new_withText():Void
 	{
 		var xmlDocument = new XMLDocument("hello");
+		Assert.equals(ELEMENT_NODE, xmlDocument.nodeType);
+		Assert.isNull(xmlDocument.nodeName);
+		Assert.isNull(xmlDocument.localName);
+		Assert.isNull(xmlDocument.prefix);
+		Assert.isNull(xmlDocument.namespaceURI);
+		Assert.isNull(xmlDocument.nodeValue);
+		Assert.isNull(xmlDocument.parentNode);
+		Assert.isTrue(xmlDocument.hasChildNodes());
+		Assert.equals(1, xmlDocument.childNodes.length);
+		Assert.notNull(xmlDocument.firstChild);
+		Assert.notNull(xmlDocument.lastChild);
+		Assert.isNull(xmlDocument.previousSibling);
+		Assert.isNull(xmlDocument.nextSibling);
+		Assert.equals(0, Reflect.fields(xmlDocument.attributes).length);
+		Assert.equals("hello", xmlDocument.toString());
+		Assert.equals(0, Reflect.fields(xmlDocument.idMap).length);
+
+		var firstChild = xmlDocument.firstChild;
+		Assert.equals(TEXT_NODE, firstChild.nodeType);
+		Assert.isNull(firstChild.nodeName);
+		Assert.isNull(firstChild.localName);
+		Assert.isNull(firstChild.prefix);
+		Assert.isNull(firstChild.namespaceURI);
+		Assert.equals("hello", firstChild.nodeValue);
+		Assert.equals(xmlDocument, firstChild.parentNode);
+		Assert.isFalse(firstChild.hasChildNodes());
+		Assert.equals(0, firstChild.childNodes.length);
+		Assert.isNull(firstChild.firstChild);
+		Assert.isNull(firstChild.lastChild);
+		Assert.isNull(firstChild.previousSibling);
+		Assert.isNull(firstChild.nextSibling);
+		Assert.equals(0, Reflect.fields(firstChild.attributes).length);
+		Assert.equals("hello", firstChild.toString());
+
+		Assert.equals(xmlDocument.firstChild, xmlDocument.lastChild);
+	}
+
+	public function test_new_withCData():Void
+	{
+		var xmlDocument = new XMLDocument("<![CDATA[hello]]>");
 		Assert.equals(ELEMENT_NODE, xmlDocument.nodeType);
 		Assert.isNull(xmlDocument.nodeName);
 		Assert.isNull(xmlDocument.localName);

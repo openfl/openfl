@@ -155,6 +155,9 @@ class XMLDocument extends XMLNode
 				case PCData:
 					var textNode = new XMLNode(TEXT_NODE, xml.nodeValue);
 					appendChild(textNode);
+				case CData:
+					var textNode = new XMLNode(TEXT_NODE, xml.nodeValue);
+					appendChild(textNode);
 				case DocType:
 					// replace any previous values
 					docTypeDecl = "<!DOCTYPE " + xml.nodeValue + ">";
