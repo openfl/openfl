@@ -235,7 +235,75 @@ import hl.Gc;
 	}
 	#end
 
-	// @:noCompletion @:dox(hide) @:require(flash11) public static function pauseForGCIfCollectionImminent (imminence:Float = 0.75):Void;
+	/**
+		Advise the garbage collector that if the collector's imminence exceeds
+		the function's imminence parameter then the collector should finish the
+		incremental collection cycle.
+
+		The Flash Runtime garbage collector algorithm runs incrementally while
+		marking memory in use. It pauses application execution when collecting
+		unused portions of memory. The pause that occurs as the incremental
+		collection cycle finishes can be longer than desired and can be
+		observable or audible in some programs. This function allows the
+		application to advise the runtime that it is a good time to both
+		complete the marking and perform collection. Scheduling potential pauses
+		for times when the user won't notice them makes for a better user
+		experience. For example, a game might call this function upon the
+		completion of a level in a game, thus reducing the chances of a pause
+		occurring during gameplay.
+
+		Imminence is defined as how far through marking the collector believes
+		it is, and therefore how close it is to triggering a collection pause.
+		The imminence argument to this function is a threshold: the garbage
+		collector will be invoked only if the actual imminence exceeds the
+		threshold value. Otherwise, this call returns immediately without taking
+		action.
+
+		By calling this function with a low imminence value, the application
+		indicates that it is willing to accept that a relatively large amount of
+		marking must be completed. A high imminence value, on the other hand,
+		indicates that the application should be paused only if marking is
+		nearly complete.  Typically, pauses are longer in the former case than
+		in the latter.
+
+		The amount of memory being freed does not depend on the imminence
+		parameter. It only depends on the number of freeable objects. If the
+		application has recently released references to large data structures
+		or to a large number of objects, a low imminence parameter will tend to
+		trigger a collection that will free those objects immediately.
+
+		_OpenFL target support:_ This feature is supported on all desktop
+		operating systems, on iOS, and on Android. This feature is not supported
+		on the html5 target. Since most Haxe targets provide very little control
+		over the behavior of their garbage collectors, this method is more
+		limited in OpenFL, compared to Adobe AIR. In OpenFL, the imminence
+		parameter will always trigger garbage collection if its value is less
+		than `0.25`. If the imminence parameter's value is equal to greater than
+		`0.25`, garbage collection will not be triggered.
+
+		@param imminence A number between 0 and 1, where 0 means less imminent
+		and 1 means most imminent. Values less than 0 default to 0.25. Values
+		greater than 1.0 default to 1.0. NaN defaults to 0.75
+	**/
+	public static function pauseForGCIfCollectionImminent(imminence:Float = 0.75):Void
+	{
+		if (Math.isNaN(imminence))
+		{
+			imminence = 0.75;
+		}
+		else if (imminence > 1.0)
+		{
+			imminence = 1.0;
+		}
+		else if (imminence < 0.0)
+		{
+			imminence = 0.25;
+		}
+		if (imminence < 0.25)
+		{
+			System.gc();
+		}
+	}
 
 	#if !openfl_strict
 	/**
