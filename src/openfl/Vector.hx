@@ -2117,6 +2117,10 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		// a bare Array object is passed in
 
 		// return cast this.concat (cast a);
+		if (a == null)
+		{
+			return VectorData.ofArray(cast this);
+		}
 		return VectorData.ofArray(untyped #if haxe4 js.Syntax.code #else __js__ #end ("Array.prototype.concat.call")(this, a));
 	}
 
@@ -2392,6 +2396,10 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 
 	public function concat(?a:Vector<T>):VectorData<T>
 	{
+		if (a == null)
+		{
+			return VectorData.ofArray(cast this);
+		}
 		return VectorData.ofArray(untyped #if haxe4 js.Syntax.code #else __js__ #end ("Array.prototype.concat.call (this, a)"));
 	}
 
