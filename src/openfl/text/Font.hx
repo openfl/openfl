@@ -99,6 +99,16 @@ class Font #if lime extends LimeFont #end
 					if (file.toLowerCase().indexOf('.ttf') != -1) _allFonts.push(fromFile(alternateFontsDirectory + file));
 				}
 			}
+			#elseif mac
+			var alternateFontsDirectory = '${lime.system.System.userDirectory}/Library/Fonts';
+			if (sys.FileSystem.exists(alternateFontsDirectory))
+			{
+				files = sys.FileSystem.readDirectory(alternateFontsDirectory);
+				for (file in files)
+				{
+					if (file.toLowerCase().indexOf('.ttf') != -1) _allFonts.push(fromFile(alternateFontsDirectory + "/" + file));
+				}
+			}
 			#end
 
 			return _allFonts;
