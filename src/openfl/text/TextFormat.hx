@@ -157,7 +157,7 @@ class TextFormat
 		`null`, which means that 0 pixels of letter spacing is used.
 		You can use decimal values such as `1.75`.
 	**/
-	public var letterSpacing:Null<Float>;
+	public var letterSpacing(default, set):Null<Float>;
 
 	/**
 		The right margin of the paragraph, in pixels. The default value is
@@ -339,7 +339,7 @@ class TextFormat
 
 	@:noCompletion private function __toCacheKey():String
 	{
-		return __cacheKey = '$font$size$bold$italic';
+		return __cacheKey = '$font$size$bold$italic$letterSpacing';
 	}
 
 	@:noCompletion private function set_font(value:String):String
@@ -350,6 +350,16 @@ class TextFormat
 			__cacheKey = null;
 		}
 		return font;
+	}
+
+	@:noCompletion private function set_letterSpacing(value:Null<Float>):Null<Float>
+	{
+		if (letterSpacing != value)
+		{
+			letterSpacing = value;
+			__cacheKey = null;
+		}
+		return letterSpacing;
 	}
 
 	@:noCompletion private function set_size(value:Null<Int>):Null<Int>
