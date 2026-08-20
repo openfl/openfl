@@ -103,7 +103,7 @@ class Font #if lime extends LimeFont #end
 			var alternateFontsDirectory = '${Sys.getEnv("LocalAppData")}\\Microsoft\\Windows\\Fonts';
 			if (sys.FileSystem.exists(alternateFontsDirectory))
 			{
-				files = sys.FileSystem.readDirectory(alternateFontsDirectory);
+				var files = sys.FileSystem.readDirectory(alternateFontsDirectory);
 				for (file in files)
 				{
 					if (file.toLowerCase().indexOf('.ttf') != -1)
