@@ -123,7 +123,14 @@ class Font #if lime extends LimeFont #end
 				files = sys.FileSystem.readDirectory(alternateFontsDirectory);
 				for (file in files)
 				{
-					if (file.toLowerCase().indexOf('.ttf') != -1) _allFonts.push(fromFile(alternateFontsDirectory + "/" + file));
+					if (file.toLowerCase().indexOf('.ttf') != -1)
+					{
+						var file = fromFile(alternateFontsDirectory + "/" + file);
+						if (file != null)
+						{
+							_allFonts.push(file);
+						}
+					}
 				}
 			}
 			#end
