@@ -123,7 +123,7 @@ class Font #if lime extends LimeFont #end
 			var alternateFontsDirectory = '${lime.system.System.userDirectory}/Library/Fonts';
 			if (sys.FileSystem.exists(alternateFontsDirectory))
 			{
-				files = sys.FileSystem.readDirectory(alternateFontsDirectory);
+				var files = sys.FileSystem.readDirectory(alternateFontsDirectory);
 				for (file in files)
 				{
 					var ext = haxe.io.Path.extension(file.toLowerCase());
