@@ -41,6 +41,7 @@ class Font #if lime extends LimeFont #end
 
 	@:noCompletion private static var __fontByName:Map<String, Font> = new Map();
 	@:noCompletion private static var __registeredFonts:Array<Font> = new Array();
+	@:noCompletion private static var __supportedFontFileExtensions:Array<String> = ["ttf", "otf", "ttc", "otc"];
 
 	@:noCompletion private var __initialized:Bool;
 
@@ -85,7 +86,8 @@ class Font #if lime extends LimeFont #end
 				var files = sys.FileSystem.readDirectory(lime.system.System.fontsDirectory);
 				for (file in files)
 				{
-					if (file.toLowerCase().indexOf('.ttf') != -1)
+					var ext = haxe.io.Path.extension(file.toLowerCase());
+					if (__supportedFontFileExtensions.indexOf(ext) != -1)
 					{
 						var font = fromFile(lime.system.System.fontsDirectory + file);
 						if (font != null)
@@ -106,7 +108,8 @@ class Font #if lime extends LimeFont #end
 				var files = sys.FileSystem.readDirectory(alternateFontsDirectory);
 				for (file in files)
 				{
-					if (file.toLowerCase().indexOf('.ttf') != -1)
+					var ext = haxe.io.Path.extension(file.toLowerCase());
+					if (__supportedFontFileExtensions.indexOf(ext) != -1)
 					{
 						var font = fromFile(alternateFontsDirectory + file);
 						if (font != null)
@@ -123,7 +126,8 @@ class Font #if lime extends LimeFont #end
 				files = sys.FileSystem.readDirectory(alternateFontsDirectory);
 				for (file in files)
 				{
-					if (file.toLowerCase().indexOf('.ttf') != -1)
+					var ext = haxe.io.Path.extension(file.toLowerCase());
+					if (__supportedFontFileExtensions.indexOf(ext) != -1)
 					{
 						var file = fromFile(alternateFontsDirectory + "/" + file);
 						if (file != null)
@@ -335,7 +339,8 @@ class Font #if lime extends LimeFont #end
 						pathsToSearch.push(filePath);
 						continue;
 					}
-					if (file.toLowerCase().indexOf('.ttf') != -1)
+					var ext = haxe.io.Path.extension(file.toLowerCase());
+					if (__supportedFontFileExtensions.indexOf(ext) != -1)
 					{
 						var font = fromFile(filePath);
 						if (font != null)
