@@ -108,7 +108,7 @@ class Font #if lime extends LimeFont #end
 				{
 					if (file.toLowerCase().indexOf('.ttf') != -1)
 					{
-						var font = fromFile(alternateFontsDirectory + file);
+						var font = fromFile(alternateFontsDirectory + "\\" + file);
 						if (font != null)
 						{
 							_allFonts.push(font);
