@@ -85,7 +85,14 @@ class Font #if lime extends LimeFont #end
 				var files = sys.FileSystem.readDirectory(lime.system.System.fontsDirectory);
 				for (file in files)
 				{
-					if (file.toLowerCase().indexOf('.ttf') != -1) _allFonts.push(fromFile(lime.system.System.fontsDirectory + file));
+					if (file.toLowerCase().indexOf('.ttf') != -1)
+					{
+						var font = fromFile(lime.system.System.fontsDirectory + file);
+						if (font != null)
+						{
+							_allFonts.push(font);
+						}
+					}
 				}
 			}
 
@@ -99,7 +106,14 @@ class Font #if lime extends LimeFont #end
 				files = sys.FileSystem.readDirectory(alternateFontsDirectory);
 				for (file in files)
 				{
-					if (file.toLowerCase().indexOf('.ttf') != -1) _allFonts.push(fromFile(alternateFontsDirectory + file));
+					if (file.toLowerCase().indexOf('.ttf') != -1)
+					{
+						var font = fromFile(alternateFontsDirectory + file);
+						if (font != null)
+						{
+							_allFonts.push(font);
+						}
+					}
 				}
 			}
 			#end
