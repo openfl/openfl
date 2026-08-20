@@ -314,6 +314,18 @@ class Font #if lime extends LimeFont #end
 	{
 		__copyFrom(font);
 	}
+
+	@:noCompletion override private function __copyFrom(font:LimeFont):Void
+	{
+		super.__copyFrom(font);
+		__initializeFontStyle();
+	}
+
+	@:noCompletion override private function __initializeSource():Void
+	{
+		super.__initializeSource();
+		__initializeFontStyle();
+	}
 	#end
 
 	#if (lime && native)
@@ -375,6 +387,30 @@ class Font #if lime extends LimeFont #end
 
 		return __initialized;
 	}
+
+	#if lime
+	@:noCompletion private function __initializeFontStyle():Void
+	{
+		#if (lime >= "8.4.0")
+		if (isBold && isItalic)
+		{
+			fontStyle = BOLD_ITALIC;
+		}
+		else if (isBold)
+		{
+			fontStyle = BOLD;
+		}
+		else if (isItalic)
+		{
+			fontStyle = ITALIC;
+		}
+		else
+		{
+			fontStyle = REGULAR;
+		}
+		#end
+	}
+	#end
 
 	// Get & Set Methods
 	@:noCompletion private inline function get_fontName():String
