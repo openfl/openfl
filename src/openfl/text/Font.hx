@@ -133,6 +133,9 @@ class Font #if lime extends LimeFont #end
 					}
 				}
 			}
+			#elseif linux
+			var alternateFontsDirectory = '${lime.system.System.userDirectory}/.local/share/fonts';
+			__enumerateDeviceFontsRecursive(alternateFontsDirectory, _allFonts);
 			#end
 
 			return _allFonts;
@@ -306,6 +309,43 @@ class Font #if lime extends LimeFont #end
 	@:noCompletion private function __fromLimeFont(font:LimeFont):Void
 	{
 		__copyFrom(font);
+	}
+	#end
+
+	#if (lime && native)
+	@:noCompletion private static function __enumerateDeviceFontsRecursive(directory:String, _allFonts:Array<Font>):Void
+	{
+		#if windows
+		var separator = "\\";
+		#else
+		var separator = "/";
+		#end
+		var pathsToSearch:Array<String> = [directory];
+		while (pathsToSearch.length > 0)
+		{
+			var pathToSearch = pathsToSearch.shift();
+			if (sys.FileSystem.exists(pathToSearch) && sys.FileSystem.isDirectory(pathToSearch))
+			{
+				var files = sys.FileSystem.readDirectory(pathToSearch);
+				for (file in files)
+				{
+					var filePath = pathToSearch + separator + file;
+					if (sys.FileSystem.isDirectory(filePath))
+					{
+						pathsToSearch.push(filePath);
+						continue;
+					}
+					if (file.toLowerCase().indexOf('.ttf') != -1)
+					{
+						var font = fromFile(filePath);
+						if (font != null)
+						{
+							_allFonts.push(font);
+						}
+					}
+				}
+			}
+		}
 	}
 	#end
 
