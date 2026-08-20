@@ -60,6 +60,7 @@ class Font #if lime extends LimeFont #end
 		#if lime
 		super(name);
 		#end
+		fontType = DEVICE;
 	}
 
 	/**
