@@ -55,76 +55,71 @@ class ShapeCache
 		}
 	}
 
-	private function __cacheShortWord(wordKey:String, formatKey:String, getPositions:#if (js && html5) Void->
-		Array<Float>):Array<Float> #else TextLayout):Array<GlyphPosition> #end
+	#if (js && html5)
+	private function __cacheShortWord(wordKey:String, formatKey:String, getPositions:Void->Array<Float>):Array<Float>
+	#else
+	private function __cacheShortWord(wordKey:String, formatKey:String, getPositions:TextLayout):Array<GlyphPosition>
+	#end
+	{
+		if (__shortWordMap.exists(formatKey))
 		{
-			if
-			(__shortWordMap.exists(formatKey))
+			var formatMap = __shortWordMap.get(formatKey);
+			if (formatMap.exists(wordKey))
 			{
-				var formatMap = __shortWordMap.get(formatKey);
-				if
-				(formatMap.exists(wordKey))
-				{
-					return
-					formatMap.get
-					(wordKey);
-				}
+				return formatMap.get(wordKey);
+			}
 			else
-				{
-					formatMap.set
-					(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
-				}
-			}
-		else
 			{
-				var formatMap = new StringMap();
-				formatMap.set
-				(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
-				__shortWordMap.set
-				(formatKey, formatMap);
+				formatMap.set(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
 			}
-			return
-			#if (js && html5)
-			getPositions()
-			#else
-			cast getPositions.positions
-			#end
-			;
 		}
-		private function __cacheLongWord(wordKey : String, formatKey : String, getPositions : #if (js && html5) Void->
-			Array<Float>):Array<Float> #else TextLayout):Array<GlyphPosition> #end
+		else
+		{
+			var formatMap = new StringMap();
+
+			formatMap.set(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
+			__shortWordMap.set(formatKey, formatMap);
+		}
+		return #if (js && html5) getPositions() #else cast getPositions.positions #end;
+	}
+
+	#if (js && html5)
+	private function __cacheLongWord(wordKey:String, formatKey:String, getPositions:Void->Array<Float>):Array<Float>
+	#else
+	private function __cacheLongWord(wordKey:String, formatKey:String, getPositions:TextLayout):Array<GlyphPosition>
+	#end
+	{
+		var hash = hashFunction(wordKey);
+		if (__longWordMap.exists(formatKey))
+		{
+			var formatMap = __longWordMap.get(formatKey);
+			if (formatMap.exists(hash))
 			{
-				var hash = hashFunction(wordKey);
-				if (__longWordMap.exists(formatKey))
+				var measurement = formatMap.get(hash);
+				if (measurement.exists(wordKey))
 				{
-					var formatMap = __longWordMap.get(formatKey);
-					if (formatMap.exists(hash))
-					{
-						var measurement = formatMap.get(hash);
-						if (measurement.exists(wordKey))
-						{
-							return measurement.get(wordKey);
-						}
-						else
-						{
-							measurement.set(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
-						}
-					}
-					else
-					{
-						var measurement = new CacheMeasurement(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
-						formatMap.set(hash, measurement);
-					}
+					return measurement.get(wordKey);
 				}
 				else
 				{
-					var formatMap = new IntMap();
-					var measurement = new CacheMeasurement(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
-					measurement.hash = hash;
-					formatMap.set(hash, measurement);
-					__longWordMap.set(formatKey, formatMap);
+					measurement.set(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
 				}
-				return #if (js && html5) getPositions() #else getPositions.positions #end;
 			}
+			else
+			{
+				var measurement = new CacheMeasurement(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
+				formatMap.set(hash, measurement);
+			}
+		}
+		else
+		{
+			var formatMap = new IntMap();
+			var measurement = new CacheMeasurement(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
+			measurement.hash = hash;
+			formatMap.set(hash, measurement);
+			__longWordMap.set(formatKey, formatMap);
+		}
+		return #if (js && html5) getPositions() #else getPositions.positions #end;
 	}
+}
 #end
