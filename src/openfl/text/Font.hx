@@ -60,7 +60,6 @@ class Font #if lime extends LimeFont #end
 		#if lime
 		super(name);
 		#end
-		fontType = DEVICE;
 	}
 
 	/**
@@ -319,13 +318,13 @@ class Font #if lime extends LimeFont #end
 	@:noCompletion override private function __copyFrom(font:LimeFont):Void
 	{
 		super.__copyFrom(font);
-		__initializeFontStyle();
+		__initializeFontStyleAndType();
 	}
 
 	@:noCompletion override private function __initializeSource():Void
 	{
 		super.__initializeSource();
-		__initializeFontStyle();
+		__initializeFontStyleAndType();
 	}
 	#end
 
@@ -390,7 +389,7 @@ class Font #if lime extends LimeFont #end
 	}
 
 	#if lime
-	@:noCompletion private function __initializeFontStyle():Void
+	@:noCompletion private function __initializeFontStyleAndType():Void
 	{
 		#if (lime >= "8.4.0")
 		if (isBold && isItalic)
@@ -409,6 +408,7 @@ class Font #if lime extends LimeFont #end
 		{
 			fontStyle = REGULAR;
 		}
+		fontType = DEVICE;
 		#end
 	}
 	#end
