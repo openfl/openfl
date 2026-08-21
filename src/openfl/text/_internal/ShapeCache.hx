@@ -70,17 +70,20 @@ class ShapeCache
 			}
 			else
 			{
-				formatMap.set(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
+				var positions = #if (js && html5) getPositions() #else getPositions.positions #end;
+				formatMap.set(wordKey, positions);
+				return positions;
 			}
 		}
 		else
 		{
 			var formatMap = new StringMap();
+			var positions = #if (js && html5) getPositions() #else getPositions.positions #end;
 
-			formatMap.set(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
+			formatMap.set(wordKey, positions);
 			__shortWordMap.set(formatKey, formatMap);
+			return positions;
 		}
-		return #if (js && html5) getPositions() #else cast getPositions.positions #end;
 	}
 
 	#if (js && html5)
@@ -102,24 +105,29 @@ class ShapeCache
 				}
 				else
 				{
-					measurement.set(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
+					var positions = #if (js && html5) getPositions() #else getPositions.positions #end;
+					measurement.set(wordKey, positions);
+					return positions;
 				}
 			}
 			else
 			{
-				var measurement = new CacheMeasurement(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
+				var positions = #if (js && html5) getPositions() #else getPositions.positions #end;
+				var measurement = new CacheMeasurement(wordKey, positions);
 				formatMap.set(hash, measurement);
+				return positions;
 			}
 		}
 		else
 		{
 			var formatMap = new IntMap();
-			var measurement = new CacheMeasurement(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
+			var positions = #if (js && html5) getPositions() #else getPositions.positions #end;
+			var measurement = new CacheMeasurement(wordKey, positions);
 			measurement.hash = hash;
 			formatMap.set(hash, measurement);
 			__longWordMap.set(formatKey, formatMap);
+			return positions;
 		}
-		return #if (js && html5) getPositions() #else getPositions.positions #end;
 	}
 }
 #end
