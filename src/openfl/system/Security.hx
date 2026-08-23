@@ -578,7 +578,7 @@ class Security
 					 Security Settings panel you want to display. If you omit
 					 this parameter, `SecurityPanel.DEFAULT` is used.
 	**/
-	public static function showSettings(panel:String = null):Void {}
+	public static function showSettings(panel:SecurityPanel = null):Void {}
 }
 #else
 typedef Security = flash.system.Security;

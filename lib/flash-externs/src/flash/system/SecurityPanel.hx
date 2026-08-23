@@ -1,15 +1,15 @@
 package flash.system;
 
 #if flash
-extern class SecurityPanel
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract SecurityPanel(String) from String to String
 {
-	public static var CAMERA(default, never):String;
-	public static var DEFAULT(default, never):String;
-	public static var DISPLAY(default, never):String;
-	public static var LOCAL_STORAGE(default, never):String;
-	public static var MICROPHONE(default, never):String;
-	public static var PRIVACY(default, never):String;
-	public static var SETTINGS_MANAGER(default, never):String;
+	public var CAMERA = "camera";
+	public var DEFAULT = "default";
+	public var DISPLAY = "display";
+	public var LOCAL_STORAGE = "localStorage";
+	public var MICROPHONE = "microphone";
+	public var PRIVACY = "privacy";
+	public var SETTINGS_MANAGER = "settingsManager";
 }
 #else
 typedef SecurityPanel = openfl.system.SecurityPanel;
