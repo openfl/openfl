@@ -58,6 +58,27 @@ class SpriteTest extends Test
 		Assert.isTrue(exists);
 	}
 
+	public function test_soundTransform()
+	{
+		var sprite = new Sprite();
+
+		var t1 = sprite.soundTransform;
+		var t2 = sprite.soundTransform;
+
+		Assert.notNull(t1);
+		Assert.notNull(t2);
+
+		Assert.notEquals(t1, t2);
+
+		Assert.equals(t1.volume, t2.volume);
+		Assert.equals(t1.pan, t2.pan);
+
+		t1.volume = 0.5;
+		sprite.soundTransform = t1;
+
+		Assert.equals(0.5, sprite.soundTransform.volume);
+	}
+
 	public function test_startDrag()
 	{
 		// TODO: Confirm functionality
