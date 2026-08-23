@@ -1,6 +1,8 @@
 package openfl.net;
 
-#if !(flash || air)
+#if (flash || air)
+typedef LocalConnection = flash.net.LocalConnection;
+#elseif (cpp && windows)
 import haxe.Timer;
 import openfl.errors.ArgumentError;
 import openfl.events.StatusEvent;
@@ -83,7 +85,7 @@ class LocalConnection extends EventDispatcher
 	}
 
 	/** Sends a message to another connection */
-	public function send(connectionName:String, methodName:String, ...arguments):Void
+	public function send(connectionName:String, methodName:String, ...arguments:Dynamic):Void
 	{
 		__resetSeralizer();
 		var status:Bool = false;
@@ -130,12 +132,12 @@ class LocalConnection extends EventDispatcher
 		}
 	}
 
-	public function allowDomain(?domains:Array<String>):Void
+	public function allowDomain(...domains:String):Void
 	{
 		Lib.notImplemented("LocalConnection.allowDomain");
 	}
 
-	public function allowInsecureDomain(?domains:Array<String>):Void
+	public function allowInsecureDomain(...domains:String):Void
 	{
 		Lib.notImplemented("LocalConnection.allowInsecureDomain");
 	}
@@ -392,5 +394,52 @@ class LocalConnection extends EventDispatcher
 	}
 }
 #else
-typedef LocalConnection = flash.net.LocalConnection;
+import openfl.events.EventDispatcher;
+import openfl.events.StatusEvent;
+import openfl.utils.Object;
+
+/**
+	The LocalConnection class lets you send messages between running applications.
+
+	Named-pipe IPC is currently implemented on Windows native targets only. On
+	other targets, `send` dispatches a `StatusEvent` with `level` set to
+	`"error"`, matching Flash Player behavior when no receiver is connected.
+**/
+class LocalConnection extends EventDispatcher
+{
+	public var client:Object;
+
+	public var domain(get, never):String;
+
+	public var isPerUser:Bool;
+
+	private function get_domain():String
+	{
+		return "localhost";
+	}
+
+	public function new()
+	{
+		super();
+		isPerUser = false;
+	}
+
+	public function close():Void {}
+
+	public function connect(connectionName:String):Void {}
+
+	public function send(connectionName:String, methodName:String, ...arguments:Dynamic):Void
+	{
+		dispatchEvent(new StatusEvent(StatusEvent.STATUS, false, false, "0", "error"));
+	}
+
+	public function allowDomain(...domains:String):Void {}
+
+	public function allowInsecureDomain(...domains:String):Void {}
+
+	public static function get_isSupported():Bool
+	{
+		return false;
+	}
+}
 #end
