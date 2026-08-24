@@ -603,6 +603,8 @@ class TextEngine
 		#if (js && html5)
 		return findFontVariant(format);
 		#elseif lime_cffi
+		initializeDefaultFonts();
+
 		var instance:Font = null;
 
 		if (format != null && format.font != null)
