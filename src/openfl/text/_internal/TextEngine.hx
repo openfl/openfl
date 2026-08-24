@@ -299,193 +299,200 @@ class TextEngine
 		textBounds.setTo(Math.max(x - 2, 0), Math.max(y - 2, 0), Math.min(textWidth + 4, bounds.width), Math.min(textHeight + 4, bounds.height));
 	}
 
+	private static function initializeDefaultFonts():Void
+	{
+		if (__defaultFonts != null)
+		{
+			return;
+		}
+
+		__defaultFonts = new Map();
+
+		#if lime_cffi
+		var systemFontDirectory = System.fontsDirectory;
+
+		function processFontList(list:Array<String>):Font
+		{
+			var font:Font = null;
+			for (path in list)
+			{
+				font = findFont(path);
+				if (font != null) break;
+			}
+			return font;
+		}
+
+		#if windows
+		__defaultFonts.set("_sans",
+			new DefaultFontSet(findFont(systemFontDirectory + "/arial.ttf"), findFont(systemFontDirectory + "/arialbd.ttf"),
+				findFont(systemFontDirectory + "/ariali.ttf"), findFont(systemFontDirectory + "/arialbi.ttf")));
+
+		__defaultFonts.set("_serif",
+			new DefaultFontSet(findFont(systemFontDirectory + "/times.ttf"), findFont(systemFontDirectory + "/timesbd.ttf"),
+				findFont(systemFontDirectory + "/timesi.ttf"), findFont(systemFontDirectory + "/timesbi.ttf")));
+
+		__defaultFonts.set("_typewriter",
+			new DefaultFontSet(findFont(systemFontDirectory + "/cour.ttf"), findFont(systemFontDirectory + "/courbd.ttf"),
+				findFont(systemFontDirectory + "/couri.ttf"), findFont(systemFontDirectory + "/courbi.ttf")));
+		#elseif (mac || ios || tvos)
+		var sans = processFontList([
+			systemFontDirectory + "/Arial.ttf",
+			systemFontDirectory + "/Cache/Arial.ttf",
+			systemFontDirectory + "/Core/Arial.ttf",
+			systemFontDirectory + "/CoreAddition/Arial.ttf",
+			systemFontDirectory + "/WebFonts/Arial.ttf",
+			"/System/Library/Fonts/Supplemental/Arial.ttf",
+			// tries to fall back to helvetica, if arial is missing
+			systemFontDirectory + "/Helvetica.ttf",
+			systemFontDirectory + "/Cache/Helvetica.ttf",
+			systemFontDirectory + "/Core/Helvetica.ttf",
+			systemFontDirectory + "/CoreAddition/Helvetica.ttf",
+		]);
+
+		var sansBold = processFontList([
+			systemFontDirectory + "/CoreAddition/ArialBold.ttf",
+			systemFontDirectory + "/WebFonts/ArialBold.ttf",
+			"/System/Library/Fonts/Supplemental/Arial Bold.ttf"
+		]);
+		var sansItalic = processFontList([
+			systemFontDirectory + "/CoreAddition/ArialItalic.ttf",
+			systemFontDirectory + "/WebFonts/ArialItalic.ttf",
+			"/System/Library/Fonts/Supplemental/Arial Italic.ttf"
+		]);
+		var sansBoldItalic = processFontList([
+			systemFontDirectory + "/CoreAddition/ArialBoldItalic.ttf",
+			systemFontDirectory + "/WebFonts/ArialBoldItalic.ttf",
+			"/System/Library/Fonts/Supplemental/Arial Bold Italic.ttf"
+		]);
+
+		__defaultFonts.set("_sans", new DefaultFontSet(sans, sansBold, sansItalic, sansBoldItalic));
+
+		var georgia = processFontList([
+			systemFontDirectory + "/Georgia.ttf",
+			systemFontDirectory + "/Cache/Georgia.ttf",
+			systemFontDirectory + "/Core/Georgia.ttf",
+			systemFontDirectory + "/CoreAddition/Georgia.ttf",
+			"/System/Library/Fonts/Supplemental/Georgia.ttf",
+		]);
+		var georgiaBold = processFontList([
+			systemFontDirectory + "/Core/GeorgiaBold.ttf",
+			"/System/Library/Fonts/Supplemental/Georgia Bold.ttf",
+		]);
+		var georgiaItalic = processFontList([
+			systemFontDirectory + "/Core/GeorgiaItalic.ttf",
+			"/System/Library/Fonts/Supplemental/Georgia Italic.ttf",
+		]);
+		var georgiaBoldItalic = processFontList([
+			systemFontDirectory + "/Core/GeorgiaBoldItalic.ttf",
+			"/System/Library/Fonts/Supplemental/Georgia Bold Italic.ttf",
+		]);
+
+		var times = processFontList([
+			systemFontDirectory + "/Times New Roman.ttf",
+			systemFontDirectory + "/Cache/Times New Roman.ttf",
+			systemFontDirectory + "/Core/Times New Roman.ttf",
+			systemFontDirectory + "/Core/TimesNewRoman.ttf",
+			systemFontDirectory + "/CoreAddition/Times New Roman.ttf",
+			"/System/Library/Fonts/Supplemental/Times New Roman.ttf",
+			// tries to fall back to times, if times new roman is missing
+			systemFontDirectory + "/Times.ttf",
+			systemFontDirectory + "/Cache/Times.ttf",
+			systemFontDirectory + "/Core/Times.ttf",
+			systemFontDirectory + "/CoreAddition/Times.ttf",
+		]);
+		var timesBold = processFontList([
+			systemFontDirectory + "/Core/TimesNewRomanBold.ttf",
+			"/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf"
+		]);
+		var timesItalic = processFontList([
+			systemFontDirectory + "/Core/TimesNewRomanItalic.ttf",
+			"/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf"
+		]);
+		var timesBoldItalic = processFontList([
+			systemFontDirectory + "/Core/TimesNewRomanBoldItalic.ttf",
+			"/System/Library/Fonts/Supplemental/Times New Roman Bold Italic.ttf"
+		]);
+
+		var serif = georgia;
+		var serifBold = georgiaBold;
+		var serifItalic = georgiaItalic;
+		var serifBoldItalic = georgiaBoldItalic;
+		// prefer georgia over times, but only if there is a full set of styles
+		if (times != null && (serif == null || serifBold == null || serifItalic == null || serifBoldItalic == null))
+		{
+			serif = times;
+			serifBold = timesBold;
+			serifItalic = timesItalic;
+			serifBoldItalic = timesBoldItalic;
+		}
+
+		__defaultFonts.set("_serif", new DefaultFontSet(serif, serifBold, serifItalic, serifBoldItalic));
+
+		var typewriter = processFontList([
+			systemFontDirectory + "/Courier New.ttf",
+			systemFontDirectory + "/Courier.ttf",
+			systemFontDirectory + "/Cache/Courier New.ttf",
+			systemFontDirectory + "/Cache/Courier.ttf",
+			systemFontDirectory + "/Core/Courier New.ttf",
+			systemFontDirectory + "/Core/CourierNew.ttf",
+			systemFontDirectory + "/Core/Courier.ttf",
+			systemFontDirectory + "/CoreAddition/Courier New.ttf",
+			systemFontDirectory + "/CoreAddition/Courier.ttf",
+			"/System/Library/Fonts/Supplemental/Courier New.ttf"
+		]);
+		var typewriterBold = processFontList([
+			systemFontDirectory + "/Core/CourierNewBold.ttf",
+			"/System/Library/Fonts/Supplemental/Courier New Bold.ttf"
+		]);
+		var typewriterItalic = processFontList([
+			systemFontDirectory + "/Core/CourierNewItalic.ttf",
+			"/System/Library/Fonts/Supplemental/Courier New Italic.ttf"
+		]);
+		var typewriterBoldItalic = processFontList([
+			systemFontDirectory + "/Core/CourierNewBoldItalic.ttf",
+			"/System/Library/Fonts/Supplemental/Courier New Bold Italic.ttf"
+		]);
+
+		__defaultFonts.set("_typewriter", new DefaultFontSet(typewriter, typewriterBold, typewriterItalic, typewriterBoldItalic));
+		#elseif linux
+		__defaultFonts.set("_sans",
+			new DefaultFontSet(processFontList([new Process("fc-match", ["sans", "-f%{file}"]).stdout.readLine()]),
+				processFontList([new Process("fc-match", ["sans:weight=bold", "-f%{file}"]).stdout.readLine()]),
+				processFontList([new Process("fc-match", ["sans:slant=italic", "-f%{file}"]).stdout.readLine()]), processFontList([
+					new Process("fc-match", ["sans:weight=bold:slant=italic", "-f%{file}"]).stdout.readLine()
+				])));
+
+		__defaultFonts.set("_serif",
+			new DefaultFontSet(processFontList([new Process("fc-match", ["serif", "-f%{file}"]).stdout.readLine()]),
+				processFontList([new Process("fc-match", ["serif:weight=bold", "-f%{file}"]).stdout.readLine()]),
+				processFontList([new Process("fc-match", ["serif:slant=italic", "-f%{file}"]).stdout.readLine()]), processFontList([
+					new Process("fc-match", ["serif:weight=bold:slant=italic", "-f%{file}"]).stdout.readLine()
+				])));
+
+		__defaultFonts.set("_typewriter",
+			new DefaultFontSet(processFontList([new Process("fc-match", ["mono", "-f%{file}"]).stdout.readLine()]),
+				processFontList([new Process("fc-match", ["mono:weight=bold", "-f%{file}"]).stdout.readLine()]),
+				processFontList([new Process("fc-match", ["mono:slant=italic", "-f%{file}"]).stdout.readLine()]), processFontList([
+					new Process("fc-match", ["mono:weight=bold:slant=italic", "-f%{file}"]).stdout.readLine()
+				])));
+		#elseif android
+		__defaultFonts.set("_sans", new DefaultFontSet(findFont(systemFontDirectory + "/DroidSans.ttf")));
+		__defaultFonts.set("_serif", new DefaultFontSet(processFontList([
+			systemFontDirectory + "/DroidSerif-Regular.ttf",
+			systemFontDirectory + "/NotoSerif-Regular.ttf"
+		])));
+		__defaultFonts.set("_typewriter", new DefaultFontSet(findFont(systemFontDirectory + "/DroidSansMono.ttf")));
+		#else
+		__defaultFonts.set("_sans", new DefaultFontSet(findFont("Noto Sans Regular")));
+		__defaultFonts.set("_serif", new DefaultFontSet(findFont("Noto Serif Regular")));
+		__defaultFonts.set("_typewriter", new DefaultFontSet(findFont("Noto Mono")));
+		#end
+		#end
+	}
+
 	private static function getDefaultFont(name:String, bold:Bool, italic:Bool):Font
 	{
-		if (__defaultFonts == null)
-		{
-			__defaultFonts = new Map();
-
-			#if lime_cffi
-			var systemFontDirectory = System.fontsDirectory;
-
-			function processFontList(list:Array<String>):Font
-			{
-				var font:Font = null;
-				for (path in list)
-				{
-					font = findFont(path);
-					if (font != null) break;
-				}
-				return font;
-			}
-
-			#if windows
-			__defaultFonts.set("_sans",
-				new DefaultFontSet(findFont(systemFontDirectory + "/arial.ttf"), findFont(systemFontDirectory + "/arialbd.ttf"),
-					findFont(systemFontDirectory + "/ariali.ttf"), findFont(systemFontDirectory + "/arialbi.ttf")));
-
-			__defaultFonts.set("_serif",
-				new DefaultFontSet(findFont(systemFontDirectory + "/times.ttf"), findFont(systemFontDirectory + "/timesbd.ttf"),
-					findFont(systemFontDirectory + "/timesi.ttf"), findFont(systemFontDirectory + "/timesbi.ttf")));
-
-			__defaultFonts.set("_typewriter",
-				new DefaultFontSet(findFont(systemFontDirectory + "/cour.ttf"), findFont(systemFontDirectory + "/courbd.ttf"),
-					findFont(systemFontDirectory + "/couri.ttf"), findFont(systemFontDirectory + "/courbi.ttf")));
-			#elseif (mac || ios || tvos)
-			var sans = processFontList([
-				systemFontDirectory + "/Arial.ttf",
-				systemFontDirectory + "/Cache/Arial.ttf",
-				systemFontDirectory + "/Core/Arial.ttf",
-				systemFontDirectory + "/CoreAddition/Arial.ttf",
-				systemFontDirectory + "/WebFonts/Arial.ttf",
-				"/System/Library/Fonts/Supplemental/Arial.ttf",
-				// tries to fall back to helvetica, if arial is missing
-				systemFontDirectory + "/Helvetica.ttf",
-				systemFontDirectory + "/Cache/Helvetica.ttf",
-				systemFontDirectory + "/Core/Helvetica.ttf",
-				systemFontDirectory + "/CoreAddition/Helvetica.ttf",
-			]);
-
-			var sansBold = processFontList([
-				systemFontDirectory + "/CoreAddition/ArialBold.ttf",
-				systemFontDirectory + "/WebFonts/ArialBold.ttf",
-				"/System/Library/Fonts/Supplemental/Arial Bold.ttf"
-			]);
-			var sansItalic = processFontList([
-				systemFontDirectory + "/CoreAddition/ArialItalic.ttf",
-				systemFontDirectory + "/WebFonts/ArialItalic.ttf",
-				"/System/Library/Fonts/Supplemental/Arial Italic.ttf"
-			]);
-			var sansBoldItalic = processFontList([
-				systemFontDirectory + "/CoreAddition/ArialBoldItalic.ttf",
-				systemFontDirectory + "/WebFonts/ArialBoldItalic.ttf",
-				"/System/Library/Fonts/Supplemental/Arial Bold Italic.ttf"
-			]);
-
-			__defaultFonts.set("_sans", new DefaultFontSet(sans, sansBold, sansItalic, sansBoldItalic));
-
-			var georgia = processFontList([
-				systemFontDirectory + "/Georgia.ttf",
-				systemFontDirectory + "/Cache/Georgia.ttf",
-				systemFontDirectory + "/Core/Georgia.ttf",
-				systemFontDirectory + "/CoreAddition/Georgia.ttf",
-				"/System/Library/Fonts/Supplemental/Georgia.ttf",
-			]);
-			var georgiaBold = processFontList([
-				systemFontDirectory + "/Core/GeorgiaBold.ttf",
-				"/System/Library/Fonts/Supplemental/Georgia Bold.ttf",
-			]);
-			var georgiaItalic = processFontList([
-				systemFontDirectory + "/Core/GeorgiaItalic.ttf",
-				"/System/Library/Fonts/Supplemental/Georgia Italic.ttf",
-			]);
-			var georgiaBoldItalic = processFontList([
-				systemFontDirectory + "/Core/GeorgiaBoldItalic.ttf",
-				"/System/Library/Fonts/Supplemental/Georgia Bold Italic.ttf",
-			]);
-
-			var times = processFontList([
-				systemFontDirectory + "/Times New Roman.ttf",
-				systemFontDirectory + "/Cache/Times New Roman.ttf",
-				systemFontDirectory + "/Core/Times New Roman.ttf",
-				systemFontDirectory + "/Core/TimesNewRoman.ttf",
-				systemFontDirectory + "/CoreAddition/Times New Roman.ttf",
-				"/System/Library/Fonts/Supplemental/Times New Roman.ttf",
-				// tries to fall back to times, if times new roman is missing
-				systemFontDirectory + "/Times.ttf",
-				systemFontDirectory + "/Cache/Times.ttf",
-				systemFontDirectory + "/Core/Times.ttf",
-				systemFontDirectory + "/CoreAddition/Times.ttf",
-			]);
-			var timesBold = processFontList([
-				systemFontDirectory + "/Core/TimesNewRomanBold.ttf",
-				"/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf"
-			]);
-			var timesItalic = processFontList([
-				systemFontDirectory + "/Core/TimesNewRomanItalic.ttf",
-				"/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf"
-			]);
-			var timesBoldItalic = processFontList([
-				systemFontDirectory + "/Core/TimesNewRomanBoldItalic.ttf",
-				"/System/Library/Fonts/Supplemental/Times New Roman Bold Italic.ttf"
-			]);
-
-			var serif = georgia;
-			var serifBold = georgiaBold;
-			var serifItalic = georgiaItalic;
-			var serifBoldItalic = georgiaBoldItalic;
-			// prefer georgia over times, but only if there is a full set of styles
-			if (times != null && (serif == null || serifBold == null || serifItalic == null || serifBoldItalic == null))
-			{
-				serif = times;
-				serifBold = timesBold;
-				serifItalic = timesItalic;
-				serifBoldItalic = timesBoldItalic;
-			}
-
-			__defaultFonts.set("_serif", new DefaultFontSet(serif, serifBold, serifItalic, serifBoldItalic));
-
-			var typewriter = processFontList([
-				systemFontDirectory + "/Courier New.ttf",
-				systemFontDirectory + "/Courier.ttf",
-				systemFontDirectory + "/Cache/Courier New.ttf",
-				systemFontDirectory + "/Cache/Courier.ttf",
-				systemFontDirectory + "/Core/Courier New.ttf",
-				systemFontDirectory + "/Core/CourierNew.ttf",
-				systemFontDirectory + "/Core/Courier.ttf",
-				systemFontDirectory + "/CoreAddition/Courier New.ttf",
-				systemFontDirectory + "/CoreAddition/Courier.ttf",
-				"/System/Library/Fonts/Supplemental/Courier New.ttf"
-			]);
-			var typewriterBold = processFontList([
-				systemFontDirectory + "/Core/CourierNewBold.ttf",
-				"/System/Library/Fonts/Supplemental/Courier New Bold.ttf"
-			]);
-			var typewriterItalic = processFontList([
-				systemFontDirectory + "/Core/CourierNewItalic.ttf",
-				"/System/Library/Fonts/Supplemental/Courier New Italic.ttf"
-			]);
-			var typewriterBoldItalic = processFontList([
-				systemFontDirectory + "/Core/CourierNewBoldItalic.ttf",
-				"/System/Library/Fonts/Supplemental/Courier New Bold Italic.ttf"
-			]);
-
-			__defaultFonts.set("_typewriter", new DefaultFontSet(typewriter, typewriterBold, typewriterItalic, typewriterBoldItalic));
-			#elseif linux
-			__defaultFonts.set("_sans",
-				new DefaultFontSet(processFontList([new Process("fc-match", ["sans", "-f%{file}"]).stdout.readLine()]),
-					processFontList([new Process("fc-match", ["sans:weight=bold", "-f%{file}"]).stdout.readLine()]),
-					processFontList([new Process("fc-match", ["sans:slant=italic", "-f%{file}"]).stdout.readLine()]), processFontList([
-						new Process("fc-match", ["sans:weight=bold:slant=italic", "-f%{file}"]).stdout.readLine()
-					])));
-
-			__defaultFonts.set("_serif",
-				new DefaultFontSet(processFontList([new Process("fc-match", ["serif", "-f%{file}"]).stdout.readLine()]),
-					processFontList([new Process("fc-match", ["serif:weight=bold", "-f%{file}"]).stdout.readLine()]),
-					processFontList([new Process("fc-match", ["serif:slant=italic", "-f%{file}"]).stdout.readLine()]), processFontList([
-						new Process("fc-match", ["serif:weight=bold:slant=italic", "-f%{file}"]).stdout.readLine()
-					])));
-
-			__defaultFonts.set("_typewriter",
-				new DefaultFontSet(processFontList([new Process("fc-match", ["mono", "-f%{file}"]).stdout.readLine()]),
-					processFontList([new Process("fc-match", ["mono:weight=bold", "-f%{file}"]).stdout.readLine()]),
-					processFontList([new Process("fc-match", ["mono:slant=italic", "-f%{file}"]).stdout.readLine()]), processFontList([
-						new Process("fc-match", ["mono:weight=bold:slant=italic", "-f%{file}"]).stdout.readLine()
-					])));
-			#elseif android
-			__defaultFonts.set("_sans", new DefaultFontSet(findFont(systemFontDirectory + "/DroidSans.ttf")));
-			__defaultFonts.set("_serif", new DefaultFontSet(processFontList([
-				systemFontDirectory + "/DroidSerif-Regular.ttf",
-				systemFontDirectory + "/NotoSerif-Regular.ttf"
-			])));
-			__defaultFonts.set("_typewriter", new DefaultFontSet(findFont(systemFontDirectory + "/DroidSansMono.ttf")));
-			#else
-			__defaultFonts.set("_sans", new DefaultFontSet(findFont("Noto Sans Regular")));
-			__defaultFonts.set("_serif", new DefaultFontSet(findFont("Noto Serif Regular")));
-			__defaultFonts.set("_typewriter", new DefaultFontSet(findFont("Noto Mono")));
-			#end
-			#end
-		}
+		initializeDefaultFonts();
 
 		var fontSet = __defaultFonts.get(name);
 		if (fontSet == null) return null;
