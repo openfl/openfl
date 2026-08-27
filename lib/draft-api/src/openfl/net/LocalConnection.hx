@@ -4,6 +4,7 @@ package openfl.net;
 typedef LocalConnection = flash.net.LocalConnection;
 #elseif (cpp && windows)
 import haxe.Timer;
+import openfl.Lib;
 import openfl.errors.ArgumentError;
 import openfl.events.StatusEvent;
 import openfl.utils.Object;
@@ -12,6 +13,7 @@ import haxe.Serializer;
 import cpp.Pointer;
 import haxe.ds.StringMap;
 import haxe.io.Bytes;
+import haxe.io.BytesBuffer;
 import haxe.io.BytesData;
 import openfl.net._internal.NativeLocalConnection;
 import lime.system.BackgroundWorker;
@@ -34,7 +36,7 @@ class LocalConnection extends EventDispatcher
 
 	private function get_domain():String
 	{
-		Lib.notImplemented("LocalConnection.domain");
+		Lib.notImplemented();
 		return "";
 	}
 
@@ -134,12 +136,12 @@ class LocalConnection extends EventDispatcher
 
 	public function allowDomain(...domains:String):Void
 	{
-		Lib.notImplemented("LocalConnection.allowDomain");
+		Lib.notImplemented();
 	}
 
 	public function allowInsecureDomain(...domains:String):Void
 	{
-		Lib.notImplemented("LocalConnection.allowInsecureDomain");
+		Lib.notImplemented();
 	}
 
 	public static function get_isSupported():Bool
