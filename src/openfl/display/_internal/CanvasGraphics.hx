@@ -673,10 +673,17 @@ class CanvasGraphics
 
 	private static function toScale9Position(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
 	{
-		if (scale <= 0.0)
+		if (scale == 0.0)
 		{
-			// doesn't render if scaled with negative value
+			// a zero scale collapses the object; nothing to lay out
 			return 0.0;
+		}
+		// A negative scale is a mirror, not a degenerate scale. Lay the slices
+		// out at the magnitude and let the sign stay in the display object's
+		// transform, which is where the flip is actually applied.
+		if (scale < 0.0)
+		{
+			scale = -scale;
 		}
 		var scale9End = unscaledSize - scale9Center - scale9Start;
 		var size = unscaledSize * scale;
@@ -2136,8 +2143,11 @@ class CanvasGraphics
 		#end
 		if (hasScale9Grid)
 		{
-			graphics.__bitmapScaleX = graphics.__owner.scaleX;
-			graphics.__bitmapScaleY = graphics.__owner.scaleY;
+			// magnitude only: toScale9Position() lays the slices out unmirrored,
+			// so the sign has to stay in __worldTransform. Taking it here too
+			// would cancel the flip and place a mirrored object on the wrong side.
+			graphics.__bitmapScaleX = Math.abs(graphics.__owner.scaleX);
+			graphics.__bitmapScaleY = Math.abs(graphics.__owner.scaleY);
 		}
 		else
 		{
