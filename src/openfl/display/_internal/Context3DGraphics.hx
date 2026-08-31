@@ -89,12 +89,12 @@ class Context3DGraphics
 					if (isX)
 					{
 						tempScale9VerticesVector[i] = toScale9Position(vertices[i], scale9Grid.x, scale9Grid.width, bounds.width,
-							graphics.__owner.scaleX) / graphics.__owner.scaleX;
+							graphics.__owner.scaleX) / Math.abs(graphics.__owner.scaleX);
 					}
 					else
 					{
 						tempScale9VerticesVector[i] = toScale9Position(vertices[i], scale9Grid.y, scale9Grid.height, bounds.height,
-							graphics.__owner.scaleY) / graphics.__owner.scaleY;
+							graphics.__owner.scaleY) / Math.abs(graphics.__owner.scaleY);
 					}
 					i++;
 					isX = !isX;
@@ -1041,10 +1041,10 @@ class Context3DGraphics
 									var scaledBottom = toScale9Position(c.y + c.height, scale9Grid.y, scale9Grid.height, bounds.height,
 										graphics.__owner.scaleY);
 
-									x = scaledLeft / graphics.__owner.scaleX;
-									y = scaledTop / graphics.__owner.scaleY;
-									width = (scaledRight - scaledLeft) / graphics.__owner.scaleX;
-									height = (scaledBottom - scaledTop) / graphics.__owner.scaleY;
+									x = scaledLeft / Math.abs(graphics.__owner.scaleX);
+									y = scaledTop / Math.abs(graphics.__owner.scaleY);
+									width = (scaledRight - scaledLeft) / Math.abs(graphics.__owner.scaleX);
+									height = (scaledBottom - scaledTop) / Math.abs(graphics.__owner.scaleY);
 								}
 
 								matrix.identity();
@@ -1249,11 +1249,19 @@ class Context3DGraphics
 
 	private static function toScale9Position(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
 	{
-		if (scale <= 0.0)
+		if (scale == 0.0)
 		{
-			// doesn't render if scaled with negative value
+			// doesn't render at all if scale is zero
 			return 0.0;
 		}
+
+		if (scale < 0.0)
+		{
+			// work with positive coordinates only
+			// it will get flipped later for rendering
+			scale = -scale;
+		}
+
 		var scale9End = unscaledSize - scale9Center - scale9Start;
 		var size = unscaledSize * scale;
 		var center = size - scale9Start - scale9End;
