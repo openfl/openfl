@@ -66,11 +66,15 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __commands:DrawCommandBuffer;
 	@:noCompletion private var __dirty(default, set):Bool = true;
 	@:noCompletion private var __hardwareDirty:Bool;
+	@:noCompletion private var __hardwareCompatible:Bool = false;
+	@:noCompletion private var __hardwareCompatibilityKnown:Bool = false;
+	@:noCompletion private var __hardwareCommands:DrawCommandBuffer;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __managed:Bool;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __quadBuffer:Context3DBuffer;
+	@:noCompletion private var __rectangleBatchesRequired:Bool;
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __softwareDirty:Bool;
@@ -2090,6 +2094,9 @@ import js.html.CanvasRenderingContext2D;
 		{
 			__softwareDirty = true;
 			__hardwareDirty = true;
+			__hardwareCompatible = false;
+			__hardwareCompatibilityKnown = false;
+			__hardwareCommands = null;
 		}
 
 		return __dirty = value;
