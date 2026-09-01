@@ -103,6 +103,17 @@ class ApplicationMain
 		}
 
 		app.createWindow(attributes);
+		#if (linux && sys)
+		var iconPath = lime.system.System.applicationDirectory + "/icon.png";
+		if (sys.FileSystem.exists(iconPath))
+		{
+			var icon = lime.graphics.Image.fromFile(iconPath);
+			if (icon != null && app.window != null)
+			{
+				app.window.setIcon(icon);
+			}
+		}
+		#end
 		::end::
 		#elseif air
 		app.window.title = "::meta.title::";
