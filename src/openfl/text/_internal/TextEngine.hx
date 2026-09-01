@@ -699,6 +699,8 @@ class TextEngine
 		textHeight = 0;
 		numLines = 1;
 		maxScrollH = 0;
+		var textWidthWithWhitespace = 0.0;
+		var currentLineWidthWithWhitespace = 0.0;
 
 		var lastIndex = layoutGroups.length - 1;
 		for (i in 0...layoutGroups.length)
@@ -741,11 +743,16 @@ class TextEngine
 			}
 
 			currentLineHeight = Math.max(currentLineHeight, group.height);
-			currentLineWidth = group.offsetX - 2 + group.width;
+			currentLineWidth = group.width;
+			currentLineWidthWithWhitespace = group.width + group.offsetX - 2;
 
 			if (currentLineWidth > textWidth)
 			{
 				textWidth = currentLineWidth;
+			}
+			if (currentLineWidthWithWhitespace > textWidthWithWhitespace)
+			{
+				textWidthWithWhitespace = currentLineWidthWithWhitespace;
 			}
 
 			currentTextHeight = Math.ceil(group.offsetY - 2 + group.ascent + group.descent);
@@ -818,9 +825,9 @@ class TextEngine
 			switch (autoSize)
 			{
 				case LEFT, RIGHT, CENTER:
-					if (!wordWrap /*&& (width < textWidth + 4)*/)
+					if (!wordWrap /*&& (width < textWidthWithWhitespace + 4)*/)
 					{
-						width = textWidth + 4;
+						width = textWidthWithWhitespace + 4;
 					}
 
 					height = textHeight + 4;
@@ -830,9 +837,9 @@ class TextEngine
 			}
 		}
 
-		if (textWidth > width - 4)
+		if (textWidthWithWhitespace > width - 4)
 		{
-			maxScrollH = Std.int(textWidth - width + 4); // TODO: incorrect
+			maxScrollH = Std.int(textWidthWithWhitespace - width + 4); // TODO: incorrect
 		}
 		else
 		{
