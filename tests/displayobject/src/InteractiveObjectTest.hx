@@ -1,5 +1,6 @@
 package;
 
+import openfl.geom.Point;
 import lime.ui.Touch;
 import openfl.Lib;
 import openfl.display.InteractiveObject;
@@ -2955,6 +2956,294 @@ class InteractiveObjectTest extends Test
 		Lib.current.removeEventListener(MouseEvent.MOUSE_DOWN, libCurrent_mouseDownHandler2);
 		Lib.current.removeEventListener(MouseEvent.MOUSE_DOWN, libCurrent_mouseDownCaptureHandler, true);
 		sprite.parent.removeChild(sprite);
+	}
+
+	public function test_mouseEventMouseDisabled()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouse event mouseEnabled = false");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var outerSprite = new Sprite();
+		outerSprite.graphics.beginFill(0xff0000);
+		outerSprite.graphics.drawRect(0.0, 0.0, 100.0, 100.0);
+		outerSprite.graphics.endFill();
+		outerSprite.x = 20.0;
+		outerSprite.y = 30.0;
+		Lib.current.addChild(outerSprite);
+
+		var innerSprite = new Sprite();
+		innerSprite.graphics.beginFill(0x0000ff);
+		innerSprite.graphics.drawRect(0.0, 0.0, 100.0, 100.0);
+		innerSprite.graphics.endFill();
+		innerSprite.x = 50.0;
+		innerSprite.y = 50.0;
+		outerSprite.addChild(innerSprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
+		var outerSpriteDispatched = false;
+		outerSprite.addEventListener(MouseEvent.MOUSE_DOWN, function(event:MouseEvent):Void
+		{
+			outerSpriteDispatched = true;
+		});
+
+		var innerSpriteDispatched = false;
+		innerSprite.addEventListener(MouseEvent.MOUSE_DOWN, function(event:MouseEvent):Void
+		{
+			innerSpriteDispatched = true;
+		});
+
+		var pointOverOuterSpriteOnly = new Point(25.0, 35.0);
+		var pointOverInnerSpriteOnly = new Point(125.0, 135.0);
+		var pointOverBothSprites = new Point(80.0, 90.0);
+
+		// ---------- baseline: both outer and inner mouse enabled
+		outerSprite.mouseEnabled = true;
+		innerSprite.mouseEnabled = true;
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+		stage.window.onMouseDown.dispatch(pointOverBothSprites.x, pointOverBothSprites.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+		Assert.isTrue(innerSpriteDispatched);
+		Assert.isTrue(outerSpriteDispatched);
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+		stage.window.onMouseDown.dispatch(pointOverOuterSpriteOnly.x, pointOverOuterSpriteOnly.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+		Assert.isFalse(innerSpriteDispatched);
+		Assert.isTrue(outerSpriteDispatched);
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+		stage.window.onMouseDown.dispatch(pointOverInnerSpriteOnly.x, pointOverInnerSpriteOnly.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+		Assert.isTrue(innerSpriteDispatched);
+		// the event bubbles up from the child
+		Assert.isTrue(outerSpriteDispatched);
+
+		// ---------- outer mouse enabled, inner mouse disabled
+		outerSprite.mouseEnabled = true;
+		innerSprite.mouseEnabled = false;
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+		stage.window.onMouseDown.dispatch(pointOverBothSprites.x, pointOverBothSprites.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+		Assert.isFalse(innerSpriteDispatched);
+		Assert.isTrue(outerSpriteDispatched);
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+		stage.window.onMouseDown.dispatch(pointOverOuterSpriteOnly.x, pointOverOuterSpriteOnly.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+		Assert.isFalse(innerSpriteDispatched);
+		Assert.isTrue(outerSpriteDispatched);
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+		stage.window.onMouseDown.dispatch(pointOverInnerSpriteOnly.x, pointOverInnerSpriteOnly.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+		Assert.isFalse(innerSpriteDispatched);
+		// the event bubbles up from the child
+		Assert.isTrue(outerSpriteDispatched);
+
+		// ---------- outer mouse disabled, inner mouse enabled
+		outerSprite.mouseEnabled = false;
+		innerSprite.mouseEnabled = true;
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+		stage.window.onMouseDown.dispatch(pointOverBothSprites.x, pointOverBothSprites.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+		Assert.isTrue(innerSpriteDispatched);
+		// not enabled, but the event still bubbles
+		Assert.isTrue(outerSpriteDispatched);
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+		stage.window.onMouseDown.dispatch(pointOverOuterSpriteOnly.x, pointOverOuterSpriteOnly.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+		Assert.isFalse(innerSpriteDispatched);
+		Assert.isFalse(outerSpriteDispatched);
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+		stage.window.onMouseDown.dispatch(pointOverInnerSpriteOnly.x, pointOverInnerSpriteOnly.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+		Assert.isTrue(innerSpriteDispatched);
+		// not enabled, but the event still bubbles
+		Assert.isTrue(outerSpriteDispatched);
+
+		// ---------- both outer and inner mouse disabled
+		outerSprite.mouseEnabled = false;
+		innerSprite.mouseEnabled = false;
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+		stage.window.onMouseDown.dispatch(pointOverBothSprites.x, pointOverBothSprites.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+		Assert.isFalse(innerSpriteDispatched);
+		Assert.isFalse(outerSpriteDispatched);
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+		stage.window.onMouseDown.dispatch(pointOverOuterSpriteOnly.x, pointOverOuterSpriteOnly.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+		Assert.isFalse(innerSpriteDispatched);
+		Assert.isFalse(outerSpriteDispatched);
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+		stage.window.onMouseDown.dispatch(pointOverInnerSpriteOnly.x, pointOverInnerSpriteOnly.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+		Assert.isFalse(innerSpriteDispatched);
+		Assert.isFalse(outerSpriteDispatched);
+
+		outerSprite.parent.removeChild(outerSprite);
+	}
+
+	public function test_mouseEventMouseChildrenDisabled()
+	{
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouse event mouseChildren = false");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+
+		var outerSprite = new Sprite();
+		outerSprite.graphics.beginFill(0xff0000);
+		outerSprite.graphics.drawRect(0.0, 0.0, 100.0, 100.0);
+		outerSprite.graphics.endFill();
+		outerSprite.x = 20.0;
+		outerSprite.y = 30.0;
+		Lib.current.addChild(outerSprite);
+
+		var innerSprite = new Sprite();
+		innerSprite.graphics.beginFill(0x0000ff);
+		innerSprite.graphics.drawRect(0.0, 0.0, 100.0, 100.0);
+		innerSprite.graphics.endFill();
+		innerSprite.x = 50.0;
+		innerSprite.y = 50.0;
+		outerSprite.addChild(innerSprite);
+
+		// ensure that __transformDirty flag is cleared
+		@:privateAccess Lib.current.stage.__renderAfterEvent();
+
+		var outerSpriteDispatched = false;
+		outerSprite.addEventListener(MouseEvent.MOUSE_DOWN, function(event:MouseEvent):Void
+		{
+			outerSpriteDispatched = true;
+		});
+
+		var innerSpriteDispatched = false;
+		innerSprite.addEventListener(MouseEvent.MOUSE_DOWN, function(event:MouseEvent):Void
+		{
+			innerSpriteDispatched = true;
+		});
+
+		var pointOverOuterSpriteOnly = new Point(25.0, 35.0);
+		var pointOverInnerSpriteOnly = new Point(125.0, 135.0);
+		var pointOverBothSprites = new Point(80.0, 90.0);
+
+		// ---------- outer mouse children enabled
+		outerSprite.mouseChildren = true;
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+
+		stage.window.onMouseDown.dispatch(pointOverBothSprites.x, pointOverBothSprites.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(innerSpriteDispatched);
+		Assert.isTrue(outerSpriteDispatched);
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+
+		stage.window.onMouseDown.dispatch(pointOverOuterSpriteOnly.x, pointOverOuterSpriteOnly.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isFalse(innerSpriteDispatched);
+		Assert.isTrue(outerSpriteDispatched);
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+
+		stage.window.onMouseDown.dispatch(pointOverInnerSpriteOnly.x, pointOverInnerSpriteOnly.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isTrue(innerSpriteDispatched);
+		Assert.isTrue(outerSpriteDispatched);
+
+		// ---------- outer mouse children disabled
+		outerSprite.mouseChildren = false;
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+
+		stage.window.onMouseDown.dispatch(pointOverBothSprites.x, pointOverBothSprites.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isFalse(innerSpriteDispatched);
+		Assert.isTrue(outerSpriteDispatched);
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+
+		stage.window.onMouseDown.dispatch(pointOverInnerSpriteOnly.x, pointOverInnerSpriteOnly.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isFalse(innerSpriteDispatched);
+		Assert.isTrue(outerSpriteDispatched);
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+
+		stage.window.onMouseDown.dispatch(pointOverOuterSpriteOnly.x, pointOverOuterSpriteOnly.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isFalse(innerSpriteDispatched);
+		Assert.isTrue(outerSpriteDispatched);
+
+		outerSpriteDispatched = false;
+		innerSpriteDispatched = false;
+
+		stage.window.onMouseDown.dispatch(pointOverInnerSpriteOnly.x, pointOverInnerSpriteOnly.y, 0);
+		// ensure that pending mouse events are dispatched
+		stage.application.onUpdate.dispatch(0);
+
+		Assert.isFalse(innerSpriteDispatched);
+		Assert.isTrue(outerSpriteDispatched);
+
+		outerSprite.parent.removeChild(outerSprite);
 	}
 	#end
 }

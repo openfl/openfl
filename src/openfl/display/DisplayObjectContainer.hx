@@ -920,7 +920,20 @@ class DisplayObjectContainer extends InteractiveObject
 
 				if (hitTest)
 				{
-					stack.insert(length, hitObject);
+					// if interactiveOnly, and the container's
+					// mouseEnabled is false, but mouseEnabled is true
+					// on something inside the container that was hit,
+					// then the container should be added to the stack
+					// because the event will bubble up to it.
+					// however, if the stack is empty at this point,
+					// mouseEnabled was false on all of the hit objects.
+					// since the container's mouseEnabled is also false,
+					// don't add it to the stack because nothing will
+					// bubble up to it.
+					if (!interactiveOnly || mouseEnabled || stack.length > 0)
+					{
+						stack.insert(length, hitObject);
+					}
 					return true;
 				}
 			}

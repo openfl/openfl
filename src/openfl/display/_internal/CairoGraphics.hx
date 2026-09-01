@@ -514,11 +514,19 @@ class CairoGraphics
 
 	private static function toScale9Position(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float
 	{
-		if (scale <= 0.0)
+		if (scale == 0.0)
 		{
-			// doesn't render if scaled with negative value
+			// doesn't render at all if scale is zero
 			return 0.0;
 		}
+
+		if (scale < 0.0)
+		{
+			// work with positive coordinates only
+			// it will get flipped later for rendering
+			scale = -scale;
+		}
+
 		var scale9End = unscaledSize - scale9Center - scale9Start;
 		var size = unscaledSize * scale;
 		var center = size - scale9Start - scale9End;
@@ -1999,8 +2007,8 @@ class CairoGraphics
 		#end
 		if (hasScale9Grid)
 		{
-			graphics.__bitmapScaleX = graphics.__owner.scaleX;
-			graphics.__bitmapScaleY = graphics.__owner.scaleY;
+			graphics.__bitmapScaleX = Math.abs(graphics.__owner.scaleX);
+			graphics.__bitmapScaleY = Math.abs(graphics.__owner.scaleY);
 		}
 		else
 		{

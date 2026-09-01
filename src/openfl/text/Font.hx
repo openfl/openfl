@@ -4,6 +4,7 @@ package openfl.text;
 import openfl.utils.Assets;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
+import openfl.text._internal.TextEngine;
 #if lime
 import lime.text.Font as LimeFont;
 #end
@@ -20,6 +21,7 @@ import lime.text.Font as LimeFont;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.text._internal.TextEngine)
 class Font #if lime extends LimeFont #end
 {
 	/**
@@ -78,6 +80,7 @@ class Font #if lime extends LimeFont #end
 	public static function enumerateFonts(enumerateDeviceFonts:Bool = false):Array<Font>
 	{
 		#if (lime && native)
+		TextEngine.initializeDefaultFonts();
 		if (enumerateDeviceFonts)
 		{
 			var _allFonts = __registeredFonts.copy();
@@ -111,7 +114,7 @@ class Font #if lime extends LimeFont #end
 					var ext = haxe.io.Path.extension(file.toLowerCase());
 					if (__supportedFontFileExtensions.indexOf(ext) != -1)
 					{
-						var font = fromFile(alternateFontsDirectory + file);
+						var font = fromFile(alternateFontsDirectory + "\\" + file);
 						if (font != null)
 						{
 							_allFonts.push(font);
