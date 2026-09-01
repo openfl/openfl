@@ -297,7 +297,11 @@ class TextEngine
 
 		// don't add 4 to bounds.width and bounds.height here because the + 4
 		// is already included from a previous calculation
-		textBounds.setTo(Math.max(x - 2, 0), Math.max(y - 2, 0), Math.min(textWidth + 4, bounds.width), Math.min(textHeight + 4, bounds.height));
+		var textBoundsX = Math.max(x - 2, 0);
+		var textBoundsY = Math.max(y - 2, 0);
+		var textBoundsWidth = Math.max(Math.min(textWidth + 4, bounds.width - textBoundsX), 0);
+		var textBoundsHeight = Math.max(Math.min(textHeight + 4, bounds.height - textBoundsY), 0);
+		textBounds.setTo(textBoundsX, textBoundsY, textBoundsWidth, textBoundsHeight);
 	}
 
 	private static function initializeDefaultFonts():Void
