@@ -745,6 +745,10 @@ class TextEngine
 			currentLineHeight = Math.max(currentLineHeight, group.height);
 			currentLineWidth = group.width;
 			currentLineWidthWithWhitespace = group.width + group.offsetX - 2;
+			if (autoSize != NONE && group.format.rightMargin != null)
+			{
+				currentLineWidthWithWhitespace += group.format.rightMargin;
+			}
 
 			if (currentLineWidth > textWidth)
 			{
