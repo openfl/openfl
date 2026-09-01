@@ -1058,4 +1058,57 @@ class TextFieldTest extends Test
 		tf.parent.removeChild(tf);
 	}
 	#end
+
+	public function test_widthAndTextWidth_indent()
+	{
+		var tf = new TextField();
+		tf.autoSize = LEFT;
+		tf.text = "Hello";
+
+		var originalTextWidth = tf.textWidth;
+		var originalWidth = tf.width;
+
+		var format = new TextFormat();
+		format.indent = 20;
+		tf.setTextFormat(format);
+
+		Assert.equals(originalTextWidth, tf.textWidth);
+		Assert.equals(originalWidth + format.indent, tf.width);
+	}
+
+	public function test_widthAndTextWidth_leftMargin()
+	{
+		var tf = new TextField();
+		tf.autoSize = LEFT;
+		tf.text = "Hello";
+
+		var originalTextWidth = tf.textWidth;
+		var originalWidth = tf.width;
+
+		var format = new TextFormat();
+		format.leftMargin = 20;
+		tf.setTextFormat(format);
+
+		Assert.equals(originalTextWidth, tf.textWidth);
+
+		Assert.equals(originalTextWidth, tf.textWidth);
+		Assert.equals(originalWidth + format.leftMargin, tf.width);
+	}
+
+	public function test_widthAndTextWidth_rightMargin()
+	{
+		var tf = new TextField();
+		tf.autoSize = LEFT;
+		tf.text = "Hello";
+
+		var originalTextWidth = tf.textWidth;
+		var originalWidth = tf.width;
+
+		var format = new TextFormat();
+		format.rightMargin = 20;
+		tf.setTextFormat(format);
+
+		Assert.equals(originalTextWidth, tf.textWidth);
+		Assert.equals(originalWidth + format.rightMargin, tf.width);
+	}
 }
