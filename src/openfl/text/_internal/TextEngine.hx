@@ -946,9 +946,11 @@ class TextEngine
 					for (i in startIndex...endIndex)
 					{
 						width = measureText(text.substring(startIndex, i + 1));
-						// if (i > 0) width += letterSpacing;
 
-						positions.push(width - previousWidth);
+						var advance = width - previousWidth;
+						if (__useLetterSpacing && i > 0) advance += letterSpacing;
+
+						positions.push(advance);
 
 						previousWidth = width;
 					}
