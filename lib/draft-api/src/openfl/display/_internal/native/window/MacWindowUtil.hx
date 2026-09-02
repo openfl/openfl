@@ -1,4 +1,4 @@
-package src._internal.native.window;
+package openfl.display._internal.native.window;
 
 /**
  * ...
