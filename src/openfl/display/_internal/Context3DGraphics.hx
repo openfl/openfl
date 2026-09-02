@@ -60,6 +60,7 @@ class Context3DGraphics
 
 		var bitmap:BitmapData = null;
 		var bitmapMatrix:Matrix = null;
+		var shaderBuffer:ShaderBuffer = null;
 
 		var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
 		// no scale9Grid for masks
@@ -121,10 +122,22 @@ class Context3DGraphics
 			var dataPerVertex = vertLength + 2;
 			var vertexOffset = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
 
-			// TODO: Use index buffer for indexed render
-
-			// if (hasIndices) resizeIndexBuffer (graphics, false, triangleIndexBufferPosition + length);
-			resizeVertexBuffer(graphics, hasUVTData, vertexOffset + (length * dataPerVertex));
+			// TODO: Implement drawElements optimization when uvtData.length == 3 (x, y, t) if the t component is identical for each shared index.
+			// TODO: Support drawElements by moving the t division logic from the CPU buffer to the shader when uvtData.length == 3 (x, y, t).
+			#if openfl_enable_experimental_graphics_draw_elements
+			var useDrawElements = !hasUVTData
+				&& (shaderBuffer == null
+					|| (shaderBuffer != null && shaderBuffer.paramDataLength < length * shaderBuffer.paramIndicesDataLength));
+			#else
+			var useDrawElements = false;
+			#end
+			if (useDrawElements)
+			{
+				resizeIndexBuffer(graphics, false, triangleIndexBufferPosition + length);
+				resizeVertexBuffer(graphics, hasUVTData, vertexOffset + (numVertices * dataPerVertex));
+			}
+			else
+				resizeVertexBuffer(graphics, hasUVTData, vertexOffset + (length * dataPerVertex));
 
 			// var indexBufferData = graphics.__triangleIndexBufferData;
 			var vertexBufferData = hasUVTData ? graphics.__vertexBufferDataUVT : graphics.__vertexBufferData;
@@ -133,31 +146,65 @@ class Context3DGraphics
 			var uvOffset:Int;
 			var t:Float;
 
-			for (i in 0...length)
+			if (!useDrawElements)
 			{
-				offset = vertexOffset + (i * dataPerVertex);
-				vertOffset = hasIndices ? indices[i] * 2 : i * 2;
-				uvOffset = hasIndices ? indices[i] * uvStride : i * uvStride;
-
-				// if (hasIndices) indexBufferData[triangleIndexBufferPosition + i] = indices[i];
-
-				if (hasUVTData)
+				for (i in 0...length)
 				{
-					t = uvtData[uvOffset + 2];
+					offset = vertexOffset + (i * dataPerVertex);
+					vertOffset = hasIndices ? indices[i] * 2 : i * 2;
+					uvOffset = hasIndices ? indices[i] * uvStride : i * uvStride;
 
-					vertexBufferData[offset + 0] = vertices[vertOffset] / t;
-					vertexBufferData[offset + 1] = vertices[vertOffset + 1] / t;
-					vertexBufferData[offset + 2] = 0;
-					vertexBufferData[offset + 3] = 1 / t;
+					if (hasUVTData)
+					{
+						t = uvtData[uvOffset + 2];
+
+						vertexBufferData[offset + 0] = vertices[vertOffset] / t;
+						vertexBufferData[offset + 1] = vertices[vertOffset + 1] / t;
+						vertexBufferData[offset + 2] = 0;
+						vertexBufferData[offset + 3] = 1 / t;
+					}
+					else
+					{
+						vertexBufferData[offset + 0] = vertices[vertOffset];
+						vertexBufferData[offset + 1] = vertices[vertOffset + 1];
+					}
+
+					vertexBufferData[offset + vertLength] = hasUVData ? uvtData[uvOffset] : 0;
+					vertexBufferData[offset + vertLength + 1] = hasUVData ? uvtData[uvOffset + 1] : 0;
 				}
-				else
+			}
+			else
+			{
+				var indexBufferData = graphics.__triangleIndexBufferData;
+				for (i in 0...length)
 				{
-					vertexBufferData[offset + 0] = vertices[vertOffset];
-					vertexBufferData[offset + 1] = vertices[vertOffset + 1];
+					indexBufferData[triangleIndexBufferPosition + i] = indices[i];
 				}
+				for (i in 0...numVertices)
+				{
+					offset = vertexOffset + (i * dataPerVertex);
+					vertOffset = i * 2;
+					uvOffset = i * uvStride;
 
-				vertexBufferData[offset + vertLength] = hasUVData ? uvtData[uvOffset] : 0;
-				vertexBufferData[offset + vertLength + 1] = hasUVData ? uvtData[uvOffset + 1] : 0;
+					if (hasUVTData)
+					{
+						t = uvtData[uvOffset + 2];
+
+						vertexBufferData[offset + 0] = vertices[vertOffset] / t;
+						vertexBufferData[offset + 1] = vertices[vertOffset + 1] / t;
+						vertexBufferData[offset + 2] = 0;
+						vertexBufferData[offset + 3] = 1 / t;
+					}
+					else
+					{
+						vertexBufferData[offset + 0] = vertices[vertOffset];
+						vertexBufferData[offset + 1] = vertices[vertOffset + 1];
+					}
+
+					vertexBufferData[offset + vertLength] = hasUVData ? uvtData[uvOffset] : 0;
+					vertexBufferData[offset + vertLength + 1] = hasUVData ? uvtData[uvOffset + 1] : 0;
+				}
+				triangleIndexBufferPosition += length;
 			}
 
 			// if (hasIndices) triangleIndexBufferPosition += length;
@@ -192,7 +239,7 @@ class Context3DGraphics
 
 				case BEGIN_SHADER_FILL:
 					var c = data.readBeginShaderFill();
-					var shaderBuffer = c.shaderBuffer;
+					shaderBuffer = c.shaderBuffer;
 
 					bitmap = null;
 					bitmapMatrix = null;
@@ -793,6 +840,15 @@ class Context3DGraphics
 						var vertexBuffer = hasUVTData ? graphics.__vertexBufferUVT : graphics.__vertexBuffer;
 						var bufferPosition = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
 
+						// TODO: Implement drawElements optimization when uvtData.length == 3 (x, y, t) if the t component is identical for each shared index.
+						// TODO: Support drawElements by moving the t division logic from the CPU buffer to the shader when uvtData.length == 3 (x, y, t).
+						#if openfl_enable_experimental_graphics_draw_elements
+						var useDrawElements = !hasUVTData
+							&& (shaderBuffer == null
+								|| (shaderBuffer != null && shaderBuffer.paramDataLength < length * shaderBuffer.paramIndicesDataLength));
+						#else
+						var useDrawElements = false;
+						#end
 						var uMatrix = renderer.__getMatrix(graphics.__owner.__renderTransform, AUTO);
 						var shader:Shader;
 
@@ -857,7 +913,15 @@ class Context3DGraphics
 							default:
 						}
 
-						context.__drawTriangles(0, length);
+						if (useDrawElements)
+						{
+							context.drawTriangles(graphics.__triangleIndexBuffer, triangleIndexBufferPosition, Math.floor(length / 3));
+							triangleIndexBufferPosition += length;
+						}
+						else
+						{
+							context.__drawTriangles(0, length);
+						}
 
 						shaderBufferOffset += length;
 						if (hasUVTData)
