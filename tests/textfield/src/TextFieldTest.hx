@@ -1111,4 +1111,21 @@ class TextFieldTest extends Test
 		Assert.equals(originalTextWidth, tf.textWidth);
 		Assert.equals(originalWidth + format.rightMargin, tf.width);
 	}
+
+	public function test_widthAndTextWidth_blockIndent()
+	{
+		var tf = new TextField();
+		tf.autoSize = LEFT;
+		tf.text = "Hello";
+
+		var originalTextWidth = tf.textWidth;
+		var originalWidth = tf.width;
+
+		var format = new TextFormat();
+		format.blockIndent = 20;
+		tf.setTextFormat(format);
+
+		Assert.equals(originalTextWidth, tf.textWidth);
+		Assert.equals(originalWidth + format.blockIndent, tf.width);
+	}
 }

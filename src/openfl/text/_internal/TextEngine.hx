@@ -743,7 +743,19 @@ class TextEngine
 			}
 
 			currentLineHeight = Math.max(currentLineHeight, group.height);
-			currentLineWidth = group.width;
+			currentLineWidth = group.width + group.offsetX - 2;
+			if (group.format.leftMargin != null)
+			{
+				currentLineWidth -= group.format.leftMargin;
+			}
+			if (group.format.blockIndent != null)
+			{
+				currentLineWidth -= group.format.blockIndent;
+			}
+			if (group.firstLineOfParagraph && group.format.indent != null)
+			{
+				currentLineWidth -= group.format.indent;
+			}
 			currentLineWidthWithWhitespace = group.width + group.offsetX - 2;
 			if (autoSize != NONE && group.format.rightMargin != null)
 			{
@@ -1252,6 +1264,7 @@ class TextEngine
 				layoutGroup.descent = descent;
 				layoutGroup.leading = leading;
 				layoutGroup.lineIndex = lineIndex;
+				layoutGroup.firstLineOfParagraph = firstLineOfParagraph;
 				layoutGroup.offsetY = offsetY + GUTTER;
 				layoutGroup.width = widthValue;
 				layoutGroup.height = heightValue;
@@ -1286,6 +1299,7 @@ class TextEngine
 						layoutGroup.descent = descent;
 						layoutGroup.leading = leading;
 						layoutGroup.lineIndex = lineIndex;
+						layoutGroup.firstLineOfParagraph = firstLineOfParagraph;
 						layoutGroup.offsetY = offsetY + GUTTER;
 						layoutGroup.width = widthValue;
 						layoutGroup.height = heightValue;
@@ -1636,6 +1650,7 @@ class TextEngine
 								layoutGroup.offsetX -= bumpX;
 								layoutGroup.offsetY = offsetY + GUTTER;
 								layoutGroup.lineIndex = lineIndex;
+								layoutGroup.firstLineOfParagraph = firstLineOfParagraph;
 								offsetX += layoutGroup.width;
 							}
 						}
@@ -1767,6 +1782,7 @@ class TextEngine
 			layoutGroup.descent = descent;
 			layoutGroup.leading = leading;
 			layoutGroup.lineIndex = lineIndex;
+			layoutGroup.firstLineOfParagraph = firstLineOfParagraph;
 			layoutGroup.offsetX = getBaseX(); // TODO: double check it doesn't default to GUTTER or something
 			layoutGroup.offsetY = offsetY + GUTTER;
 			layoutGroup.width = 0;

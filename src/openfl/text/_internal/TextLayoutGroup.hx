@@ -27,6 +27,7 @@ class TextLayoutGroup
 	#end
 	public var startIndex:Int;
 	public var width:Float;
+	public var firstLineOfParagraph:Bool;
 
 	public function new(format:TextFormat, startIndex:Int, endIndex:Int)
 	{
