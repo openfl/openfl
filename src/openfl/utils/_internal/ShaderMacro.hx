@@ -20,41 +20,12 @@ class ShaderMacro
 	{
 		var fields = Context.getBuildFields();
 
-		var glFragmentHeader = "";
-		var glFragmentBody = "";
-		var glVertexHeader = "";
-		var glVertexBody = "";
-
-		var glFragmentSource:String = null;
-		var glVertexSource:String = null;
+		var glMetas = new GlMetas();
 
 		for (field in fields)
 		{
-			for (meta in field.meta)
-			{
-				switch (meta.name)
-				{
-					case "glFragmentSource", ":glFragmentSource":
-						glFragmentSource = meta.params[0].getValue();
-
-					case "glVertexSource", ":glVertexSource":
-						glVertexSource = meta.params[0].getValue();
-
-					case "glFragmentHeader", ":glFragmentHeader":
-						glFragmentHeader = meta.params[0].getValue();
-
-					case "glFragmentBody", ":glFragmentBody":
-						glFragmentBody = meta.params[0].getValue();
-
-					case "glVertexHeader", ":glVertexHeader":
-						glVertexHeader = meta.params[0].getValue();
-
-					case "glVertexBody", ":glVertexBody":
-						glVertexBody = meta.params[0].getValue();
-
-					default:
-				}
-			}
+			if (field.name == "new" && field.meta != null)
+				glMetas.add(field.meta);
 		}
 
 		var pos = Context.currentPos();
@@ -69,50 +40,17 @@ class ShaderMacro
 
 			for (field in parentFields)
 			{
-				for (meta in field.meta.get())
-				{
-					switch (meta.name)
-					{
-						case "glFragmentSource", ":glFragmentSource":
-							if (glFragmentSource == null) glFragmentSource = meta.params[0].getValue();
-
-						case "glVertexSource", ":glVertexSource":
-							if (glVertexSource == null) glVertexSource = meta.params[0].getValue();
-
-						case "glFragmentHeader", ":glFragmentHeader":
-							glFragmentHeader = meta.params[0].getValue() + "\n" + glFragmentHeader;
-
-						case "glFragmentBody", ":glFragmentBody":
-							glFragmentBody = meta.params[0].getValue() + "\n" + glFragmentBody;
-
-						case "glVertexHeader", ":glVertexHeader":
-							glVertexHeader = meta.params[0].getValue() + "\n" + glVertexHeader;
-
-						case "glVertexBody", ":glVertexBody":
-							glVertexBody = meta.params[0].getValue() + "\n" + glVertexBody;
-
-						default:
-					}
-				}
+				if (field.name == "new")
+					glMetas.add(field.meta.get());
 			}
 
 			parent = parent.superClass != null ? parent.superClass.t.get() : null;
 		}
 
+		var glFragmentSource = glMetas.constructFragmentSource();
+		var glVertexSource = glMetas.constructVertexSource();
 		if (glVertexSource != null || glFragmentSource != null)
 		{
-			if (glFragmentSource != null && glFragmentHeader != null && glFragmentBody != null)
-			{
-				glFragmentSource = StringTools.replace(glFragmentSource, "#pragma header", glFragmentHeader);
-				glFragmentSource = StringTools.replace(glFragmentSource, "#pragma body", glFragmentBody);
-			}
-
-			if (glVertexSource != null && glVertexHeader != null && glVertexBody != null)
-			{
-				glVertexSource = StringTools.replace(glVertexSource, "#pragma header", glVertexHeader);
-				glVertexSource = StringTools.replace(glVertexSource, "#pragma body", glVertexBody);
-			}
-
 			var shaderDataFields:Array<Field> = [];
 			var uniqueFields:Array<Field> = [];
 
@@ -322,6 +260,90 @@ class ShaderMacro
 			position = regex.matchedPos();
 			lastMatch = position.pos + position.len;
 		}
+	}
+}
+
+/**
+	Stores metadata and uses them to constructa  glsl shader, with important logging info
+ */
+abstract GlMetas(Array<Map<String, MetadataEntry>>)
+{
+	inline static var GL_FRAGMENT_SOURCE = "glFragmentSource";
+	inline static var GL_FRAGMENT_HEADER = "glFragmentHeader";
+	inline static var GL_FRAGMENT_BODY = "glFragmentBody";
+	inline static var GL_VERTEX_SOURCE = "glVertexSource";
+	inline static var GL_VERTEX_HEADER = "glVertexHeader";
+	inline static var GL_VERTEX_BODY = "glVertexBody";
+	
+	static var names = [GL_FRAGMENT_SOURCE, GL_FRAGMENT_HEADER, GL_FRAGMENT_BODY, GL_VERTEX_SOURCE, GL_VERTEX_HEADER, GL_VERTEX_BODY];
+
+	inline public function new ()
+	{
+		this = [];
+	}
+	
+	public function add(metas:Metadata)
+	{
+		var result = new Map<String, MetadataEntry>();
+
+		for (meta in metas)
+		{
+			var metaName = meta.name.split(":").join("");
+			if (names.indexOf(metaName) != -1)
+				result[metaName] = meta;
+		}
+		
+		this.push(result);
+	}
+	
+	public function constructFragmentSource():Null<String>
+	{
+		return construct(getFirst(GL_FRAGMENT_SOURCE), concatAll(GL_FRAGMENT_HEADER), concatAll(GL_FRAGMENT_BODY));
+	}
+	
+	public function constructVertexSource():Null<String>
+	{
+		return construct(getFirst(GL_VERTEX_SOURCE), concatAll(GL_VERTEX_HEADER), concatAll(GL_VERTEX_BODY));
+	}
+	
+	function construct(source, header, body):Null<String>
+	{
+		if (source != null && header != null && body != null)
+		{
+			source = StringTools.replace(source, "#pragma header", header);
+			source = StringTools.replace(source, "#pragma body", body);
+		}
+		return source;
+	}
+	
+	inline function getFirst(name:String):Null<String>
+	{
+		var meta = Lambda.find(this, function (item) { return item.exists(name); });
+		return meta == null ? null : metaToString(meta[name]);
+	}
+
+	inline function concatAll(name:String):Null<String>
+	{
+		return Lambda.fold(this, function (item, result)
+		{
+			if (!item.exists(name))
+				return result;
+			
+			return '${metaToString(item[name])}\n$result';
+		}, "");
+	}
+	
+	inline function metaToString(meta:MetadataEntry):String
+	{
+		#if haxe4
+		var loc = meta.params[0].pos.toLocation();
+		var name = meta.name.split(":").join("");
+		return '// { openfl_region       $name - ${loc.file}:${loc.range.start.line}\n'
+			+  '${meta.params[0].getValue()}\n'
+			+  '// } openfl_endregion    $name - ${loc.file}:${loc.range.end.line}';
+		#else
+		return meta.params[0].getValue();
+		#end
 	}
 }
 #end
