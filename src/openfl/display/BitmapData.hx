@@ -744,7 +744,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function dispose():Void
 	{
-		#if (js && html5)
+		#if (js && html5 && lime)
 		// if this BitmapData was created with Assets.getBitmapData(), then
 		// don't destroy the underlying image buffer.
 		// on html5, images are loaded asynchronously, and cloning is too
@@ -1019,7 +1019,9 @@ class BitmapData implements IBitmapDrawable
 			}
 
 			#if (js && html5)
+			#if lime
 			ImageCanvasUtil.convertToCanvas(image);
+			#end
 			var renderer = new CanvasRenderer(image.buffer.__srcContext);
 			#else
 			var renderer = new CairoRenderer(new Cairo(getSurface()));
@@ -1320,12 +1322,16 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function fromCanvas(canvas:CanvasElement, transparent:Bool = true):BitmapData
 	{
+		#if lime
 		if (canvas == null) return null;
 
 		var bitmapData = new BitmapData(0, 0, transparent, 0);
 		bitmapData.__fromImage(Image.fromCanvas(canvas));
 		bitmapData.image.transparent = transparent;
 		return bitmapData;
+		#else
+		return null;
+		#end
 	}
 	#end
 
@@ -3121,7 +3127,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private function __applyAlpha(alpha:ByteArray):Void
 	{
-		#if (js && html5)
+		#if (js && html5 && lime)
 		ImageCanvasUtil.convertToCanvas(image);
 		ImageCanvasUtil.createImageData(image);
 		#end
@@ -3450,7 +3456,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private function __sync():Void
 	{
-		#if (js && html5)
+		#if (js && html5 && lime)
 		ImageCanvasUtil.sync(image, false);
 		#end
 	}

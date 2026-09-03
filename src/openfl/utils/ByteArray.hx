@@ -1282,7 +1282,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		compress(CompressionAlgorithm.DEFLATE);
 	}
 
-	#if openfljs
+	#if (openfljs && lime)
 	public static function fromArrayBuffer(buffer:ArrayBuffer):ByteArrayData
 	{
 		return ByteArray.fromArrayBuffer(buffer);
@@ -1442,7 +1442,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readMultiByte(length:Int, charSet:String):String
 	{
-		#if js
+		#if (js && lime)
 		if (position + length > __length)
 		{
 			throw new EOFError();
