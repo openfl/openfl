@@ -313,7 +313,14 @@ class TextureBase extends EventDispatcher
 
 			if (__textureTarget == __context.gl.TEXTURE_CUBE_MAP) __context.__bindGLTextureCubeMap(__textureID);
 			else
+			{
 				__context.__bindGLTexture2D(__textureID);
+				if (state.mipfilter != MIPNONE)
+				{
+					gl.generateMipmap(__textureTarget);
+					state.mipmapGenerated = true;
+				}
+			}
 
 			var wrapModeS = 0, wrapModeT = 0;
 
@@ -361,12 +368,8 @@ class TextureBase extends EventDispatcher
 			gl.texParameteri(__textureTarget, gl.TEXTURE_MAG_FILTER, magFilter);
 			gl.texParameteri(__textureTarget, gl.TEXTURE_WRAP_S, wrapModeS);
 			gl.texParameteri(__textureTarget, gl.TEXTURE_WRAP_T, wrapModeT);
+			gl.texParameterf(__textureTarget, 34049, state.lodBias); // GL_TEXTURE_LOD_BIAS
 
-			if (state.lodBias != 0.0)
-			{
-				// TODO
-				// throw new IllegalOperationError("Lod bias setting not supported yet");
-			}
 
 			if (__samplerState == null) __samplerState = state.clone();
 			__samplerState.copyFrom(state);
