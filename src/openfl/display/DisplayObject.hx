@@ -996,6 +996,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __renderTransformCache:Matrix;
 	@:noCompletion private var __renderTransformChanged:Bool;
+	@:noCompletion private var __removedChildCleanupDelay:Float;
 	@:noCompletion private var __rotation:Float;
 	@:noCompletion private var __rotationCosine:Float;
 	@:noCompletion private var __rotationSine:Float;
@@ -1134,6 +1135,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__cacheAsBitmap = false;
 		__transform = new Matrix();
 		__visible = true;
+		__removedChildCleanupDelay = 0.0;
 
 		__rotation = 0;
 		__rotationSine = 0;
