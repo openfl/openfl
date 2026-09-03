@@ -470,11 +470,24 @@ class DisplayObjectRenderer extends EventDispatcher
 			}
 			else
 			{
-				// Should we retain these longer?
+				var currentCacheBitmapData = displayObject.__cacheBitmap.bitmapData;
 
-				displayObject.__cacheBitmapData = displayObject.__cacheBitmap.bitmapData;
-				displayObject.__cacheBitmapData2 = null;
-				displayObject.__cacheBitmapData3 = null;
+				if (currentCacheBitmapData == displayObject.__cacheBitmapData2)
+				{
+					var previousMainBitmapData = displayObject.__cacheBitmapData;
+					displayObject.__cacheBitmapData = currentCacheBitmapData;
+					displayObject.__cacheBitmapData2 = previousMainBitmapData;
+				}
+				else if (currentCacheBitmapData == displayObject.__cacheBitmapData3)
+				{
+					var previousMainBitmapData = displayObject.__cacheBitmapData;
+					displayObject.__cacheBitmapData = currentCacheBitmapData;
+					displayObject.__cacheBitmapData3 = previousMainBitmapData;
+				}
+				else
+				{
+					displayObject.__cacheBitmapData = currentCacheBitmapData;
+				}
 			}
 
 			if (updateTransform || needRender)
@@ -689,7 +702,14 @@ class DisplayObjectRenderer extends EventDispatcher
 							filter.__renderDirty = false;
 						}
 
-						displayObject.__cacheBitmap.__bitmapData = bitmap;
+						if (displayObject.__cacheBitmapData != bitmap)
+						{
+							cacheBitmap = displayObject.__cacheBitmapData;
+							displayObject.__cacheBitmapData = bitmap;
+							displayObject.__cacheBitmapData2 = cacheBitmap;
+						}
+
+						displayObject.__cacheBitmap.__bitmapData = displayObject.__cacheBitmapData;
 					}
 
 					parentRenderer.__blendMode = NORMAL;
