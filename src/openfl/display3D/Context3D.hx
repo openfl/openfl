@@ -324,10 +324,8 @@ import lime.math.Vector2;
 			var extension:Dynamic = gl.getExtension("EXT_texture_filter_anisotropic");
 
 			#if (js && html5)
-			if (extension == null
-				|| !Reflect.hasField(extension, "MAX_TEXTURE_MAX_ANISOTROPY_EXT")) extension = gl.getExtension("MOZ_EXT_texture_filter_anisotropic");
-			if (extension == null
-				|| !Reflect.hasField(extension, "MAX_TEXTURE_MAX_ANISOTROPY_EXT")) extension = gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
+			if (extension == null) extension = gl.getExtension("MOZ_EXT_texture_filter_anisotropic");
+			if (extension == null) extension = gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
 			#end
 
 			if (extension != null)
