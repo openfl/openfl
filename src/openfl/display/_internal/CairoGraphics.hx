@@ -616,6 +616,20 @@ class CairoGraphics
 		{
 			hitTesting = true;
 
+			var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
+			#if (openfl_legacy_scale9grid && !cairo)
+			var hasScale9Grid:Bool = false;
+			#else
+			// no scale9Grid for masks
+			// no scale9Grid for rotation 0.02 degrees or higher (less than 0.02 is allowed in flash)
+			var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
+			#end
+			if (hasScale9Grid)
+			{
+				x = toScale9Position(x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+				y = toScale9Position(y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+			}
+
 			x -= bounds.x;
 			y -= bounds.y;
 
