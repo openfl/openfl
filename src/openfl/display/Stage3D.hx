@@ -113,6 +113,7 @@ class Stage3D extends EventDispatcher
 	@:noCompletion private var __width:Int;
 	@:noCompletion private var __x:Float;
 	@:noCompletion private var __y:Float;
+	@:noCompletion private var __pixelRatio:Float;
 	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
 	@:noCompletion private var __renderContext:RenderContext;
@@ -148,6 +149,7 @@ class Stage3D extends EventDispatcher
 		__width = 0;
 		__x = 0;
 		__y = 0;
+		__pixelRatio = 0;
 
 		visible = true;
 
@@ -428,7 +430,8 @@ class Stage3D extends EventDispatcher
 
 	@:noCompletion private function __resize(width:Int, height:Int):Void
 	{
-		if (width != __width || height != __height)
+		var pixelRatio = __stage.window.scale;
+		if (width != __width || height != __height || pixelRatio != __pixelRatio)
 		{
 			#if (js && html5)
 			if (__canvas != null)
@@ -457,13 +460,13 @@ class Stage3D extends EventDispatcher
 				1.0
 			]));
 
-			var pixelRatio = __stage.window.scale;
 			__renderTransform.identity();
 			__renderTransform.appendTranslation(__x * pixelRatio, __y * pixelRatio, 0);
 			__renderTransform.append(__projectionTransform);
 
 			__width = width;
 			__height = height;
+			__pixelRatio = pixelRatio;
 		}
 	}
 
