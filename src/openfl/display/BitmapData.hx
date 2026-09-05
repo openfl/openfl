@@ -382,12 +382,12 @@ class BitmapData implements IBitmapDrawable
 
 		if (filter.__preserveObject)
 		{
-			bitmapData3.copyPixels(this, rect, destPoint);
+			bitmapData3.copyPixels(sourceBitmapData, sourceRect, destPoint);
 		}
 
-		var lastBitmap = filter.__applyFilter(bitmapData2, this, sourceRect, destPoint);
+		var lastBitmap = filter.__applyFilter(bitmapData2, sourceBitmapData, sourceRect, destPoint);
 
-		if (filter.__preserveObject)
+		if (filter.__preserveObject && !filter.__softwareComposite)
 		{
 			lastBitmap.draw(bitmapData3, null, null);
 		}
