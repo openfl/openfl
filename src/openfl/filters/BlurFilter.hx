@@ -141,11 +141,11 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	**/
 	public var quality(get, set):Int;
 
-	@:noCompletion private var __blurX:Float;
-	@:noCompletion private var __blurY:Float;
-	@:noCompletion private var __horizontalPasses:Int;
-	@:noCompletion private var __quality:Int;
-	@:noCompletion private var __verticalPasses:Int;
+	@:noCompletion private var __blurX:Float = 0;
+	@:noCompletion private var __blurY:Float = 0;
+	@:noCompletion private var __quality:Int = 0;
+	@:noCompletion private var __verticalPasses:Int = 0;
+	@:noCompletion private var __horizontalPasses:Int = 0;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
