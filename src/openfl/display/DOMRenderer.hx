@@ -200,7 +200,7 @@ class DOMRenderer extends DisplayObjectRenderer
 	}
 	#end
 
-	@:noCompletion private override function __popMask():Void
+	@:noCompletion private override function __popMask(maskee:DisplayObject = null):Void
 	{
 		__popMaskRect();
 	}
@@ -235,7 +235,7 @@ class DOMRenderer extends DisplayObjectRenderer
 		}
 	}
 
-	@:noCompletion private override function __pushMask(mask:DisplayObject):Void
+	@:noCompletion private override function __pushMask(mask:DisplayObject, maskee:DisplayObject = null):Void
 	{
 		// TODO: Handle true mask shape, as well as alpha test
 
