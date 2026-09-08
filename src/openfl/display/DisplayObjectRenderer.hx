@@ -30,8 +30,10 @@ import lime.graphics.RenderContextType;
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
+@:access(openfl.display.Stage)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.events.RenderEvent)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
@@ -437,6 +439,14 @@ class DisplayObjectRenderer extends EventDispatcher
 					else
 					{
 						displayObject.__cacheBitmapData.__fillRect(displayObject.__cacheBitmapData.rect, bitmapColor, allowFramebuffer);
+					}
+
+					if (renderer.__type == OPENGL
+						&& displayObject.__cacheBitmapData.__texture != null
+						&& __hasMaskedDescendant(displayObject)
+						&& __isOnMouseOverPath(displayObject))
+					{
+						displayObject.__cacheBitmapData.__texture.__disposeDepthStencil();
 					}
 
 					if (needsFill)
@@ -881,6 +891,52 @@ class DisplayObjectRenderer extends EventDispatcher
 	@:noCompletion private inline function __affineChanged(a:Matrix, b:Matrix, eps = 1e-4):Bool
 	{
 		return (Math.abs(a.a - b.a) > eps) || (Math.abs(a.b - b.b) > eps) || (Math.abs(a.c - b.c) > eps) || (Math.abs(a.d - b.d) > eps);
+	}
+
+	@:noCompletion private static function __hasMaskedDescendant(displayObject:DisplayObject):Bool
+	{
+		if (displayObject == null) return false;
+		if (displayObject.__mask != null || displayObject.__isMask) return true;
+
+		var children = displayObject.__children;
+		if (children == null) return false;
+
+		for (child in children)
+		{
+			if (child != null && __hasMaskedDescendant(child))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@:noCompletion private static function __isOnMouseOverPath(displayObject:DisplayObject):Bool
+	{
+		if (displayObject == null || displayObject.stage == null || displayObject.stage.__mouseOverTarget == null)
+		{
+			return false;
+		}
+
+		var hovered:DisplayObject = cast displayObject.stage.__mouseOverTarget;
+		while (hovered != null)
+		{
+			var current = displayObject;
+			while (current != null)
+			{
+				if (current == hovered)
+				{
+					return true;
+				}
+
+				current = current.__renderParent != null ? current.__renderParent : current.parent;
+			}
+
+			hovered = hovered.parent;
+		}
+
+		return false;
 	}
 
 	#if (haxe_ver >= 4.2)
