@@ -4,12 +4,18 @@ import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
+#if (lime && !flash)
+import openfl.display.GraphicsShader;
+#end
 import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.geom.Matrix;
 import utest.Assert;
 import utest.Test;
 
+#if !flash
+@:access(openfl.display.Graphics)
+#end
 class GraphicsTest extends Test
 {
 	public function test_new_()
@@ -21,6 +27,45 @@ class GraphicsTest extends Test
 
 		Assert.notNull(graphics);
 	}
+
+	#if !flash
+	public function testShaderStateIsLazy()
+	{
+		var graphics = new Shape().graphics;
+
+		Assert.isNull(graphics.__shaderBufferPool);
+		Assert.isNull(graphics.__usedShaderBuffers);
+
+		graphics.clear();
+
+		Assert.isNull(graphics.__shaderBufferPool);
+		Assert.isNull(graphics.__usedShaderBuffers);
+	}
+	#end
+
+	#if (lime && !flash)
+	public function testBeginShaderFillInitializesShaderState()
+	{
+		var graphics = new Shape().graphics;
+
+		graphics.beginShaderFill(new GraphicsShader());
+
+		Assert.notNull(graphics.__shaderBufferPool);
+		Assert.notNull(graphics.__usedShaderBuffers);
+		Assert.equals(1, graphics.__usedShaderBuffers.length);
+
+		var shaderBufferPool = graphics.__shaderBufferPool;
+		graphics.clear();
+
+		Assert.equals(shaderBufferPool, graphics.__shaderBufferPool);
+		Assert.equals(0, graphics.__usedShaderBuffers.length);
+
+		graphics.beginShaderFill(new GraphicsShader());
+
+		Assert.equals(shaderBufferPool, graphics.__shaderBufferPool);
+		Assert.equals(1, graphics.__usedShaderBuffers.length);
+	}
+	#end
 
 	#if flash
 	@Ignored
