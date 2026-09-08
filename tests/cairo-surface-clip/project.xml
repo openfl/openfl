@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<meta title="Cairo Surface Clip" package="com.openfl.tests.cairoSurfaceClip" version="1.0.0" company="OpenFL"/>
+	<app main="Main" path="bin" file="CairoSurfaceClip"/>
+	<window background="#202020" width="800" height="600" fps="60"/>
+	<source path="src"/>
+	<haxelib name="openfl" path="../.."/>
+	<haxedef name="openfl_count_surface_allocs"/>
+</project>
