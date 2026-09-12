@@ -239,6 +239,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		A value from the StageAlign class that specifies the alignment of the
 		stage in Flash Player or the browser. The following are valid values:
 
+		The default value is an empty string, matching Flash Player and AIR.
+		That value is not a `StageAlign` constant; it centers the
+		stage both horizontally and vertically. Any other unrecognized value
+		has the same centered behavior.
+
 		The `align` property is only available to an object that is
 		in the same security sandbox as the Stage owner (the main SWF file). To
 		avoid this, the Stage owner can grant permission to the domain of the
@@ -1120,7 +1125,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		this.stage = this;
 
-		align = StageAlign.TOP_LEFT;
+		// Flash Player / AIR default to "" (centered).
+		align = "";
 		allowsFullScreen = true;
 		allowsFullScreenInteractive = true;
 		__quality = StageQuality.HIGH;
@@ -3562,7 +3568,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var visibleY = 0.0;
 		switch (align)
 		{
+			#if openfljs
+			case "":
+			#else
 			case null:
+			#end
 				// it is undocumented, but it is possible to align the stage in
 				// Flash to the center both horizontally and vertically by
 				// setting stage.align to an invalid value, such as an empty
