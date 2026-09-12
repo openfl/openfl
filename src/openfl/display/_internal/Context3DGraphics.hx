@@ -561,7 +561,7 @@ class Context3DGraphics
 		// for drawRect(), remember the bounds of each rectangle
 		cleanupTempRects();
 
-		// drawTriangles() or drawQuads(): for simplicity, we'll allow only one
+		// drawTriangles() or drawQuads(): for simplicity, we'll allow only one per fill
 		var hasDrawnComplex = false;
 
 		for (type in graphics.__commands.types)
@@ -579,6 +579,7 @@ class Context3DGraphics
 					hasBitmapFill = true;
 					hasColorFill = false;
 					hasShaderFill = false;
+					hasDrawnComplex = false;
 					cleanupTempRects();
 					data.skip(type);
 
@@ -586,6 +587,7 @@ class Context3DGraphics
 					hasBitmapFill = false;
 					hasColorFill = true;
 					hasShaderFill = false;
+					hasDrawnComplex = false;
 					cleanupTempRects();
 					data.skip(type);
 
@@ -593,6 +595,7 @@ class Context3DGraphics
 					hasBitmapFill = false;
 					hasColorFill = false;
 					hasShaderFill = true;
+					hasDrawnComplex = false;
 					cleanupTempRects();
 					data.skip(type);
 
@@ -652,6 +655,7 @@ class Context3DGraphics
 					hasBitmapFill = false;
 					hasColorFill = false;
 					hasShaderFill = false;
+					hasDrawnComplex = false;
 					cleanupTempRects();
 					data.skip(type);
 
