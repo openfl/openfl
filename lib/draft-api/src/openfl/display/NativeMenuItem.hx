@@ -1,6 +1,6 @@
 package openfl.display;
 
-import _internal.native.menu.ContextMenuData.ContextMenuItemData;
+import openfl.display._internal.native.menu.ContextMenuData.ContextMenuItemData;
 import openfl.events.Event;
 import openfl.events.EventType;
 import openfl.utils.Object;
