@@ -49,14 +49,12 @@ import openfl.utils._internal.NullUtils;
 	}
 
 	#if cs
-	@:noCompletion @:op(A == B) private static function equals(a:Context3DRenderMode, b:Context3DRenderMode):Bool
+	@:op(A == B) private static function equals(a:Null<Context3DRenderMode>, b:Null<Context3DRenderMode>):Bool
 	{
-		return NullUtils.valueEquals(a, b, Int);
+		return NullUtils.intEquals(a, b);
 	}
-	#end
 
-	#if cs
-	@:noCompletion @:op(A != B) private static function notEquals(a:Context3DRenderMode, b:Context3DRenderMode):Bool
+	@:op(A != B) private static inline function notEquals(a:Null<Context3DRenderMode>, b:Null<Context3DRenderMode>):Bool
 	{
 		return !equals(a, b);
 	}
