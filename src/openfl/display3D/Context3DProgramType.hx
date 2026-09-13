@@ -43,12 +43,12 @@ import openfl.utils._internal.NullUtils;
 	}
 
 	#if cs
-	@:op(A == B) private static function equals(a:Null<Context3DProgramType>, b:Null<Context3DProgramType>):Bool
+	@:op(A == B) private static function equals(a:Context3DProgramType, b:Context3DProgramType):Bool
 	{
-		return NullUtils.intEquals(a, b);
+		return NullUtils.intEquals(cast a, cast b);
 	}
 
-	@:op(A != B) private static inline function notEquals(a:Null<Context3DProgramType>, b:Null<Context3DProgramType>):Bool
+	@:op(A != B) private static inline function notEquals(a:Context3DProgramType, b:Context3DProgramType):Bool
 	{
 		return !equals(a, b);
 	}

@@ -44,12 +44,12 @@ import openfl.utils._internal.NullUtils;
 	}
 
 	#if cs
-	@:op(A == B) private static function equals(a:Null<Context3DBufferUsage>, b:Null<Context3DBufferUsage>):Bool
+	@:op(A == B) private static function equals(a:Context3DBufferUsage, b:Context3DBufferUsage):Bool
 	{
-		return NullUtils.intEquals(a, b);
+		return NullUtils.intEquals(cast a, cast b);
 	}
 
-	@:op(A != B) private static inline function notEquals(a:Null<Context3DBufferUsage>, b:Null<Context3DBufferUsage>):Bool
+	@:op(A != B) private static inline function notEquals(a:Context3DBufferUsage, b:Context3DBufferUsage):Bool
 	{
 		return !equals(a, b);
 	}

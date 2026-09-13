@@ -71,12 +71,12 @@ import openfl.utils._internal.NullUtils;
 	}
 
 	#if cs
-	@:op(A == B) private static function equals(a:Null<Context3DTextureFilter>, b:Null<Context3DTextureFilter>):Bool
+	@:op(A == B) private static function equals(a:Context3DTextureFilter, b:Context3DTextureFilter):Bool
 	{
-		return NullUtils.intEquals(a, b);
+		return NullUtils.intEquals(cast a, cast b);
 	}
 
-	@:op(A != B) private static inline function notEquals(a:Null<Context3DTextureFilter>, b:Null<Context3DTextureFilter>):Bool
+	@:op(A != B) private static inline function notEquals(a:Context3DTextureFilter, b:Context3DTextureFilter):Bool
 	{
 		return !equals(a, b);
 	}
