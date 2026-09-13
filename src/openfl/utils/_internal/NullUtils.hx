@@ -2,8 +2,6 @@ package openfl.utils._internal;
 
 #if cs
 
-import haxe.macro.Expr;
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -11,24 +9,24 @@ import haxe.macro.Expr;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class NullUtils
 {
-	public static macro function boolEquals(a:Expr, b:Expr):Expr
+	public static inline function boolEquals(a:Null<Bool>, b:Null<Bool>):Bool
 	{
-		return macro $a == null ? $b == null : $b != null && (cast $a : Bool) == (cast $b : Bool);
+		return a == null ? b == null : b != null && (cast a : Bool) == (cast b : Bool);
 	}
 
-	public static macro function intEquals(a:Expr, b:Expr):Expr
+	public static inline function intEquals(a:Null<Int>, b:Null<Int>):Bool
 	{
-		return macro $a == null ? $b == null : $b != null && (cast $a : Int) == (cast $b : Int);
+		return a == null ? b == null : b != null && (cast a : Int) == (cast b : Int);
 	}
 
-	public static macro function uintEquals(a:Expr, b:Expr):Expr
+	public static inline function uintEquals(a:Null<UInt>, b:Null<UInt>):Bool
 	{
-		return macro $a == null ? $b == null : $b != null && (cast $a : UInt) == (cast $b : UInt);
+		return a == null ? b == null : b != null && (cast a : UInt) == (cast b : UInt);
 	}
 
-	public static macro function floatEquals(a:Expr, b:Expr):Expr
+	public static inline function floatEquals(a:Null<Float>, b:Null<Float>):Bool
 	{
-		return macro $a == null ? $b == null : $b != null && (cast $a : Float) == (cast $b : Float);
+		return a == null ? b == null : b != null && (cast a : Float) == (cast b : Float);
 	}
 }
 
