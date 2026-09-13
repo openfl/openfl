@@ -69,12 +69,12 @@ class CairoGraphics
 	private static var ssHalfSurface:CairoImageSurface;
 	private static var ssHalfCairo:Cairo;
 
-	private static function __scaleDown(dst:Cairo, src:CairoImageSurface, factor:Int, filter:CairoFilter, dstWidth:Int, dstHeight:Int):Void
+	private static function __scaleDown(dst:Cairo, src:CairoImageSurface, factor:Int, filter:CairoFilter, dstWidth:Int, dstHeight:Int, clearWidth:Int, clearHeight:Int):Void
 	{
 		dst.matrix = new Matrix3();
 		dst.newPath();
 		dst.setOperator(CLEAR);
-		dst.rectangle(0, 0, dstWidth + SCRATCH_MARGIN, dstHeight + SCRATCH_MARGIN);
+		dst.rectangle(0, 0, clearWidth, clearHeight);
 		dst.fill();
 		dst.setOperator(OVER);
 
@@ -82,7 +82,7 @@ class CairoGraphics
 		pattern.filter = filter;
 		pattern.matrix = new Matrix3(factor, 0, 0, factor, 0, 0);
 		dst.source = pattern;
-		dst.rectangle(0, 0, dstWidth + SCRATCH_MARGIN, dstHeight + SCRATCH_MARGIN);
+		dst.rectangle(0, 0, dstWidth, dstHeight);
 		dst.fill();
 	}
 
@@ -2433,12 +2433,12 @@ class CairoGraphics
 						ssHalfCairo = new Cairo(ssHalfSurface);
 					}
 
-					__scaleDown(ssHalfCairo, src, 2, CairoFilter.GOOD, halfW, halfH);
+					__scaleDown(ssHalfCairo, src, 2, CairoFilter.GOOD, halfW, halfH, halfW + SCRATCH_MARGIN, halfH + SCRATCH_MARGIN);
 					src = ssHalfSurface;
 					factor = 2;
 				}
 				var filter = __qualityToDownsampleFilter(quality);
-				__scaleDown(graphics.__cairo, src, factor, filter, graphics.__bitmap.width, graphics.__bitmap.height);
+				__scaleDown(graphics.__cairo, src, factor, filter, width, height, graphics.__bitmap.width, graphics.__bitmap.height);
 			}
 			#end
 
