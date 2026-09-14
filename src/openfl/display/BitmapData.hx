@@ -396,6 +396,9 @@ class BitmapData implements IBitmapDrawable
 		{
 			bitmapData2.image.version = image.version;
 			image = bitmapData2.image;
+			// the cached Cairo surface wraps the previous image's memory: a later
+			// draw() would render into it and the result would be lost
+			__surface = null;
 		}
 
 		image.dirty = true;
