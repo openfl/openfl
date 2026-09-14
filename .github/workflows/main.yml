@@ -123,7 +123,7 @@ jobs:
           haxelib run hxp test -Dtarget=hl -Duse-lime-tools -verbose --install-hxp-alias
 
   unit-test-lime-develop:
-    runs-on: macos-latest
+    runs-on: macos-15-intel
     env:
       SDL_AUDIODRIVER: "disk"
     steps:
@@ -166,17 +166,14 @@ jobs:
 
       - name: Install HashLink dependencies with Homebrew
         run: |
-          if [ ! -x /usr/local/bin/brew ]; then
-            NONINTERACTIVE=1 arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-          fi
           pushd ${{ github.workspace }}/lime-develop/project/lib/hashlink
-          arch -x86_64 /usr/local/bin/brew update
+          brew update
           rm /usr/local/bin/2to3*
           rm /usr/local/bin/idle3*
           rm /usr/local/bin/pydoc3*
           rm /usr/local/bin/python3*
           rm /usr/local/bin/pip3*
-          HOMEBREW_BUNDLE_BREW_SKIP="cmake" arch -x86_64 /usr/local/bin/brew bundle
+          HOMEBREW_BUNDLE_BREW_SKIP="cmake" brew bundle
           popd
 
       - name: Rebuild Lime
