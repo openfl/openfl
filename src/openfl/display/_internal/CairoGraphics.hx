@@ -9,6 +9,7 @@ import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
 import openfl.display.SpreadMethod;
+import openfl.display.StageQuality;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -16,7 +17,9 @@ import openfl.Vector;
 #if lime
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoExtend;
+import lime.graphics.cairo.CairoAntialias;
 import lime.graphics.cairo.CairoFilter;
+import lime.graphics.cairo.CairoFormat;
 import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
 import lime.math.Matrix3;
@@ -37,6 +40,76 @@ import lime.math.Vector2;
 class CairoGraphics
 {
 	#if lime_cairo
+
+	#if !openfl_cairo_no_supersample
+
+	// Cairo is capped at 32767 × 32767 pixels
+	// but setting a lower limit here as max resolution can consume gigabytes of memory.
+	private static inline var SUPERSAMPLE_MAX:Int = 8192;
+	private static inline var SCRATCH_MARGIN:Int = 8;
+
+	private static var supersampleByQuality:Map<StageQuality, Int> = [
+		LOW => 1,
+		MEDIUM => 2,
+		HIGH => 4,
+		BEST => 4
+	];
+	//Note: CairoFilter BEST is slow, it might be worth using 8x supersampling instead.
+	private static var downsampleFilterByQuality:Map<StageQuality, CairoFilter> = [
+		LOW => CairoFilter.GOOD,
+		MEDIUM => CairoFilter.GOOD,
+		HIGH => CairoFilter.GOOD,
+		BEST => CairoFilter.BEST
+	];
+
+	private static var ssSurface:CairoImageSurface;
+	private static var ssCairo:Cairo;
+
+	// Cairo can downsample 2x 2:1 faster than 4:1 so we create intermediate surfaces  trading some memory for speed.
+	private static var ssHalfSurface:CairoImageSurface;
+	private static var ssHalfCairo:Cairo;
+
+	private static function __scaleDown(dst:Cairo, src:CairoImageSurface, factor:Int, filter:CairoFilter, dstWidth:Int, dstHeight:Int, clearWidth:Int, clearHeight:Int):Void
+	{
+		dst.matrix = new Matrix3();
+		dst.newPath();
+		dst.setOperator(CLEAR);
+		dst.rectangle(0, 0, clearWidth, clearHeight);
+		dst.fill();
+		dst.setOperator(OVER);
+
+		var pattern = CairoPattern.createForSurface(src);
+		pattern.filter = filter;
+		pattern.matrix = new Matrix3(factor, 0, 0, factor, 0, 0);
+		dst.source = pattern;
+		dst.rectangle(0, 0, dstWidth, dstHeight);
+		dst.fill();
+	}
+
+	private static function __qualityToSupersample(quality:StageQuality):Int
+	{
+		var factor = supersampleByQuality.get(quality);
+		return factor != null ? factor : supersampleByQuality.get(HIGH);
+	}
+
+	private static function __stageQuality(graphics:Graphics):StageQuality
+	{
+		return (graphics.__owner != null && graphics.__owner.stage != null) ? graphics.__owner.stage.quality : StageQuality.HIGH;
+	}
+
+	private static function __tooLargeToSupersample(graphics:Graphics):Bool
+	{
+		var maxDim = graphics.__width > graphics.__height ? graphics.__width : graphics.__height;
+		return __qualityToSupersample(__stageQuality(graphics)) > 1 && maxDim * 2 > SUPERSAMPLE_MAX;
+	}
+
+	private static function __qualityToDownsampleFilter(quality:StageQuality):CairoFilter
+	{
+		var filter = downsampleFilterByQuality.get(quality);
+		return filter != null ? filter : CairoFilter.BEST;
+	}
+	#end
+
 	private static var SIN45:Float = 0.70710678118654752440084436210485;
 	private static var TAN22:Float = 0.4142135623730950488016887242097;
 	private static var KAPPA = 0.5522848;
@@ -903,7 +976,12 @@ class CairoGraphics
 		var setStart = false;
 
 		cairo.fillRule = EVEN_ODD;
+		#if !openfl_cairo_no_supersample
+		//we fallback to antialiasing if too large for supersampling
+		cairo.antialias = __tooLargeToSupersample(graphics) ? SUBPIXEL : NONE;
+		#else
 		cairo.antialias = SUBPIXEL;
+		#end
 
 		var hasPath:Bool = false;
 
@@ -2039,6 +2117,68 @@ class CairoGraphics
 				graphics.__bitmap = bitmap;
 			}
 
+			#if !openfl_cairo_no_supersample
+			// The supersampling factor follows Stage.quality.
+			var quality = __stageQuality(graphics);
+			var renderScaleFactor = __qualityToSupersample(quality);
+			if (renderScaleFactor < 1) renderScaleFactor = 1;
+
+			// Reduce the factor for very large shapes so the temporary surface
+			// stays under SUPERSAMPLE_MAX in either dimension.
+			var maxDim = width > height ? width : height;
+			while (renderScaleFactor > 1 && maxDim * renderScaleFactor > SUPERSAMPLE_MAX)
+			{
+				renderScaleFactor--;
+			}
+
+			if (renderScaleFactor > 1)
+			{
+				// Render into a larger scratch surface with hard-edged fills.
+				// it's downsampled into graphics.__bitmap once all commands run.
+				var ssW = width * renderScaleFactor;
+				var ssH = height * renderScaleFactor;
+
+				if (ssSurface == null || ssCairo == null || ssW > ssSurface.width || ssH > ssSurface.height)
+				{
+					ssSurface = new CairoImageSurface(CairoFormat.ARGB32, ssW, ssH);
+					ssCairo = new Cairo(ssSurface);
+				}
+
+				cairo = ssCairo;
+
+				// The scratch surface is shared and grows to the largest shape seen as allocating new surfaces is a real slowdown so we try to avoid it.
+				// We re use the surface by simply reset draw rules and clear only the part that this shape use (plus the margin the downsample kernel reads).
+				cairo.matrix = new Matrix3();
+				cairo.newPath();
+				cairo.setOperator(CLEAR);
+				cairo.rectangle(0, 0, ssW + SCRATCH_MARGIN, ssH + SCRATCH_MARGIN);
+				cairo.fill();
+				cairo.setOperator(OVER);
+
+				renderer.__setBlendModeCairo(cairo, NORMAL);
+
+				var ssMatrix = Matrix.__pool.get();
+				ssMatrix.copyFrom(graphics.__renderTransform);
+				ssMatrix.scale(renderScaleFactor, renderScaleFactor);
+				renderer.applyMatrix(ssMatrix, cairo);
+				Matrix.__pool.release(ssMatrix);
+			}
+			else
+			{
+				cairo = graphics.__cairo;
+
+				renderer.__setBlendModeCairo(cairo, NORMAL);
+				renderer.applyMatrix(graphics.__renderTransform, cairo);
+			}
+
+			if (renderScaleFactor == 1)
+			{
+				cairo.setOperator(CLEAR);
+				cairo.paint();
+				cairo.setOperator(OVER);
+			}
+
+			#else
 			cairo = graphics.__cairo;
 
 			renderer.__setBlendModeCairo(cairo, NORMAL);
@@ -2047,6 +2187,8 @@ class CairoGraphics
 			cairo.setOperator(CLEAR);
 			cairo.paint();
 			cairo.setOperator(OVER);
+
+			#end
 
 			fillCommands.clear();
 			strokeCommands.clear();
@@ -2279,6 +2421,34 @@ class CairoGraphics
 			}
 
 			data.destroy();
+
+			#if !openfl_cairo_no_supersample
+			if (renderScaleFactor > 1)
+			{
+				// Cairo scales 2:1 through an exact 2x2 box average making it faster to perform 2x 2:1 scaling than a single 4:1
+				// some simple benchmarks suggests 80-90%  faster downsampling. depending on the raster time this can give anywere from 20-80%
+				// faster rendering for a given asset. Note that this is not guarantied and probably depends on CPU and SIMD support.
+				var src = ssSurface;
+				var factor = renderScaleFactor;
+				if (factor == 4)
+				{
+					var halfW = width * 2;
+					var halfH = height * 2;
+
+					if (ssHalfSurface == null || halfW > ssHalfSurface.width || halfH > ssHalfSurface.height)
+					{
+						ssHalfSurface = new CairoImageSurface(CairoFormat.ARGB32, halfW, halfH);
+						ssHalfCairo = new Cairo(ssHalfSurface);
+					}
+
+					__scaleDown(ssHalfCairo, src, 2, CairoFilter.GOOD, halfW, halfH, halfW + SCRATCH_MARGIN, halfH + SCRATCH_MARGIN);
+					src = ssHalfSurface;
+					factor = 2;
+				}
+				var filter = __qualityToDownsampleFilter(quality);
+				__scaleDown(graphics.__cairo, src, factor, filter, width, height, graphics.__bitmap.width, graphics.__bitmap.height);
+			}
+			#end
 
 			graphics.__bitmap.image.dirty = true;
 			graphics.__bitmap.image.version++;
