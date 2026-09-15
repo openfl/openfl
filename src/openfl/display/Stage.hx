@@ -2402,6 +2402,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		cpp.vm.tracy.TracyProfiler.frameMark();
 		#end
 
+		#if (hl && hl_profile)
+		hl.Profile.event(0);
+		#end
+
 		return cancelled;
 	}
 
