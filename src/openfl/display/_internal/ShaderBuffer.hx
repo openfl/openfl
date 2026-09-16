@@ -16,6 +16,7 @@ import openfl.display.ShaderParameter;
 @:noDebug
 #end
 @:access(openfl.display.Shader)
+@:access(openfl.display.ShaderParameter)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class ShaderBuffer
 {
@@ -50,6 +51,7 @@ class ShaderBuffer
 	public var paramRefs_Float:Array<ShaderParameter<Float>>;
 	public var paramRefs_Int:Array<ShaderParameter<Int>>;
 	public var paramTypes:Array<Int>;
+	public var paramIndicesDataLength:Int;
 	public var shader:GraphicsShader;
 
 	public function new()
@@ -117,6 +119,7 @@ class ShaderBuffer
 		paramDataLength = 0;
 		paramFloatCount = 0;
 		paramIntCount = 0;
+		paramIndicesDataLength = 0;
 		this.shader = null;
 
 		if (shader == null) return;
@@ -156,6 +159,7 @@ class ShaderBuffer
 			paramLengths[p] = length;
 			paramDataLength += length;
 			paramTypes[p] = 0;
+			if (param.value != null && !param.__isUniform) paramIndicesDataLength += param.__length;
 
 			paramRefs_Bool[i] = param;
 			p++;
@@ -172,6 +176,7 @@ class ShaderBuffer
 			paramLengths[p] = length;
 			paramDataLength += length;
 			paramTypes[p] = 1;
+			if (param.value != null && !param.__isUniform) paramIndicesDataLength += param.__length;
 
 			paramRefs_Float[i] = param;
 			p++;
@@ -188,6 +193,7 @@ class ShaderBuffer
 			paramLengths[p] = length;
 			paramDataLength += length;
 			paramTypes[p] = 2;
+			if (param.value != null && !param.__isUniform) paramIndicesDataLength += param.__length;
 
 			paramRefs_Int[i] = param;
 			p++;
