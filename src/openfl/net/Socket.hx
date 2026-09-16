@@ -1171,7 +1171,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			}
 		}
 
-		var b = new BytesBuffer();
+		var b:BytesBuffer = null;
 		var bLength = 0;
 
 		if (doConnect)
@@ -1217,6 +1217,10 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 
 					if (l > 0)
 					{
+						if (b == null)
+						{
+							b = new BytesBuffer();
+						}
 						b.addBytes(__buffer, 0, l);
 						bLength += l;
 					}
