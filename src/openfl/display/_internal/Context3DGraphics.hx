@@ -561,7 +561,7 @@ class Context3DGraphics
 		// for drawRect(), remember the bounds of each rectangle
 		cleanupTempRects();
 
-		// drawTriangles() or drawQuads(): for simplicity, we'll allow only one
+		// drawTriangles() or drawQuads(): for simplicity, we'll allow only one per fill
 		var hasDrawnComplex = false;
 
 		for (type in graphics.__commands.types)
