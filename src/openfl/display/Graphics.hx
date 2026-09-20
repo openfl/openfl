@@ -1973,6 +1973,12 @@ import js.html.CanvasRenderingContext2D;
 			}
 		}
 
+		if (__owner.__worldScale9Grid != null)
+		{
+			scaleX = Math.abs(__owner.scaleX) * pixelRatio;
+			scaleY = Math.abs(__owner.scaleY) * pixelRatio;
+		}
+
 		#if openfl_disable_graphics_upscaling
 		if (__owner.__worldScale9Grid == null)
 		{
