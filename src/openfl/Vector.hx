@@ -3,6 +3,19 @@ package openfl;
 #if (!flash || display)
 #if (!openfljs || !js)
 import haxe.Constraints.Function;
+import openfl.errors.RangeError;
+
+@:noCompletion private class VectorDataUtil
+{
+	public static inline function checkSetIndex(index:Int, length:Int, fixed:Bool):Void
+	{
+		// Flash: may set existing indices or index == length (grow by one) when not fixed.
+		if (index < 0 || (fixed ? index >= length : index > length))
+		{
+			throw new RangeError("Error #1125: The index " + index + " is out of range " + length + ".");
+		}
+	}
+}
 
 /**
 	The Vector class lets you access and manipulate a vector — an array whose elements
@@ -961,14 +974,8 @@ abstract Vector<T>(IVector<T>)
 
 	public function set(index:Int, value:Bool):Bool
 	{
-		if (!fixed || index < __array.length)
-		{
-			return __array[index] = value;
-		}
-		else
-		{
-			return value;
-		}
+		VectorDataUtil.checkSetIndex(index, __array.length, fixed);
+		return __array[index] = value;
 	}
 
 	public function shift():Null<Bool>
@@ -1213,14 +1220,8 @@ abstract Vector<T>(IVector<T>)
 
 	public function set(index:Int, value:Float):Float
 	{
-		if (!fixed || index < __array.length)
-		{
-			return __array[index] = value;
-		}
-		else
-		{
-			return value;
-		}
+		VectorDataUtil.checkSetIndex(index, __array.length, fixed);
+		return __array[index] = value;
 	}
 
 	public function shift():Null<Float>
@@ -1470,14 +1471,8 @@ abstract Vector<T>(IVector<T>)
 
 	public function set(index:Int, value:Function):Function
 	{
-		if (!fixed || index < __array.length)
-		{
-			return __array[index] = value;
-		}
-		else
-		{
-			return value;
-		}
+		VectorDataUtil.checkSetIndex(index, __array.length, fixed);
+		return __array[index] = value;
 	}
 
 	public function shift():Function
@@ -1713,14 +1708,8 @@ abstract Vector<T>(IVector<T>)
 
 	public function set(index:Int, value:Int):Int
 	{
-		if (!fixed || index < __array.length)
-		{
-			return __array[index] = value;
-		}
-		else
-		{
-			return value;
-		}
+		VectorDataUtil.checkSetIndex(index, __array.length, fixed);
+		return __array[index] = value;
 	}
 
 	public function shift():Null<Int>
@@ -1966,14 +1955,8 @@ abstract Vector<T>(IVector<T>)
 
 	public function set(index:Int, value:T):T
 	{
-		if (!fixed || index < __array.length)
-		{
-			return __array[index] = value;
-		}
-		else
-		{
-			return value;
-		}
+		VectorDataUtil.checkSetIndex(index, __array.length, fixed);
+		return __array[index] = value;
 	}
 
 	public function shift():T
@@ -2226,15 +2209,12 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 
 	@:arrayAccess public function set(index:Int, value:T):T
 	{
-		// return this.set (index, value);
-		if (!this.fixed || index < this.length)
+		var length:Int = this.length;
+		if (index < 0 || (this.fixed ? index >= length : index > length))
 		{
-			return this[index] = value;
+			throw new openfl.errors.RangeError("Error #1125: The index " + index + " is out of range " + length + ".");
 		}
-		else
-		{
-			return value;
-		}
+		return this[index] = value;
 	}
 
 	public function shift():Null<T>
@@ -2519,14 +2499,12 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 
 	public function set(index:Int, value:T):T
 	{
-		if (!fixed || index < untyped #if haxe4 js.Syntax.code #else __js__ #end ("this").length)
+		var length:Int = untyped #if haxe4 js.Syntax.code #else __js__ #end ("this").length;
+		if (index < 0 || (fixed ? index >= length : index > length))
 		{
-			return untyped #if haxe4 js.Syntax.code #else __js__ #end ("this")[index] = value;
+			throw new openfl.errors.RangeError("Error #1125: The index " + index + " is out of range " + length + ".");
 		}
-		else
-		{
-			return value;
-		}
+		return untyped #if haxe4 js.Syntax.code #else __js__ #end ("this")[index] = value;
 	}
 
 	public function shift():Null<T>
