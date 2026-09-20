@@ -3,6 +3,8 @@ package;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
+import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectRenderer;
 import openfl.display.Sprite;
 import openfl.filters.BitmapFilter;
 import openfl.filters.DropShadowFilter;
@@ -15,8 +17,79 @@ import openfl.Lib;
 import utest.Assert;
 import utest.Test;
 
+@:access(openfl.display.DisplayObject)
 class DisplayObjectTest extends Test
 {
+	#if !flash
+	public function testRenderStateIsLazy()
+	{
+		var sprite = new Sprite();
+
+		Assert.isNull(sprite.__renderTransform);
+		Assert.isNull(sprite.__worldTransform);
+	}
+
+	public function testCoordinateConversionInitializesRenderState()
+	{
+		var parent = new Sprite();
+		var child = new Sprite();
+		parent.x = 10;
+		child.x = 5;
+		parent.addChild(child);
+
+		var global = child.localToGlobal(new Point());
+
+		Assert.equals(15, global.x);
+		Assert.equals(0, global.y);
+		Assert.notNull(parent.__renderTransform);
+		Assert.notNull(parent.__worldTransform);
+		Assert.notNull(child.__renderTransform);
+		Assert.notNull(child.__worldTransform);
+	}
+
+	public function testUpdateTransformsInitializesNullParentTransforms()
+	{
+		var parent = new Sprite();
+		var child = new Sprite();
+		parent.x = 10;
+		child.x = 5;
+		parent.addChild(child);
+
+		// Parent may still have lazily-null transforms (e.g. Stage before first render).
+		parent.__worldTransform = null;
+		parent.__renderTransform = null;
+
+		child.__updateTransforms();
+
+		Assert.notNull(parent.__worldTransform);
+		Assert.notNull(parent.__renderTransform);
+		Assert.notNull(child.__worldTransform);
+		Assert.notNull(child.__renderTransform);
+		Assert.equals(15, child.__worldTransform.tx);
+		Assert.equals(0, child.__worldTransform.ty);
+	}
+
+	public function testRendererInitializesRenderStateBeforeRendering()
+	{
+		var renderer = new TestDisplayObjectRenderer();
+		var sprite = new Sprite();
+
+		renderer.ensureRenderTransform(sprite);
+
+		Assert.notNull(sprite.__renderTransform);
+		Assert.notNull(sprite.__worldTransform);
+	}
+
+	public function testCacheBitmapInitializesRenderState()
+	{
+		var renderer = new TestDisplayObjectRenderer();
+		var bitmap = renderer.createCacheBitmap();
+
+		Assert.notNull(bitmap.__renderTransform);
+		Assert.notNull(bitmap.__worldTransform);
+	}
+	#end
+
 	public function test_getBounds()
 	{
 		var sprite = new Sprite();
@@ -862,3 +935,24 @@ class DisplayObjectTest extends Test
 
 	// public function test_z() {}
 }
+
+#if !flash
+@:access(openfl.display.DisplayObjectRenderer)
+private class TestDisplayObjectRenderer extends DisplayObjectRenderer
+{
+	public function new()
+	{
+		super();
+	}
+
+	public function createCacheBitmap():Bitmap
+	{
+		return __createCacheBitmap();
+	}
+
+	public function ensureRenderTransform(object:DisplayObject):Void
+	{
+		__ensureRenderTransform(object);
+	}
+}
+#end
