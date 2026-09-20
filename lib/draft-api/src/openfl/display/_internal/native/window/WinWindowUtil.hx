@@ -1,6 +1,6 @@
-package _internal.native.window;
+package openfl.display._internal.native.window;
 
-import _internal.native.window.extension.WinWindowUtilExtern;
+import openfl.display._internal.native.window.extension.WinWindowUtilExtern;
 import haxe.ds.IntMap;
 import lime.tools.GUID;
 import openfl.display.Window;
@@ -9,7 +9,7 @@ import openfl.display.Window;
  * ...
  * @author Christopher Speciale
  */
-@:access(_internal.native.window.extension.WinWindowUtilExtern)
+@:access(openfl.display._internal.native.window.extension.WinWindowUtilExtern)
 class WinWindowUtil
 {
 	private static var systemTrayCallback:Void->Void;
