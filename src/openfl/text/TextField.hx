@@ -3506,15 +3506,25 @@ class TextField extends InteractiveObject
 				{
 					upPos = __getPositionByIdentifier(mouseX + scrollH, mouseY, false);
 				}
-				var leftPos:Int = Std.int(Math.min(__selectionIndex, upPos));
-				var rightPos:Int = Std.int(Math.max(__selectionIndex, upPos));
+				// The range must cover the selection this double or triple click ALREADY
+				// made on mouse down, not just one end of it. `this_onMouseDown` finishes
+				// with `setSelection(__caretIndex, __selectionIndex)`, and setSelection
+				// assigns `__selectionIndex = begin` and `__caretIndex = end`, so by the
+				// time we get here `__selectionIndex` is the LEFT edge of the word. On a
+				// double click with no drag, `upPos` is that same left edge, so
+				// min(left, left) and max(left, left) both collapse to it and the word
+				// that was selected on mouse down is thrown away on mouse up.
+				//
+				// Taking both ends keeps the word and still extends it when the pointer
+				// has been dragged past either side, which is what this block is for.
+				var loSel:Int = Std.int(Math.min(__selectionIndex, __caretIndex));
+				var hiSel:Int = Std.int(Math.max(__selectionIndex, __caretIndex));
+				var leftPos:Int = Std.int(Math.min(loSel, upPos));
+				var rightPos:Int = Std.int(Math.max(hiSel, upPos));
 
 				__selectionIndex = leftPos;
 				__caretIndex = rightPos;
 			}
-
-			__wordSelection = false;
-			__lineSelection = false;
 
 			if (__inputEnabled)
 			{
@@ -3531,6 +3541,15 @@ class TextField extends InteractiveObject
 				#end
 			}
 		}
+
+		// OUTSIDE the focus test, deliberately. Everything above is guarded by
+		// `stage.focus == this`, and a TextField wrapped by a component library is often
+		// not what holds stage focus, so these flags could stay true after the click that
+		// set them and make the NEXT single click take the word or line branch. They
+		// describe this one gesture and nothing else, so they are cleared whichever
+		// object has focus.
+		__wordSelection = false;
+		__lineSelection = false;
 	}
 
 	@:noCompletion private function this_onAddedToStage(event:Event):Void
