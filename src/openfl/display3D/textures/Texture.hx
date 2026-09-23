@@ -10,6 +10,9 @@ import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.Event;
 import openfl.utils.ByteArray;
+#if !(flash || air)
+import openfl.display3D._internal.KTX1Reader;
+#end
 
 /**
 	The Texture class represents a 2-dimensional texture uploaded to a rendering context.
@@ -298,6 +301,41 @@ import openfl.utils.ByteArray;
 
 	@:noCompletion private function __uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
+		#if !(flash || air)
+		// Detect and handle KTX v1 data.
+		if (KTX1Reader.isKTX1(data, byteArrayOffset))
+		{
+			var reader = new KTX1Reader(data, byteArrayOffset);
+			var context = __context;
+			var gl = context.gl;
+
+			__context.__bindGLTexture2D(__textureID);
+
+			var gpuFormat = reader.atfGPUFormat;
+
+			// Lookup the compressed format code for this runtime (GL constant)
+			var format = 0;
+			if (gpuFormat != null) {
+				// Choose the correct lookup table based on alpha
+				var formats = reader.hasAlpha
+					? TextureBase.__compressedFormatsAlpha
+					: TextureBase.__compressedFormats;
+				format = formats[gpuFormat];
+			}
+
+			if (format == 0) return; // Bail if unsupported texture format
+
+			reader.readTextures(function(target, level, gpuFormat, width, height, blockLength, bytes:Bytes)
+			{
+				gl.compressedTexImage2D(gl.TEXTURE_2D, level, format, width, height, 0,
+					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, blockLength));
+			});
+
+			__context.__bindGLTexture2D(null);
+			return; // Done, skip ATF
+		}
+		#end
+
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader(__width, __height, false);
 
