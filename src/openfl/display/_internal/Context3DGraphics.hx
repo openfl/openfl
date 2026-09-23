@@ -586,6 +586,7 @@ class Context3DGraphics
 					hasBitmapFill = true;
 					hasColorFill = false;
 					hasShaderFill = false;
+					hasDrawnComplex = false;
 					cleanupTempRects();
 					data.skip(type);
 
@@ -593,6 +594,7 @@ class Context3DGraphics
 					hasBitmapFill = false;
 					hasColorFill = true;
 					hasShaderFill = false;
+					hasDrawnComplex = false;
 					cleanupTempRects();
 					data.skip(type);
 
@@ -600,6 +602,7 @@ class Context3DGraphics
 					hasBitmapFill = false;
 					hasColorFill = false;
 					hasShaderFill = true;
+					hasDrawnComplex = false;
 					cleanupTempRects();
 					data.skip(type);
 
@@ -659,6 +662,7 @@ class Context3DGraphics
 					hasBitmapFill = false;
 					hasColorFill = false;
 					hasShaderFill = false;
+					hasDrawnComplex = false;
 					cleanupTempRects();
 					data.skip(type);
 
