@@ -285,12 +285,15 @@ class Rectangle
 	{
 		if (rect.width <= 0 || rect.height <= 0)
 		{
-			return rect.x > x && rect.y > y && rect.right < right && rect.bottom < bottom;
+			return false;
 		}
-		else
+
+		if (this.width <= 0 || this.height <= 0)
 		{
-			return rect.x >= x && rect.y >= y && rect.right <= right && rect.bottom <= bottom;
+			return false;
 		}
+
+		return rect.x >= this.x && rect.y >= this.y && rect.right <= this.right && rect.bottom <= this.bottom;
 	}
 
 	/**
@@ -566,7 +569,7 @@ class Rectangle
 
 	public function toString():String
 	{
-		return '(x=$x, y=$y, width=$width, height=$height)';
+		return '(x=$x, y=$y, w=$width, h=$height)';
 	}
 
 	/**
