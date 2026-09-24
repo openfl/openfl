@@ -227,6 +227,8 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __vertexBufferScaleX:Float;
 	@:noCompletion private var __vertexBufferScaleY:Float;
 	@:noCompletion private var __vertexBufferWidth:Float;
+	@:noCompletion private var __vertexBufferPaintedWidth:Int = -1;
+	@:noCompletion private var __vertexBufferPaintedHeight:Int = -1;
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
@@ -1656,7 +1658,8 @@ class BitmapData implements IBitmapDrawable
 		@param	context	A Stage3D context
 		@returns	A VertexBuffer3D object for use with rendering
 	**/
-	@:dox(hide) public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null):VertexBuffer3D
+	@:dox(hide) public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null,
+			paintedWidth:Int = -1, paintedHeight:Int = -1):VertexBuffer3D
 	{
 		var gl = context.gl;
 
@@ -1667,6 +1670,8 @@ class BitmapData implements IBitmapDrawable
 			|| __vertexBufferContext != context.__context
 			|| (scale9Grid != null && __vertexBufferGrid == null)
 			|| (__vertexBufferGrid != null && !__vertexBufferGrid.equals(scale9Grid))
+			|| __vertexBufferPaintedWidth != paintedWidth
+			|| __vertexBufferPaintedHeight != paintedHeight
 			|| (targetObject != null
 				&& (__vertexBufferWidth != targetObject.width
 					|| __vertexBufferHeight != targetObject.height
@@ -1961,19 +1966,33 @@ class BitmapData implements IBitmapDrawable
 
 			if (__vertexBuffer == null)
 			{
+				// Painted region support: when the caller passes paintedWidth/Height
+				// (the sub-region of the bitmap that actually contains rendered
+				// content), build the quad for that sub-region and scale UV so we
+				// sample only that part of the texture. Used by Context3DShape /
+				// Context3DBitmap to composite a high-water cached surface without
+				// dragging its transparent padding into world space.
+				var quadW:Float = (paintedWidth > 0) ? paintedWidth : width;
+				var quadH:Float = (paintedHeight > 0) ? paintedHeight : height;
+				var quadUvW:Float = (paintedWidth > 0) ? uvWidth * (paintedWidth / width) : uvWidth;
+				var quadUvH:Float = (paintedHeight > 0) ? uvHeight * (paintedHeight / height) : uvHeight;
+
 				__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 4);
 
-				__vertexBufferData[0] = width;
-				__vertexBufferData[1] = height;
-				__vertexBufferData[3] = uvWidth;
-				__vertexBufferData[4] = uvHeight;
-				__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = height;
-				__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight;
-				__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = width;
-				__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth;
+				__vertexBufferData[0] = quadW;
+				__vertexBufferData[1] = quadH;
+				__vertexBufferData[3] = quadUvW;
+				__vertexBufferData[4] = quadUvH;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = quadH;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = quadUvH;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = quadW;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = quadUvW;
 
 				__vertexBuffer = context.createVertexBuffer(3, VERTEX_BUFFER_STRIDE);
 			}
+
+			__vertexBufferPaintedWidth = paintedWidth;
+			__vertexBufferPaintedHeight = paintedHeight;
 
 			// for (i in 0...4) {
 

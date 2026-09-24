@@ -98,6 +98,11 @@ class Bitmap extends DisplayObject
 	#end
 	@:noCompletion private var __bitmapData:BitmapData;
 	@:noCompletion private var __imageVersion:Int;
+	// Painted sub-region (-1 = use full bitmapData dims). Set when this Bitmap
+	// instance is `DisplayObject.__cacheBitmap` and the backing data is sized
+	// larger than the current cache footprint (high-water-mark strategy).
+	@:noCompletion private var __paintedWidth:Int = -1;
+	@:noCompletion private var __paintedHeight:Int = -1;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
