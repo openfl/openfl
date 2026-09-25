@@ -17,7 +17,7 @@ class Log
 	public static var level:LogLevel;
 	public static var throwErrors:Bool = true;
 
-	public static function debug(message:Dynamic, ?info:PosInfos):Void
+	public static dynamic function debug(message:Dynamic, ?info:PosInfos):Void
 	{
 		if (level >= LogLevel.DEBUG)
 		{
@@ -29,7 +29,7 @@ class Log
 		}
 	}
 
-	public static function error(message:Dynamic, ?info:PosInfos):Void
+	public static dynamic function error(message:Dynamic, ?info:PosInfos):Void
 	{
 		if (level >= LogLevel.ERROR)
 		{
@@ -50,7 +50,7 @@ class Log
 		}
 	}
 
-	public static function info(message:Dynamic, ?info:PosInfos):Void
+	public static dynamic function info(message:Dynamic, ?info:PosInfos):Void
 	{
 		if (level >= LogLevel.INFO)
 		{
@@ -88,7 +88,7 @@ class Log
 		#end
 	}
 
-	public static function verbose(message:Dynamic, ?info:PosInfos):Void
+	public static dynamic function verbose(message:Dynamic, ?info:PosInfos):Void
 	{
 		if (level >= LogLevel.VERBOSE)
 		{
@@ -96,7 +96,7 @@ class Log
 		}
 	}
 
-	public static function warn(message:Dynamic, ?info:PosInfos):Void
+	public static dynamic function warn(message:Dynamic, ?info:PosInfos):Void
 	{
 		if (level >= LogLevel.WARN)
 		{
