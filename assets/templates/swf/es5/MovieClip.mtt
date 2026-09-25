@@ -1,0 +1,14 @@
+"use strict"
+var Assets = require ("openfl/utils/Assets").default;
+::if BASE_CLASS_NAME::::else::var MovieClip = require ("openfl/display/MovieClip").default;::end::
+
+var ::NATIVE_CLASS_NAME:: = (function() {
+	::if BASE_CLASS_NAME::::BASE_CLASS_NAME::::else::MovieClip::end::.call (this);
+	Assets.initBinding("::NATIVE_CLASS_NAME::", this);
+})
+
+::NATIVE_CLASS_NAME::.prototype = Object.create(::if BASE_CLASS_NAME::::BASE_CLASS_NAME::::else::MovieClip::end::.prototype);
+::NATIVE_CLASS_NAME::.prototype.constructor = ::NATIVE_CLASS_NAME::;
+
+module.exports.::NATIVE_CLASS_NAME:: = ::NATIVE_CLASS_NAME::;
+module.exports.default = ::NATIVE_CLASS_NAME::;

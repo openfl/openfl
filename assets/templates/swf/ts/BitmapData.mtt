@@ -1,0 +1,15 @@
+import Assets from "openfl/utils/Assets";
+import Assets from "openfl/display/BitmapData";
+
+class ::NATIVE_CLASS_NAME:: extends BitmapData {
+
+	::foreach CLASS_PROPERTIES:: ::name::;
+	::end::
+
+	constructor (width:number = 0, height:number = 0, transparent:bool = false, background:number = 0) {
+		super (width, height, transparent, background);
+		Assets.initBinding("::NATIVE_CLASS_NAME::", this);
+	}
+
+}
+export default ::NATIVE_CLASS_NAME::;
