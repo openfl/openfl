@@ -220,11 +220,13 @@ class Timer extends EventDispatcher
 
 	@:noCompletion private function __handleUpdateAfterEvent():Void
 	{
+		#if lime
 		if (Lib.current == null || Lib.current.stage == null)
 		{
 			return;
 		}
 		Lib.current.stage.__renderAfterEvent();
+		#end
 	}
 
 	// Event Handlers

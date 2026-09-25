@@ -15,10 +15,12 @@ class CanvasBitmapData
 
 		var image = bitmapData.image;
 
+		#if lime
 		if (image.type == DATA)
 		{
 			ImageCanvasUtil.convertToCanvas(image);
 		}
+		#end
 
 		var context = renderer.context;
 		context.globalAlpha = 1;
