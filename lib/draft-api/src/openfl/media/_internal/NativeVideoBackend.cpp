@@ -21,6 +21,22 @@
 #pragma comment(lib, "mfuuid")
 #pragma comment(lib, "Ole32.lib")
 
+// wincontypes.h, pulled in by windows.h, defines these as integer constants.
+// This file is included into the NativeVideo translation unit, which then
+// parses OpenFL headers. MouseEvent.h declares DOUBLE_CLICK.
+#ifdef DOUBLE_CLICK
+#undef DOUBLE_CLICK
+#endif
+#ifdef MOUSE_MOVED
+#undef MOUSE_MOVED
+#endif
+#ifdef MOUSE_WHEELED
+#undef MOUSE_WHEELED
+#endif
+#ifdef MOUSE_HWHEELED
+#undef MOUSE_HWHEELED
+#endif
+
 #ifndef GL_CLAMP_TO_EDGE
 #define GL_CLAMP_TO_EDGE 0x812F
 #endif
