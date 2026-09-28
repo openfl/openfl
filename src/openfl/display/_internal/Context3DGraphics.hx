@@ -89,13 +89,15 @@ class Context3DGraphics
 				{
 					if (isX)
 					{
-						tempScale9VerticesVector[i] = toScale9Position(vertices[i], scale9Grid.x, scale9Grid.width, bounds.width,
-							graphics.__owner.scaleX) / Math.abs(graphics.__owner.scaleX);
+						tempScale9VerticesVector[i] = bounds.x
+							+ (toScale9Position(vertices[i] - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width,
+								graphics.__owner.scaleX) / Math.abs(graphics.__owner.scaleX));
 					}
 					else
 					{
-						tempScale9VerticesVector[i] = toScale9Position(vertices[i], scale9Grid.y, scale9Grid.height, bounds.height,
-							graphics.__owner.scaleY) / Math.abs(graphics.__owner.scaleY);
+						tempScale9VerticesVector[i] = bounds.y
+							+ (toScale9Position(vertices[i] - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height,
+								graphics.__owner.scaleY) / Math.abs(graphics.__owner.scaleY));
 					}
 					i++;
 					isX = !isX;
@@ -1090,8 +1092,8 @@ class Context3DGraphics
 									var scaledBottom = toScale9Position(c.y + c.height - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height,
 										graphics.__owner.scaleY);
 
-									x = bounds.x + scaledLeft / Math.abs(graphics.__owner.scaleX);
-									y = bounds.y + scaledTop / Math.abs(graphics.__owner.scaleY);
+									x = bounds.x + (scaledLeft / Math.abs(graphics.__owner.scaleX));
+									y = bounds.y + (scaledTop / Math.abs(graphics.__owner.scaleY));
 									width = (scaledRight - scaledLeft) / Math.abs(graphics.__owner.scaleX);
 									height = (scaledBottom - scaledTop) / Math.abs(graphics.__owner.scaleY);
 								}
