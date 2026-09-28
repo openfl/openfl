@@ -435,6 +435,47 @@ class CanvasGraphics
 	}
 
 	/**
+		Draws a rectangle that starts and stops at the top-left corner.
+	**/
+	private static function drawRect(x:Float, y:Float, width:Float, height:Float, ?scale9Grid:Rectangle, ?bounds:Rectangle, ?scaleX:Float, ?scaleY:Float):Void
+	{
+		#if (js && html5)
+		if (scale9Grid != null)
+		{
+			var scaledLeft = toScale9Position(x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+			var scaledTop = toScale9Position(y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+			var scaledRight = toScale9Position(x + width, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+			var scaledBottom = toScale9Position(y + height, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+
+			if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
+			{
+				applyScale9GridUnscaledX(x);
+				applyScale9GridUnscaledY(y);
+				applyScale9GridUnscaledX(x + width);
+				applyScale9GridUnscaledY(y + height);
+				applyScale9GridScaledX(scaledLeft);
+				applyScale9GridScaledY(scaledTop);
+				applyScale9GridScaledX(scaledRight);
+				applyScale9GridScaledY(scaledBottom);
+			}
+
+			var scaledWidth = scaledRight - scaledLeft;
+			var scaledHeight = scaledBottom - scaledTop;
+			if (scaledWidth != 0.0 || scaledHeight != 0.0)
+			{
+				// flash doesn't draw the rectangle if both the width
+				// and height are zero
+				context.rect(scaledLeft, scaledTop, scaledWidth, scaledHeight);
+			}
+		}
+		else if (width != 0.0 || height != 0.0)
+		{
+			context.rect(x, y, width, height);
+		}
+		#end
+	}
+
+	/**
 		Draws a rounded rectangle that starts and stops at the bottom-right
 		corner, just above the ellipse height.
 	**/
@@ -1935,38 +1976,7 @@ class CanvasGraphics
 					if (!optimizationUsed)
 					{
 						hasPath = true;
-						if (hasScale9Grid)
-						{
-							var scaledLeft = toScale9Position(c.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-							var scaledTop = toScale9Position(c.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-							var scaledRight = toScale9Position(c.x + c.width, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-							var scaledBottom = toScale9Position(c.y + c.height, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-
-							if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
-							{
-								applyScale9GridUnscaledX(c.x);
-								applyScale9GridUnscaledY(c.y);
-								applyScale9GridUnscaledX(c.x + c.width);
-								applyScale9GridUnscaledY(c.y + c.height);
-								applyScale9GridScaledX(scaledLeft);
-								applyScale9GridScaledY(scaledTop);
-								applyScale9GridScaledX(scaledRight);
-								applyScale9GridScaledY(scaledBottom);
-							}
-
-							var scaledWidth = scaledRight - scaledLeft;
-							var scaledHeight = scaledBottom - scaledTop;
-							if (scaledWidth != 0.0 || scaledHeight != 0.0)
-							{
-								// flash doesn't draw the rectangle if both the width
-								// and height are zero
-								context.rect(scaledLeft - offsetX, scaledTop - offsetY, scaledWidth, scaledHeight);
-							}
-						}
-						else if (c.width != 0.0 || c.height != 0.0)
-						{
-							context.rect(c.x - offsetX, c.y - offsetY, c.width, c.height);
-						}
+						drawRect(c.x - offsetX, c.y - offsetY, c.width, c.height, scale9Grid, bounds, graphics.__owner.scaleX, graphics.__owner.scaleY);
 					}
 
 					// top-left corner of the rectangle
@@ -2539,9 +2549,7 @@ class CanvasGraphics
 
 					case DRAW_RECT:
 						var c = data.readDrawRect();
-						context.beginPath();
-						context.rect(c.x - offsetX, c.y - offsetY, c.width, c.height);
-						context.closePath();
+						drawRect(c.x - offsetX, c.y - offsetY, c.width, c.height);
 
 						// top-left corner of the rectangle
 						positionX = c.x;
