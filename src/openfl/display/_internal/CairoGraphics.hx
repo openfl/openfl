@@ -983,29 +983,28 @@ class CairoGraphics
 
 					if (hasScale9Grid)
 					{
-						var scaledControlX1 = toScale9Position(c.controlX1, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						var scaledControlY1 = toScale9Position(c.controlY1, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-						var scaledControlX2 = toScale9Position(c.controlX2, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						var scaledControlY2 = toScale9Position(c.controlY2, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-						var scaledAnchorX = toScale9Position(c.anchorX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						var scaledAnchorY = toScale9Position(c.anchorY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						var scaledControlX1 = toScale9Position(c.controlX1 - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width,
+							graphics.__owner.scaleX);
+						var scaledControlY1 = toScale9Position(c.controlY1 - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height,
+							graphics.__owner.scaleY);
+						var scaledControlX2 = toScale9Position(c.controlX2 - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width,
+							graphics.__owner.scaleX);
+						var scaledControlY2 = toScale9Position(c.controlY2 - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height,
+							graphics.__owner.scaleY);
+						var scaledAnchorX = toScale9Position(c.anchorX - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width,
+							graphics.__owner.scaleX);
+						var scaledAnchorY = toScale9Position(c.anchorY - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height,
+							graphics.__owner.scaleY);
 
 						if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
 						{
-							applyScale9GridUnscaledX(c.anchorX);
-							applyScale9GridUnscaledY(c.anchorY);
+							applyScale9GridUnscaledX(c.anchorX - offsetX);
+							applyScale9GridUnscaledY(c.anchorY - offsetY);
 							applyScale9GridScaledX(scaledAnchorX);
 							applyScale9GridScaledY(scaledAnchorY);
 						}
 
-						cairo.curveTo(scaledControlX1
-							- offsetX, scaledControlY1
-							- offsetY, scaledControlX2
-							- offsetX, scaledControlY2
-							- offsetY,
-							scaledAnchorX
-							- offsetX, scaledAnchorY
-							- offsetY);
+						cairo.curveTo(scaledControlX1, scaledControlY1, scaledControlX2, scaledControlY2, scaledAnchorX, scaledAnchorY);
 					}
 					else
 					{
@@ -1028,20 +1027,24 @@ class CairoGraphics
 
 					if (hasScale9Grid)
 					{
-						var scaledControlX = toScale9Position(c.controlX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						var scaledControlY = toScale9Position(c.controlY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-						var scaledAnchorX = toScale9Position(c.anchorX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						var scaledAnchorY = toScale9Position(c.anchorY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						var scaledControlX = toScale9Position(c.controlX - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width,
+							graphics.__owner.scaleX);
+						var scaledControlY = toScale9Position(c.controlY - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height,
+							graphics.__owner.scaleY);
+						var scaledAnchorX = toScale9Position(c.anchorX - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width,
+							graphics.__owner.scaleX);
+						var scaledAnchorY = toScale9Position(c.anchorY - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height,
+							graphics.__owner.scaleY);
 
 						if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
 						{
-							applyScale9GridUnscaledX(c.anchorX);
-							applyScale9GridUnscaledY(c.anchorY);
+							applyScale9GridUnscaledX(c.anchorX - offsetX);
+							applyScale9GridUnscaledY(c.anchorY - offsetY);
 							applyScale9GridScaledX(scaledAnchorX);
 							applyScale9GridScaledY(scaledAnchorY);
 						}
 
-						quadraticCurveTo(scaledControlX - offsetX, scaledControlY - offsetY, scaledAnchorX - offsetX, scaledAnchorY - offsetY);
+						quadraticCurveTo(scaledControlX, scaledControlY, scaledAnchorX, scaledAnchorY);
 					}
 					else
 					{
@@ -1103,20 +1106,20 @@ class CairoGraphics
 
 					if (hasScale9Grid)
 					{
-						var scaledX = toScale9Position(c.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						var scaledY = toScale9Position(c.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						var scaledX = toScale9Position(c.x - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledY = toScale9Position(c.y - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
 
 						if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
 						{
-							applyScale9GridUnscaledX(c.x);
-							applyScale9GridUnscaledY(c.y);
+							applyScale9GridUnscaledX(c.x - offsetX);
+							applyScale9GridUnscaledY(c.y - offsetY);
 							applyScale9GridScaledX(scaledX);
 							applyScale9GridScaledY(scaledY);
 						}
 
 						if (positionX != c.x || positionY != c.y)
 						{
-							cairo.lineTo(scaledX - offsetX, scaledY - offsetY);
+							cairo.lineTo(scaledX, scaledY);
 						}
 					}
 					else
@@ -1142,18 +1145,18 @@ class CairoGraphics
 
 					if (hasScale9Grid)
 					{
-						var scaledX = toScale9Position(c.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						var scaledY = toScale9Position(c.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						var scaledX = toScale9Position(c.x - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledY = toScale9Position(c.y - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
 
 						if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
 						{
-							applyScale9GridUnscaledX(c.x);
-							applyScale9GridUnscaledY(c.y);
+							applyScale9GridUnscaledX(c.x - offsetX);
+							applyScale9GridUnscaledY(c.y - offsetY);
 							applyScale9GridScaledX(scaledX);
 							applyScale9GridScaledY(scaledY);
 						}
 
-						cairo.moveTo(scaledX - offsetX, scaledY - offsetY);
+						cairo.moveTo(scaledX, scaledY);
 					}
 					else
 					{
@@ -1181,9 +1184,9 @@ class CairoGraphics
 
 					if (hasScale9Grid)
 					{
-						var scaledX = toScale9Position(positionX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						var scaledY = toScale9Position(positionY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-						cairo.moveTo(scaledX - offsetX, scaledY - offsetY);
+						var scaledX = toScale9Position(positionX - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledY = toScale9Position(positionY - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						cairo.moveTo(scaledX, scaledY);
 					}
 					else
 					{
@@ -1256,9 +1259,9 @@ class CairoGraphics
 
 					if (hasScale9Grid)
 					{
-						var scaledX = toScale9Position(positionX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						var scaledY = toScale9Position(positionY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-						cairo.moveTo(scaledX - offsetX, scaledY - offsetY);
+						var scaledX = toScale9Position(positionX - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledY = toScale9Position(positionY - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						cairo.moveTo(scaledX, scaledY);
 					}
 					else
 					{
@@ -1282,9 +1285,9 @@ class CairoGraphics
 
 					if (hasScale9Grid)
 					{
-						var scaledX = toScale9Position(positionX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						var scaledY = toScale9Position(positionY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-						cairo.moveTo(scaledX - offsetX, scaledY - offsetY);
+						var scaledX = toScale9Position(positionX - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledY = toScale9Position(positionY - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						cairo.moveTo(scaledX, scaledY);
 					}
 					else
 					{
