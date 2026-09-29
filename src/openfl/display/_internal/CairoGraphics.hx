@@ -879,6 +879,9 @@ class CairoGraphics
 
 			data.destroy();
 
+			fillCommands.clear();
+			strokeCommands.clear();
+
 			CairoGraphics.graphics = null;
 			return hitTest;
 		}
@@ -937,6 +940,10 @@ class CairoGraphics
 	private static function playCommands(commands:DrawCommandBuffer, stroke:Bool = false):Void
 	{
 		if (commands.length == 0) return;
+
+		// a previous call to playCommands() may have saved its internal state,
+		// but if there are no additional commands, we can return early.
+		if (commands.length == 1 && commands.types[0] == MOVE_TO_INTERNAL) return;
 
 		bounds = graphics.__bounds;
 
@@ -1134,7 +1141,7 @@ class CairoGraphics
 					}
 					else
 					{
-						if (positionX != c.x || positionY != c.y)
+						// if (positionX != c.x || positionY != c.y)
 						{
 							// flash doesn't draw the line if the previous
 							// position is equal to the new position
@@ -1183,6 +1190,37 @@ class CairoGraphics
 
 					startX = positionX;
 					startY = positionY;
+					setStart = true;
+
+				case MOVE_TO_INTERNAL:
+					var c = data.readMoveToInternal();
+
+					var moveX = c.moveX;
+					var moveY = c.moveY;
+					if (hasScale9Grid)
+					{
+						var scaledX = toScale9Position(moveX - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						var scaledY = toScale9Position(moveY - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+
+						if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
+						{
+							applyScale9GridUnscaledX(moveX - offsetX);
+							applyScale9GridUnscaledY(moveY - offsetY);
+							applyScale9GridScaledX(scaledX);
+							applyScale9GridScaledY(scaledY);
+						}
+
+						cairo.moveTo(scaledX, scaledY);
+					}
+					else
+					{
+						cairo.moveTo(moveX - offsetX, moveY - offsetY);
+					}
+
+					positionX = moveX;
+					positionY = moveY;
+					startX = c.fillX;
+					startY = c.fillY;
 					setStart = true;
 
 				case LINE_STYLE:
@@ -1961,10 +1999,9 @@ class CairoGraphics
 		}
 
 		commands.clear();
-		if (positionX != 0.0 || positionY != 0.0)
-		{
-			commands.moveTo(positionX, positionY);
-		}
+		// we may need to restore these positions if playCommands() gets called
+		// again for the same buffer.
+		commands.moveToInternal(positionX, positionY, startX, startY);
 	}
 
 	private static function quadraticCurveTo(cx:Float, cy:Float, x:Float, y:Float):Void
@@ -2096,8 +2133,10 @@ class CairoGraphics
 			strokePattern = null;
 
 			var hasLineStyle = false;
-			var initStrokeX = 0.0;
-			var initStrokeY = 0.0;
+			var initStrokeX:Null<Float> = null;
+			var initStrokeY:Null<Float> = null;
+			var initMoveX = 0.0;
+			var initMoveY = 0.0;
 
 			var data = new DrawCommandReader(graphics.__commands);
 
@@ -2160,6 +2199,8 @@ class CairoGraphics
 							initStrokeX = c.x;
 							initStrokeY = c.y;
 						}
+						initMoveX = c.x;
+						initMoveY = c.y;
 
 					case END_FILL:
 						data.readEndFill();
@@ -2168,17 +2209,23 @@ class CairoGraphics
 						hasFill = false;
 						bitmapFill = null;
 						bitmapFillMatrix = null;
-						initStrokeX = 0;
-						initStrokeY = 0;
+						initStrokeX = null;
+						initStrokeY = null;
 
 					case LINE_GRADIENT_STYLE:
 						var c = data.readLineGradientStyle();
 
-						if (!hasLineStyle && (initStrokeX != 0 || initStrokeY != 0))
+						if (!hasLineStyle && initStrokeX != null && initStrokeY != null)
 						{
-							strokeCommands.moveTo(initStrokeX, initStrokeY);
-							initStrokeX = 0;
-							initStrokeY = 0;
+							// the stroke commands won't be populated yet because
+							// there was no line style until now. we need the
+							// current position, and the previous moveTo()
+							// position because, if there was a fill, we may
+							// need to automatically extend the stroke to the
+							// start of that fill.
+							strokeCommands.moveToInternal(initStrokeX, initStrokeY, initMoveX, initMoveY);
+							initStrokeX = null;
+							initStrokeY = null;
 						}
 
 						hasLineStyle = true;
@@ -2188,11 +2235,17 @@ class CairoGraphics
 					case LINE_BITMAP_STYLE:
 						var c = data.readLineBitmapStyle();
 
-						if (!hasLineStyle && (initStrokeX != 0 || initStrokeY != 0))
+						if (!hasLineStyle && initStrokeX != null && initStrokeY != null)
 						{
-							strokeCommands.moveTo(initStrokeX, initStrokeY);
-							initStrokeX = 0;
-							initStrokeY = 0;
+							// the stroke commands won't be populated yet because
+							// there was no line style until now. we need the
+							// current position, and the previous moveTo()
+							// position because, if there was a fill, we may
+							// need to automatically extend the stroke to the
+							// start of that fill.
+							strokeCommands.moveToInternal(initStrokeX, initStrokeY, initMoveX, initMoveY);
+							initStrokeX = null;
+							initStrokeY = null;
 						}
 
 						hasLineStyle = true;
@@ -2203,11 +2256,17 @@ class CairoGraphics
 
 						if (!hasLineStyle && c.thickness != null)
 						{
-							if (initStrokeX != 0 || initStrokeY != 0)
+							if (initStrokeX != null && initStrokeY != null)
 							{
-								strokeCommands.moveTo(initStrokeX, initStrokeY);
-								initStrokeX = 0;
-								initStrokeY = 0;
+								// the stroke commands won't be populated yet because
+								// there was no line style until now. we need the
+								// current position, and the previous moveTo()
+								// position because, if there was a fill, we may
+								// need to automatically extend the stroke to the
+								// start of that fill.
+								strokeCommands.moveToInternal(initStrokeX, initStrokeY, initMoveX, initMoveY);
+								initStrokeX = null;
+								initStrokeY = null;
 							}
 						}
 
@@ -2254,6 +2313,10 @@ class CairoGraphics
 							strokeCommands.drawCircle(c.x, c.y, c.radius);
 						}
 
+						// the right-most point of the circle, centered vertically
+						initMoveX = c.x + c.radius;
+						initMoveY = c.y;
+
 					case DRAW_ELLIPSE:
 						var c = data.readDrawEllipse();
 						fillCommands.drawEllipse(c.x, c.y, c.width, c.height);
@@ -2262,6 +2325,10 @@ class CairoGraphics
 						{
 							strokeCommands.drawEllipse(c.x, c.y, c.width, c.height);
 						}
+
+						// the right-most point of the ellipse, centered vertically
+						initMoveX = c.x + c.width;
+						initMoveY = c.y + c.height / 2;
 
 					case DRAW_RECT:
 						var c = data.readDrawRect();
@@ -2272,6 +2339,10 @@ class CairoGraphics
 							strokeCommands.drawRect(c.x, c.y, c.width, c.height);
 						}
 
+						// top-left corner of the rectangle
+						initMoveX = c.x;
+						initMoveY = c.y;
+
 					case DRAW_ROUND_RECT:
 						var c = data.readDrawRoundRect();
 						fillCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
@@ -2280,6 +2351,10 @@ class CairoGraphics
 						{
 							strokeCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 						}
+
+						// bottom-right corner of the rectangle, above the radius
+						initMoveX = c.x + c.width;
+						initMoveY = c.y + c.height - (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
 
 					case DRAW_QUADS:
 						var c = data.readDrawQuads();
@@ -2321,6 +2396,9 @@ class CairoGraphics
 			graphics.__bitmap.image.dirty = true;
 			graphics.__bitmap.image.version++;
 		}
+
+		fillCommands.clear();
+		strokeCommands.clear();
 
 		graphics.__softwareDirty = false;
 		graphics.__dirty = false;
