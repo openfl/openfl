@@ -2592,7 +2592,7 @@ class CanvasGraphics
 
 						// bottom-right corner of the rectangle, above the radius
 						positionX = c.x + c.width;
-						positionY = c.y + c.height - c.ellipseHeight;
+						positionY = c.y + c.height - (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
 
 					case LINE_TO:
 						var c = data.readLineTo();
