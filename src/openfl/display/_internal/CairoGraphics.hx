@@ -1621,21 +1621,24 @@ class CairoGraphics
 
 						if (hasScale9Grid)
 						{
-							var scaledX1 = toScale9Position(v[iax], scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-							var scaledY1 = toScale9Position(v[iay], scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-							var scaledX2 = toScale9Position(v[ibx], scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-							var scaledY2 = toScale9Position(v[iby], scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-							var scaledX3 = toScale9Position(v[icx], scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-							var scaledY3 = toScale9Position(v[icy], scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+							var scaledX1 = toScale9Position(v[iax] - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+							var scaledY1 = toScale9Position(v[iay] - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height,
+								graphics.__owner.scaleY);
+							var scaledX2 = toScale9Position(v[ibx] - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+							var scaledY2 = toScale9Position(v[iby] - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height,
+								graphics.__owner.scaleY);
+							var scaledX3 = toScale9Position(v[icx] - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+							var scaledY3 = toScale9Position(v[icy] - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height,
+								graphics.__owner.scaleY);
 
 							if ((fillScale9Bounds != null && bitmapFill != null) || (strokeScale9Bounds != null && bitmapStroke != null))
 							{
-								applyScale9GridUnscaledX(v[iax]);
-								applyScale9GridUnscaledY(v[iay]);
-								applyScale9GridUnscaledX(v[ibx]);
-								applyScale9GridUnscaledY(v[iby]);
-								applyScale9GridUnscaledX(v[icx]);
-								applyScale9GridUnscaledY(v[icy]);
+								applyScale9GridUnscaledX(v[iax] - offsetX);
+								applyScale9GridUnscaledY(v[iay] - offsetY);
+								applyScale9GridUnscaledX(v[ibx] - offsetX);
+								applyScale9GridUnscaledY(v[iby] - offsetY);
+								applyScale9GridUnscaledX(v[icx] - offsetX);
+								applyScale9GridUnscaledY(v[icy] - offsetY);
 								applyScale9GridScaledX(scaledX1);
 								applyScale9GridScaledY(scaledY1);
 								applyScale9GridScaledX(scaledX2);
@@ -1644,12 +1647,12 @@ class CairoGraphics
 								applyScale9GridScaledY(scaledY3);
 							}
 
-							x1 = scaledX1 - offsetX;
-							y1 = scaledY1 - offsetY;
-							x2 = scaledX2 - offsetX;
-							y2 = scaledY2 - offsetY;
-							x3 = scaledX3 - offsetX;
-							y3 = scaledY3 - offsetY;
+							x1 = scaledX1;
+							y1 = scaledY1;
+							x2 = scaledX2;
+							y2 = scaledY2;
+							x3 = scaledX3;
+							y3 = scaledY3;
 						}
 						else
 						{
