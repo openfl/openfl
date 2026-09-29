@@ -919,8 +919,8 @@ import js.html.CanvasRenderingContext2D;
 			}
 			else
 			{
-				tileTransform.tx = tileRect.x;
-				tileTransform.ty = tileRect.y;
+				tileTransform.tx = rects[ri];
+				tileTransform.ty = rects[ri + 1];
 			}
 
 			tileRect.__transform(tileRect, tileTransform);
