@@ -305,7 +305,34 @@ class Context3DGraphics
 
 						ri = (hasIndices ? (indices[i] * 4) : i * 4);
 						if (ri < 0) continue;
-						tileRect.setTo(rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
+
+						if (hasScale9Grid)
+						{
+							var tileRectX = rects[ri];
+							var tileRectY = rects[ri + 1];
+							var tileRectWidth = rects[ri + 2];
+							var tileRectHeight = rects[ri + 3];
+							var scaledLeft = bounds.x
+								+ (toScale9Position(tileRectX - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width,
+									graphics.__owner.scaleX) / graphics.__owner.scaleX);
+							var scaledTop = bounds.y
+								+ (toScale9Position(tileRectY - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height,
+									graphics.__owner.scaleY) / graphics.__owner.scaleY);
+							var scaledRight = bounds.x
+								+ (toScale9Position(tileRectX + tileRectWidth - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width,
+									graphics.__owner.scaleX) / graphics.__owner.scaleX);
+							var scaledBottom = bounds.y
+								+ (toScale9Position(tileRectY + tileRectHeight - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height,
+									graphics.__owner.scaleY) / graphics.__owner.scaleY);
+
+							var scaledWidth = scaledRight - scaledLeft;
+							var scaledHeight = scaledBottom - scaledTop;
+							tileRect.setTo(scaledLeft, scaledTop, scaledWidth, scaledHeight);
+						}
+						else
+						{
+							tileRect.setTo(rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
+						}
 
 						tileWidth = tileRect.width;
 						tileHeight = tileRect.height;

@@ -1652,14 +1652,6 @@ class CanvasGraphics
 					// var roundPixels = renderer.__roundPixels;
 					var alpha = CanvasGraphics.worldAlpha;
 
-					var scaledPositionX = positionX;
-					var scaledPositionY = positionY;
-					if (hasScale9Grid)
-					{
-						scaledPositionX = toScale9Position(scaledPositionX, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						scaledPositionY = toScale9Position(scaledPositionY, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-					}
-
 					var ri:Int;
 					var ti:Int;
 
@@ -1670,8 +1662,31 @@ class CanvasGraphics
 						ri = (hasIndices ? (indices[i] * 4) : i * 4);
 						if (ri < 0) continue;
 
-						// TODO: scale9Grid
-						tileRect.setTo(rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
+						if (hasScale9Grid)
+						{
+							var tileX = rects[ri];
+							var tileY = rects[ri + 1];
+							var tileWidth = rects[ri + 2];
+							var tileHeight = rects[ri + 3];
+							var scaledLeft = offsetX
+								+ toScale9Position(tileX - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+							var scaledTop = offsetY
+								+ toScale9Position(tileY - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+							var scaledRight = offsetX
+								+ toScale9Position(tileX + tileWidth - offsetX, scale9Grid.x - offsetX, scale9Grid.width, bounds.width,
+									graphics.__owner.scaleX);
+							var scaledBottom = offsetY
+								+ toScale9Position(tileY + tileHeight - offsetY, scale9Grid.y - offsetY, scale9Grid.height, bounds.height,
+									graphics.__owner.scaleY);
+
+							var scaledWidth = scaledRight - scaledLeft;
+							var scaledHeight = scaledBottom - scaledTop;
+							tileRect.setTo(scaledLeft, scaledTop, scaledWidth, scaledHeight);
+						}
+						else
+						{
+							tileRect.setTo(rects[ri], rects[ri + 1], rects[ri + 2], rects[ri + 3]);
+						}
 
 						if (tileRect.width <= 0 || tileRect.height <= 0)
 						{
@@ -1701,8 +1716,8 @@ class CanvasGraphics
 							tileTransform.ty = tileRect.y;
 						}
 
-						tileTransform.tx += scaledPositionX - offsetX;
-						tileTransform.ty += scaledPositionY - offsetY;
+						tileTransform.tx += positionX - offsetX;
+						tileTransform.ty += positionY - offsetY;
 						tileTransform.concat(transform);
 
 						// if (roundPixels) {
