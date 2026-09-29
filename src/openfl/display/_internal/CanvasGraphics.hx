@@ -201,12 +201,18 @@ class CanvasGraphics
 				#end
 				if (hasScale9Grid)
 				{
-					point.x = toScale9Position(point.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-					point.y = toScale9Position(point.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-					point2.x = toScale9Position(point2.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-					point2.y = toScale9Position(point2.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-					point3.x = toScale9Position(point3.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-					point3.y = toScale9Position(point3.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+					point.x = bounds.x
+						+ toScale9Position(point.x - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+					point.y = bounds.y
+						+ toScale9Position(point.y - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+					point2.x = bounds.x
+						+ toScale9Position(point2.x - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+					point2.y = bounds.y
+						+ toScale9Position(point2.y - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+					point3.x = bounds.x
+						+ toScale9Position(point3.x - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+					point3.y = bounds.y
+						+ toScale9Position(point3.y - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
 				}
 
 				var dx = point3.x - point2.x;
@@ -261,10 +267,14 @@ class CanvasGraphics
 					#end
 					if (hasScale9Grid)
 					{
-						point.x = toScale9Position(point.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						point.y = toScale9Position(point.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-						point2.x = toScale9Position(point2.x, scale9Grid.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						point2.y = toScale9Position(point2.y, scale9Grid.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						point.x = bounds.x
+							+ toScale9Position(point.x - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						point.y = bounds.y
+							+ toScale9Position(point.y - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+						point2.x = bounds.x
+							+ toScale9Position(point2.x - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						point2.y = bounds.y
+							+ toScale9Position(point2.y - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
 					}
 
 					gradientFill = context.createLinearGradient(point.x, point.y, point2.x, point2.y);
