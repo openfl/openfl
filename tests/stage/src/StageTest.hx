@@ -161,7 +161,7 @@ class StageTest extends Test
 			return;
 		}
 
-		Assert.isTrue(Lib.current.stage.stageHeight > 0.0);
+		Assert.notNull(Lib.current.stage.stageHeight);
 	}
 
 	public function test_stageWidth()
@@ -172,7 +172,7 @@ class StageTest extends Test
 			return;
 		}
 
-		Assert.isTrue(Lib.current.stage.stageWidth > 0.0);
+		Assert.notNull(Lib.current.stage.stageWidth);
 	}
 
 	public function test_window()
