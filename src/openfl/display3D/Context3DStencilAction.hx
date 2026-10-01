@@ -91,14 +91,12 @@ import openfl.utils._internal.NullUtils;
 	}
 
 	#if cs
-	@:noCompletion @:op(A == B) private static function equals(a:Context3DStencilAction, b:Context3DStencilAction):Bool
+	@:op(A == B) private static function equals(a:Context3DStencilAction, b:Context3DStencilAction):Bool
 	{
-		return NullUtils.valueEquals(a, b, Int);
+		return NullUtils.intEquals(cast a, cast b);
 	}
-	#end
 
-	#if cs
-	@:noCompletion @:op(A != B) private static function notEquals(a:Context3DStencilAction, b:Context3DStencilAction):Bool
+	@:op(A != B) private static inline function notEquals(a:Context3DStencilAction, b:Context3DStencilAction):Bool
 	{
 		return !equals(a, b);
 	}
