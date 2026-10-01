@@ -71,9 +71,24 @@ class DisplayObjectRenderer extends EventDispatcher
 
 	@:noCompletion private function __clear():Void {}
 
+	@:noCompletion private function __createCacheBitmap():Bitmap
+	{
+		var bitmap = new Bitmap();
+		__ensureRenderTransform(bitmap);
+		return bitmap;
+	}
+
 	@:noCompletion private function __getAlpha(value:Float):Float
 	{
 		return value * __worldAlpha;
+	}
+
+	@:noCompletion private inline function __ensureRenderTransform(displayObject:DisplayObject):Void
+	{
+		if (displayObject.__worldTransform == null || displayObject.__renderTransform == null)
+		{
+			displayObject.__getWorldTransform();
+		}
 	}
 
 	@:noCompletion private function __getColorTransform(value:ColorTransform):ColorTransform
@@ -430,7 +445,10 @@ class DisplayObjectRenderer extends EventDispatcher
 					{
 						displayObject.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
 
-						if (displayObject.__cacheBitmap == null) displayObject.__cacheBitmap = new Bitmap();
+						if (displayObject.__cacheBitmap == null)
+						{
+							displayObject.__cacheBitmap = __createCacheBitmap();
+						}
 						displayObject.__cacheBitmap.__bitmapData = displayObject.__cacheBitmapData;
 						displayObject.__cacheBitmapRenderer = null;
 					}
