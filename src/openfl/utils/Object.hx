@@ -2,6 +2,7 @@ package openfl.utils;
 
 import haxe.Constraints.Function;
 import openfl.display.DisplayObjectContainer;
+import openfl.utils._internal.Lib;
 
 @:transitive
 @:callable
@@ -70,6 +71,18 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 		return (this != null
 			&& Reflect.hasField(this, name)
 			&& #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (Reflect.field(this, name), Iterable_));
+	}
+
+	/**
+		Sets the availability of a dynamic property for `for..in` loops.
+
+		Haxe objects do not store ECMA `[[Enumerable]]` attributes (except on
+		the Flash target, where the native AVM method is used). This method
+		currently does not hide fields from `for..in`.
+	**/
+	public function setPropertyIsEnumerable(name:String, isEnum:Bool = true):Void
+	{
+		Lib.notImplemented();
 	}
 
 	public inline function toLocaleString():String
