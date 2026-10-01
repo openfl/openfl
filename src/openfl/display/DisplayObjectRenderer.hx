@@ -43,6 +43,16 @@ import lime.graphics.RenderContextType;
 @:allow(openfl.text)
 class DisplayObjectRenderer extends EventDispatcher
 {
+	#if openfl_count_surface_allocs
+	/**
+		Diagnostic counter incremented every time a new BitmapData is allocated
+		for `DisplayObject.__cacheBitmapData` (the cacheAsBitmap/filters cache).
+		Used by `tests/cairo-surface-clip` to compare allocation churn between
+		surface-sizing strategies. No-op unless `-D openfl_count_surface_allocs`.
+	**/
+	public static var __cacheBitmapAllocs:Int = 0;
+	#end
+
 	@:noCompletion private var __allowSmoothing:Bool;
 	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __cleared:Bool;
@@ -392,10 +402,18 @@ class DisplayObjectRenderer extends EventDispatcher
 
 				if (displayObject.__cacheBitmapData != null)
 				{
-					if (filterWidth > displayObject.__cacheBitmapData.width || filterHeight > displayObject.__cacheBitmapData.height)
+					// High-water-mark cache strategy: grow on demand, keep the peak
+					// size on shrink. Safe because `Context3DBitmap` composites only
+					// the painted sub-region `filterWidth x filterHeight` (set as
+					// `__cacheBitmap.__paintedWidth/Height` below) — see the matching
+					// CairoGraphics surface strategy and openfl/openfl#2866.
+					if (filterWidth > displayObject.__cacheBitmapData.width
+						|| filterHeight > displayObject.__cacheBitmapData.height)
 					{
-						bitmapWidth = Math.ceil(Math.max(filterWidth * 1.25, displayObject.__cacheBitmapData.width));
-						bitmapHeight = Math.ceil(Math.max(filterHeight * 1.25, displayObject.__cacheBitmapData.height));
+						bitmapWidth = (displayObject.__cacheBitmapData.width > filterWidth)
+							? displayObject.__cacheBitmapData.width : filterWidth;
+						bitmapHeight = (displayObject.__cacheBitmapData.height > filterHeight)
+							? displayObject.__cacheBitmapData.height : filterHeight;
 						needRender = true;
 					}
 					else
@@ -429,6 +447,9 @@ class DisplayObjectRenderer extends EventDispatcher
 						|| bitmapHeight > displayObject.__cacheBitmapData.height)
 					{
 						displayObject.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
+						#if openfl_count_surface_allocs
+						__cacheBitmapAllocs++;
+						#end
 
 						if (displayObject.__cacheBitmap == null) displayObject.__cacheBitmap = new Bitmap();
 						displayObject.__cacheBitmap.__bitmapData = displayObject.__cacheBitmapData;
@@ -437,6 +458,14 @@ class DisplayObjectRenderer extends EventDispatcher
 					else
 					{
 						displayObject.__cacheBitmapData.__fillRect(displayObject.__cacheBitmapData.rect, bitmapColor, allowFramebuffer);
+					}
+
+					// Tell Context3DBitmap to composite only the painted sub-region
+					// (matters when bitmapWidth > filterWidth — high-water cache).
+					if (displayObject.__cacheBitmap != null)
+					{
+						displayObject.__cacheBitmap.__paintedWidth = filterWidth;
+						displayObject.__cacheBitmap.__paintedHeight = filterHeight;
 					}
 
 					if (needsFill)

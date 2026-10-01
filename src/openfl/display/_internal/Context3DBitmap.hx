@@ -42,7 +42,12 @@ class Context3DBitmap
 			renderer.applyColorTransform(bitmap.__worldColorTransform);
 			renderer.updateShader();
 
-			var vertexBuffer = bitmap.__bitmapData.getVertexBuffer(context);
+			// `__paintedWidth/Height` are set on the cacheBitmap when the backing
+			// `__bitmapData` is sized larger than the current filterWidth/Height
+			// (high-water-mark cache strategy in DisplayObjectRenderer). Without
+			// this clamp the oversize transparent padding would leak into world
+			// space — see openfl/openfl#2866 follow-up.
+			var vertexBuffer = bitmap.__bitmapData.getVertexBuffer(context, null, null, bitmap.__paintedWidth, bitmap.__paintedHeight);
 			if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
 			if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
 			var indexBuffer = bitmap.__bitmapData.getIndexBuffer(context);
