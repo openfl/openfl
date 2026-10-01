@@ -30,6 +30,7 @@ import lime.graphics.RenderContextType;
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
+@:access(openfl.display.Stage)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.events.RenderEvent)
@@ -48,15 +49,236 @@ class DisplayObjectRenderer extends EventDispatcher
 	@:noCompletion private var __cleared:Bool;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __context:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __overrideBlendMode:BlendMode;
+	@:noCompletion private var __groupBlendMode:BlendMode;
+	// the group whose touches are tracked (see __touch); null at the top of a render, where every
+	// pixel counts as touched
+	@:noCompletion private var __touchedGroup:DisplayObject;
+	@:noCompletion private var __touchedBuilt:Bool;
+	// how many groups the current object is inside; a cache bitmap's renderer starts at the depth it
+	// is drawn at, since the scratch buffers kept per depth are shared
+	@:noCompletion private var __layerDepth:Int = 0;
+	// the current buffer's level, and whether it has content yet (see __openBuffer)
+	@:noCompletion private var __bufferLevel:Int = 0;
+	@:noCompletion private var __bufferHasContent:Bool = false;
 	@:noCompletion private var __pixelRatio:Float;
 	@:noCompletion private var __roundPixels:Bool;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __tempColorTransform:ColorTransform;
-	@:noCompletion private var __transparent:Bool;
+
+	/**
+		Whether the surface being drawn into has an alpha channel. `BitmapData.draw` sets this to false
+		when it draws into an opaque bitmap. When the stage is rendered, the stage's own `transparent`
+		setting is used instead.
+	**/
+	@:noCompletion private var __transparent:Bool = true;
+
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __type:#if lime RenderContextType #else Dynamic #end;
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
+
+	/**
+		Records that `displayObject` was drawn: the current buffer now has content (see `__openBuffer`),
+		and the object's coverage is added to the group's touched buffer, if one is kept.
+
+		Flash tracks how much of each pixel of a group earlier objects have covered. SUBTRACT and INVERT
+		draw the object as it is over uncovered pixels and apply the mode over covered ones, even where
+		the backdrop has become transparent again; ERASE and ALPHA do so only where `__cutterShowsAsIs`
+		holds. A group builds its buffer the first time one of these needs it (see `__ensureTouched`);
+		outside any group there is none, and every pixel counts as covered.
+
+		A leaf adds its own coverage, a container's graphics are added by `__touchGraphics`, and with
+		`subtree` an object rendered as a group of its own is added as a whole.
+	**/
+	@:noCompletion private function __touch(displayObject:DisplayObject, subtree:Bool = false):Void
+	{
+		if (!__countsAsTouching(displayObject)) return;
+		if (subtree)
+		{
+			// a group counts as drawn into the buffer through __closeBuffer, if anything was drawn into it
+			if (__touchedBuilt) __walkTouched(displayObject, null);
+		}
+		else if (displayObject.__children == null)
+		{
+			__bufferHasContent = true;
+			if (__touchedBuilt) __drawTouched(displayObject, false);
+		}
+	}
+
+	/**
+		The mode `displayObject` is composited with: the one given to `BitmapData.draw`, or its world
+		mode. The mode of the group being rendered counts as NORMAL, since the group's composite
+		applies it.
+	**/
+	@:noCompletion private function __effectiveBlendMode(displayObject:DisplayObject):BlendMode
+	{
+		var blendMode = __overrideBlendMode != null ? __overrideBlendMode : displayObject.__worldBlendMode;
+		return blendMode == __groupBlendMode ? NORMAL : blendMode;
+	}
+
+	/**
+		Whether `displayObject` is composited with ERASE or ALPHA (see `__effectiveBlendMode`).
+	**/
+	@:noCompletion private function __isCutter(displayObject:DisplayObject):Bool
+	{
+		var blendMode = __effectiveBlendMode(displayObject);
+		return blendMode == ERASE || blendMode == ALPHA;
+	}
+
+	/**
+		Whether `displayObject` counts as drawn for `__touch`: visible, and not a cutter unless cutters
+		follow the touched model here (see `__cutterShowsAsIs`).
+	**/
+	@:noCompletion private function __countsAsTouching(displayObject:DisplayObject):Bool
+	{
+		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return false;
+		return !__isCutter(displayObject) || __cutterShowsAsIs();
+	}
+
+	/**
+		Records a container's own graphics as drawn, before its children (see `__touch`).
+	**/
+	@:noCompletion private function __touchGraphics(displayObject:DisplayObject):Void
+	{
+		if (!__countsAsTouching(displayObject)) return;
+		var graphics = displayObject.__graphics;
+		if (graphics == null || graphics.__commands.length == 0) return;
+		__bufferHasContent = true;
+		if (__touchedBuilt) __drawTouched(displayObject, true);
+	}
+
+	/**
+		Draws the coverage of `displayObject` and its descendants into the touched buffer in drawing
+		order, stopping at `stopAt`, and returns whether it was reached. It fills a buffer built after
+		the fact (see `__ensureTouched`) and adds a whole group (see `__touch`). Objects that do not
+		count as touching are skipped with their children (see `__countsAsTouching`).
+	**/
+	@:noCompletion private function __walkTouched(displayObject:DisplayObject, stopAt:DisplayObject):Bool
+	{
+		if (displayObject == stopAt) return true;
+		if (!__countsAsTouching(displayObject)) return false;
+		var children = displayObject.__children;
+		if (children == null)
+		{
+			__drawTouched(displayObject, false);
+			return false;
+		}
+		if (displayObject.__graphics != null) __drawTouched(displayObject, true);
+		for (child in children)
+		{
+			if (__walkTouched(child, stopAt)) return true;
+		}
+		return false;
+	}
+
+	/**
+		Draws what a leaf covers into the touched buffer, or with `graphicsOnly` a container's own
+		graphics. Each renderer implements it for its own kind of buffer.
+	**/
+	@:noCompletion private function __drawTouched(displayObject:DisplayObject, graphicsOnly:Bool):Void {}
+
+	/**
+		Whether drawing goes straight onto the stage, rather than into a group, a cache bitmap or a
+		`BitmapData.draw` bitmap. Flash does not draw ERASE or ALPHA objects there at all.
+	**/
+	@:noCompletion private inline function __drawsOntoStage():Bool
+	{
+		return __bufferLevel == 0;
+	}
+
+	/**
+		Whether ERASE and ALPHA follow the touched model here (see `__touch`) instead of simply cutting.
+		On screen Flash does so only in a buffer nested inside one that has content
+		(see `__openBuffer`). The bitmap of `BitmapData.draw` counts as a buffer with content, so every
+		group inside a draw call does.
+	**/
+	@:noCompletion private inline function __cutterShowsAsIs():Bool
+	{
+		return __bufferLevel >= 2;
+	}
+
+	/**
+		Starts a render at level 0 on the stage, or at level 1 with content when drawing into a bitmap
+		(`BitmapData.draw` or a cache bitmap).
+	**/
+	@:noCompletion private function __resetBufferLevel():Void
+	{
+		var stage = __stage != null && __stage.__renderer == this;
+		__bufferLevel = stage ? 0 : 1;
+		__bufferHasContent = !stage;
+	}
+
+	/**
+		Enters a group: it gets the next level when the current buffer is the stage or has content, and
+		shares the current level when that buffer is still empty. The caller keeps the old state for
+		`__closeBuffer`.
+	**/
+	@:noCompletion private function __openBuffer():Void
+	{
+		if (__bufferLevel == 0 || __bufferHasContent) __bufferLevel++;
+		__bufferHasContent = false;
+	}
+
+	/**
+		Leaves a group and restores the outer buffer's `level`. The outer buffer has content if it had
+		some before (`hadContent`) or the group got any.
+	**/
+	@:noCompletion private function __closeBuffer(level:Int, hadContent:Bool):Void
+	{
+		__bufferHasContent = hadContent || __bufferHasContent;
+		__bufferLevel = level;
+	}
+
+	/**
+		Whether a shape should also render its coverage: a second copy of its fills, drawn fully opaque,
+		that ALPHA uses as a mask. That is the case whenever the shape ends up composited with ALPHA,
+		whether through its own blend mode, the group it is being rendered into, or the blend mode given
+		to `BitmapData.draw`.
+	**/
+	@:noCompletion private function __isCompositedWithAlpha(displayObject:DisplayObject):Bool
+	{
+		return displayObject.__worldBlendMode == ALPHA || __groupBlendMode == ALPHA || __overrideBlendMode == ALPHA;
+	}
+
+	/**
+		Whether an object under ALPHA needs a separate coverage mask, or whether its own pixels already
+		show which area it covers.
+
+		Flash's ALPHA only affects the area an object covers: the whole rectangle of a Bitmap,
+		transparent pixels included, but only the fills of a shape. The rest of the object's bounding
+		box keeps the backdrop. A single object without graphics, such as a Bitmap, that is not rotated
+		or skewed covers exactly its bounding box, so it needs no mask. Anything with graphics, anything
+		with children, and anything rotated or skewed does.
+	**/
+	@:noCompletion private function __alphaNeedsMask(displayObject:DisplayObject):Bool
+	{
+		if (displayObject.__graphics != null) return true;
+		if (displayObject.__children != null && displayObject.__children.length > 0) return true;
+		var transform = displayObject.__renderTransform;
+		return transform.b != 0 || transform.c != 0;
+	}
+
+	/**
+		Whether a blended object can be composited straight from pixels it already has, instead of first
+		being rendered into a group of its own.
+
+		That is true for a Bitmap, using its bitmapData, and for a Shape or an empty Sprite, using its
+		rendered graphics, as long as it has no children, mask, scroll rectangle, opaque background,
+		color transform or cache bitmap. Other objects with graphics, such as a TextField, draw
+		themselves in their own way and always use a group. The cache bitmap is brought up to date
+		first, as a normal draw would do, so that filters are taken into account.
+	**/
+	@:noCompletion private function __isBlendLeaf(displayObject:DisplayObject):Bool
+	{
+		var type = displayObject.__drawableType;
+		if (type != BITMAP && type != SHAPE && type != SPRITE) return false;
+		if (displayObject.__children != null && displayObject.__children.length > 0) return false;
+		if (displayObject.__mask != null || displayObject.__scrollRect != null || displayObject.opaqueBackground != null) return false;
+		if (!displayObject.__worldColorTransform.__isDefault(false)) return false;
+		__updateCacheBitmap(displayObject, false);
+		if (displayObject.__cacheBitmap != null) return false;
+		return type == BITMAP || displayObject.__graphics != null;
+	}
 
 	@:noCompletion private function new()
 	{
@@ -164,7 +386,13 @@ class DisplayObjectRenderer extends EventDispatcher
 
 	@:noCompletion private function __resize(width:Int, height:Int):Void {}
 
-	@:noCompletion private function __setBlendMode(value:BlendMode):Void {}
+	/**
+		Sets the blend mode on the render target. Nothing happens if the renderer already has that mode
+		set, unless `force` is true. Use `force` when another renderer may have changed the target's
+		state in the meantime, as happens when a cacheAsBitmap child renderer draws with the same
+		context (see `__updateCacheBitmap`).
+	**/
+	@:noCompletion private function __setBlendMode(value:BlendMode, force:Bool = false):Void {}
 
 	@:noCompletion private function __shouldCacheHardware(displayObject:DisplayObject, value:Null<Bool>):Null<Bool>
 	{
@@ -535,6 +763,8 @@ class DisplayObjectRenderer extends EventDispatcher
 						displayObject.__cacheBitmapRenderer = new CanvasRenderer(displayObject.__cacheBitmapData.image.buffer.__srcContext);
 						#else
 						displayObject.__cacheBitmapRenderer = new CairoRenderer(new Cairo(displayObject.__cacheBitmapData.getSurface()));
+						// the bitmap drawn into, for the composites that work on views of its bytes
+						cast(displayObject.__cacheBitmapRenderer, CairoRenderer).__targetBitmap = displayObject.__cacheBitmapData;
 						#end
 					}
 
@@ -548,9 +778,14 @@ class DisplayObjectRenderer extends EventDispatcher
 				if (displayObject.__cacheBitmapColorTransform == null) displayObject.__cacheBitmapColorTransform = new ColorTransform();
 
 				displayObject.__cacheBitmapRenderer.__stage = displayObject.stage;
+				// the scratch bitmaps of the groups are kept per layer depth and shared by every renderer:
+				// the cache is drawn while this renderer's groups are open, so its own start above them
+				displayObject.__cacheBitmapRenderer.__layerDepth = __layerDepth;
 
 				displayObject.__cacheBitmapRenderer.__allowSmoothing = renderer.__allowSmoothing;
-				displayObject.__cacheBitmapRenderer.__setBlendMode(NORMAL);
+				// another renderer has drawn with this context since, so the mode is applied whatever
+				// this renderer believes it holds
+				displayObject.__cacheBitmapRenderer.__setBlendMode(NORMAL, true);
 				displayObject.__cacheBitmapRenderer.__worldAlpha = 1 / displayObject.__worldAlpha;
 
 				displayObject.__cacheBitmapRenderer.__worldTransform.copyFrom(displayObject.__renderTransform);
@@ -655,7 +890,7 @@ class DisplayObjectRenderer extends EventDispatcher
 							bitmap3 = displayObject.__cacheBitmapData3;
 						}
 
-						childRenderer.__setBlendMode(NORMAL);
+						childRenderer.__setBlendMode(NORMAL, true);
 						childRenderer.__worldAlpha = 1;
 						childRenderer.__worldTransform.identity();
 						childRenderer.__worldColorTransform.__identity();
@@ -692,8 +927,8 @@ class DisplayObjectRenderer extends EventDispatcher
 						displayObject.__cacheBitmap.__bitmapData = bitmap;
 					}
 
-					parentRenderer.__blendMode = NORMAL;
-					parentRenderer.__setBlendMode(cacheBlendMode);
+					// the child renderer left its own blend factors in the context
+					parentRenderer.__setBlendMode(cacheBlendMode, true);
 					parentRenderer.__copyShader(childRenderer);
 
 					if (cacheRTT != null)

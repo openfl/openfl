@@ -1347,7 +1347,7 @@ import lime.math.Vector2;
 		__state.blendDestinationAlphaFactor = destinationAlphaFactor;
 
 		// TODO: Better way to handle this?
-		__setGLBlendEquation(gl.FUNC_ADD);
+		__setGLBlendEquation(gl.FUNC_ADD, gl.FUNC_ADD);
 	}
 
 	/**
@@ -2641,12 +2641,22 @@ import lime.math.Vector2;
 		}
 	}
 
-	@:noCompletion private function __setGLBlendEquation(value:Int):Void
+	@:noCompletion private function __setGLBlendEquation(value:Int, alphaValue:Int):Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.__glBlendEquation != value #end)
+		if (#if openfl_disable_context_cache true #else __contextState.__glBlendEquation != value
+			|| __contextState.__glBlendEquationAlpha != alphaValue #end)
 		{
-			gl.blendEquation(value);
+			if (value == alphaValue)
+			{
+				gl.blendEquation(value);
+			}
+			else
+			{
+				gl.blendEquationSeparate(value, alphaValue);
+			}
+
 			__contextState.__glBlendEquation = value;
+			__contextState.__glBlendEquationAlpha = alphaValue;
 		}
 	}
 

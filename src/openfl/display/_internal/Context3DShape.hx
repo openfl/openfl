@@ -1,6 +1,7 @@
 package openfl.display._internal;
 
 #if !flash
+import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.OpenGLRenderer;
 #if gl_stats
@@ -36,15 +37,23 @@ class Context3DShape
 			renderer.__pushMaskObject(shape);
 			// renderer.filterManager.pushObject (shape);
 
-			Context3DGraphics.render(graphics, renderer);
+			Context3DGraphics.render(graphics, renderer, renderer.__isCompositedWithAlpha(shape));
 
 			if (graphics.__bitmap != null && graphics.__visible)
 			{
 				var context = renderer.__context3D;
+				var shader = renderer.__initDisplayShader(shape.__worldShader);
 
-				var shader = renderer.__initDisplayShader(cast shape.__worldShader);
 				renderer.setShader(shader);
 				renderer.applyBitmapData(graphics.__bitmap, true);
+				// Flash's ALPHA only touches the pixels a shape covers and keeps coverage and fill alpha
+				// apart at its edges: the coverage render gives that, or else at least the empty
+				// texels of the texture must not cut the backdrop. A text field draws straight into its
+				// bitmap, in colors that are always opaque, so the bitmap's own alpha is its coverage
+				var alphaMask = renderer.__blendMode == BlendMode.ALPHA;
+				var coverage = graphics.__managed ? graphics.__bitmap : graphics.__coverage;
+				renderer.applyCoverage(alphaMask ? coverage : null);
+				renderer.applyDiscardTransparent(alphaMask && coverage == null);
 
 				var matrix = Matrix.__pool.get();
 				matrix.scale(1 / graphics.__bitmapScaleX, 1 / graphics.__bitmapScaleY);

@@ -26,7 +26,7 @@ class CanvasShape
 
 		if (graphics != null)
 		{
-			CanvasGraphics.render(graphics, renderer);
+			CanvasGraphics.render(graphics, renderer, renderer.__isCompositedWithAlpha(shape));
 
 			var width = graphics.__width;
 			var height = graphics.__height;
@@ -78,7 +78,7 @@ class CanvasShape
 
 		if (graphics != null)
 		{
-			CanvasGraphics.render(graphics, renderer);
+			CanvasGraphics.render(graphics, renderer, renderer.__isCompositedWithAlpha(shape));
 
 			var width = graphics.__width;
 			var height = graphics.__height;

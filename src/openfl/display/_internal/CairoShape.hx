@@ -39,7 +39,7 @@ class CairoShape
 
 		if (graphics != null)
 		{
-			CairoGraphics.render(graphics, renderer);
+			CairoGraphics.render(graphics, renderer, renderer.__isCompositedWithAlpha(shape));
 
 			var width = graphics.__width;
 			var height = graphics.__height;
@@ -91,7 +91,7 @@ class CairoShape
 
 		if (graphics != null)
 		{
-			CairoGraphics.render(graphics, renderer);
+			CairoGraphics.render(graphics, renderer, renderer.__isCompositedWithAlpha(shape));
 
 			var width = graphics.__width;
 			var height = graphics.__height;
