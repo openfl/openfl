@@ -197,11 +197,32 @@ class CanvasRenderer extends DisplayObjectRenderer
 	@:noCompletion private override function __render(object:IBitmapDrawable):Void
 	{
 		__resetBufferLevel();
-		// the root is rendered as it is, its own blend mode being its parent's to apply, unless
-		// BitmapData.draw gave a blend mode: then the root is composited with it, as one object
+		// the root is rendered as it is (see __renderRoot), unless BitmapData.draw gave a blend mode:
+		// then the root is composited with it, as one object
 		if (__overrideBlendMode != null && __overrideBlendMode != NORMAL) __renderDrawable(object);
 		else
-			__renderDrawableDirect(object);
+			__renderRoot(object);
+	}
+
+	/**
+		Renders the root of a render. Its own blend mode is for whoever composites the result: the
+		renderer that draws a cache bitmap applies it to the bitmap, and `BitmapData.draw` ignores it,
+		as Flash does. Applied inside the render, against a transparent target, MULTIPLY, SUBTRACT,
+		ERASE and ALPHA would leave a cache bitmap empty. So the root's mode counts as the group's mode
+		here, as inside any group: the root and the children that only inherit its mode draw NORMAL
+		(see `__effectiveBlendMode`). A blend mode given to `BitmapData.draw` replaces the root's own
+		and is left as it is.
+	**/
+	@:noCompletion private function __renderRoot(object:IBitmapDrawable):Void
+	{
+		var groupBlendMode = __groupBlendMode;
+		if (object.__drawableType != BITMAP_DATA && __overrideBlendMode == null)
+		{
+			var displayObject:DisplayObject = cast object;
+			__groupBlendMode = displayObject.__worldBlendMode;
+		}
+		__renderDrawableDirect(object);
+		__groupBlendMode = groupBlendMode;
 	}
 
 	@:noCompletion private function __renderDrawable(object:IBitmapDrawable):Void
