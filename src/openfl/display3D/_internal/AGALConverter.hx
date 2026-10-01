@@ -1066,7 +1066,7 @@ private class SourceRegister
 				// only output swizzles for each source mask
 				if ((sourceMask & (1 << i)) != 0)
 				{
-					switch ((s >> (i * 2)) & 3)
+					switch ((s >> (swizzle.length * 2)) & 3)
 					{
 						case 0:
 							swizzle += "x";
