@@ -26,6 +26,7 @@ class DisplayObjectTest extends Test
 
 		sprite.graphics.beginFill(0xFF0000);
 		sprite.graphics.drawRect(0, 0, 100, 100);
+		sprite.graphics.endFill();
 
 		bounds = sprite.getBounds(sprite);
 		Assert.equals(0, bounds.x);
@@ -81,22 +82,117 @@ class DisplayObjectTest extends Test
 
 	public function test_getRect()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.getRect;
+		var bounds = sprite.getRect(sprite);
 
-		Assert.notNull(exists);
+		Assert.isTrue(bounds.isEmpty());
+
+		sprite.graphics.beginFill(0xFF0000);
+		sprite.graphics.drawRect(0, 0, 100, 100);
+		sprite.graphics.endFill();
+
+		bounds = sprite.getRect(sprite);
+		Assert.equals(0, bounds.x);
+		Assert.equals(0, bounds.y);
+		Assert.equals(100, bounds.width);
+		Assert.equals(100, bounds.height);
+
+		sprite.x = 100;
+
+		bounds = sprite.getRect(sprite);
+		Assert.equals(0, bounds.x);
+		Assert.equals(0, bounds.y);
+		Assert.equals(100, bounds.width);
+		Assert.equals(100, bounds.height);
+
+		var sprite2 = new Sprite();
+		sprite2.addChild(sprite);
+
+		bounds = sprite.getRect(sprite2);
+		Assert.equals(100, bounds.x);
+		Assert.equals(0, bounds.y);
+		Assert.equals(100, bounds.width);
+		Assert.equals(100, bounds.height);
+
+		sprite.rotation = 90;
+
+		bounds = sprite.getRect(sprite2);
+		Assert.equals(0, bounds.x);
+		Assert.equals(0, bounds.y);
+		Assert.equals(100, bounds.width);
+		Assert.equals(100, bounds.height);
+
+		bounds = sprite2.getRect(sprite2);
+		Assert.equals(0, bounds.x);
+		Assert.equals(0, bounds.y);
+		Assert.equals(100, bounds.width);
+		Assert.equals(100, bounds.height);
+
+		sprite.x = 200;
+
+		bounds = sprite.getRect(sprite);
+		Assert.equals(0, bounds.x);
+		Assert.equals(0, bounds.y);
+		Assert.equals(100, bounds.width);
+		Assert.equals(100, bounds.height);
+
+		bounds = sprite2.getRect(sprite);
+		Assert.equals(0, bounds.x);
+		Assert.equals(0, bounds.y);
+		Assert.equals(100, bounds.width);
+		Assert.equals(100, bounds.height);
 	}
 
 	public function test_globalToLocal()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.globalToLocal;
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0, 0, 150, 100);
+		sprite.graphics.endFill();
+		sprite.x = 10;
+		sprite.y = 5;
 
-		Assert.notNull(exists);
+		var global = new Point(50, 25);
+		var local = sprite.globalToLocal(global);
+
+		Assert.equals(40, local.x);
+		Assert.equals(20, local.y);
+
+		var container = new Sprite();
+		container.x = 15;
+		container.y = 5;
+		container.addChild(sprite);
+
+		var global = new Point(50, 25);
+		var local = sprite.globalToLocal(global);
+
+		Assert.equals(25, local.x);
+		Assert.equals(15, local.y);
+
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping globalToLocal stage test");
+			return;
+		}
+
+		Lib.current.addChild(container);
+
+		var global = new Point(50, 25);
+		var local = sprite.globalToLocal(global);
+
+		Assert.equals(25, local.x);
+		Assert.equals(15, local.y);
+
+		Lib.current.addChild(sprite);
+
+		var global = new Point(50, 25);
+		var local = sprite.globalToLocal(global);
+
+		Assert.equals(40, local.x);
+		Assert.equals(20, local.y);
+
+		Lib.current.removeChild(container);
+		Lib.current.removeChild(sprite);
 	}
 
 	public function test_hitTestObject()
@@ -121,12 +217,54 @@ class DisplayObjectTest extends Test
 
 	public function test_localToGlobal()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.localToGlobal;
+		sprite.graphics.beginFill(0xff0000);
+		sprite.graphics.drawRect(0, 0, 150, 100);
+		sprite.graphics.endFill();
+		sprite.x = 10;
+		sprite.y = 5;
 
-		Assert.notNull(exists);
+		var global = new Point(40, 20);
+		var local = sprite.localToGlobal(global);
+
+		Assert.equals(50, local.x);
+		Assert.equals(25, local.y);
+
+		var container = new Sprite();
+		container.x = 15;
+		container.y = 5;
+		container.addChild(sprite);
+
+		var global = new Point(25, 15);
+		var local = sprite.localToGlobal(global);
+
+		Assert.equals(50, local.x);
+		Assert.equals(25, local.y);
+
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping localToGlobal stage test");
+			return;
+		}
+
+		Lib.current.addChild(container);
+
+		var global = new Point(25, 15);
+		var local = sprite.localToGlobal(global);
+
+		Assert.equals(50, local.x);
+		Assert.equals(25, local.y);
+
+		Lib.current.addChild(sprite);
+
+		var global = new Point(40, 20);
+		var local = sprite.localToGlobal(global);
+
+		Assert.equals(50, local.x);
+		Assert.equals(25, local.y);
+
+		Lib.current.removeChild(container);
+		Lib.current.removeChild(sprite);
 	}
 
 	/*public function test_testRect () {
@@ -363,22 +501,22 @@ class DisplayObjectTest extends Test
 
 	public function test_loaderInfo()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.loaderInfo;
+		Assert.isNull(sprite.loaderInfo);
 
-		Assert.isNull(exists);
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping loaderInfo stage test");
+			return;
+		}
 
-		// TODO: Isolate so integration is not needed
-
-		#if integration
 		openfl.Lib.current.addChild(sprite);
 
 		Assert.notNull(sprite.loaderInfo);
 
 		openfl.Lib.current.removeChild(sprite);
-		#end
+
+		Assert.isNull(sprite.loaderInfo);
 	}
 
 	public function test_mask()
@@ -398,32 +536,16 @@ class DisplayObjectTest extends Test
 		Assert.isNull(sprite1.mask);
 	}
 
-	#if !integration
-	@Ignored
-	#end
 	public function test_mouseX()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
-
 		var sprite = new Sprite();
-		var exists = sprite.mouseX;
-
-		Assert.notNull(exists);
+		Assert.equals(0.0, sprite.mouseX);
 	}
 
-	#if !integration
-	@Ignored
-	#end
 	public function test_mouseY()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
-
 		var sprite = new Sprite();
-		var exists = sprite.mouseY;
-
-		Assert.notNull(exists);
+		Assert.equals(0.0, sprite.mouseY);
 	}
 
 	public function test_name()
@@ -765,22 +887,77 @@ class DisplayObjectTest extends Test
 
 	public function test_stage()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.stage;
+		Assert.isNull(sprite.stage);
 
-		Assert.isNull(exists);
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping stage test");
+			return;
+		}
+
+		Lib.current.addChild(sprite);
+		Assert.equals(Lib.current.stage, sprite.stage);
+		Lib.current.removeChild(sprite);
+		Assert.isNull(sprite.stage);
 	}
 
 	public function test_transform()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.transform;
+		Assert.notNull(sprite.transform);
+		Assert.notNull(sprite.transform.matrix);
+		Assert.equals(1.0, sprite.transform.matrix.a);
+		Assert.equals(0.0, sprite.transform.matrix.b);
+		Assert.equals(0.0, sprite.transform.matrix.c);
+		Assert.equals(1.0, sprite.transform.matrix.d);
+		Assert.equals(0.0, sprite.transform.matrix.tx);
+		Assert.equals(0.0, sprite.transform.matrix.ty);
 
-		Assert.notNull(exists);
+		sprite.scaleX = 1.0;
+		sprite.scaleY = 1.0;
+		sprite.rotation = 0.0;
+		sprite.x = 10.0;
+		sprite.y = 15.0;
+		Assert.equals(1.0, sprite.transform.matrix.a);
+		Assert.equals(0.0, sprite.transform.matrix.b);
+		Assert.equals(0.0, sprite.transform.matrix.c);
+		Assert.equals(1.0, sprite.transform.matrix.d);
+		Assert.equals(10.0, sprite.transform.matrix.tx);
+		Assert.equals(15.0, sprite.transform.matrix.ty);
+
+		sprite.scaleX = 2.0;
+		sprite.scaleY = 0.5;
+		sprite.rotation = 0.0;
+		sprite.x = 0.0;
+		sprite.y = 0.0;
+		Assert.equals(2.0, sprite.transform.matrix.a);
+		Assert.equals(0.0, sprite.transform.matrix.b);
+		Assert.equals(0.0, sprite.transform.matrix.c);
+		Assert.equals(0.5, sprite.transform.matrix.d);
+		Assert.equals(0.0, sprite.transform.matrix.tx);
+		Assert.equals(0.0, sprite.transform.matrix.ty);
+
+		sprite.scaleX = 1.0;
+		sprite.scaleY = 1.0;
+		sprite.rotation = 90.0;
+		sprite.x = 0.0;
+		sprite.y = 0.0;
+		// Assert.equals(0.0, sprite.transform.matrix.a);
+		Assert.isTrue(sprite.transform.matrix.a < 0.00001);
+		Assert.equals(1.0, sprite.transform.matrix.b);
+		Assert.equals(-1.0, sprite.transform.matrix.c);
+		// Assert.equals(0.0, sprite.transform.matrix.d);
+		Assert.isTrue(sprite.transform.matrix.d < 0.00001);
+		Assert.equals(0.0, sprite.transform.matrix.tx);
+		Assert.equals(0.0, sprite.transform.matrix.ty);
+
+		sprite.transform.matrix = new Matrix(0.0, 2.0, -2.0, 0.0, 10.0, 15.0);
+		Assert.equals(2.0, sprite.scaleX);
+		Assert.equals(2.0, sprite.scaleY);
+		Assert.equals(90.0, sprite.rotation);
+		Assert.equals(10.0, sprite.x);
+		Assert.equals(15.0, sprite.y);
 	}
 
 	public function test_visible()
@@ -842,22 +1019,14 @@ class DisplayObjectTest extends Test
 
 	public function test_x()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.x;
-
-		Assert.notNull(exists);
+		Assert.equals(0.0, sprite.x);
 	}
 
 	public function test_y()
 	{
-		// TODO: Confirm functionality
-
 		var sprite = new Sprite();
-		var exists = sprite.y;
-
-		Assert.notNull(exists);
+		Assert.equals(0.0, sprite.y);
 	}
 
 	// public function test_z() {}
