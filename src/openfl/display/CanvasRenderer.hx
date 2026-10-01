@@ -603,7 +603,10 @@ class CanvasRenderer extends DisplayObjectRenderer
 		}
 		else
 		{
-			CanvasGraphics.render(graphics, this, true);
+			__coverageOnly = true;
+			CanvasGraphics.render(graphics, this);
+			__coverageOnly = false;
+
 			if (graphics.__bounds != null)
 			{
 				bounds.copyFrom(graphics.__bounds);

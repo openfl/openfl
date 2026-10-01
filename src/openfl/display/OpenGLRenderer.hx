@@ -128,9 +128,6 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private static var __staticBlendShader:BlendModeShader;
 	@:noCompletion private static var __staticWhite:BitmapData;
 
-	// __renderDrawableDirect draws coverage instead of objects (see __drawCoverage)
-	@:noCompletion private var __coverageOnly:Bool;
-
 	@:noCompletion private static var __invertSilhouette:ColorTransform = new ColorTransform(0, 0, 0, 1, 255, 255, 255, 0);
 
 	@:noCompletion private function new(context:Context3D, defaultRenderTarget:BitmapData = null)
@@ -1497,7 +1494,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		else
 		{
 			// renders the graphics to their texture when dirty (the texture path draws nothing here)
-			Context3DGraphics.render(graphics, this, blendMode == ALPHA);
+			Context3DGraphics.render(graphics, this);
 			if (graphics.__bitmap != null && graphics.__visible)
 			{
 				texture = graphics.__bitmap;
@@ -1758,7 +1755,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		// the direct triangle path draws its fills straight into the pass, opaque (applyAlpha and
 		// applyColorTransform see __coverageOnly); otherwise the render leaves a texture to draw,
 		// and a coverage render of the fills, made now if the shape has none yet
-		Context3DGraphics.render(graphics, this, true);
+		Context3DGraphics.render(graphics, this);
 		if (graphics.__bitmap != null && graphics.__visible)
 		{
 			var matrix = Matrix.__pool.get();

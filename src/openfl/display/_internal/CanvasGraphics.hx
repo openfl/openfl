@@ -2555,12 +2555,14 @@ class CanvasGraphics
 	}
 	#end
 
-	public static function render(graphics:Graphics, renderer:CanvasRenderer, withCoverage:Bool = false):Void
+	public static function render(graphics:Graphics, renderer:CanvasRenderer):Void
 	{
 		#if (js && html5)
 		CanvasGraphics.graphics = graphics;
 		CanvasGraphics.allowSmoothing = renderer.__allowSmoothing;
 		CanvasGraphics.worldAlpha = renderer.__getAlpha(graphics.__owner.__worldAlpha);
+
+		var withCoverage = renderer.__coverageOnly || renderer.__isCompositedWithAlpha(graphics.__owner);
 
 		#if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
 		var pixelRatio = 1;

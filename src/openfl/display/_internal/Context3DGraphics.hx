@@ -706,13 +706,7 @@ class Context3DGraphics
 		return true;
 	}
 
-	/**
-		Prepares graphics for drawing on the GPU. Graphics the direct path can handle are turned into
-		triangles. The rest, and any that already have an up-to-date texture, are rendered to a texture
-		by the software rasterizer. When `withCoverage` is true, the texture path also renders their
-		coverage, which ALPHA uses as a mask.
-	**/
-	public static function render(graphics:Graphics, renderer:OpenGLRenderer, withCoverage:Bool = false):Void
+	public static function render(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{
 		if (!graphics.__visible || graphics.__commands.length == 0) return;
 
@@ -747,10 +741,12 @@ class Context3DGraphics
 				renderer.__softwareRenderer.__worldTransform = renderer.__worldTransform;
 			}
 
+			renderer.__softwareRenderer.__coverageOnly = renderer.__coverageOnly || renderer.__isCompositedWithAlpha(graphics.__owner);
+
 			#if (js && html5)
-			CanvasGraphics.render(graphics, cast renderer.__softwareRenderer, withCoverage);
+			CanvasGraphics.render(graphics, cast renderer.__softwareRenderer);
 			#elseif lime_cairo
-			CairoGraphics.render(graphics, cast renderer.__softwareRenderer, withCoverage);
+			CairoGraphics.render(graphics, cast renderer.__softwareRenderer);
 			#end
 
 			renderer.__softwareRenderer.__worldTransform = cacheTransform;

@@ -628,7 +628,7 @@ class CairoRenderer extends DisplayObjectRenderer
 		else
 		{
 			#if lime_cairo
-			CairoGraphics.render(graphics, this, __isCompositedWithAlpha(displayObject));
+			CairoGraphics.render(graphics, this);
 			if (graphics.__cairo != null && graphics.__visible && graphics.__width >= 1 && graphics.__height >= 1)
 			{
 				surface = graphics.__cairo.target;
@@ -742,7 +742,11 @@ class CairoRenderer extends DisplayObjectRenderer
 	@:noCompletion private function __drawGraphicsCoverage(coverage:Cairo, displayObject:DisplayObject):Void
 	{
 		var graphics = displayObject.__graphics;
-		CairoGraphics.render(graphics, this, true);
+
+		__coverageOnly = true;
+		CairoGraphics.render(graphics, this);
+		__coverageOnly = false;
+
 		if (graphics.__bitmap == null) return;
 
 		var matrix = Matrix.__pool.get();

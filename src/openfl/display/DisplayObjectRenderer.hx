@@ -50,6 +50,7 @@ class DisplayObjectRenderer extends EventDispatcher
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __context:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __overrideBlendMode:BlendMode;
 	@:noCompletion private var __groupBlendMode:BlendMode;
+	@:noCompletion private var __coverageOnly:Bool;
 	// the group whose touches are tracked (see __touch); null at the top of a render, where every
 	// pixel counts as touched
 	@:noCompletion private var __touchedGroup:DisplayObject;

@@ -2317,17 +2317,14 @@ class CairoGraphics
 	}
 	#end
 
-	/**
-		Renders the graphics to their surface if they have changed. When `withCoverage` is true, it also
-		renders their coverage, which ALPHA uses as a mask, including for graphics that were rendered
-		before without one.
-	**/
-	public static function render(graphics:Graphics, renderer:CairoRenderer, withCoverage:Bool = false):Void
+	public static function render(graphics:Graphics, renderer:CairoRenderer):Void
 	{
 		#if lime_cairo
 		CairoGraphics.graphics = graphics;
 		CairoGraphics.allowSmoothing = renderer.__allowSmoothing;
 		CairoGraphics.worldAlpha = renderer.__getAlpha(graphics.__owner.__worldAlpha);
+
+		var withCoverage = renderer.__coverageOnly || renderer.__isCompositedWithAlpha(graphics.__owner);
 
 		#if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
 		var pixelRatio = 1;
