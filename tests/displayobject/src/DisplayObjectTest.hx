@@ -536,17 +536,45 @@ class DisplayObjectTest extends Test
 		Assert.isNull(sprite1.mask);
 	}
 
+	#if !flash
 	public function test_mouseX()
 	{
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseX test");
+			return;
+		}
+
+		// even a sprite that isn't on stage, its mouse position is affected.
+		// an earlier test might have updated the mouse position, so reset it
+		// before checking the value.
+		openfl.Lib.current.stage.window.onMouseMove.dispatch(0.0, 0.0);
+		// ensure that pending mouse events are dispatched
+		openfl.Lib.current.stage.application.onUpdate.dispatch(0);
+
 		var sprite = new Sprite();
 		Assert.equals(0.0, sprite.mouseX);
 	}
 
 	public function test_mouseY()
 	{
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping mouseY test");
+			return;
+		}
+
+		// even a sprite that isn't on stage, its mouse position is affected.
+		// an earlier test might have updated the mouse position, so reset it
+		// before checking the value.
+		openfl.Lib.current.stage.window.onMouseMove.dispatch(0.0, 0.0);
+		// ensure that pending mouse events are dispatched
+		openfl.Lib.current.stage.application.onUpdate.dispatch(0);
+
 		var sprite = new Sprite();
 		Assert.equals(0.0, sprite.mouseY);
 	}
+	#end
 
 	public function test_name()
 	{
