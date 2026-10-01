@@ -340,8 +340,9 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 			shader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
 			shader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
 			shader.uColor.value[2] = (color & 0xFF) / 255;
-			shader.uColor.value[3] = alpha;
-			shader.uStrength.value[0] = blurPass == (numBlurPasses - 1) ? __strength : 1.0;
+			var finalBlurPass = blurPass == (numBlurPasses - 1);
+			shader.uColor.value[3] = finalBlurPass ? alpha : 1.0;
+			shader.uStrength.value[0] = finalBlurPass ? __strength : 1.0;
 			return shader;
 		}
 		if (__inner)
