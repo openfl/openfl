@@ -552,11 +552,18 @@ class CanvasRenderer extends DisplayObjectRenderer
 	/**
 		Paints the area covered by `displayObject` and its descendants into `coverage`, whose origin is
 		(x0, y0) of the target, with its current composite operation: graphics through
-		`__drawGraphicsCoverage`, other leaves as their bounding box.
+		`__drawGraphicsCoverage`, other leaves as their bounding box. An object drawn through its cache
+		bitmap (filters, cacheAsBitmap) covers the whole bitmap, as a Bitmap does, whatever its own
+		leaves cover.
 	**/
 	@:noCompletion private function __drawCoverage(coverage:js.html.CanvasRenderingContext2D, displayObject:DisplayObject, x0:Int, y0:Int):Void
 	{
 		if (!displayObject.__renderable) return;
+		if (displayObject.__cacheBitmap != null && !displayObject.__isCacheBitmapRender)
+		{
+			__drawCoverage(coverage, displayObject.__cacheBitmap, x0, y0);
+			return;
+		}
 		var graphics = displayObject.__graphics;
 		var bounds = Rectangle.__pool.get();
 		var matrix = Matrix.__pool.get();

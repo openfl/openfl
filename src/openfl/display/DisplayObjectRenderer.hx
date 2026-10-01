@@ -159,7 +159,8 @@ class DisplayObjectRenderer extends EventDispatcher
 		if (displayObject == stopAt) return true;
 		if (!__countsAsTouching(displayObject)) return false;
 		var children = displayObject.__children;
-		if (children == null)
+		// a container drawn through its cache bitmap is one leaf, the bitmap (see __drawCoverage)
+		if (children == null || (displayObject.__cacheBitmap != null && !displayObject.__isCacheBitmapRender))
 		{
 			__drawTouched(displayObject, false);
 			return false;

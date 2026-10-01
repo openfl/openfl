@@ -1680,11 +1680,17 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	/**
 		Draws the area covered by `displayObject` and its descendants into the current target, opaque,
 		for ALPHA's coverage pass and the touched buffer: graphics through `__drawGraphicsCoverage`,
-		other leaves as their bounding box.
+		other leaves as their bounding box. An object drawn through its cache bitmap (filters,
+		cacheAsBitmap) covers the whole bitmap, as a Bitmap does, whatever its own leaves cover.
 	**/
 	@:noCompletion private function __drawCoverage(displayObject:DisplayObject):Void
 	{
 		if (!displayObject.__renderable) return;
+		if (displayObject.__cacheBitmap != null && !displayObject.__isCacheBitmapRender)
+		{
+			__drawCoverage(displayObject.__cacheBitmap);
+			return;
+		}
 		var graphics = displayObject.__graphics;
 		var matrix = Matrix.__pool.get();
 

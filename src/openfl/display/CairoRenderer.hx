@@ -705,11 +705,17 @@ class CairoRenderer extends DisplayObjectRenderer
 	/**
 		Paints the area covered by `displayObject` and its descendants into `coverage`, a context in the
 		target's coordinates, with its current operator: graphics through `__drawGraphicsCoverage`,
-		other leaves as their bounding box.
+		other leaves as their bounding box. An object drawn through its cache bitmap (filters,
+		cacheAsBitmap) covers the whole bitmap, as a Bitmap does, whatever its own leaves cover.
 	**/
 	@:noCompletion private function __drawCoverage(coverage:Cairo, displayObject:DisplayObject):Void
 	{
 		if (!displayObject.__renderable) return;
+		if (displayObject.__cacheBitmap != null && !displayObject.__isCacheBitmapRender)
+		{
+			__drawCoverage(coverage, displayObject.__cacheBitmap);
+			return;
+		}
 		var graphics = displayObject.__graphics;
 
 		if (graphics != null) __drawGraphicsCoverage(coverage, displayObject);
