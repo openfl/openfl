@@ -131,6 +131,9 @@ class DrawCommandBuffer
 				case MOVE_TO:
 					var c = data.readMoveTo();
 					moveTo(c.x, c.y);
+				case MOVE_TO_INTERNAL:
+					var c = data.readMoveToInternal();
+					moveToInternal(c.moveX, c.moveY, c.fillX, c.fillY);
 				case OVERRIDE_MATRIX:
 					var c = data.readOverrideMatrix();
 					overrideMatrix(c.matrix);
@@ -451,6 +454,17 @@ class DrawCommandBuffer
 		types.push(MOVE_TO);
 		f.push(x);
 		f.push(y);
+	}
+
+	public function moveToInternal(moveX:Float, moveY:Float, fillX:Float, fillY:Float):Void
+	{
+		prepareWrite();
+
+		types.push(MOVE_TO_INTERNAL);
+		f.push(moveX);
+		f.push(moveY);
+		f.push(fillX);
+		f.push(fillY);
 	}
 
 	private function prepareWrite():Void

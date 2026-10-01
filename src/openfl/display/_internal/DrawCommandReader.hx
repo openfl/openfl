@@ -116,6 +116,9 @@ class DrawCommandReader
 			case MOVE_TO:
 				fPos += 2; // x, y
 
+			case MOVE_TO_INTERNAL:
+				fPos += 4; // strokeX, strokeY, fillX, fillY
+
 			case OVERRIDE_BLEND_MODE:
 				oPos += 1; // blendMode
 
@@ -291,6 +294,13 @@ class DrawCommandReader
 		advance();
 		prev = MOVE_TO;
 		return new MoveToView(this);
+	}
+
+	public inline function readMoveToInternal():MoveToInternalView
+	{
+		advance();
+		prev = MOVE_TO_INTERNAL;
+		return new MoveToInternalView(this);
 	}
 
 	public inline function readOverrideBlendMode():OverrideBlendModeView
@@ -1029,6 +1039,42 @@ abstract MoveToView(DrawCommandReader)
 	private inline function get_y():Float
 	{
 		return this.float(1);
+	}
+}
+
+abstract MoveToInternalView(DrawCommandReader)
+{
+	public inline function new(d:DrawCommandReader)
+	{
+		this = d;
+	}
+
+	public var moveX(get, never):Float;
+
+	private inline function get_moveX():Float
+	{
+		return this.float(0);
+	}
+
+	public var moveY(get, never):Float;
+
+	private inline function get_moveY():Float
+	{
+		return this.float(1);
+	}
+
+	public var fillX(get, never):Float;
+
+	private inline function get_fillX():Float
+	{
+		return this.float(2);
+	}
+
+	public var fillY(get, never):Float;
+
+	private inline function get_fillY():Float
+	{
+		return this.float(3);
 	}
 }
 
