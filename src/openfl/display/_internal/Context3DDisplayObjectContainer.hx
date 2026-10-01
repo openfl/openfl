@@ -16,6 +16,7 @@ class Context3DDisplayObjectContainer
 		if (!displayObjectContainer.__renderable || displayObjectContainer.__worldAlpha <= 0) return;
 
 		Context3DDisplayObject.renderDrawable(displayObjectContainer, renderer);
+		renderer.__touchGraphics(displayObjectContainer);
 
 		if (displayObjectContainer.__cacheBitmap != null && !displayObjectContainer.__isCacheBitmapRender) return;
 

@@ -45,14 +45,31 @@ class DisplayObjectShader extends Shader
 		varying vec4 openfl_ColorOffsetv;
 		varying vec2 openfl_TextureCoordv;
 
+		uniform sampler2D openfl_Coverage;
+		uniform bool openfl_DiscardTransparent;
 		uniform bool openfl_HasColorTransform;
+		uniform bool openfl_HasCoverage;
 		uniform sampler2D openfl_Texture;
 		uniform vec2 openfl_TextureSize;")
 	@:glFragmentBody("vec4 color = texture2D (openfl_Texture, openfl_TextureCoordv);
 
-		if (color.a == 0.0) {
+		if (openfl_HasCoverage) {
 
-			gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+			// ALPHA on a shape: the backdrop is kept by 1 - coverage + alpha, coverage and fill
+			// alpha apart at the edges (see applyCoverage); only the alpha reaches the blend
+			gl_FragColor = vec4 (0.0, 0.0, 0.0, 1.0 - texture2D (openfl_Coverage, openfl_TextureCoordv).a + color.a * openfl_Alphav);
+
+		} else if (color.a == 0.0) {
+
+			if (openfl_DiscardTransparent) {
+
+				discard;
+
+			} else {
+
+				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+
+			}
 
 		} else if (openfl_HasColorTransform) {
 

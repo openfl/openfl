@@ -6,6 +6,7 @@ import openfl.display._internal.DrawCommandReader;
 import openfl.display.BitmapData;
 import openfl.display.CairoRenderer;
 import openfl.display.GradientType;
+import openfl.display.BlendMode;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
 import openfl.display.SpreadMethod;
@@ -53,6 +54,9 @@ class CairoGraphics
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
 	private static var hitTesting:Bool;
+	// __renderCommands renders coverage: every fill and stroke opaque black
+	private static var coverage:Bool;
+	private static var coveragePattern:CairoPattern;
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
 	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
@@ -113,7 +117,7 @@ class CairoGraphics
 			}
 		}
 
-		cairo.source = strokePattern;
+		cairo.source = coverage ? coveragePattern : strokePattern;
 		if (!hitTesting) cairo.strokePreserve();
 
 		if (strokeBefore)
@@ -737,6 +741,7 @@ class CairoGraphics
 						{
 							data.destroy();
 							CairoGraphics.graphics = null;
+							hitTesting = false;
 							return true;
 						}
 
@@ -760,6 +765,7 @@ class CairoGraphics
 						{
 							data.destroy();
 							CairoGraphics.graphics = null;
+							hitTesting = false;
 							return true;
 						}
 
@@ -769,6 +775,7 @@ class CairoGraphics
 						{
 							data.destroy();
 							CairoGraphics.graphics = null;
+							hitTesting = false;
 							return true;
 						}
 
@@ -783,6 +790,7 @@ class CairoGraphics
 						{
 							data.destroy();
 							CairoGraphics.graphics = null;
+							hitTesting = false;
 							return true;
 						}
 
@@ -792,6 +800,7 @@ class CairoGraphics
 						{
 							data.destroy();
 							CairoGraphics.graphics = null;
+							hitTesting = false;
 							return true;
 						}
 
@@ -883,6 +892,7 @@ class CairoGraphics
 			strokeCommands.clear();
 
 			CairoGraphics.graphics = null;
+			hitTesting = false;
 			return hitTest;
 		}
 		#end
@@ -1586,7 +1596,7 @@ class CairoGraphics
 						tempMatrix3.tx = tileRect.x;
 						tempMatrix3.ty = tileRect.y;
 						fillPattern.matrix = tempMatrix3;
-						cairo.source = fillPattern;
+						cairo.source = coverage ? coveragePattern : fillPattern;
 
 						if (tileRect != sourceRect)
 						{
@@ -1599,7 +1609,7 @@ class CairoGraphics
 
 						if (!hitTesting)
 						{
-							if (alpha == 1)
+							if (alpha == 1 || coverage)
 							{
 								cairo.paint();
 							}
@@ -1783,7 +1793,7 @@ class CairoGraphics
 								}
 							}
 
-							cairo.source = fillPattern;
+							cairo.source = coverage ? coveragePattern : fillPattern;
 							if (!hitTesting) cairo.fillPreserve();
 
 							if (!hitTesting && hasScale9Grid && fillScale9Bounds != null && bitmapFill != null)
@@ -1838,7 +1848,7 @@ class CairoGraphics
 
 						tempMatrix3.setTo(t1, t2, t3, t4, dx, dy);
 						cairo.matrix = tempMatrix3;
-						cairo.source = fillPattern;
+						cairo.source = coverage ? coveragePattern : fillPattern;
 						if (!hitTesting) cairo.fill();
 
 						i += 3;
@@ -1921,7 +1931,7 @@ class CairoGraphics
 					Matrix.__pool.release(matrix);
 				}
 
-				cairo.source = strokePattern;
+				cairo.source = coverage ? coveragePattern : strokePattern;
 				if (!hitTesting) cairo.strokePreserve();
 			}
 
@@ -1974,7 +1984,7 @@ class CairoGraphics
 					Matrix.__pool.release(matrix);
 				}
 
-				cairo.source = fillPattern;
+				cairo.source = coverage ? coveragePattern : fillPattern;
 
 				if (pendingMatrix != null)
 				{
@@ -2027,12 +2037,294 @@ class CairoGraphics
 	}
 	#end
 
+	/**
+		Plays the graphics' drawing commands into `target`. This is the normal render or, while
+		`coverage` is set, the coverage render, in which every fill and stroke is drawn opaque black.
+	**/
+	#if lime_cairo
+	private static function __renderCommands(graphics:Graphics, renderer:CairoRenderer, target:Cairo):Void
+	{
+		if (CairoGraphics.coverage && coveragePattern == null) coveragePattern = CairoPattern.createRGB(0, 0, 0);
+		cairo = target;
+
+		renderer.__setBlendModeCairo(cairo, NORMAL);
+		renderer.applyMatrix(graphics.__renderTransform, cairo);
+
+		cairo.setOperator(CLEAR);
+		cairo.paint();
+		cairo.setOperator(OVER);
+
+		fillCommands.clear();
+		strokeCommands.clear();
+
+		hasFill = false;
+		hasStroke = false;
+
+		fillPattern = null;
+		strokePattern = null;
+
+			var hasLineStyle = false;
+			var initStrokeX:Null<Float> = null;
+			var initStrokeY:Null<Float> = null;
+			var initMoveX = 0.0;
+			var initMoveY = 0.0;
+
+		var data = new DrawCommandReader(graphics.__commands);
+
+		for (type in graphics.__commands.types)
+		{
+			switch (type)
+			{
+				case CUBIC_CURVE_TO:
+					var c = data.readCubicCurveTo();
+					fillCommands.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+
+					if (hasLineStyle)
+					{
+						strokeCommands.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+					}
+					else
+					{
+						initStrokeX = c.anchorX;
+						initStrokeY = c.anchorY;
+					}
+
+				case CURVE_TO:
+					var c = data.readCurveTo();
+					fillCommands.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
+
+					if (hasLineStyle)
+					{
+						strokeCommands.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
+					}
+					else
+					{
+						initStrokeX = c.anchorX;
+						initStrokeY = c.anchorY;
+					}
+
+				case LINE_TO:
+					var c = data.readLineTo();
+					fillCommands.lineTo(c.x, c.y);
+
+					if (hasLineStyle)
+					{
+						strokeCommands.lineTo(c.x, c.y);
+					}
+					else
+					{
+						initStrokeX = c.x;
+						initStrokeY = c.y;
+					}
+
+				case MOVE_TO:
+					var c = data.readMoveTo();
+					fillCommands.moveTo(c.x, c.y);
+
+						if (hasLineStyle)
+						{
+							strokeCommands.moveTo(c.x, c.y);
+						}
+						else
+						{
+							initStrokeX = c.x;
+							initStrokeY = c.y;
+						}
+						initMoveX = c.x;
+						initMoveY = c.y;
+
+					case END_FILL:
+						data.readEndFill();
+						endFill();
+						endStroke();
+						hasFill = false;
+						bitmapFill = null;
+						bitmapFillMatrix = null;
+						initStrokeX = null;
+						initStrokeY = null;
+
+				case LINE_GRADIENT_STYLE:
+					var c = data.readLineGradientStyle();
+
+						if (!hasLineStyle && initStrokeX != null && initStrokeY != null)
+						{
+							// the stroke commands won't be populated yet because
+							// there was no line style until now. we need the
+							// current position, and the previous moveTo()
+							// position because, if there was a fill, we may
+							// need to automatically extend the stroke to the
+							// start of that fill.
+							strokeCommands.moveToInternal(initStrokeX, initStrokeY, initMoveX, initMoveY);
+							initStrokeX = null;
+							initStrokeY = null;
+						}
+
+					hasLineStyle = true;
+					strokeCommands.lineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+
+				case LINE_BITMAP_STYLE:
+					var c = data.readLineBitmapStyle();
+
+						if (!hasLineStyle && initStrokeX != null && initStrokeY != null)
+						{
+							// the stroke commands won't be populated yet because
+							// there was no line style until now. we need the
+							// current position, and the previous moveTo()
+							// position because, if there was a fill, we may
+							// need to automatically extend the stroke to the
+							// start of that fill.
+							strokeCommands.moveToInternal(initStrokeX, initStrokeY, initMoveX, initMoveY);
+							initStrokeX = null;
+							initStrokeY = null;
+						}
+
+					hasLineStyle = true;
+					strokeCommands.lineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
+
+				case LINE_STYLE:
+					var c = data.readLineStyle();
+
+						if (!hasLineStyle && c.thickness != null)
+						{
+							if (initStrokeX != null && initStrokeY != null)
+							{
+								// the stroke commands won't be populated yet because
+								// there was no line style until now. we need the
+								// current position, and the previous moveTo()
+								// position because, if there was a fill, we may
+								// need to automatically extend the stroke to the
+								// start of that fill.
+								strokeCommands.moveToInternal(initStrokeX, initStrokeY, initMoveX, initMoveY);
+								initStrokeX = null;
+								initStrokeY = null;
+							}
+						}
+
+					hasLineStyle = c.thickness != null;
+					strokeCommands.lineStyle(c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+
+				case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
+					endFill();
+					endStroke();
+
+					if (type == BEGIN_BITMAP_FILL)
+					{
+						var c = data.readBeginBitmapFill();
+						fillCommands.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
+						strokeCommands.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
+					}
+					else if (type == BEGIN_GRADIENT_FILL)
+					{
+						var c = data.readBeginGradientFill();
+						fillCommands.beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+							c.focalPointRatio);
+						strokeCommands.beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+							c.focalPointRatio);
+					}
+					else if (type == BEGIN_SHADER_FILL)
+					{
+						var c = data.readBeginShaderFill();
+						fillCommands.beginShaderFill(c.shaderBuffer);
+						strokeCommands.beginShaderFill(c.shaderBuffer);
+					}
+					else
+					{
+						var c = data.readBeginFill();
+						fillCommands.beginFill(c.color, c.alpha);
+						strokeCommands.beginFill(c.color, c.alpha);
+					}
+
+				case DRAW_CIRCLE:
+					var c = data.readDrawCircle();
+					fillCommands.drawCircle(c.x, c.y, c.radius);
+
+					if (hasLineStyle)
+					{
+						strokeCommands.drawCircle(c.x, c.y, c.radius);
+					}
+
+				// the right-most point of the circle, centered vertically
+						initMoveX = c.x + c.radius;
+						initMoveY = c.y;case DRAW_ELLIPSE:
+					var c = data.readDrawEllipse();
+					fillCommands.drawEllipse(c.x, c.y, c.width, c.height);
+
+					if (hasLineStyle)
+					{
+						strokeCommands.drawEllipse(c.x, c.y, c.width, c.height);
+					}
+
+				// the right-most point of the ellipse, centered vertically
+						initMoveX = c.x + c.width;
+						initMoveY = c.y + c.height / 2;case DRAW_RECT:
+					var c = data.readDrawRect();
+					fillCommands.drawRect(c.x, c.y, c.width, c.height);
+
+					if (hasLineStyle)
+					{
+						strokeCommands.drawRect(c.x, c.y, c.width, c.height);
+					}
+
+				// top-left corner of the rectangle
+						initMoveX = c.x;
+						initMoveY = c.y;case DRAW_ROUND_RECT:
+					var c = data.readDrawRoundRect();
+					fillCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+
+					if (hasLineStyle)
+					{
+						strokeCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+					}
+
+				// bottom-right corner of the rectangle, above the radius
+						initMoveX = c.x + c.width;
+						initMoveY = c.y + c.height - (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);case DRAW_QUADS:
+					var c = data.readDrawQuads();
+					fillCommands.drawQuads(c.rects, c.indices, c.transforms);
+
+				case DRAW_TRIANGLES:
+					var c = data.readDrawTriangles();
+					fillCommands.drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
+
+				case OVERRIDE_BLEND_MODE:
+					var c = data.readOverrideBlendMode();
+					renderer.__setBlendModeCairo(cairo, c.blendMode);
+
+				case WINDING_EVEN_ODD:
+					data.readWindingEvenOdd();
+					fillCommands.windingEvenOdd();
+
+				case WINDING_NON_ZERO:
+					data.readWindingNonZero();
+					fillCommands.windingNonZero();
+
+				default:
+					data.skip(type);
+			}
+		}
+
+		if (fillCommands.length > 0)
+		{
+			endFill();
+		}
+
+		if (strokeCommands.length > 0)
+		{
+			endStroke();
+		}
+
+		data.destroy();
+	}
+	#end
+
 	public static function render(graphics:Graphics, renderer:CairoRenderer):Void
 	{
 		#if lime_cairo
 		CairoGraphics.graphics = graphics;
 		CairoGraphics.allowSmoothing = renderer.__allowSmoothing;
 		CairoGraphics.worldAlpha = renderer.__getAlpha(graphics.__owner.__worldAlpha);
+
+		var withCoverage = renderer.__coverageOnly || renderer.__isCompositedWithAlpha(graphics.__owner);
 
 		#if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
 		var pixelRatio = 1;
@@ -2044,6 +2336,13 @@ class CairoGraphics
 
 		if (!graphics.__softwareDirty || graphics.__managed)
 		{
+			// a shape that came under ALPHA after its render (its blend mode changed, or an ancestor's)
+			// still needs its coverage: rendered here on its own, the fills being unchanged
+			if (withCoverage && !graphics.__managed && graphics.__coverage == null && graphics.__bitmap != null)
+			{
+				bounds = graphics.__bounds;
+				__renderCoverage(graphics, renderer);
+			}
 			CairoGraphics.graphics = null;
 			return;
 		}
@@ -2076,6 +2375,7 @@ class CairoGraphics
 		{
 			graphics.__cairo = null;
 			graphics.__bitmap = null;
+			graphics.__coverage = null;
 		}
 		else
 		{
@@ -2114,284 +2414,18 @@ class CairoGraphics
 				graphics.__bitmap = bitmap;
 			}
 
-			cairo = graphics.__cairo;
+			__renderCommands(graphics, renderer, graphics.__cairo);
 
-			renderer.__setBlendModeCairo(cairo, NORMAL);
-			renderer.applyMatrix(graphics.__renderTransform, cairo);
-
-			cairo.setOperator(CLEAR);
-			cairo.paint();
-			cairo.setOperator(OVER);
-
-			fillCommands.clear();
-			strokeCommands.clear();
-
-			hasFill = false;
-			hasStroke = false;
-
-			fillPattern = null;
-			strokePattern = null;
-
-			var hasLineStyle = false;
-			var initStrokeX:Null<Float> = null;
-			var initStrokeY:Null<Float> = null;
-			var initMoveX = 0.0;
-			var initMoveY = 0.0;
-
-			var data = new DrawCommandReader(graphics.__commands);
-
-			for (type in graphics.__commands.types)
+			// a shape under ALPHA also needs its coverage, every fill and stroke opaque, so the
+			// composite can keep the uncovered part of an edge pixel (see CairoRenderer)
+			if (withCoverage)
 			{
-				switch (type)
-				{
-					case CUBIC_CURVE_TO:
-						var c = data.readCubicCurveTo();
-						fillCommands.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-
-						if (hasLineStyle)
-						{
-							strokeCommands.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-						}
-						else
-						{
-							initStrokeX = c.anchorX;
-							initStrokeY = c.anchorY;
-						}
-
-					case CURVE_TO:
-						var c = data.readCurveTo();
-						fillCommands.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
-
-						if (hasLineStyle)
-						{
-							strokeCommands.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
-						}
-						else
-						{
-							initStrokeX = c.anchorX;
-							initStrokeY = c.anchorY;
-						}
-
-					case LINE_TO:
-						var c = data.readLineTo();
-						fillCommands.lineTo(c.x, c.y);
-
-						if (hasLineStyle)
-						{
-							strokeCommands.lineTo(c.x, c.y);
-						}
-						else
-						{
-							initStrokeX = c.x;
-							initStrokeY = c.y;
-						}
-
-					case MOVE_TO:
-						var c = data.readMoveTo();
-						fillCommands.moveTo(c.x, c.y);
-
-						if (hasLineStyle)
-						{
-							strokeCommands.moveTo(c.x, c.y);
-						}
-						else
-						{
-							initStrokeX = c.x;
-							initStrokeY = c.y;
-						}
-						initMoveX = c.x;
-						initMoveY = c.y;
-
-					case END_FILL:
-						data.readEndFill();
-						endFill();
-						endStroke();
-						hasFill = false;
-						bitmapFill = null;
-						bitmapFillMatrix = null;
-						initStrokeX = null;
-						initStrokeY = null;
-
-					case LINE_GRADIENT_STYLE:
-						var c = data.readLineGradientStyle();
-
-						if (!hasLineStyle && initStrokeX != null && initStrokeY != null)
-						{
-							// the stroke commands won't be populated yet because
-							// there was no line style until now. we need the
-							// current position, and the previous moveTo()
-							// position because, if there was a fill, we may
-							// need to automatically extend the stroke to the
-							// start of that fill.
-							strokeCommands.moveToInternal(initStrokeX, initStrokeY, initMoveX, initMoveY);
-							initStrokeX = null;
-							initStrokeY = null;
-						}
-
-						hasLineStyle = true;
-						strokeCommands.lineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-							c.focalPointRatio);
-
-					case LINE_BITMAP_STYLE:
-						var c = data.readLineBitmapStyle();
-
-						if (!hasLineStyle && initStrokeX != null && initStrokeY != null)
-						{
-							// the stroke commands won't be populated yet because
-							// there was no line style until now. we need the
-							// current position, and the previous moveTo()
-							// position because, if there was a fill, we may
-							// need to automatically extend the stroke to the
-							// start of that fill.
-							strokeCommands.moveToInternal(initStrokeX, initStrokeY, initMoveX, initMoveY);
-							initStrokeX = null;
-							initStrokeY = null;
-						}
-
-						hasLineStyle = true;
-						strokeCommands.lineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
-
-					case LINE_STYLE:
-						var c = data.readLineStyle();
-
-						if (!hasLineStyle && c.thickness != null)
-						{
-							if (initStrokeX != null && initStrokeY != null)
-							{
-								// the stroke commands won't be populated yet because
-								// there was no line style until now. we need the
-								// current position, and the previous moveTo()
-								// position because, if there was a fill, we may
-								// need to automatically extend the stroke to the
-								// start of that fill.
-								strokeCommands.moveToInternal(initStrokeX, initStrokeY, initMoveX, initMoveY);
-								initStrokeX = null;
-								initStrokeY = null;
-							}
-						}
-
-						hasLineStyle = c.thickness != null;
-						strokeCommands.lineStyle(c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-
-					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL, BEGIN_SHADER_FILL:
-						endFill();
-						endStroke();
-
-						if (type == BEGIN_BITMAP_FILL)
-						{
-							var c = data.readBeginBitmapFill();
-							fillCommands.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
-							strokeCommands.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
-						}
-						else if (type == BEGIN_GRADIENT_FILL)
-						{
-							var c = data.readBeginGradientFill();
-							fillCommands.beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-								c.focalPointRatio);
-							strokeCommands.beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-								c.focalPointRatio);
-						}
-						else if (type == BEGIN_SHADER_FILL)
-						{
-							var c = data.readBeginShaderFill();
-							fillCommands.beginShaderFill(c.shaderBuffer);
-							strokeCommands.beginShaderFill(c.shaderBuffer);
-						}
-						else
-						{
-							var c = data.readBeginFill();
-							fillCommands.beginFill(c.color, c.alpha);
-							strokeCommands.beginFill(c.color, c.alpha);
-						}
-
-					case DRAW_CIRCLE:
-						var c = data.readDrawCircle();
-						fillCommands.drawCircle(c.x, c.y, c.radius);
-
-						if (hasLineStyle)
-						{
-							strokeCommands.drawCircle(c.x, c.y, c.radius);
-						}
-
-						// the right-most point of the circle, centered vertically
-						initMoveX = c.x + c.radius;
-						initMoveY = c.y;
-
-					case DRAW_ELLIPSE:
-						var c = data.readDrawEllipse();
-						fillCommands.drawEllipse(c.x, c.y, c.width, c.height);
-
-						if (hasLineStyle)
-						{
-							strokeCommands.drawEllipse(c.x, c.y, c.width, c.height);
-						}
-
-						// the right-most point of the ellipse, centered vertically
-						initMoveX = c.x + c.width;
-						initMoveY = c.y + c.height / 2;
-
-					case DRAW_RECT:
-						var c = data.readDrawRect();
-						fillCommands.drawRect(c.x, c.y, c.width, c.height);
-
-						if (hasLineStyle)
-						{
-							strokeCommands.drawRect(c.x, c.y, c.width, c.height);
-						}
-
-						// top-left corner of the rectangle
-						initMoveX = c.x;
-						initMoveY = c.y;
-
-					case DRAW_ROUND_RECT:
-						var c = data.readDrawRoundRect();
-						fillCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-
-						if (hasLineStyle)
-						{
-							strokeCommands.drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-						}
-
-						// bottom-right corner of the rectangle, above the radius
-						initMoveX = c.x + c.width;
-						initMoveY = c.y + c.height - (c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
-
-					case DRAW_QUADS:
-						var c = data.readDrawQuads();
-						fillCommands.drawQuads(c.rects, c.indices, c.transforms);
-
-					case DRAW_TRIANGLES:
-						var c = data.readDrawTriangles();
-						fillCommands.drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
-
-					case OVERRIDE_BLEND_MODE:
-						var c = data.readOverrideBlendMode();
-						renderer.__setBlendModeCairo(cairo, c.blendMode);
-
-					case WINDING_EVEN_ODD:
-						data.readWindingEvenOdd();
-						fillCommands.windingEvenOdd();
-
-					case WINDING_NON_ZERO:
-						data.readWindingNonZero();
-						fillCommands.windingNonZero();
-
-					default:
-						data.skip(type);
-				}
+				__renderCoverage(graphics, renderer);
 			}
-
-			if (fillCommands.length > 0)
+			else
 			{
-				endFill();
+				graphics.__coverage = null;
 			}
-
-			if (strokeCommands.length > 0)
-			{
-				endStroke();
-			}
-
-			data.destroy();
 
 			graphics.__bitmap.image.dirty = true;
 			graphics.__bitmap.image.version++;
@@ -2403,6 +2437,28 @@ class CairoGraphics
 		graphics.__softwareDirty = false;
 		graphics.__dirty = false;
 		CairoGraphics.graphics = null;
+		#end
+	}
+
+	/**
+		Renders the fills and strokes of `graphics` fully opaque into `graphics.__coverage`, a bitmap
+		the same size as `graphics.__bitmap`.
+	**/
+	private static function __renderCoverage(graphics:Graphics, renderer:CairoRenderer):Void
+	{
+		#if lime_cairo
+		var bitmap = graphics.__bitmap;
+		if (graphics.__coverage == null || graphics.__coverage.width != bitmap.width || graphics.__coverage.height != bitmap.height)
+		{
+			graphics.__coverage = new BitmapData(bitmap.width, bitmap.height, true, 0);
+		}
+		CairoGraphics.coverage = true;
+		__renderCommands(graphics, renderer, new Cairo(graphics.__coverage.getSurface()));
+		CairoGraphics.coverage = false;
+		// the OpenGL renderer uploads the coverage as a texture and re-uploads it only when the
+		// image version grows, like __bitmap
+		graphics.__coverage.image.dirty = true;
+		graphics.__coverage.image.version++;
 		#end
 	}
 

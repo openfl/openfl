@@ -741,6 +741,8 @@ class Context3DGraphics
 				renderer.__softwareRenderer.__worldTransform = renderer.__worldTransform;
 			}
 
+			renderer.__softwareRenderer.__coverageOnly = renderer.__coverageOnly || renderer.__isCompositedWithAlpha(graphics.__owner);
+
 			#if (js && html5)
 			CanvasGraphics.render(graphics, cast renderer.__softwareRenderer);
 			#elseif lime_cairo
