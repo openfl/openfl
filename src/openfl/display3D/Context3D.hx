@@ -2199,6 +2199,7 @@ import lime.math.Vector2;
 		if (__state.renderToTexture != null)
 		{
 			if (#if openfl_disable_context_cache true #else __contextState.renderToTexture != __state.renderToTexture
+				|| __contextState.renderToTextureDepthStencil != __state.renderToTextureDepthStencil
 				|| __contextState.renderToTextureSurfaceSelector != __state.renderToTextureSurfaceSelector #end)
 			{
 				var framebuffer = __state.renderToTexture.__getGLFramebuffer(__state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias,

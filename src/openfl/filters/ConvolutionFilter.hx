@@ -4,6 +4,12 @@ package openfl.filters;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+#if lime
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+import lime.math.RGBA;
+#end
 
 /**
 	The ConvolutionFilter class applies a matrix convolution filter effect. A
@@ -232,11 +238,264 @@ class ConvolutionFilter extends BitmapFilter
 		this.alpha = alpha;
 
 		__numShaderPasses = 1;
+		// the software path reads the whole source before writing, so it can run in place
+		__needSecondBitmapData = false;
 	}
 
 	public override function clone():BitmapFilter
 	{
 		return new ConvolutionFilter(matrixX, matrixY, __matrix, divisor, bias, preserveAlpha, clamp, color, alpha);
+	}
+
+	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
+			destPoint:Point):BitmapData
+	{
+		#if lime
+		var sourceImage = sourceBitmapData.image;
+		var image = bitmapData.image;
+
+		#if (js && html5)
+		ImageCanvasUtil.convertToData(sourceImage);
+		ImageCanvasUtil.convertToData(image);
+		#end
+
+		var sourceData = sourceImage.data;
+		var destData = image.data;
+		var sourceFormat = sourceImage.buffer.format;
+		var destFormat = image.buffer.format;
+		var sourcePremultiplied = sourceImage.buffer.premultiplied;
+		var destPremultiplied = image.buffer.premultiplied;
+		var sourceStride = sourceBitmapData.width * 4;
+		var destStride = bitmapData.width * 4;
+
+		var sx = Std.int(sourceRect.x), sy = Std.int(sourceRect.y);
+		var width = Std.int(sourceRect.width), height = Std.int(sourceRect.height);
+		var dx = Std.int(destPoint.x), dy = Std.int(destPoint.y);
+		if (width <= 0 || height <= 0) return bitmapData;
+
+		var mx = matrixX, my = matrixY;
+		var kernel = __matrix;
+		var identity = (kernel == null || mx <= 0 || my <= 0 || kernel.length < mx * my);
+
+		// On native targets the pixel bytes are read and written through
+		// haxe.io.Bytes, a plain memory access, typed-array element access is a
+		// call per byte there. The byte order and the premultiplied conversion
+		// follow lime.math.RGBA exactly. On js RGBA is used as is.
+		#if js
+		var direct = false;
+		#else
+		var direct = true;
+		#end
+		var sourceBytes:haxe.io.Bytes = direct ? sourceData.buffer : null;
+		var destBytes:haxe.io.Bytes = direct ? destData.buffer : null;
+		var sr = 0, sg = 1, sb = 2, sa = 3; // channel byte positions in the source
+		switch (sourceFormat)
+		{
+			case ARGB32: sr = 1; sg = 2; sb = 3; sa = 0;
+			case BGRA32: sr = 2; sg = 1; sb = 0; sa = 3;
+			default:
+		}
+		var dr = 0, dg = 1, db = 2, da = 3;
+		switch (destFormat)
+		{
+			case ARGB32: dr = 1; dg = 2; db = 3; da = 0;
+			case BGRA32: dr = 2; dg = 1; db = 0; da = 3;
+			default:
+		}
+
+		// the source region as straight ARGB channels, read once
+		var src = new Array<Int>();
+		src[width * height * 4 - 1] = 0;
+		var pixel:RGBA = 0;
+		var k = 0;
+		for (y in 0...height)
+		{
+			var offset = (sy + y) * sourceStride + sx * 4;
+			if (direct)
+			{
+				for (x in 0...width)
+				{
+					var r = sourceBytes.get(offset + sr), g = sourceBytes.get(offset + sg), b = sourceBytes.get(offset + sb), a = sourceBytes.get(offset + sa);
+					if (sourcePremultiplied && a != 0 && a != 0xFF)
+					{
+						var unmult = 255.0 / a;
+						r = Math.round(r * unmult);
+						g = Math.round(g * unmult);
+						b = Math.round(b * unmult);
+						if (r > 255) r = 255;
+						if (g > 255) g = 255;
+						if (b > 255) b = 255;
+					}
+					src[k] = r;
+					src[k + 1] = g;
+					src[k + 2] = b;
+					src[k + 3] = a;
+					k += 4;
+					offset += 4;
+				}
+			}
+			else
+			{
+				for (x in 0...width)
+				{
+					pixel.readUInt8(sourceData, offset, sourceFormat, sourcePremultiplied);
+					src[k] = pixel.r;
+					src[k + 1] = pixel.g;
+					src[k + 2] = pixel.b;
+					src[k + 3] = pixel.a;
+					k += 4;
+					offset += 4;
+				}
+			}
+		}
+
+		var scale = 1.0 / (divisor != 0 ? divisor : 1.0);
+		var cx = mx >> 1, cy = my >> 1;
+		var subR = (color >> 16) & 0xFF, subG = (color >> 8) & 0xFF, subB = color & 0xFF;
+		var subA = Std.int(Math.max(0, Math.min(1, alpha)) * 255);
+
+		// the non-zero taps as offsets into the source array (interior pixels
+		// only need these, no bounds checks)
+		var tapOffset = new Array<Int>();
+		var tapWeight = new Array<Float>();
+		var tapX = new Array<Int>();
+		var tapY = new Array<Int>();
+
+		if (!identity)
+		{
+			for (j in 0...my)
+				for (i in 0...mx)
+				{
+					var weight = kernel[j * mx + i];
+					if (weight == 0) continue;
+					tapX.push(i - cx);
+					tapY.push(j - cy);
+					tapOffset.push(((j - cy) * width + (i - cx)) * 4);
+					tapWeight.push(weight);
+				}
+		}
+		var taps = tapWeight.length;
+		var innerX0 = cx;
+		var innerY0 = cy;
+		var innerX1 = width - (mx - 1 - cx);
+		var innerY1 = height - (my - 1 - cy);
+
+		for (y in 0...height)
+		{
+			var ty = dy + y;
+			if (ty < 0 || ty >= bitmapData.height) continue;
+
+			var inRow = y >= innerY0 && y < innerY1;
+			for (x in 0...width)
+			{
+				var tx = dx + x;
+				if (tx < 0 || tx >= bitmapData.width) continue;
+
+				var s = (y * width + x) * 4;
+
+				if (identity)
+				{
+					pixel.r = src[s];
+					pixel.g = src[s + 1];
+					pixel.b = src[s + 2];
+					pixel.a = src[s + 3];
+				}
+				else
+				{
+					var r = 0.0, g = 0.0, b = 0.0, a = 0.0;
+					if (inRow && x >= innerX0 && x < innerX1)
+					{
+						for (t in 0...taps)
+						{
+							var q = s + tapOffset[t];
+							var weight = tapWeight[t];
+							r += src[q] * weight;
+							g += src[q + 1] * weight;
+							b += src[q + 2] * weight;
+							a += src[q + 3] * weight;
+						}
+					}
+					else
+					{
+						for (t in 0...taps)
+						{
+							var weight = tapWeight[t];
+							var px = x + tapX[t], py = y + tapY[t];
+							if (px < 0 || px >= width || py < 0 || py >= height)
+							{
+								if (clamp)
+								{
+									var qx = px < 0 ? 0 : (px >= width ? width - 1 : px);
+									var qy = py < 0 ? 0 : (py >= height ? height - 1 : py);
+									var q = (qy * width + qx) * 4;
+									r += src[q] * weight;
+									g += src[q + 1] * weight;
+									b += src[q + 2] * weight;
+									a += src[q + 3] * weight;
+								}
+								else
+								{
+									r += subR * weight;
+									g += subG * weight;
+									b += subB * weight;
+									a += subA * weight;
+								}
+							}
+							else
+							{
+								var q = (py * width + px) * 4;
+								r += src[q] * weight;
+								g += src[q + 1] * weight;
+								b += src[q + 2] * weight;
+								a += src[q + 3] * weight;
+							}
+						}
+					}
+					pixel.r = __clampChannel(r * scale + bias);
+					pixel.g = __clampChannel(g * scale + bias);
+					pixel.b = __clampChannel(b * scale + bias);
+					pixel.a = preserveAlpha ? src[s + 3] : __clampChannel(a * scale + bias);
+				}
+
+				var d = ty * destStride + tx * 4;
+				if (direct)
+				{
+					var r = pixel.r, g = pixel.g, b = pixel.b, a = pixel.a;
+					if (destPremultiplied)
+					{
+						if (a == 0)
+						{
+							r = g = b = 0;
+						}
+						else if (a != 0xFF)
+						{
+							var a16 = Math.ceil(a * ((1 << 16) / 0xFF));
+							r = (r * a16) >> 16;
+							g = (g * a16) >> 16;
+							b = (b * a16) >> 16;
+						}
+					}
+					destBytes.set(d + dr, r);
+					destBytes.set(d + dg, g);
+					destBytes.set(d + db, b);
+					destBytes.set(d + da, a);
+				}
+				else
+				{
+					pixel.writeUInt8(destData, d, destFormat, destPremultiplied);
+				}
+			}
+		}
+
+		image.dirty = true;
+		image.version++;
+		#end
+		return bitmapData;
+	}
+
+	@:noCompletion private static inline function __clampChannel(value:Float):Int
+	{
+		return value <= 0 ? 0 : (value >= 255 ? 255 : Std.int(value + 0.5));
 	}
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
@@ -288,22 +547,31 @@ private class ConvolutionShader extends BitmapFilterShader
 		uniform float uDivisor;
 		uniform bool uPreserveAlpha;
 
+		// The texture holds premultiplied colours (each colour channel is already multiplied by its alpha).
+	    // Flash applies the matrix to the straight colours, so we divide the alpha out before weighting the
+	    // taps and multiply it back in before writing the result.
+		vec4 straight (vec2 uv) {
+			vec4 t = texture2D (openfl_Texture, uv);
+			if (t.a > 0.0) t.rgb /= t.a;
+			return t;
+		}
+
 		void main(void) {
 
-			vec4 tc = texture2D (openfl_Texture, vBlurCoords[4]);
+			vec4 tc = straight (vBlurCoords[4]);
 			vec4 c = vec4 (0.0);
 
-			c += texture2D (openfl_Texture, vBlurCoords[0]) * uConvoMatrix[0][0];
-			c += texture2D (openfl_Texture, vBlurCoords[1]) * uConvoMatrix[0][1];
-			c += texture2D (openfl_Texture, vBlurCoords[2]) * uConvoMatrix[0][2];
+			c += straight (vBlurCoords[0]) * uConvoMatrix[0][0];
+			c += straight (vBlurCoords[1]) * uConvoMatrix[0][1];
+			c += straight (vBlurCoords[2]) * uConvoMatrix[0][2];
 
-			c += texture2D (openfl_Texture, vBlurCoords[3]) * uConvoMatrix[1][0];
+			c += straight (vBlurCoords[3]) * uConvoMatrix[1][0];
 			c += tc * uConvoMatrix[1][1];
-			c += texture2D (openfl_Texture, vBlurCoords[5]) * uConvoMatrix[1][2];
+			c += straight (vBlurCoords[5]) * uConvoMatrix[1][2];
 
-			c += texture2D (openfl_Texture, vBlurCoords[6]) * uConvoMatrix[2][0];
-			c += texture2D (openfl_Texture, vBlurCoords[7]) * uConvoMatrix[2][1];
-			c += texture2D (openfl_Texture, vBlurCoords[8]) * uConvoMatrix[2][2];
+			c += straight (vBlurCoords[6]) * uConvoMatrix[2][0];
+			c += straight (vBlurCoords[7]) * uConvoMatrix[2][1];
+			c += straight (vBlurCoords[8]) * uConvoMatrix[2][2];
 
 			if (uDivisor > 0.0) {
 
@@ -311,7 +579,8 @@ private class ConvolutionShader extends BitmapFilterShader
 
 			}
 
-			c += vec4 (uBias, uBias, uBias, uBias);
+			// bias is in 0..255 colour units
+			c += vec4 (uBias / 255.0);
 
 			if (uPreserveAlpha) {
 
@@ -319,6 +588,8 @@ private class ConvolutionShader extends BitmapFilterShader
 
 			}
 
+			c = clamp (c, 0.0, 1.0);
+			c.rgb *= c.a;
 			gl_FragColor = c;
 
 		}")
