@@ -3,6 +3,7 @@ package openfl.display;
 #if !flash
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.media.SoundTransform;
 import openfl.ui.MouseCursor;
 import openfl.utils._internal.Log;
 import openfl.utils.AssetLibrary;
@@ -103,14 +104,13 @@ class Sprite extends DisplayObjectContainer
 	**/
 	public var hitArea:Sprite;
 
-	#if false
 	/**
 		Controls sound within this sprite.
+
 		**Note:** This property does not affect HTML content in an HTMLControl
 		object (in Adobe AIR).
 	**/
-	// @:noCompletion @:dox(hide) public var soundTransform:SoundTransform;
-	#end
+	public var soundTransform:SoundTransform;
 
 	/**
 		A Boolean value that indicates whether the pointing hand (hand cursor)
@@ -137,6 +137,7 @@ class Sprite extends DisplayObjectContainer
 	@:noCompletion private var __buttonMode:Bool;
 	@:noCompletion private var __pendingBindClassName:String;
 	@:noCompletion private var __pendingBindLibrary:AssetLibrary;
+	@:noCompletion private var __soundTransform:SoundTransform;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -147,6 +148,10 @@ class Sprite extends DisplayObjectContainer
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_buttonMode (v); }")
 			},
 			"graphics": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_graphics (); }")},
+			"soundTransform": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_soundTransform (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_soundTransform (v); }")
+			},
 		});
 	}
 	#end
@@ -403,6 +408,22 @@ class Sprite extends DisplayObjectContainer
 	@:noCompletion private function set_buttonMode(value:Bool):Bool
 	{
 		return __buttonMode = value;
+	}
+
+	@:noCompletion private function get_soundTransform():SoundTransform
+	{
+		if (__soundTransform == null)
+		{
+			__soundTransform = new SoundTransform();
+		}
+
+		return new SoundTransform(__soundTransform.volume, __soundTransform.pan);
+	}
+
+	@:noCompletion private function set_soundTransform(value:SoundTransform):SoundTransform
+	{
+		__soundTransform = new SoundTransform(value.volume, value.pan);
+		return value;
 	}
 }
 #else
