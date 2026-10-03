@@ -290,6 +290,13 @@ class DisplayObjectRenderer extends EventDispatcher
 			var updateTransform = (needRender || !displayObject.__cacheBitmap.__worldTransform.equals(displayObject.__worldTransform));
 			var hasFilters = #if !openfl_disable_filters displayObject.__filters != null #else false #end;
 
+			if (!hasFilters)
+			{
+				// Only filter passes use these, so they go once the filters are removed
+				displayObject.__cacheBitmapData2 = null;
+				displayObject.__cacheBitmapData3 = null;
+			}
+
 			#if !openfl_enable_cacheasbitmap
 			if (renderer.__type == DOM && !hasFilters)
 			{
@@ -664,6 +671,10 @@ class DisplayObjectRenderer extends EventDispatcher
 							displayObject.__cacheBitmapData3.__setUVRect(context, 0, 0, filterWidth, filterHeight);
 							bitmap3 = displayObject.__cacheBitmapData3;
 						}
+						else
+						{
+							displayObject.__cacheBitmapData3 = null;
+						}
 
 						childRenderer.__setBlendMode(NORMAL);
 						childRenderer.__worldAlpha = 1;
@@ -776,6 +787,7 @@ class DisplayObjectRenderer extends EventDispatcher
 						}
 						else
 						{
+							displayObject.__cacheBitmapData2 = null;
 							bitmap2 = bitmap;
 						}
 
@@ -793,6 +805,10 @@ class DisplayObjectRenderer extends EventDispatcher
 								displayObject.__cacheBitmapData3.fillRect(displayObject.__cacheBitmapData3.rect, 0);
 							}
 							bitmap3 = displayObject.__cacheBitmapData3;
+						}
+						else
+						{
+							displayObject.__cacheBitmapData3 = null;
 						}
 
 						if (displayObject.__tempPoint == null) displayObject.__tempPoint = new Point();
