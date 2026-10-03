@@ -110,15 +110,12 @@ import js.html.CanvasRenderingContext2D;
 		__positionX = 0;
 		__positionY = 0;
 		__renderTransform = new Matrix();
-		__usedShaderBuffers = new List<ShaderBuffer>();
 		__worldTransform = new Matrix();
 		__width = 0;
 		__height = 0;
 
 		__bitmapScaleX = 1;
 		__bitmapScaleY = 1;
-
-		__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
 
 		#if (js && html5)
 		moveTo(0, 0);
@@ -393,6 +390,12 @@ import js.html.CanvasRenderingContext2D;
 		if (shader != null)
 		{
 			#if lime
+			if (__shaderBufferPool == null)
+			{
+				__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
+				__usedShaderBuffers = new List<ShaderBuffer>();
+			}
+
 			var shaderBuffer = __shaderBufferPool.get();
 			__usedShaderBuffers.add(shaderBuffer);
 			shaderBuffer.update(cast shader);
@@ -410,13 +413,17 @@ import js.html.CanvasRenderingContext2D;
 	public function clear():Void
 	{
 		#if lime
-		for (shaderBuffer in __usedShaderBuffers)
+		if (__usedShaderBuffers != null)
 		{
-			__shaderBufferPool.release(shaderBuffer);
+			for (shaderBuffer in __usedShaderBuffers)
+			{
+				__shaderBufferPool.release(shaderBuffer);
+			}
+
+			__usedShaderBuffers.clear();
 		}
 		#end
 
-		__usedShaderBuffers.clear();
 		__commands.clear();
 		__strokePadding = 0;
 
