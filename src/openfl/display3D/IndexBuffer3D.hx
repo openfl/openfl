@@ -3,9 +3,13 @@ package openfl.display3D;
 #if !flash
 import openfl.display3D._internal.GLBuffer;
 import openfl.utils._internal.ArrayBufferView;
+import openfl.utils._internal.UInt8Array;
 import openfl.utils._internal.UInt16Array;
+import openfl.utils._internal.UInt32Array;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+import openfl.errors.RangeError;
+import openfl.errors.TypeError;
 
 /**
 	IndexBuffer3D is used to represent lists of vertex indices comprising graphic elements
@@ -32,18 +36,74 @@ import openfl.Vector;
 	@:noCompletion private var __id:GLBuffer;
 	@:noCompletion private var __memoryUsage:Int;
 	@:noCompletion private var __numIndices:Int;
-	@:noCompletion private var __tempUInt16Array:UInt16Array;
 	@:noCompletion private var __usage:Int;
+	@:noCompletion private var __format:Context3DIndexBufferFormat;
 
-	@:noCompletion private function new(context3D:Context3D, numIndices:Int, bufferUsage:Context3DBufferUsage)
+	@:noCompletion private function new(context3D:Context3D, numIndices:Int, bufferUsage:Context3DBufferUsage, format:Context3DIndexBufferFormat = UINT16)
 	{
 		__context = context3D;
 		__numIndices = numIndices;
 
 		var gl = __context.gl;
 		__id = gl.createBuffer();
+		__context.__bindGLElementArrayBuffer(__id);
 
 		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
+
+		__format = format;
+		if (format == UINT32)
+		{
+			var webgl = ~/WebGL\s*([0-9\.]+)/i;
+			var opengles = ~/OpenGL\s*ES\s*([0-9\.]+)/i;
+			var opengl = ~/^([0-9\.]+)/i;
+			var version = gl.getParameter(gl.VERSION);
+			if (webgl.match(version))
+			{
+				if (webgl.matched(1) == "1.0")
+				{
+					if (gl.getExtension("OES_element_index_uint") == null && gl.getExtension("EXT_element_index_uint") == null)
+					{
+						__format = UINT16;
+					}
+				}
+			}
+			else if (opengles.match(version))
+			{
+				if (opengles.matched(1) == "1.0" || opengles.matched(1) == "2.0")
+				{
+					if (gl.getExtension("OES_element_index_uint") == null && gl.getExtension("EXT_element_index_uint") == null)
+					{
+						__format = UINT16;
+					}
+				}
+			}
+			else if (opengl.match(version))
+			{
+				var major = Std.parseInt(opengl.matched(1).split(".")[0]);
+				if (major < 3)
+				{
+					if (gl.getExtension("OES_element_index_uint") == null && gl.getExtension("EXT_element_index_uint") == null)
+					{
+						__format = UINT16;
+					}
+				}
+			}
+		}
+
+		switch __format
+		{
+			case UINT8:
+				var tmparray = new ByteArray(__numIndices);
+				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new UInt8Array(tmparray, 0, __numIndices), __usage);
+
+			case UINT16:
+				var tmparray = new ByteArray(__numIndices * 2);
+				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new UInt8Array(tmparray, 0, __numIndices * 2), __usage);
+
+			case UINT32:
+				var tmparray = new ByteArray(__numIndices * 4);
+				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new UInt8Array(tmparray, 0, __numIndices * 4), __usage);
+		}
 	}
 
 	/**
@@ -79,8 +139,54 @@ import openfl.Vector;
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void
 	{
 		#if lime
-		var offset = byteArrayOffset + startOffset * 2;
-		uploadFromTypedArray(new UInt16Array(data.toArrayBuffer(), offset, count));
+		if (data == null)
+		{
+			throw new TypeError("Invalid data");
+		}
+		if (count < 0)
+		{
+			throw new RangeError("Invalid count");
+		}
+		if (byteArrayOffset < 0 || byteArrayOffset >= data.length)
+		{
+			throw new RangeError("Invalid byteArrayOffset");
+		}
+		if (startOffset < 0)
+		{
+			throw new RangeError("Invalid startOffset");
+		}
+		if (startOffset + count > __numIndices)
+		{
+			throw new RangeError("Invalid combination of count and startOffset");
+		}
+
+		var byteLength = count * 2;
+		if (__format == UINT8)
+		{
+			byteLength = count;
+		}
+		else if (__format == UINT32)
+		{
+			byteLength = count * 4;
+		}
+		if (byteArrayOffset + byteLength > data.length)
+		{
+			throw new RangeError("Invalid combination of count and byteArrayOffset");
+		}
+
+		var byteStartOffset = startOffset * 2;
+		if (__format == UINT8)
+		{
+			byteStartOffset = startOffset;
+		}
+		else if (__format == UINT32)
+		{
+			byteStartOffset = startOffset * 4;
+		}
+
+		var gl = __context.gl;
+		__context.__bindGLElementArrayBuffer(__id);
+		gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, byteStartOffset, new UInt8Array(data, byteArrayOffset, byteLength));
 		#end
 	}
 
@@ -117,30 +223,46 @@ import openfl.Vector;
 	public function uploadFromVector(data:Vector<UInt>, startOffset:Int, count:Int):Void
 	{
 		#if lime
-		// TODO: Optimize more
-
-		if (data == null) return;
-		var gl = __context.gl;
-
-		var length = startOffset + count;
-		var existingUInt16Array = __tempUInt16Array;
-
-		if (__tempUInt16Array == null || __tempUInt16Array.length < count)
+		if (data == null)
 		{
-			__tempUInt16Array = new UInt16Array(count);
-
-			if (existingUInt16Array != null)
-			{
-				__tempUInt16Array.set(existingUInt16Array);
-			}
+			throw new TypeError("Invalid data");
 		}
-
-		for (i in startOffset...length)
+		if (count < 0 || count > data.length)
 		{
-			__tempUInt16Array[i - startOffset] = data[i];
+			throw new RangeError("Invalid count");
 		}
+		if (startOffset + count > __numIndices)
+		{
+			throw new RangeError("Invalid combination of count and startOffset");
+		}
+		var tempArray:ByteArray;
+		switch __format
+		{
+			case UINT8:
+				tempArray = new ByteArray(count);
+				var arrayView = new UInt8Array(tempArray);
+				for (i in 0...count)
+				{
+					arrayView[i] = data[i];
+				}
 
-		uploadFromTypedArray(__tempUInt16Array);
+			case UINT16:
+				tempArray = new ByteArray(count * 2);
+				var arrayView = new UInt16Array(tempArray);
+				for (i in 0...count)
+				{
+					arrayView[i] = data[i];
+				}
+
+			case UINT32:
+				tempArray = new ByteArray(count * 4);
+				var arrayView = new UInt32Array(tempArray);
+				for (i in 0...count)
+				{
+					arrayView[i] = data[i];
+				}
+		}
+		uploadFromByteArray(tempArray, 0, startOffset, count);
 		#end
 	}
 }
