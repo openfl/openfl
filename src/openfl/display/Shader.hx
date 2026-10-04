@@ -325,19 +325,112 @@ class Shader
 		gl.compileShader(shader);
 		var shaderInfoLog = gl.getShaderInfoLog(shader);
 		var hasInfoLog = shaderInfoLog != null && StringTools.trim(shaderInfoLog) != "";
-		var compileStatus = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+		var isError = gl.getShaderParameter(shader, gl.COMPILE_STATUS) == 0;
 
-		if (hasInfoLog || compileStatus == 0)
+		if (hasInfoLog || isError)
 		{
-			var message = (compileStatus == 0) ? "Error" : "Info";
-			message += (type == gl.VERTEX_SHADER) ? " compiling vertex shader" : " compiling fragment shader";
-			message += "\n" + shaderInfoLog;
-			message += "\n" + source;
-			if (compileStatus == 0) Log.error(message);
-			else if (hasInfoLog) Log.debug(message);
+			__logGLShaderInfo(isError, type, shaderInfoLog, source);
 		}
 
 		return shader;
+	}
+
+	/**
+	 * Retrieves the line number from a shader log line.
+	 */
+	#if windows
+	// 0(5) : whatever
+	@:noCompletion private var __lineExtractor = ~/^\d+\((\d+)\) : (.+$)/;
+	#else // (html5 || macos || linux)
+	// ERROR: 0:5:whatever
+	@:noCompletion private var __lineExtractor = ~/^\w+?: \d+:(\d+):(.+$)/;
+	#end
+	/**
+	 * Searches for strings that have only whitespace.
+	 * 
+	 * **Note:** Searching for all whitespace via `~/^\s*$/` caused false-negatives,
+	 * notably: `String.fromCharCode(0)` is `false` but `\W` is `true`.
+	 */
+	@:noCompletion private var __isEmptyLine = ~/^\W*$/;
+	@:noCompletion private function __logGLShaderInfo(isError:Bool, type:Int, infoLog:String, source:String):Void
+	{
+		var message = "";
+		var lines = source.split("\n");
+		var failingLine:String = null;
+		for (log in infoLog.split("\n"))
+		{
+			// ignore empty lines
+			if (__isEmptyLine.match(log))
+				continue;
+
+			// look for a line number
+			if (!__lineExtractor.match(log))
+			{
+				// Could not find expected info, abort pretty formatting
+				failingLine = log;
+				break;
+			}
+
+			var lineNumberStr = __lineExtractor.matched(1);
+			var lineNumber = Std.parseInt(lineNumberStr);
+			var info = __lineExtractor.matched(2);
+			if (lineNumber >= lines.length)
+			{
+				// EOF errors will not have a valid line
+				message += '\n\n $lineNumber | $info';
+			}
+			else
+			{
+				// Add the relevant line to each log
+				var line = lines[lineNumber - 1];
+				var indent = StringTools.lpad("|", " ", lineNumberStr.length + 3);
+				#if haxe4 
+				var pos = getSourcePos(lines, lineNumber - 1);
+				message += '\n\n${pos.file}:${pos.lineNumber}\n ${pos.lineNumber} | $line\n$indent ${info}';
+				#else
+				message += '\n\n $lineNumber | $line\n$indent ${info}';
+				#end
+			}
+		}
+
+		// If we couldn't parse the logs, output the old, verbose format
+		if (failingLine != null)
+			message = '\nFailed to simplify log:"$failingLine"\n$infoLog\n$source';
+		
+		var typeName = (type == __context.gl.VERTEX_SHADER) ? "vertex" : "fragment";
+		if (isError)
+		{
+			Log.error('Error compiling $typeName shader $message');
+		}
+		else Log.debug('Info compiling $typeName shader $message');
+	}
+	
+	function getSourcePos(lines:Array<String>, lineNumber:Int):{file:String, lineNumber:Int}
+	{
+		var nests = 0;
+		var i = lineNumber;
+		var linesBack = 0;
+		while (i-- > 0)
+		{
+			if (lines[i].indexOf("openfl_endregion") != -1)
+				nests++;
+			
+			if (nests == 0)
+				linesBack++;
+			
+			if (lines[i].indexOf("openfl_region") != -1)
+			{
+				if (nests == 0)
+					break;
+				nests--;
+			}
+		}
+		
+		var sourceData = lines[i].split("// { openfl_region       ")[1].split(":");
+		return {
+			file: sourceData[0],
+			lineNumber: Std.parseInt(sourceData[1]) + linesBack - 1
+		};
 	}
 
 	@:noCompletion private function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
