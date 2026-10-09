@@ -1140,7 +1140,8 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds(minX, minY);
 		__inflateBounds(maxX, maxY);
 
-		__commands.drawTriangles(vertices, indices, uvtData, culling);
+		__commands.drawTriangles(vertices != null ? vertices.copy() : null, indices != null ? indices.copy() : null, uvtData != null ? uvtData.copy() : null,
+			culling);
 
 		__dirty = true;
 		__visible = true;
