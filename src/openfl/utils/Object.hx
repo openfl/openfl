@@ -72,6 +72,17 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 			&& #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (Reflect.field(this, name), Iterable_));
 	}
 
+	/**
+		Sets the availability of a dynamic property for loop operations.
+
+		_OpenFL target support:_ Not currently supported, except when targeting
+		Flash. Throws an exception on other targets.
+	**/
+	public inline function setPropertyIsEnumerable(name:String, isEnum:Bool = true):Void
+	{
+		Lib.notImplemented();
+	}
+
 	public inline function toLocaleString():String
 	{
 		return (this == null ? null : Std.string(this));
