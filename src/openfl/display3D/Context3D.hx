@@ -2412,9 +2412,21 @@ import lime.math.Vector2;
 				__bindGLTexture2D(null);
 			}
 
-			if (__state.program != null && __state.program.__format == AGAL && samplerState.textureAlpha)
+			sampler++;
+		}
+
+		// separate alpha textures (for ETC1) are bound last, to the units after the program's
+		// samplers, so that binding the textures above never replaces them
+		if (__state.program != null && __state.program.__format == AGAL)
+		{
+			for (i in 0...__state.textures.length)
 			{
-				gl.activeTexture(gl.TEXTURE0 + sampler + 4);
+				var alphaSampler = __state.program.__agalAlphaSamplers[i];
+				if (alphaSampler == null || !__state.samplerStates[i].textureAlpha) continue;
+
+				texture = __state.textures[i];
+				samplerState = __state.samplerStates[i];
+				gl.activeTexture(gl.TEXTURE0 + alphaSampler.regIndex);
 
 				if (texture != null && texture.__alphaTexture != null)
 				{
@@ -2428,7 +2440,7 @@ import lime.math.Vector2;
 					}
 
 					texture.__alphaTexture.__setSamplerState(samplerState);
-					gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 1);
+					gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[i].location, 1);
 
 					#if (desktop && !html5)
 					// TODO: Cache?
@@ -2438,14 +2450,12 @@ import lime.math.Vector2;
 				else
 				{
 					__bindGLTexture2D(null);
-					if (__state.program.__agalAlphaSamplerEnabled[sampler] != null)
+					if (__state.program.__agalAlphaSamplerEnabled[i] != null)
 					{
-						gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 0);
+						gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[i].location, 0);
 					}
 				}
 			}
-
-			sampler++;
 		}
 	}
 

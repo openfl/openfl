@@ -6,6 +6,7 @@ class Tests
 	public static function main()
 	{
 		var runner = new Runner();
+		runner.addCase(new AGALConverterTest());
 		runner.addCase(new Context3DBlendFactorTest());
 		runner.addCase(new Context3DBufferUsageTest());
 		runner.addCase(new Context3DClearMaskTest());

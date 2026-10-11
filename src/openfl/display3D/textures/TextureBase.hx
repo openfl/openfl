@@ -68,72 +68,7 @@ class TextureBase extends EventDispatcher
 		__textureID = gl.createTexture();
 		__textureContext = __context.__context;
 
-		if (__supportsBGRA == null)
-		{
-			__textureInternalFormat = gl.RGBA;
-
-			var bgraExtension:Dynamic = null;
-			#if (!js || !html5)
-			bgraExtension = gl.getExtension("EXT_bgra");
-			if (bgraExtension == null) bgraExtension = gl.getExtension("EXT_texture_format_BGRA8888");
-			if (bgraExtension == null) bgraExtension = gl.getExtension("APPLE_texture_format_BGRA8888");
-			#end
-
-			if (bgraExtension != null)
-			{
-				__supportsBGRA = true;
-				__textureFormat = bgraExtension.BGRA_EXT;
-
-				#if (lime && !ios && !tvos)
-				if (context.__context.type == OPENGLES)
-				{
-					__textureInternalFormat = bgraExtension.BGRA_EXT;
-				}
-				#end
-			}
-			else
-			{
-				__supportsBGRA = false;
-				__textureFormat = gl.RGBA;
-			}
-
-			__compressedFormats = new Map();
-			__compressedFormatsAlpha = new Map();
-
-			#if (js && html5)
-			var dxtExtension = gl.getExtension("WEBGL_compressed_texture_s3tc");
-			var etc1Extension = gl.getExtension("WEBGL_compressed_texture_etc1");
-			// WEBGL_compressed_texture_pvrtc is not available on iOS Safari
-			var pvrtcExtension = gl.getExtension("WEBKIT_WEBGL_compressed_texture_pvrtc");
-			#else
-			var dxtExtension = gl.getExtension("EXT_texture_compression_s3tc");
-			var etc1Extension = gl.getExtension("OES_compressed_ETC1_RGB8_texture");
-			var pvrtcExtension = gl.getExtension("IMG_texture_compression_pvrtc");
-			#end
-
-			if (dxtExtension != null)
-			{
-				__compressedFormats[ATFGPUFormat.DXT] = dxtExtension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
-				__compressedFormatsAlpha[ATFGPUFormat.DXT] = dxtExtension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
-			}
-
-			if (etc1Extension != null)
-			{
-				#if (js && html5)
-				__compressedFormats[ATFGPUFormat.ETC1] = etc1Extension.COMPRESSED_RGB_ETC1_WEBGL;
-				__compressedFormatsAlpha[ATFGPUFormat.ETC1] = etc1Extension.COMPRESSED_RGB_ETC1_WEBGL;
-				#else
-				__compressedFormats[ATFGPUFormat.ETC1] = etc1Extension.ETC1_RGB8_OES;
-				__compressedFormatsAlpha[ATFGPUFormat.ETC1] = etc1Extension.ETC1_RGB8_OES;
-				#end
-			}
-
-			if (pvrtcExtension != null)
-			{
-				__compressedFormats[ATFGPUFormat.PVRTC] = pvrtcExtension.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
-				__compressedFormatsAlpha[ATFGPUFormat.PVRTC] = pvrtcExtension.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
-			}
-		}
+		__initFormats(context);
 
 		__internalFormat = __textureInternalFormat;
 		__format = __textureFormat;
@@ -305,6 +240,77 @@ class TextureBase extends EventDispatcher
 		return __textureID;
 	}
 
+	@:noCompletion private static function __initFormats(context:Context3D):Void
+	{
+		if (__supportsBGRA != null) return;
+
+		var gl = context.gl;
+
+		__textureInternalFormat = gl.RGBA;
+
+		var bgraExtension:Dynamic = null;
+		#if (!js || !html5)
+		bgraExtension = gl.getExtension("EXT_bgra");
+		if (bgraExtension == null) bgraExtension = gl.getExtension("EXT_texture_format_BGRA8888");
+		if (bgraExtension == null) bgraExtension = gl.getExtension("APPLE_texture_format_BGRA8888");
+		#end
+
+		if (bgraExtension != null)
+		{
+			__supportsBGRA = true;
+			__textureFormat = bgraExtension.BGRA_EXT;
+
+			#if (lime && !ios && !tvos)
+			if (context.__context.type == OPENGLES)
+			{
+				__textureInternalFormat = bgraExtension.BGRA_EXT;
+			}
+			#end
+		}
+		else
+		{
+			__supportsBGRA = false;
+			__textureFormat = gl.RGBA;
+		}
+
+		__compressedFormats = new Map();
+		__compressedFormatsAlpha = new Map();
+
+		#if (js && html5)
+		var dxtExtension = gl.getExtension("WEBGL_compressed_texture_s3tc");
+		var etc1Extension = gl.getExtension("WEBGL_compressed_texture_etc1");
+		// WEBGL_compressed_texture_pvrtc is not available on iOS Safari
+		var pvrtcExtension = gl.getExtension("WEBKIT_WEBGL_compressed_texture_pvrtc");
+		#else
+		var dxtExtension = gl.getExtension("EXT_texture_compression_s3tc");
+		var etc1Extension = gl.getExtension("OES_compressed_ETC1_RGB8_texture");
+		var pvrtcExtension = gl.getExtension("IMG_texture_compression_pvrtc");
+		#end
+
+		if (dxtExtension != null)
+		{
+			__compressedFormats[ATFGPUFormat.DXT] = dxtExtension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
+			__compressedFormatsAlpha[ATFGPUFormat.DXT] = dxtExtension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		}
+
+		if (etc1Extension != null)
+		{
+			#if (js && html5)
+			__compressedFormats[ATFGPUFormat.ETC1] = etc1Extension.COMPRESSED_RGB_ETC1_WEBGL;
+			__compressedFormatsAlpha[ATFGPUFormat.ETC1] = etc1Extension.COMPRESSED_RGB_ETC1_WEBGL;
+			#else
+			__compressedFormats[ATFGPUFormat.ETC1] = etc1Extension.ETC1_RGB8_OES;
+			__compressedFormatsAlpha[ATFGPUFormat.ETC1] = etc1Extension.ETC1_RGB8_OES;
+			#end
+		}
+
+		if (pvrtcExtension != null)
+		{
+			__compressedFormats[ATFGPUFormat.PVRTC] = pvrtcExtension.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+			__compressedFormatsAlpha[ATFGPUFormat.PVRTC] = pvrtcExtension.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+		}
+	}
+
 	@:noCompletion private function __setSamplerState(state:SamplerState):Bool
 	{
 		if (!state.equals(__samplerState))
@@ -427,6 +433,14 @@ class TextureBase extends EventDispatcher
 		__context.__bindGLTexture2D(null);
 	}
 	#end
+
+	// ATF's ETC1 blocks have no alpha channel, so compressed textures with alpha keep it in a
+	// separate texture on devices that use ETC1; shaders need an extra sampler for it there.
+	@:noCompletion private static function __usesSeparateAlphaTextures(context:Context3D):Bool
+	{
+		__initFormats(context);
+		return __compressedFormatsAlpha.exists(ATFGPUFormat.ETC1);
+	}
 }
 #else
 typedef TextureBase = flash.display3D.textures.TextureBase;
