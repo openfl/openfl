@@ -578,6 +578,18 @@ class NativeWindow extends EventDispatcher
 		return __window.title = value;
 	}
 
+	#if draft
+	/**
+		The native menu for this window.
+
+		When `NativeWindow.supportsMenu` is `true`, assigning a `NativeMenu`
+		displays it as the window menu (unless `systemChrome` is `NONE`).
+		Assigning a menu when `supportsMenu` is `false` is allowed, but does
+		nothing.
+	**/
+	public var menu:NativeMenu;
+	#end
+
 	/**
 		Specifies whether this window is visible.
 

@@ -1,4 +1,4 @@
-package _internal.native.menu;
+package openfl.display._internal.native.menu;
 
 import openfl.utils.Object;
 

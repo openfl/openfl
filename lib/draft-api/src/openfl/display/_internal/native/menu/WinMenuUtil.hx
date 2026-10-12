@@ -1,13 +1,13 @@
-package _internal.native.menu;
+package openfl.display._internal.native.menu;
 
-import _internal.native.menu.extension.WinMenuUtilExtern;
+import openfl.display._internal.native.menu.extension.WinMenuUtilExtern;
 import openfl.Lib;
 
 /**
  * ...
  * @author Christopher Speciale
  */
-@:access(_internal.native.menu.extension.WinMenuUtilExtern)
+@:access(openfl.display._internal.native.menu.extension.WinMenuUtilExtern)
 class WinMenuUtil
 {
 	public static function showPopupMenu(id:Int, menuData:ContextMenuData, x:Int, y:Int):Bool

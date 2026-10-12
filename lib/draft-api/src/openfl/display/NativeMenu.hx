@@ -1,8 +1,11 @@
 package openfl.display;
 
-import _internal.native.menu.ContextMenuData;
-import _internal.native.menu.WinMenuUtil;
 import openfl.desktop.NativeApplication;
+import openfl.display._internal.native.menu.ContextMenuData;
+#if windows
+import openfl.display._internal.native.menu.WinMenuUtil;
+import openfl.display._internal.native.window.WinWindowUtil;
+#end
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.EventType;
@@ -15,6 +18,7 @@ import haxe.ds.IntMap;
  * @author Christopher Speciale
  */
 @:access(openfl.display.NativeMenuItem)
+@:access(openfl.display.NativeWindow)
 class NativeMenu extends EventDispatcher
 {
 	private static var __hasContextMenuListener:Bool = false;
@@ -115,8 +119,13 @@ class NativeMenu extends EventDispatcher
 	public function display(stage:Stage, stageX:Float, stageY:Float):Void
 	{
 		dispatchEvent(new Event(Event.DISPLAYING));
-		@:privateAccess
-		__setupNativeListener(NativeApplication.nativeApplication.activeWindow.__hWnd);
+		#if windows
+		var nativeWindow = NativeApplication.nativeApplication.activeWindow;
+		if (nativeWindow != null)
+		{
+			__setupNativeListener(WinWindowUtil.getHWND(nativeWindow.__window));
+		}
+		#end
 	}
 
 	public function getItemAt(index:Int):NativeMenuItem
@@ -230,6 +239,7 @@ class NativeMenu extends EventDispatcher
 		window.menu = this;
 	}
 
+	#if windows
 	private function __setupNativeListener(hWnd:Int):Void
 	{
 		if (!__hasContextMenuListener)
@@ -239,6 +249,7 @@ class NativeMenu extends EventDispatcher
 			__hasContextMenuListener = true;
 		}
 	}
+	#end
 
 	private static var __callbacks:IntMap<Function> = new IntMap();
 

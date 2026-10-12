@@ -1,12 +1,12 @@
-package _internal.native.desktop;
+package openfl.display._internal.native.desktop;
 
-import _internal.native.desktop.extension.WinDesktopUtilExtern;
+import openfl.display._internal.native.desktop.extension.WinDesktopUtilExtern;
 
 /**
  * ...
  * @author Christopher Speciale
  */
-@:access(_internal.native.desktop.extension.WinDesktopUtilExtern)
+@:access(openfl.display._internal.native.desktop.extension.WinDesktopUtilExtern)
 class WinDesktopUtil
 {
 	public static function getCursorPos():Array<Int>

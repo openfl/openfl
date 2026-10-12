@@ -32,7 +32,7 @@ void setupPopupMenu(HMENU hMenu, hx::ObjectPtr<hx::Object> menuData)
 {
 	Dynamic data = menuData;
 
-	std::cout << "function start" << (data == nullptr) << std::endl;
+	std::cout << "function start" << (data == null()) << std::endl;
 
 	Array<hx::ObjectPtr<hx::Object>> items = menuData->__Field(HX_CSTRING("items"), hx::paccAlways);
 
@@ -231,7 +231,7 @@ void setupSystemMenu(HMENU hSystemMenu, hx::ObjectPtr<hx::Object> menuData)
 {
 	Dynamic data = menuData;
 
-	std::cout << "function start" << (data == nullptr) << std::endl;
+	std::cout << "function start" << (data == null()) << std::endl;
 
 	Array<hx::ObjectPtr<hx::Object>> items = menuData->__Field(HX_CSTRING("items"), hx::paccAlways);
 
