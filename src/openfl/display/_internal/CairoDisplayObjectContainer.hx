@@ -17,6 +17,7 @@ class CairoDisplayObjectContainer
 		if (!displayObjectContainer.__renderable || displayObjectContainer.__worldAlpha <= 0) return;
 
 		CairoDisplayObject.renderDrawable(displayObjectContainer, renderer);
+		renderer.__touchGraphics(displayObjectContainer);
 
 		if (displayObjectContainer.__cacheBitmap != null && !displayObjectContainer.__isCacheBitmapRender) return;
 
