@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include "../../_internal/UndefWindowsMacros.h"
 #include <iostream>
 #include <thread>
 
