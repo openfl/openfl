@@ -1370,8 +1370,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private function __createRenderer():Void
 	{
 		#if lime
-		var windowWidth = Std.int(window.width * window.scale);
-		var windowHeight = Std.int(window.height * window.scale);
+		var windowWidth = Math.ceil(window.width * window.scale);
+		var windowHeight = Math.ceil(window.height * window.scale);
 
 		switch (window.context.type)
 		{
@@ -3556,8 +3556,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var scaledWidth = __logicalWidth * scaleX;
 		var scaledHeight = __logicalHeight * scaleY;
 
-		var visibleWidth = __logicalWidth - Math.round((scaledWidth - windowWidth) / scaleX);
-		var visibleHeight = __logicalHeight - Math.round((scaledHeight - windowHeight) / scaleY);
+		var visibleWidth = __logicalWidth - Math.floor((scaledWidth - windowWidth) / scaleX);
+		var visibleHeight = __logicalHeight - Math.floor((scaledHeight - windowHeight) / scaleY);
 		var visibleX = 0.0;
 		var visibleY = 0.0;
 		switch (align)
@@ -3570,22 +3570,22 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				visibleX = Math.round((__logicalWidth - visibleWidth) / 2);
 				visibleY = Math.round((__logicalHeight - visibleHeight) / 2);
 			case BOTTOM_RIGHT:
-				visibleX = Math.round(__logicalWidth - visibleWidth);
-				visibleY = Math.round(__logicalHeight - visibleHeight);
+				visibleX = Math.floor(__logicalWidth - visibleWidth);
+				visibleY = Math.floor(__logicalHeight - visibleHeight);
 			case BOTTOM:
 				visibleX = Math.round((__logicalWidth - visibleWidth) / 2);
-				visibleY = Math.round(__logicalHeight - visibleHeight);
+				visibleY = Math.floor(__logicalHeight - visibleHeight);
 			case BOTTOM_LEFT:
-				visibleY = Math.round(__logicalHeight - visibleHeight);
+				visibleY = Math.floor(__logicalHeight - visibleHeight);
 			case RIGHT:
-				visibleX = Math.round(__logicalWidth - visibleWidth);
+				visibleX = Math.floor(__logicalWidth - visibleWidth);
 				visibleY = Math.round((__logicalHeight - visibleHeight) / 2);
 			case LEFT:
 				visibleY = Math.round((__logicalHeight - visibleHeight) / 2);
 			case TOP_RIGHT:
-				visibleX = Math.round(__logicalWidth - visibleWidth);
+				visibleX = Math.floor(__logicalWidth - visibleWidth);
 			case TOP:
-				visibleX = Math.round((__logicalWidth - visibleWidth) / 2);
+				visibleX = Math.floor((__logicalWidth - visibleWidth) / 2);
 			default: // TOP_LEFT
 		}
 
@@ -3600,8 +3600,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var cacheWidth = stageWidth;
 		var cacheHeight = stageHeight;
 
-		var windowWidth = Std.int(window.width * window.scale);
-		var windowHeight = Std.int(window.height * window.scale);
+		var windowWidth = Math.ceil(window.width * window.scale);
+		var windowHeight = Math.ceil(window.height * window.scale);
 
 		__displayMatrix.identity();
 
@@ -3611,8 +3611,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			// Should stageWidth / stageHeight be changed?
 
-			stageWidth = Std.int(fullScreenSourceRect.width);
-			stageHeight = Std.int(fullScreenSourceRect.height);
+			stageWidth = Math.ceil(fullScreenSourceRect.width);
+			stageHeight = Math.ceil(fullScreenSourceRect.height);
 
 			var displayScaleX = windowWidth / stageWidth;
 			var displayScaleY = windowHeight / stageHeight;
@@ -3630,8 +3630,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				stageWidth = windowWidth;
 				stageHeight = windowHeight;
 				#else
-				stageWidth = Math.round(windowWidth / window.scale);
-				stageHeight = Math.round(windowHeight / window.scale);
+				stageWidth = Math.ceil(windowWidth / window.scale);
+				stageHeight = Math.ceil(windowHeight / window.scale);
 
 				__displayMatrix.scale(window.scale, window.scale);
 				#end
