@@ -88,6 +88,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private var __displayHeight:Int;
 	@:noCompletion private var __displayWidth:Int;
 	@:noCompletion private var __flipped:Bool;
+	@:noCompletion private var __shaderOverride:Shader;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __gl:#if lime WebGLRenderContext #else Dynamic #end;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __maskShader:Context3DMaskShader;
@@ -555,6 +556,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initDisplayShader(shader:Shader):Shader
 	{
+		if (shader == null && __shaderOverride != null) shader = __shaderOverride;
+
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
@@ -574,6 +577,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private function __initGraphicsShader(shader:Shader):Shader
 	{
+		if (shader == null && __shaderOverride != null) shader = __shaderOverride;
+
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
@@ -589,6 +594,18 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 
 		return __defaultGraphicsShader;
+	}
+
+	@:noCompletion private function __pushShaderOverride(shader:Shader):Shader
+	{
+		var previous = __shaderOverride;
+		__shaderOverride = shader;
+		return previous;
+	}
+
+	@:noCompletion private function __popShaderOverride(previous:Shader):Void
+	{
+		__shaderOverride = previous;
 	}
 
 	@:noCompletion private function __initShaderBuffer(shaderBuffer:ShaderBuffer):Shader
