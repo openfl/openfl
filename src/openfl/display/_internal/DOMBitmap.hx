@@ -97,7 +97,9 @@ class DOMBitmap
 
 		if (bitmap.__imageVersion != bitmap.__bitmapData.image.version)
 		{
+			#if lime
 			ImageCanvasUtil.convertToCanvas(bitmap.__bitmapData.image);
+			#end
 
 			// Next line is workaround, to fix rendering bug in Chrome 59 (https://vimeo.com/222938554)
 			bitmap.__canvas.width = bitmap.__bitmapData.width + 1;
