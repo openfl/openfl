@@ -346,6 +346,16 @@ class DisplayObjectRenderer extends EventDispatcher
 				needRender = true;
 			}
 
+			// software and hardware renderers stores cache differently and can not reuse each others cache.
+			// 	__texture (GPU) vs image (software), so when  renderer is switched (ex. BitmapData.draw)
+			// we need to perform a new render.
+			if (!needRender
+				&& displayObject.__cacheBitmapRenderer != null
+				&& displayObject.__cacheBitmapRenderer.__type != renderType)
+			{
+				needRender = true;
+			}
+
 			// Ensure that cached bitmap is updated after changes to scrollRect
 			if (!needRender)
 			{
@@ -387,8 +397,10 @@ class DisplayObjectRenderer extends EventDispatcher
 				filterWidth = rect.width > 0 ? Math.ceil((rect.width + 1) * pixelRatio) : 0;
 				filterHeight = rect.height > 0 ? Math.ceil((rect.height + 1) * pixelRatio) : 0;
 
-				offsetX = rect.x > 0 ? Math.ceil(rect.x) : Math.floor(rect.x);
-				offsetY = rect.y > 0 ? Math.ceil(rect.y) : Math.floor(rect.y);
+
+				// PixelRatio is adjusting for HDPI screns with fractional scaling. (1.5x, 1.25x etc)
+				offsetX = (rect.x > 0 ? Math.ceil(rect.x * pixelRatio) : Math.floor(rect.x * pixelRatio)) / pixelRatio;
+				offsetY = (rect.y > 0 ? Math.ceil(rect.y * pixelRatio) : Math.floor(rect.y * pixelRatio)) / pixelRatio;
 
 				if (displayObject.__cacheBitmapData != null)
 				{
@@ -668,6 +680,10 @@ class DisplayObjectRenderer extends EventDispatcher
 
 						for (filter in displayObject.__filters)
 						{
+							// the cache bitmap is drawn at pixelRatio, so blur radius and
+							// offsets (in logical pixels) must scale to match
+							filter.__renderScale = pixelRatio;
+
 							if (filter.__preserveObject)
 							{
 								childRenderer.__setRenderTarget(bitmap3);
@@ -783,8 +799,24 @@ class DisplayObjectRenderer extends EventDispatcher
 						var cacheBitmap:BitmapData;
 						var lastBitmap:BitmapData;
 
+						// where the object sits inside the padded cache bitmap (device px):
+						// the padding is the sum of every filter's extensions
+						var padLeft = 0, padTop = 0, padRight = 0, padBottom = 0;
 						for (filter in displayObject.__filters)
 						{
+							padLeft += filter.__leftExtension;
+							padTop += filter.__topExtension;
+							padRight += filter.__rightExtension;
+							padBottom += filter.__bottomExtension;
+						}
+						var objectRect = new Rectangle(padLeft * pixelRatio, padTop * pixelRatio, filterWidth - (padLeft + padRight) * pixelRatio,
+							filterHeight - (padTop + padBottom) * pixelRatio);
+
+						for (filter in displayObject.__filters)
+						{
+							filter.__renderScale = pixelRatio;
+							filter.__objectRect = objectRect;
+
 							if (filter.__preserveObject)
 							{
 								bitmap3.copyPixels(bitmap, bitmap.rect, destPoint);
@@ -792,12 +824,13 @@ class DisplayObjectRenderer extends EventDispatcher
 
 							lastBitmap = filter.__applyFilter(bitmap2, bitmap, bitmap.rect, destPoint);
 
-							if (filter.__preserveObject)
+							if (filter.__preserveObject && !filter.__softwareComposite)
 							{
 								lastBitmap.draw(bitmap3, null,
 									displayObject.__objectTransform != null ? displayObject.__objectTransform.__colorTransform : null);
 							}
 							filter.__renderDirty = false;
+							filter.__objectRect = null;
 
 							if (needSecondBitmapData && lastBitmap == bitmap2)
 							{

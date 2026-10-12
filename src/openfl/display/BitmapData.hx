@@ -382,12 +382,12 @@ class BitmapData implements IBitmapDrawable
 
 		if (filter.__preserveObject)
 		{
-			bitmapData3.copyPixels(this, rect, destPoint);
+			bitmapData3.copyPixels(sourceBitmapData, sourceRect, destPoint);
 		}
 
-		var lastBitmap = filter.__applyFilter(bitmapData2, this, sourceRect, destPoint);
+		var lastBitmap = filter.__applyFilter(bitmapData2, sourceBitmapData, sourceRect, destPoint);
 
-		if (filter.__preserveObject)
+		if (filter.__preserveObject && !filter.__softwareComposite)
 		{
 			lastBitmap.draw(bitmapData3, null, null);
 		}
@@ -396,6 +396,9 @@ class BitmapData implements IBitmapDrawable
 		{
 			bitmapData2.image.version = image.version;
 			image = bitmapData2.image;
+			// the cached Cairo surface wraps the previous image's memory: a later
+			// draw() would render into it and the result would be lost
+			__surface = null;
 		}
 
 		image.dirty = true;
