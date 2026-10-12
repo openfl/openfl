@@ -1,0 +1,13 @@
+package ::PACKAGE_NAME::;
+
+@:bind @:native("::NATIVE_CLASS_NAME::") class ::CLASS_NAME:: extends ::if BASE_CLASS_NAME::::BASE_CLASS_NAME::::else::#if flash flash.display.SimpleButton.SimpleButton2 #else openfl.display.SimpleButton #end::end::
+{
+
+	public function new () {
+
+		super ();
+
+	}
+
+
+}

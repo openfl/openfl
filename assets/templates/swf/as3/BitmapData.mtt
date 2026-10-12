@@ -1,0 +1,12 @@
+package ::PACKAGE_NAME:: {
+	import openfl.utils.Assets;
+	import openfl.display.BitmapData;
+
+	public class ::NATIVE_CLASS_NAME:: extends BitmapData {
+
+		public function ::NATIVE_CLASS_NAME:: (width:int = 0, height:int = 0, transparent:boolean = false, background:int = 0) {
+			super (width, height, transparent, background);
+		}
+
+	}
+}
