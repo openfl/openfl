@@ -28,6 +28,9 @@ class ShaderMacro
 		var glFragmentSource:String = null;
 		var glVertexSource:String = null;
 
+		var glFragmentSourceFile = null;
+		var glVertexSourceFile = null;
+
 		for (field in fields)
 		{
 			for (meta in field.meta)
@@ -38,6 +41,12 @@ class ShaderMacro
 						glFragmentSource = meta.params[0].getValue();
 
 					case "glVertexSource", ":glVertexSource":
+						glVertexSource = meta.params[0].getValue();
+
+					case "glFragmentSourceFile", ":glFragmentSourceFile":
+						glFragmentSourceFile = meta.params[0].getValue();
+
+					case "glVertexSourceFile", ":glVertexSourceFile":
 						glVertexSource = meta.params[0].getValue();
 
 					case "glFragmentHeader", ":glFragmentHeader":
@@ -79,6 +88,12 @@ class ShaderMacro
 						case "glVertexSource", ":glVertexSource":
 							if (glVertexSource == null) glVertexSource = meta.params[0].getValue();
 
+						case "glFragmentSourceFile", ":glFragmentSourceFile":
+							if (glFragmentSourceFile == null) glFragmentSourceFile = meta.params[0].getValue();
+
+						case "glVertexSourceFile", ":glVertexSourceFile":
+							if (glVertexSourceFile == null) glVertexSourceFile = meta.params[0].getValue();
+
 						case "glFragmentHeader", ":glFragmentHeader":
 							glFragmentHeader = meta.params[0].getValue() + "\n" + glFragmentHeader;
 
@@ -97,6 +112,30 @@ class ShaderMacro
 			}
 
 			parent = parent.superClass != null ? parent.superClass.t.get() : null;
+		}
+
+		if (glVertexSourceFile != null)
+		{
+			try
+			{
+				glVertexSource = sys.io.File.getContent(glVertexSourceFile);
+			}
+			catch (e:Dynamic)
+			{
+				Context.fatalError('Cannot load shader from file: ${e}', Context.currentPos());
+			}
+		}
+
+		if (glFragmentSourceFile != null)
+		{
+			try
+			{
+				glFragmentSource = sys.io.File.getContent(glFragmentSourceFile);
+			}
+			catch (e:Dynamic)
+			{
+				Context.fatalError('Cannot load shader from file: ${e}', Context.currentPos());
+			}
 		}
 
 		if (glVertexSource != null || glFragmentSource != null)
