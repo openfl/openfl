@@ -59,7 +59,13 @@ class Context3DShape
 				renderer.applyColorTransform(shape.__worldColorTransform);
 				renderer.updateShader();
 
-				var vertexBuffer = graphics.__bitmap.getVertexBuffer(context);
+				// Composite only the painted sub-region of the Cairo cache surface.
+				// `graphics.__bitmap` may be larger than the painted area when the
+				// shape uses a high-water-mark surface strategy (grows on demand,
+				// keeps the peak size to avoid reallocations on shrink/oscillation).
+				// Without this, the oversize bitmap's transparent right/bottom
+				// padding ends up in world space — see openfl/openfl#2866.
+				var vertexBuffer = graphics.__bitmap.getVertexBuffer(context, null, null, graphics.__width, graphics.__height);
 				if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
 				if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
 				var indexBuffer = graphics.__bitmap.getIndexBuffer(context);
@@ -97,7 +103,9 @@ class Context3DShape
 				renderer.applyMatrix(renderer.__getMatrix(graphics.__worldTransform, AUTO));
 				renderer.updateShader();
 
-				var vertexBuffer = graphics.__bitmap.getVertexBuffer(context);
+				// Same painted-region clamp as render() above so masks composited
+				// from a high-water cache surface don't pick up transparent padding.
+				var vertexBuffer = graphics.__bitmap.getVertexBuffer(context, null, null, graphics.__width, graphics.__height);
 				if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
 				if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
 				var indexBuffer = graphics.__bitmap.getIndexBuffer(context);
