@@ -7,6 +7,7 @@ class Tests
 	{
 		var runner = new Runner();
 		runner.addCase(new AntiAliasTypeTest());
+		runner.addCase(new Context3DTextFieldPixelRatioTest());
 		runner.addCase(new FontStyleTest());
 		runner.addCase(new FontTest());
 		runner.addCase(new FontTypeTest());
