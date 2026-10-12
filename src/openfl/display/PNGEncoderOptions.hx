@@ -1,6 +1,10 @@
 package openfl.display;
 
 #if !flash
+#if lime
+import openfl.utils.ByteArray;
+import lime.graphics.Image;
+#end
 /**
 	The PNGEncoderOptions class defines a compression algorithm for the
 	`openfl.display.BitmapData.encode()` method.
@@ -9,7 +13,7 @@ package openfl.display;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class PNGEncoderOptions
+@:final class PNGEncoderOptions implements IEncoderOptions
 {
 	/**
 		Chooses compression speed over file size. Setting this property to true improves
@@ -26,6 +30,14 @@ package openfl.display;
 	{
 		this.fastCompression = fastCompression;
 	}
+
+	#if lime
+	@:noCompletion @:keep private function encode(image:#if lime Image #else Dynamic #end, byteArray:ByteArray):ByteArray
+	{
+		byteArray.writeBytes(ByteArray.fromBytes(image.encode(PNG)));
+		return byteArray;
+	}
+	#end
 }
 #else
 typedef PNGEncoderOptions = flash.display.PNGEncoderOptions;
