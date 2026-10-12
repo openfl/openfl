@@ -1,6 +1,7 @@
 package openfl.utils._internal;
 
 #if macro
+import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
@@ -18,6 +19,54 @@ class ShaderMacro
 
 	public static function build():Array<Field>
 	{
+		#if (haxe >= "4.3.0")
+		function makeMetadata(type:Int, frag:Bool)
+		{
+			var t = switch (type)
+			{
+				case 1: "Body";
+				case 2: "Header";
+				default: "Source";
+			}
+
+			var fr = (frag) ? "Fragment" : "Vertex";
+
+			var params = "Sets the " + fr.toLowerCase() + " " + t.toLowerCase() + ((t == "Source") ? "" : "pragma ") + "code of the `Shader` class.\n\n";
+
+			if (type == 0)
+			{
+				params = "`Warning`: this will override the source code of the extended class. to append the logic with the previous `Shader` classes, use `@:gl" 
+				+ fr + "Header` or `@:gl" + fr + "Body instead.";
+			}
+			else
+			{
+				params = "`Warning`: this will append all the previous classes that have called @:gl" + fr + t + ". to override the logic of the previous `Shader` classes, use  `@:gl" 
+				+ fr + "Source` instead.";
+			}
+
+			params += "\n\n if you want to use the `Header` or `Body` code block inside your source, you will need to instance `#pragma header` or `#pragma body` respectively to inject the code inside the source code";
+
+
+			Compiler.registerCustomMetadata(
+			{
+				metadata: ':gl$fr$t',
+				doc: 'Sets the ${fr.toLowerCase()} ${(t == "Source") ? "shader" :  t.toLowerCase() + " pragma code"} of the class',
+				targets: [Expr],
+				platforms: [Cross],
+				params: [t.toLowerCase() + " code: The code block as a `String`"]
+			});
+		}
+
+		makeMetadata(0, true);
+		makeMetadata(1, true);
+		makeMetadata(2, true);
+
+
+		makeMetadata(0, false);
+		makeMetadata(1, false);
+		makeMetadata(2, false);
+		#end
+		
 		var fields = Context.getBuildFields();
 
 		var glFragmentHeader = "";
