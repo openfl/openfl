@@ -358,7 +358,12 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	{
 		__currentShaderBuffer = null;
 
-		if (__currentShader == shader) return;
+		if (__currentShader == shader
+			&& __context3D.__state.program == (shader != null ? shader.program : null)
+			&& __context3D.__contextState.program == (shader != null ? shader.program : null))
+		{
+			return;
+		}
 
 		if (__currentShader != null)
 		{
