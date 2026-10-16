@@ -2549,9 +2549,13 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 
 	public function sort(f:T->T->Int):Void {}
 
-	public function splice(pos:Int, len:Int):VectorData<T>
+	public inline function splice(pos:Int, len:Int #if (haxe_ver >= 4.2), ...items #end):VectorData<T>
 	{
+		#if (haxe_ver >= 4.2)
+		return VectorData.ofArray(untyped #if haxe4 js.Syntax.code #else __js__ #end ("Array.prototype.splice.apply (this, arguments)"));
+		#else
 		return VectorData.ofArray(untyped #if haxe4 js.Syntax.code #else __js__ #end ("Array.prototype.splice.call (this, pos, len)"));
+		#end
 	}
 
 	public function toString():String
