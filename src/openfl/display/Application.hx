@@ -36,6 +36,7 @@ class Application #if lime extends LimeApplication #end
 	#if !lime
 	public static var current:Application;
 
+	public var meta:Map<String, String>;
 	public var window:Window;
 	#end
 
@@ -43,6 +44,8 @@ class Application #if lime extends LimeApplication #end
 	{
 		#if lime
 		super();
+		#else
+		meta = new Map();
 		#end
 
 		if (Lib.application == null)

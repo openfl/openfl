@@ -345,7 +345,9 @@ class PrintJob
 			for (i in 0...__bitmapData.length)
 			{
 				bitmapData = __bitmapData[i];
+				#if lime
 				ImageCanvasUtil.sync(bitmapData.image, false);
+				#end
 
 				if (bitmapData.image.buffer.__srcCanvas != null)
 				{

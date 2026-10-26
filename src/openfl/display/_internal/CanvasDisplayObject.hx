@@ -33,9 +33,11 @@ class CanvasDisplayObject
 
 			renderer.setTransform(displayObject.__renderTransform, context);
 
+			#if lime
 			var color:ARGB = (displayObject.opaqueBackground : ARGB);
 			context.fillStyle = 'rgb(${color.r},${color.g},${color.b})';
 			context.fillRect(0, 0, displayObject.width, displayObject.height);
+			#end
 
 			renderer.__popMaskObject(displayObject);
 		}

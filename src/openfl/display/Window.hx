@@ -25,6 +25,9 @@ class Window #if lime extends LimeWindow #end
 	@SuppressWarnings("checkstyle:Dynamic") public var context:Dynamic;
 	@SuppressWarnings("checkstyle:Dynamic") public var cursor:Dynamic;
 	@SuppressWarnings("checkstyle:Dynamic") public var display:Dynamic;
+	#if (js && html5)
+	public var element(default, null):js.html.Element;
+	#end
 	public var frameRate:Float;
 	public var fullscreen:Bool;
 	public var height:Int;
@@ -77,13 +80,15 @@ class Window #if lime extends LimeWindow #end
 		#end
 	}
 
-	override public function close():Void
+	#if lime override #end public function close():Void
 	{
+		#if lime
 		super.close();
 		if (onClose.canceled)
 		{
 			return;
 		}
+		#end
 		if (stage == null)
 		{
 			// already closed

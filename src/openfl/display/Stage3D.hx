@@ -117,7 +117,9 @@ class Stage3D extends EventDispatcher
 	@:noCompletion private var __pixelRatio:Float;
 	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
+	#if lime
 	@:noCompletion private var __renderContext:RenderContext;
+	#end
 	@:noCompletion private var __style:CSSStyleDeclaration;
 	@:noCompletion private var __webgl:RenderingContext;
 	#end
