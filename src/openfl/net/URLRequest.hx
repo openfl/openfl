@@ -51,6 +51,18 @@ import haxe.macro.Compiler;
 @:final class URLRequest
 {
 	/**
+		Specifies whether successful response data should be cached for this
+		request. In Adobe AIR, `true` uses the operating system's HTTP cache.
+
+		**Note:** OpenFL keeps no HTTP cache of its own, so this property only
+		has an effect on the Flash/AIR target.
+
+		The default value is initialized from the
+		`URLRequestDefaults.cacheResponse` property.
+	**/
+	public var cacheResponse:Bool;
+
+	/**
 		The MIME content type of the content in the the `data`
 		property.
 
@@ -344,6 +356,18 @@ import haxe.macro.Compiler;
 	public var url:String;
 
 	/**
+		Specifies whether the local cache should be consulted before this
+		URLRequest fetches data.
+
+		**Note:** OpenFL keeps no HTTP cache of its own, so this property only
+		has an effect on the Flash/AIR target.
+
+		The default value is initialized from the `URLRequestDefaults.useCache`
+		property.
+	**/
+	public var useCache:Bool;
+
+	/**
 		Specifies the user-agent string to be used in the HTTP request.
 
 		The default value is the same user agent string that is used by OpenFL on native
@@ -373,6 +397,7 @@ import haxe.macro.Compiler;
 			this.url = url;
 		}
 
+		cacheResponse = URLRequestDefaults.cacheResponse;
 		contentType = null; // "application/x-www-form-urlencoded";
 		followRedirects = URLRequestDefaults.followRedirects;
 
@@ -392,6 +417,7 @@ import haxe.macro.Compiler;
 		manageCookies = URLRequestDefaults.manageCookies;
 		method = URLRequestMethod.GET;
 		requestHeaders = [];
+		useCache = URLRequestDefaults.useCache;
 		userAgent = URLRequestDefaults.userAgent;
 	}
 

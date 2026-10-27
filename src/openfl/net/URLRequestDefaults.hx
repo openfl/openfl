@@ -31,7 +31,15 @@ package openfl.net;
 class URLRequestDefaults
 {
 	// public static var authenticate:Bool;
-	// public static var cacheResponse:Bool;
+
+	/**
+		The default setting for the `cacheResponse` property of URLRequest
+		objects. Setting the `cacheResponse` property in a URLRequest object
+		overrides this default setting.
+
+		The default value is `true`.
+	**/
+	public static var cacheResponse:Bool = true;
 
 	/**
 		The default setting for the `followRedirects` property of URLRequest objects.
@@ -78,7 +86,14 @@ class URLRequestDefaults
 	**/
 	public static var manageCookies:Bool = true;
 
-	// public static var useCache:Bool;
+	/**
+		The default setting for the `useCache` property of URLRequest objects.
+		Setting the `useCache` property in a URLRequest object overrides this
+		default setting.
+
+		The default value is `true`.
+	**/
+	public static var useCache:Bool = true;
 
 	/**
 		The default setting for the `userAgent` property of URLRequest objects. Setting the
