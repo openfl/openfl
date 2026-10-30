@@ -2490,11 +2490,15 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		}
 	}
 
-	public function push(x:T):Int
+	public function push(#if (haxe_ver >= 4.2)...items #else x:T #end):Int
 	{
 		if (!fixed)
 		{
+			#if (haxe_ver >= 4.2)
+			return untyped #if haxe4 js.Syntax.code #else __js__ #end ("Array.prototype.push.apply (this, arguments)");
+			#else
 			return untyped #if haxe4 js.Syntax.code #else __js__ #end ("Array.prototype.push.call (this, x)");
+			#end
 		}
 		else
 		{
@@ -2563,11 +2567,15 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		return null;
 	}
 
-	public function unshift(x:T):Void
+	public function unshift(#if (haxe_ver >= 4.2)...items #else x:T #end):Void
 	{
 		if (!fixed)
 		{
+			#if (haxe_ver >= 4.2)
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("Array.prototype.unshift.apply (this, arguments)");
+			#else
 			untyped #if haxe4 js.Syntax.code #else __js__ #end ("Array.prototype.unshift.call (this, x)");
+			#end
 		}
 	}
 
