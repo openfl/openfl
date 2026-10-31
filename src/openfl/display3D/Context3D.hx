@@ -1433,7 +1433,10 @@ import lime.math.Vector2;
 			{
 				if (__state.samplerStates[i] == null)
 				{
-					__state.samplerStates[i] = program.__samplerStates[i].clone();
+					if (program.__samplerStates[i] != null)
+					{
+						__state.samplerStates[i] = program.__samplerStates[i].clone();
+					}
 				}
 				else
 				{
