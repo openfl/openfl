@@ -1,7 +1,6 @@
 package openfl.events;
 
 import openfl.errors.SQLError;
-import openfl.events.Event;
 
 /**
  * ...
@@ -19,8 +18,12 @@ class SQLErrorEvent extends ErrorEvent
 		this.error = error;
 	}
 
-	override public function clone():Event
+	public override function clone():SQLErrorEvent
 	{
-		return new SQLErrorEvent(type, error);
+		var event = new SQLErrorEvent(type, error);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		event.eventPhase = eventPhase;
+		return event;
 	}
 }

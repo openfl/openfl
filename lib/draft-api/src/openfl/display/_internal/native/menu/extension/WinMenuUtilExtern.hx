@@ -1,6 +1,6 @@
-package _internal.native.menu.extension;
+package openfl.display._internal.native.menu.extension;
 
-import _internal.native.menu.ContextMenuData;
+import openfl.display._internal.native.menu.ContextMenuData;
 import haxe.Constraints.Function;
 
 /**
