@@ -71,6 +71,7 @@
 			<haxedef name="openfl-native" />
 			<set name="openfl" />
 			<haxeflag name="--remap" value="flash:openfl" />
+			<haxeflag name="--remap" value="air:openfl" />
 
 			<section if="telemetry || advanced-telemetry || openfl-telemetry">
 
@@ -98,6 +99,7 @@
 			<set name="openfl-html5" />
 			<haxedef name="openfl-html5" />
 			<haxeflag name="--remap" value="flash:openfl" />
+			<haxeflag name="--remap" value="air:openfl" />
 
 			<module name="openfl" if="html5 lime-modular">
 

@@ -40,6 +40,24 @@ class SecurityErrorEvent extends ErrorEvent
 	**/
 	public static inline var SECURITY_ERROR:EventType<SecurityErrorEvent> = "securityError";
 
+	/**
+		The `SecurityErrorEvent.CERTIFICATE_ERROR` constant defines the value
+		of the `type` property of a `certificateError` event object, which a
+		secure connection dispatches when the server certificate cannot be
+		validated.
+
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `true`; calling `preventDefault()` accepts the certificate anyway. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The network object reporting the error. |
+		| `text` | Text to be displayed as an error message. |
+	**/
+	public static inline var CERTIFICATE_ERROR:EventType<SecurityErrorEvent> = "certificateError";
+
 	// @:noCompletion private static var __pool:ObjectPool<SecurityErrorEvent> = new ObjectPool<SecurityErrorEvent>(function() return
 	// 	new SecurityErrorEvent(null), function(event) event.__init());
 

@@ -138,6 +138,8 @@ class SecureSocket extends Socket
 		#end
 	}
 
+	@:noCompletion private var __verifyCert:Bool = true;
+
 	@:noCompletion private var __peerCertificate:#if sys Certificate #else Dynamic #end;
 
 	/**
@@ -307,7 +309,9 @@ class SecureSocket extends Socket
 		#if sys
 		try
 		{
-			__socket = new SysSecureSocket();
+			var secureSocket = new SysSecureSocket();
+			if (!__verifyCert) secureSocket.verifyCert = false;
+			__socket = secureSocket;
 		}
 		catch (e:Dynamic)
 		{
