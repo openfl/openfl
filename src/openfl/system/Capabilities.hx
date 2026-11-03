@@ -483,9 +483,6 @@ import sys.io.Process;
 		<haxedef name="openfl_capabilities_version" value="51,1,3,0" />
 		```
 
-		A value without a comma (such as the `1` of a define without a value)
-		is ignored.
-
 		The server string is `V`.
 	**/
 	public static var version(get, never):String;
@@ -827,9 +824,9 @@ import sys.io.Process;
 		#end
 
 		// openfl_capabilities_version reports a Flash or AIR runtime version (e.g. 51,1,3,0) instead of
-		// OpenFL's, for code that checks it, such as Starling (at least 19). A define without a value is 1.
+		// OpenFL's, for code that checks it, such as Starling (at least 19).
 		var runtimeVersion:String = Compiler.getDefine("openfl_capabilities_version");
-		if (runtimeVersion != null && runtimeVersion.indexOf(",") != -1)
+		if (runtimeVersion != null)
 		{
 			value += " " + runtimeVersion;
 		}
