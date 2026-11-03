@@ -247,7 +247,7 @@ class LoaderContext
 	**/
 	public var checkPolicyFile:Bool;
 
-	#if false
+	#if sys
 	/**
 		Specifies whether to decode image data when it is used or when it is
 		loaded.
@@ -269,8 +269,10 @@ class LoaderContext
 		Under both policies, the runtime uses the same cache and flush
 		behavior after the image is decoded. The runtime can flush the decoded
 		data at any time and re-decode the image the next time it is required.
+
+		Native targets decode images on load whatever the policy.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash11) public var imageDecodingPolicy:openfl.system.ImageDecodingPolicy;
+	public var imageDecodingPolicy:ImageDecodingPolicy;
 	#end
 	#if false
 	/**
@@ -427,6 +429,9 @@ class LoaderContext
 
 		allowCodeImport = true;
 		allowLoadBytesCodeExecution = true;
+		#if sys
+		imageDecodingPolicy = ON_DEMAND;
+		#end
 	}
 }
 #else
