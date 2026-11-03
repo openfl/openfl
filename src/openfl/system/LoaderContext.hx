@@ -247,7 +247,7 @@ class LoaderContext
 	**/
 	public var checkPolicyFile:Bool;
 
-	#if sys
+	#if (sys && (!flash_doc_gen || air_doc_gen))
 	/**
 		Specifies whether to decode image data when it is used or when it is
 		loaded.
@@ -274,6 +274,7 @@ class LoaderContext
 	**/
 	public var imageDecodingPolicy:ImageDecodingPolicy;
 	#end
+
 	#if false
 	/**
 		An Object containing the parameters to pass to the LoaderInfo object
@@ -429,7 +430,7 @@ class LoaderContext
 
 		allowCodeImport = true;
 		allowLoadBytesCodeExecution = true;
-		#if sys
+		#if (sys && (!flash_doc_gen || air_doc_gen))
 		imageDecodingPolicy = ON_DEMAND;
 		#end
 	}
