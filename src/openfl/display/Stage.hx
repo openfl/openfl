@@ -332,6 +332,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#end
 
 	/**
+		The browser zoom factor, which Starling multiplies into its content
+		scale. OpenFL renders at the window's own scale, so this is always 1,
+		as in AIR.
+	**/
+	public var browserZoomFactor(get, never):Float;
+
+	/**
 		Specifies the effective pixel scaling factor of the stage. This
 		value is 1 on standard screens and HiDPI (Retina display)
 		screens. When the stage is rendered on HiDPI screens the pixel
@@ -1048,6 +1055,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			"color": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_color (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_color (v); }")
+			},
+			"browserZoomFactor": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_browserZoomFactor (); }")
 			},
 			"contentsScaleFactor": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_contentsScaleFactor (); }")
@@ -3929,6 +3939,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 
 		return value;
+	}
+
+	@:noCompletion private function get_browserZoomFactor():Float
+	{
+		return 1;
 	}
 
 	@:noCompletion private function get_contentsScaleFactor():Float
