@@ -4,6 +4,7 @@ package openfl.display3D.textures;
 import haxe.Timer;
 import openfl.display3D._internal.GLTexture;
 import openfl.events.Event;
+import openfl.media.Camera;
 import openfl.net.NetStream;
 
 /**
@@ -64,7 +65,6 @@ import openfl.net.NetStream;
 		__textureTarget = __context.gl.TEXTURE_2D;
 	}
 
-	#if false
 	/**
 		Specifies a video stream from a camera to be rendered within the texture of the
 		VideoTexture object.
@@ -74,9 +74,11 @@ import openfl.net.NetStream;
 		`theCamera` parameter to `null`.
 
 		@param	theCamera
+
+		OpenFL has no camera input, so this only takes `null`, which Starling passes
+		to drop a video source.
 	**/
-	// public function attachCamera(theCamera:Camera):Void {}
-	#end
+	public function attachCamera(theCamera:Camera):Void {}
 
 	/**
 		Specifies a video stream to be rendered within the texture of the VideoTexture
