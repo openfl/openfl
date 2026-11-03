@@ -51,7 +51,9 @@ class AGALConverter
 		return Int64.make(high, low);
 	}
 
-	public static function convertToGLSL(agal:ByteArray, samplerState:Array<SamplerState>):String
+	// With 'separateAlphaTextures', samplers flagged "dxt5" also read an optional alpha texture
+	// (for ETC1, which has no alpha channel), from an extra sampler '<name>_alpha'.
+	public static function convertToGLSL(agal:ByteArray, samplerState:Array<SamplerState>, separateAlphaTextures:Bool = true):String
 	{
 		agal.position = 0;
 		agal.endian = Endian.LITTLE_ENDIAN;
@@ -457,7 +459,7 @@ class AGALConverter
 					{
 						case 0: // 2d texture
 
-							if (sampler.t == 2)
+							if (sampler.t == 2 && separateAlphaTextures)
 							{ // dxt5, sampler alpha
 
 								sr1.sourceMask = 0x3;
@@ -478,7 +480,7 @@ class AGALConverter
 
 						case 1: // cube texture
 
-							if (sampler.t == 2)
+							if (sampler.t == 2 && separateAlphaTextures)
 							{ // dxt5, sampler alpha
 
 								sr1.sourceMask = 0x7;

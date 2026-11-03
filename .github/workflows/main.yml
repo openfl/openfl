@@ -158,6 +158,9 @@ jobs:
           haxelib install hxp --quiet
           haxelib install utest --quiet
           haxelib install dox --quiet
+          haxelib install native-desktop --quiet
+          haxelib install native-ipc --quiet
+          haxelib install wsproto --quiet
 
       - name: Setup environment
         run: |

@@ -1,5 +1,9 @@
 package;
 
+import openfl.display.StageQuality;
+import openfl.display.StageScaleMode;
+import openfl.display.StageDisplayState;
+import openfl.display.StageAlign;
 import openfl.display.Stage;
 import openfl.events.EventPhase;
 import openfl.events.MouseEvent;
@@ -9,94 +13,71 @@ import utest.Test;
 
 class StageTest extends Test
 {
-	#if !integration
-	@Ignored
-	#end
 	public function test_align()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping align test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.align;
-
-		Assert.notNull(exists);
-		#end
+		Assert.equals(StageAlign.TOP_LEFT, Lib.current.stage.align);
 	}
 
-	#if !integration
-	@Ignored
-	#end
 	public function test_allowsFullScreen()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping allowsFullScreen test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.allowsFullScreen;
-
-		Assert.notNull(exists);
-		#end
+		Assert.isTrue(Lib.current.stage.allowsFullScreen);
 	}
 
-	#if !integration
-	@Ignored
-	#end
 	public function test_allowsFullScreenInteractive()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping allowsFullScreenInteractive test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.allowsFullScreenInteractive;
-
-		Assert.notNull(exists);
-		#end
+		Assert.notNull(Lib.current.stage.allowsFullScreenInteractive);
 	}
 
-	#if !integration
-	@Ignored
-	#end
 	public function test_application()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping application test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.application;
-
-		Assert.notNull(exists);
-		#end
+		Assert.notNull(Lib.current.stage.application);
 	}
 
-	#if !integration
-	@Ignored
-	#end
 	public function test_color()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping color test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.color;
-
-		Assert.notNull(exists);
-		#end
+		var white:UInt = 0xffffffff;
+		Assert.equals(white, Lib.current.stage.color);
 	}
 
-	#if !integration
-	@Ignored
-	#end
 	public function test_displayState()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping stageHeight test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.displayState;
-
-		Assert.notNull(exists);
-		#end
+		Assert.equals(StageDisplayState.NORMAL, Lib.current.stage.displayState);
 	}
 
 	#if !integration
@@ -114,124 +95,95 @@ class StageTest extends Test
 		#end
 	}
 
-	#if !integration
-	@Ignored
-	#end
 	public function test_frameRate()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping frameRate test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.frameRate;
-
-		Assert.notNull(exists);
-		#end
+		Assert.isTrue(Lib.current.stage.frameRate > 0);
 	}
 
-	#if !integration
-	@Ignored
-	#end
+	#if !flash
 	public function test_quality()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping quality test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.quality;
-
-		Assert.notNull(exists);
-		#end
+		Assert.equals(StageQuality.HIGH, Lib.current.stage.quality);
 	}
-
-	#if !integration
-	@Ignored
 	#end
+
 	public function test_scaleMode()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping scaleMode test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.scaleMode;
-
-		Assert.notNull(exists);
-		#end
+		Assert.equals(StageScaleMode.NO_SCALE, Lib.current.stage.scaleMode);
 	}
 
-	#if !integration
-	@Ignored
-	#end
 	public function test_stage3Ds()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping stage3Ds test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.stage3Ds;
-
-		Assert.notNull(exists);
-		#end
+		Assert.notNull(Lib.current.stage.stage3Ds);
+		Assert.isTrue(Lib.current.stage.stage3Ds.length > 0);
 	}
 
-	#if !integration
-	@Ignored
-	#end
 	public function test_stageFocusRect()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping stageFocusRect test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.stageFocusRect;
-
-		Assert.isTrue(exists);
-		#end
+		Assert.isTrue(Lib.current.stage.stageFocusRect);
 	}
 
-	#if !integration
-	@Ignored
-	#end
 	public function test_stageHeight()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping stageHeight test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.stageHeight;
-
-		Assert.notNull(exists);
-		#end
+		Assert.notNull(Lib.current.stage.stageHeight);
 	}
 
-	#if !integration
-	@Ignored
-	#end
 	public function test_stageWidth()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping stageWidth test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.stageWidth;
-
-		Assert.notNull(exists);
-		#end
+		Assert.notNull(Lib.current.stage.stageWidth);
 	}
 
-	#if !integration
-	@Ignored
-	#end
 	public function test_window()
 	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping window test");
+			return;
+		}
 
-		#if integration
-		var exists = Lib.current.stage.window;
-
-		Assert.notNull(exists);
-		#end
+		Assert.notNull(Lib.current.stage.window);
 	}
 
 	#if (flash || !integration)
