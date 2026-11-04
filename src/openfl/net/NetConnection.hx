@@ -51,7 +51,11 @@ import openfl.events.NetStatusEvent;
 class NetConnection extends EventDispatcher
 {
 	@SuppressWarnings("checkstyle:FieldDocComment")
+	@:noCompletion @:dox(hide) public static inline var CONNECT_CLOSED:String = "NetConnection.Connect.Closed";
+	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:noCompletion @:dox(hide) public static inline var CONNECT_SUCCESS:String = "NetConnection.Connect.Success";
+
+	@:noCompletion private var __connected:Bool = false;
 
 	#if false
 	/**
@@ -369,7 +373,6 @@ class NetConnection extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) public function call (command:String, responder:openfl.net.Responder, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Void;
 	#end
-	#if false
 	/**
 		Closes the connection that was opened locally or to the server and
 		dispatches a `netStatus` event with a `code` property of
@@ -398,9 +401,15 @@ class NetConnection extends EventDispatcher
 		scope="external">Flash Media Server Configuration and Administration
 		Guide</a>_.
 
+		OpenFL only connects locally (`connect(null)`): closing dispatches the
+		event, without stopping the NetStream objects using the connection.
 	**/
-	// @:noCompletion @:dox(hide) public function close ():Void;
-	#end
+	public function close():Void
+	{
+		if (!__connected) return;
+		__connected = false;
+		this.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: NetConnection.CONNECT_CLOSED, level: "status"}));
+	}
 
 	/**
 		Creates a two-way connection to an application on Flash Media Server
@@ -515,6 +524,7 @@ class NetConnection extends EventDispatcher
 			throw "Error: Can only connect in \"HTTP streaming\" mode";
 		}
 
+		__connected = true;
 		this.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, true, {code: NetConnection.CONNECT_SUCCESS}));
 	}
 }
