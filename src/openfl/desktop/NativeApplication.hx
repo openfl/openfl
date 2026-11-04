@@ -6,6 +6,7 @@ import lime.system.System;
 #end
 import openfl.display.NativeWindow;
 import openfl.events.EventDispatcher;
+import openfl.system.Capabilities;
 import openfl.utils._internal.Lib;
 
 /**
@@ -258,6 +259,32 @@ class NativeApplication extends EventDispatcher
 	{
 		// don't allow the original value to be edited externally
 		return __openedWindows.copy();
+	}
+
+	/**
+		The patch level of the runtime hosting the application.
+
+		_OpenFL target support:_ When not targeting AIR, always returns 0.
+	**/
+	public var runtimePatchLevel(get, never):UInt;
+
+	@:noCompletion private function get_runtimePatchLevel():UInt
+	{
+		return 0;
+	}
+
+	/**
+		The version number of the runtime hosting the application.
+
+		Reports the same version number as `Capabilities.version`.
+	**/
+	public var runtimeVersion(get, never):String;
+
+	@:noCompletion private function get_runtimeVersion():String
+	{
+		var version = Capabilities.version;
+		var space = version.indexOf(" ");
+		return StringTools.replace(space >= 0 ? version.substr(space + 1) : version, ",", ".");
 	}
 
 	/**
