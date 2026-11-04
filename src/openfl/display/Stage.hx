@@ -916,6 +916,18 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	public var supportedOrientations(get, never):Vector<StageOrientation>;
 
 	/**
+		This represents current state of vsync of underlying graphics solution.
+		We can enable/disable vsync, so we would immediately render without
+		waiting for next VSYNC'ed state. Reading the property is valid at
+		anytime. However, setting the property is valid only after the
+		`VsyncStateChangeAvailabilityEvent` has fired.
+
+		_OpenFL target support:_ Not currently supported, except when targeting
+		Flash or AIR. Setting the property has no effect.
+	**/
+	public var vsyncEnabled(get, set):Bool;
+
+	/**
 		The associated Lime Window instance for this Stage.
 	**/
 	public var window(default, null):Window;
@@ -1035,6 +1047,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private var __transparent:Bool;
 	@:noCompletion private var __uncaughtErrorEvents:UncaughtErrorEvents;
 	@:noCompletion private var __wasDirty:Bool;
+	@:noCompletion private var __vsyncEnabled:Bool = false;
 	@:noCompletion private var __wasFullscreen:Bool;
 	#if lime
 	@:noCompletion private var __primaryTouch:Touch;
@@ -1087,6 +1100,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			"scaleMode": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleMode (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleMode (v); }")
+			},
+			"vsyncEnabled": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_vsyncEnabled (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_vsyncEnabled (v); }")
 			},
 		});
 	}
@@ -4237,6 +4254,17 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private override function get_tabEnabled():Bool
 	{
 		return false;
+	}
+
+	@:noCompletion private function get_vsyncEnabled():Bool
+	{
+		return __vsyncEnabled;
+	}
+
+	@:noCompletion private function set_vsyncEnabled(value:Bool):Bool
+	{
+		// not available to change, so do nothing
+		return __vsyncEnabled;
 	}
 
 	@:noCompletion private override function set_tabEnabled(value:Bool):Bool
