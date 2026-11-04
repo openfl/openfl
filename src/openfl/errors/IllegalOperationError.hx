@@ -31,10 +31,11 @@ class IllegalOperationError extends Error
 		Creates a new IllegalOperationError object.
 
 		@param message A string associated with the error object.
+		@param id      A reference number to associate with the specific error message.
 	**/
-	public function new(message:String = "")
+	public function new(message:String = "", id:Int = 0)
 	{
-		super(message, 0);
+		super(message, id);
 
 		name = "IllegalOperationError";
 	}

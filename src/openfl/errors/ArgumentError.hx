@@ -17,9 +17,9 @@ class ArgumentError extends Error
 	/**
 		Creates an ArgumentError object.
 	**/
-	public function new(message:String = "")
+	public function new(message:String = "", id:Int = 0)
 	{
-		super(message);
+		super(message, id);
 
 		name = "ArgumentError";
 	}

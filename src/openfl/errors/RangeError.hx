@@ -18,9 +18,9 @@ package openfl.errors;
 #end
 class RangeError extends Error
 {
-	public function new(message:String = "")
+	public function new(message:String = "", id:Int = 0)
 	{
-		super(message, 0);
+		super(message, id);
 
 		name = "RangeError";
 	}

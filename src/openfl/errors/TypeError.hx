@@ -11,9 +11,9 @@ package openfl.errors;
 #end
 class TypeError extends Error
 {
-	public function new(message:String = "")
+	public function new(message:String = "", id:Int = 0)
 	{
-		super(message, 0);
+		super(message, id);
 
 		name = "TypeError";
 	}

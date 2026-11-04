@@ -17,10 +17,11 @@ class IOError extends Error
 		Creates a new IOError object.
 
 		@param message A string associated with the error object.
+		@param id      A reference number to associate with the specific error message.
 	**/
-	public function new(message:String = "")
+	public function new(message:String = "", id:Int = 0)
 	{
-		super(message);
+		super(message, id);
 
 		name = "IOError";
 	}
