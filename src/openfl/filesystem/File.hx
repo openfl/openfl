@@ -2252,6 +2252,13 @@ class File extends FileReference
 			{
 				path = __formatPath(path);
 			}
+
+			// as in AIR, a directory's path does not end with a separator, unless it is a root
+			var trimmed = Path.removeTrailingSlashes(path);
+			if (trimmed.length > 0 && trimmed.charAt(trimmed.length - 1) != ":")
+			{
+				path = trimmed;
+			}
 		}
 
 		return __path = path;
