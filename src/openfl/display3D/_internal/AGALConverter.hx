@@ -272,7 +272,10 @@ class AGALConverter
 
 					var existingUsage = map.getRegisterUsage(sr2);
 
-					if (existingUsage != RegisterUsage.VECTOR_4 && existingUsage != RegisterUsage.VECTOR_4_ARRAY)
+					// only a constant can be declared as a matrix: other registers are vec4s declared elsewhere
+					if (sr2.type == RegisterType.CONSTANT
+						&& existingUsage != RegisterUsage.VECTOR_4
+						&& existingUsage != RegisterUsage.VECTOR_4_ARRAY)
 					{
 						sb.add(dr.toGLSL() + " = " + sr1.toGLSL() + " * mat3(" + sr2.toGLSL(false) + "); // m33");
 						map.addDR(dr, RegisterUsage.VECTOR_4);
@@ -303,7 +306,10 @@ class AGALConverter
 
 					var existingUsage = map.getRegisterUsage(sr2);
 
-					if (existingUsage != RegisterUsage.VECTOR_4 && existingUsage != RegisterUsage.VECTOR_4_ARRAY)
+					// only a constant can be declared as a matrix: other registers are vec4s declared elsewhere
+					if (sr2.type == RegisterType.CONSTANT
+						&& existingUsage != RegisterUsage.VECTOR_4
+						&& existingUsage != RegisterUsage.VECTOR_4_ARRAY)
 					{
 						sb.add(dr.toGLSL() + " = " + sr1.toGLSL() + " * " + sr2.toGLSL(false) + "; // m44");
 						map.addDR(dr, RegisterUsage.VECTOR_4);
@@ -338,7 +344,10 @@ class AGALConverter
 
 					var existingUsage = map.getRegisterUsage(sr2);
 
-					if (existingUsage != RegisterUsage.VECTOR_4 && existingUsage != RegisterUsage.VECTOR_4_ARRAY)
+					// only a constant can be declared as a matrix: other registers are vec4s declared elsewhere
+					if (sr2.type == RegisterType.CONSTANT
+						&& existingUsage != RegisterUsage.VECTOR_4
+						&& existingUsage != RegisterUsage.VECTOR_4_ARRAY)
 					{
 						sb.add(dr.toGLSL() + " = " + sr1.toGLSL() + " * " + sr2.toGLSL(false) + "; // m34");
 						map.addDR(dr, RegisterUsage.VECTOR_4);
