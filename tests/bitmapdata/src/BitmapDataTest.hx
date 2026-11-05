@@ -7,6 +7,7 @@ import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.filters.GlowFilter;
 import openfl.geom.ColorTransform;
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
@@ -342,6 +343,60 @@ class BitmapDataTest extends Test
 
 		// TODO: Look into software renderer to find why alpha is off by one
 		Assert.isTrue(hex(bitmapData.getPixel32(50, 50)) == hex(0xFFFF0000) || hex(bitmapData.getPixel32(50, 50)) == hex(0xFEFF0000));
+	}
+
+	public function test_drawInOwnSpace()
+	{
+		// the pixels of a drawn display object do not depend on its place in the display list
+		var parent = new Sprite();
+		parent.x = 37.3;
+		var spinner = new Sprite();
+		spinner.graphics.beginFill(0xFFCC00);
+		spinner.graphics.drawCircle(0, 0, 35);
+		spinner.graphics.endFill();
+		parent.addChild(spinner);
+
+		var first:String = null;
+		for (rotation in [0, 17, 45, 133])
+		{
+			spinner.rotation = rotation;
+			var bitmapData = new BitmapData(200, 200, true, 0);
+			bitmapData.draw(spinner, new Matrix(2.4, 0, 0, 2.4, 100, 100), null, null, null, true);
+			var pixels = bitmapData.getPixels(bitmapData.rect).toString();
+			if (first == null) first = pixels;
+			Assert.isTrue(pixels == first, "rotation " + rotation);
+		}
+
+		// a clipping layer of the parent's timeline is not the source's mask, and is not drawn
+		var container = new Sprite();
+		var masked = new Sprite();
+		masked.graphics.beginFill(0xFF00FF00);
+		masked.graphics.drawRect(0, 0, 40, 40);
+		masked.graphics.endFill();
+		var layer = new Sprite();
+		layer.graphics.beginFill(0xFFFFFFFF);
+		layer.graphics.drawRect(0, 0, 10, 10);
+		layer.graphics.endFill();
+		container.addChild(layer);
+		container.addChild(masked);
+		@:privateAccess masked.clippingLayer = layer;
+
+		var bitmapData = new BitmapData(100, 100, true, 0);
+		bitmapData.draw(masked);
+		Assert.equals(hex(0xFF00FF00), hex(bitmapData.getPixel32(30, 30)));
+
+		// a mask set on the source itself still is
+		var mask = new Sprite();
+		mask.graphics.beginFill(0xFFFFFFFF);
+		mask.graphics.drawRect(0, 0, 10, 10);
+		mask.graphics.endFill();
+		container.addChild(mask);
+		@:privateAccess masked.clippingLayer = null;
+		masked.mask = mask;
+		var bitmapData = new BitmapData(100, 100, true, 0);
+		bitmapData.draw(masked);
+		Assert.equals(hex(0xFF00FF00), hex(bitmapData.getPixel32(5, 5)));
+		Assert.equals(hex(0), hex(bitmapData.getPixel32(30, 30)));
 	}
 
 	#if neko
