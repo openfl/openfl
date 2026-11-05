@@ -295,7 +295,7 @@ abstract Vector<T>(IVector<T>)
 	/**
 		Iterator
 	**/
-	@:noCompletion @:dox(hide) public inline function iterator():Iterator<T>
+	@:noCompletion @:dox(hide) public inline function iterator():VectorIteratorOf<T>
 	{
 		return this.iterator();
 	}
@@ -896,7 +896,7 @@ abstract Vector<T>(IVector<T>)
 		}
 	}
 
-	public function iterator():Iterator<Bool>
+	public function iterator():VectorIteratorOf<Bool>
 	{
 		return cast __array.iterator();
 	}
@@ -1148,7 +1148,7 @@ abstract Vector<T>(IVector<T>)
 		}
 	}
 
-	public function iterator():Iterator<Float>
+	public function iterator():VectorIteratorOf<Float>
 	{
 		return cast __array.iterator();
 	}
@@ -1405,7 +1405,7 @@ abstract Vector<T>(IVector<T>)
 		}
 	}
 
-	public function iterator():Iterator<Function>
+	public function iterator():VectorIteratorOf<Function>
 	{
 		return cast __array.iterator();
 	}
@@ -1648,7 +1648,7 @@ abstract Vector<T>(IVector<T>)
 		}
 	}
 
-	public function iterator():Iterator<Int>
+	public function iterator():VectorIteratorOf<Int>
 	{
 		return cast __array.iterator();
 	}
@@ -1901,7 +1901,7 @@ abstract Vector<T>(IVector<T>)
 		}
 	}
 
-	public function iterator():Iterator<T>
+	public function iterator():VectorIteratorOf<T>
 	{
 		return cast __array.iterator();
 	}
@@ -2073,7 +2073,7 @@ abstract Vector<T>(IVector<T>)
 	public function get(index:Int):T;
 	public function indexOf(x:T, from:Int = 0):Int;
 	public function insertAt(index:Int, element:T):Void;
-	public function iterator():Iterator<T>;
+	public function iterator():VectorIteratorOf<T>;
 	public function join(sep:String = ","):String;
 	public function lastIndexOf(x:T, from:Null<Int> = null):Int;
 	public function pop():Null<T>;
@@ -2090,6 +2090,17 @@ abstract Vector<T>(IVector<T>)
 
 	@:noCompletion private var __tempIndex:Int;
 }
+
+/**
+	The iterator of a Vector: each implementation iterates its array, so with that class
+	known a `for` loop calls `hasNext` and `next` directly, where through the `Iterator`
+	structure C++ looked both up by name, creating a closure, for each element.
+**/
+#if (haxe_ver >= 4.2)
+@:noCompletion private typedef VectorIteratorOf<T> = haxe.iterators.ArrayIterator<T>;
+#else
+@:noCompletion private typedef VectorIteratorOf<T> = Iterator<T>;
+#end
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
 abstract Vector<T>(VectorData<T>) from VectorData<T>

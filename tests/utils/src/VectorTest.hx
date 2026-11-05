@@ -370,6 +370,32 @@ class VectorTest extends Test
 		Assert.equals(11, iterations);
 	}
 
+	public function test_iteratorOfEachType()
+	{
+		var bools = Vector.ofArray([true, false]);
+		var floats = Vector.ofArray([0.5, 1.5]);
+		var strings = Vector.ofArray(["a", "b"]);
+		var functions = new Vector<Void->Int>();
+		functions.push(function() return 1);
+		functions.push(function() return 2);
+
+		var text = "";
+		for (value in bools) text += value;
+		for (value in floats) text += value;
+		for (value in strings) text += value;
+		for (value in functions) text += value();
+		Assert.equals("truefalse0.51.5ab12", text);
+
+		#if (!flash && haxe_ver >= 4.2)
+		// the type a for loop is compiled against, so the native implementations must return it
+		Assert.isTrue(Std.isOfType(bools.iterator(), haxe.iterators.ArrayIterator));
+		Assert.isTrue(Std.isOfType(floats.iterator(), haxe.iterators.ArrayIterator));
+		Assert.isTrue(Std.isOfType(strings.iterator(), haxe.iterators.ArrayIterator));
+		Assert.isTrue(Std.isOfType(functions.iterator(), haxe.iterators.ArrayIterator));
+		Assert.isTrue(Std.isOfType(new Vector<Int>(1).iterator(), haxe.iterators.ArrayIterator));
+		#end
+	}
+
 	public function test_lastIndexOf()
 	{
 		var vector = new Vector<Int>(20);
