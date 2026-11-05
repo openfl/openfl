@@ -203,6 +203,10 @@ class TextEngine
 		return new EReg('(${testRegexpParts.join('|')})', "g");
 	}
 
+	#if (lime_cffi && !(js && html5))
+	private static var __missingFontFiles:Map<String, Bool> = new Map();
+	#end
+
 	private static function findFont(name:String):Font
 	{
 		#if (js && html5)
@@ -227,6 +231,10 @@ class TextEngine
 		if (name != null && name.indexOf(":/") == -1) name = null;
 		#end
 
+		// A name that is not a font file stays so: try it once, since each attempt
+		// starts FreeType again, and text using that name is laid out and rendered often
+		if (name != null && __missingFontFiles.exists(name)) return null;
+
 		var font = Font.fromFile(name);
 
 		if (font != null)
@@ -235,6 +243,8 @@ class TextEngine
 			Font.__fontByName[font.fontName] = font;
 			return font;
 		}
+
+		if (name != null) __missingFontFiles[name] = true;
 		#end
 
 		return null;
