@@ -8,6 +8,7 @@ import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
+import openfl.text._internal.TextEngine;
 import openfl.Lib;
 import utest.Assert;
 import utest.Test;
@@ -889,6 +890,25 @@ class TextFieldTest extends Test
 		Assert.equals(5, textField.selectionBeginIndex);
 		Assert.equals(5, textField.selectionEndIndex);
 	}
+
+	#if lime_cffi
+	public function test_missingFontNameIsNotLoadedAgain()
+	{
+		// a font name that is neither registered nor a font file: each layout looked it up
+		// as a file again, which starts FreeType again
+		var name = "openfl-test-missing-font";
+		var textField = new TextField();
+		textField.defaultTextFormat = new TextFormat(name, 12);
+		textField.text = "Hello";
+		var width = textField.textWidth;
+		Assert.isTrue(@:privateAccess TextEngine.__missingFontFiles.exists(name));
+
+		// the text still lays out the same with the fallback font
+		textField.text = "World";
+		textField.text = "Hello";
+		Assert.equals(width, textField.textWidth);
+	}
+	#end
 
 	#if lime_tools
 	public function test_autoSizeWithChangedFontSize()
