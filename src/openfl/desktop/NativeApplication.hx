@@ -262,7 +262,9 @@ class NativeApplication extends EventDispatcher
 	}
 
 	/**
-		The patch level of the runtime hosting the application: always 0.
+		The patch level of the runtime hosting the application.
+
+		_OpenFL target support:_ When not targeting AIR, always returns 0.
 	**/
 	public var runtimePatchLevel(get, never):UInt;
 
@@ -272,9 +274,9 @@ class NativeApplication extends EventDispatcher
 	}
 
 	/**
-		The version number of the runtime hosting the application, such as
-		`"9.5.2.0"`: the version `Capabilities.version` reports, with dots
-		instead of commas, as AIR's.
+		The version number of the runtime hosting the application.
+
+		Reports the same version number as `Capabilities.version`.
 	**/
 	public var runtimeVersion(get, never):String;
 
