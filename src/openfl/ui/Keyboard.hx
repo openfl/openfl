@@ -817,6 +817,9 @@ import lime.ui.KeyCode;
 				// Flash-style key tables (e.g. Vector length 256) allocate ~1 GiB.
 				var code:Int = cast key;
 				if ((code & 0x40000000) != 0) return 0;
+				// keys of non-ASCII layouts have the code of their character (339 for œ), but a
+				// Flash keyCode, a virtual-key code, is below 256
+				if (code > 0xFF) return 0;
 				return code;
 		}
 	}
