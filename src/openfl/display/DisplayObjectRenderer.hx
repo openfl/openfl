@@ -555,6 +555,13 @@ class DisplayObjectRenderer extends EventDispatcher
 
 				displayObject.__cacheBitmapRenderer.__worldTransform.copyFrom(displayObject.__renderTransform);
 				displayObject.__cacheBitmapRenderer.__worldTransform.invert();
+				if (displayObject.__drawableType == TEXT_FIELD)
+				{
+					// the render transform of a text field includes the offset of its text bounds (set by SWF
+					// text), which the cache bounds include as content: the inverse must not cancel it
+					var textField:TextField = cast displayObject;
+					displayObject.__cacheBitmapRenderer.__worldTransform.translate(textField.__offsetX, textField.__offsetY);
+				}
 				displayObject.__cacheBitmapRenderer.__worldTransform.concat(displayObject.__cacheBitmapMatrix);
 				displayObject.__cacheBitmapRenderer.__worldTransform.tx -= offsetX;
 				displayObject.__cacheBitmapRenderer.__worldTransform.ty -= offsetY;
