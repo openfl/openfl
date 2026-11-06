@@ -2157,6 +2157,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function get_loaderInfo():LoaderInfo
 	{
+		// the content a Loader loaded keeps its own, on the display list or not
+		if (__loaderInfo != null)
+		{
+			return __loaderInfo;
+		}
+
 		if (stage != null)
 		{
 			return Lib.current.__loaderInfo;
