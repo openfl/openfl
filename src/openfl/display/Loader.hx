@@ -683,6 +683,11 @@ class Loader extends DisplayObjectContainer
 				__library = null;
 			}
 
+			if (content != null && content.__loaderInfo == contentLoaderInfo)
+			{
+				content.__loaderInfo = null;
+			}
+
 			content = null;
 			contentLoaderInfo.url = null;
 			contentLoaderInfo.contentType = null;
@@ -777,6 +782,7 @@ class Loader extends DisplayObjectContainer
 
 		this.content = content;
 		contentLoaderInfo.content = content;
+		content.__loaderInfo = contentLoaderInfo;
 
 		if (contentLoaderInfo.width == -1 || contentLoaderInfo.height == -1)
 		{
