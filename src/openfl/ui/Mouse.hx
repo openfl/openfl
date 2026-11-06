@@ -61,9 +61,11 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	public static var supportsCursor(default, null):Bool = #if !mobile true; #else false; #end
 
 	/**
-		Indicates whether the current configuration supports native cursors.
+		Indicates whether the current configuration supports native cursors,
+		registered with `Mouse.registerCursor()`: always false, as OpenFL has
+		none.
 	**/
-	public static var supportsNativeCursor(default, null):Bool = #if !mobile true; #else false; #end
+	public static var supportsNativeCursor(default, null):Bool = false;
 
 	@:noCompletion private static var __cursor:MouseCursor = MouseCursor.AUTO;
 	@:noCompletion private static var __hidden:Bool;
@@ -104,17 +106,19 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		#end
 	}
 
-	#if false
 	/**
 		Registers a native cursor under the given name, with the given data.
+
+		OpenFL has no native cursors (`supportsNativeCursor` is false), so this
+		does nothing, and setting `cursor` to that name keeps the current
+		cursor.
 
 		@param name   The name to use as a reference to the native cursor
 					  instance.
 		@param cursor The properties for the native cursor, such as icon
 					  bitmap, specified as a MouseCursorData instance.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10_2) public static function registerCursor (name:String, cursor:openfl.ui.MouseCursorData):Void;
-	#end
+	public static function registerCursor(name:String, cursor:MouseCursorData):Void {}
 
 	/**
 		Displays the pointer. The pointer is visible by default.
@@ -133,14 +137,13 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		cursor = cacheCursor;
 	}
 
-	#if false
 	/**
-		Unregisters the native cursor with the given name.
+		Unregisters the native cursor with the given name: does nothing, as
+		`registerCursor()` registers none.
 
 		@param name The name referring to the native cursor instance.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash11) public static function unregisterCursor (name:String):Void;
-	#end
+	public static function unregisterCursor(name:String):Void {}
 	// Get & Set Methods
 	@:noCompletion private static function get_cursor():MouseCursor
 	{
