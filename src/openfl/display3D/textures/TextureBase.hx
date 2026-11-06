@@ -190,12 +190,15 @@ class TextureBase extends EventDispatcher
 
 		if (__context.__contextState != null)
 		{
+			// Forgetting the target makes the next render to this texture go through __getGLFramebuffer
+			// again, which attaches new depth and stencil buffers. The framebuffer binding is left
+			// as it is: the framebuffer still exists, and it may still be bound, as after the clear
+			// of a cache bitmap. Forgetting it here made later draws to the back buffer skip their
+			// bind and land in this texture.
 			if (__context.__contextState.renderToTexture == this)
 			{
 				__context.__contextState.renderToTexture = null;
 			}
-
-			__context.__contextState.__currentGLFramebuffer = null;
 		}
 
 		if (depthRenderbuffer != null)
