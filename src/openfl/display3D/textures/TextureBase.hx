@@ -28,6 +28,7 @@ import lime.graphics.RenderContext;
 #end
 @:access(openfl.display._internal.SamplerState)
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display3D._internal.Context3DState)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Stage)
 class TextureBase extends EventDispatcher
@@ -114,6 +115,39 @@ class TextureBase extends EventDispatcher
 			gl.deleteRenderbuffer(__glStencilRenderbuffer);
 			__glStencilRenderbuffer = null;
 		}
+	}
+
+	@:noCompletion private function __disposeDepthStencil():Void
+	{
+		var gl = __context.gl;
+		var depthRenderbuffer = __glDepthRenderbuffer;
+		var stencilRenderbuffer = __glStencilRenderbuffer;
+
+		if (__context.__contextState != null)
+		{
+			// Forgetting the target makes the next render to this texture go through __getGLFramebuffer
+			// again, which attaches new depth and stencil buffers. The framebuffer binding is left
+			// as it is: the framebuffer still exists, and it may still be bound, as after the clear
+			// of a cache bitmap. Forgetting it here made later draws to the back buffer skip their
+			// bind and land in this texture.
+			if (__context.__contextState.renderToTexture == this)
+			{
+				__context.__contextState.renderToTexture = null;
+			}
+		}
+
+		if (depthRenderbuffer != null)
+		{
+			gl.deleteRenderbuffer(depthRenderbuffer);
+			__glDepthRenderbuffer = null;
+		}
+
+		if (stencilRenderbuffer != null && stencilRenderbuffer != depthRenderbuffer)
+		{
+			gl.deleteRenderbuffer(stencilRenderbuffer);
+		}
+
+		__glStencilRenderbuffer = null;
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
