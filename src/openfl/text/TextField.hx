@@ -670,14 +670,21 @@ class TextField extends InteractiveObject
 	**/
 	public var textWidth(get, never):Float;
 
-	// The thickness of the glyph edges in this text field. This property
-	// applies only when `openfl.text.AntiAliasType` is set to
-	// `openfl.text.AntiAliasType.ADVANCED`.
-	// The range for `thickness` is a number from -200 to 200. If you attempt
-	// to set `thickness` to a value outside that range, the property is set
-	// to the nearest value in the range (either -200 or 200).
-	// @default 0
-	// var thickness : Float;
+	/**
+		The thickness of the glyph edges in this text field. This property
+		applies only when `openfl.text.AntiAliasType` is set to
+		`openfl.text.AntiAliasType.ADVANCED`.
+
+		The range for `thickness` is a number from `-200` to `200`. If you
+		attempt to set `thickness` to a value outside that range, the property
+		is set to the nearest value in the range (either `-200` or `200`).
+
+		_OpenFL target support:_ Not currently supported, except when targeting
+		Flash or AIR.
+
+		@default 0
+	**/
+	public var thickness(get, set):Float;
 
 	/**
 		The type of the text field. Either one of the following TextFieldType
@@ -745,6 +752,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private var __htmlText:UTF8String;
 	@:noCompletion private var __textEngine:TextEngine;
 	@:noCompletion private var __textFormat:TextFormat;
+	@:noCompletion private var __thickness:Float = 0.0;
 	#if (js && html5)
 	@:noCompletion private var __div:DivElement;
 	@:noCompletion private var __renderedOnCanvasWhileOnDOM:Bool = false;
@@ -860,6 +868,10 @@ class TextField extends InteractiveObject
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_selectionTextColor (v); }")
 			},
 			"textWidth": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textWidth (); }")},
+			"thickness": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_thickness (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_thickness (v); }")
+			},
 			"type": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_type (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_type (v); }")
@@ -3296,6 +3308,16 @@ class TextField extends InteractiveObject
 	{
 		__updateLayout();
 		return __textEngine.textHeight;
+	}
+
+	@:noCompletion private function get_thickness():Float
+	{
+		return __thickness;
+	}
+
+	@:noCompletion private function set_thickness(value:Float):Float
+	{
+		return __thickness = value < -200 ? -200 : (value > 200 ? 200 : value);
 	}
 
 	@:noCompletion private function get_type():TextFieldType
