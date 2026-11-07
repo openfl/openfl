@@ -1093,6 +1093,11 @@ class BitmapData implements IBitmapDrawable
 		displayObject.__updateTransforms(identity);
 		Matrix.__pool.release(identity);
 
+		// its own scale does not apply either, so a source scaled to 0 is drawn
+		var renderParent = displayObject.__renderParent != null ? displayObject.__renderParent : displayObject.parent;
+		if (displayObject.__isMask && renderParent == null) renderParent = displayObject.__maskTarget;
+		displayObject.__renderable = (displayObject.__visible && !displayObject.__isMask && (renderParent == null || !renderParent.__isMask));
+
 		if (displayObject.__children != null)
 		{
 			for (child in displayObject.__children)
