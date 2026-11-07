@@ -125,6 +125,7 @@ import openfl.display._internal.stats.DrawCallContext;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.DisplayObjectShader)
 @:access(openfl.display.Graphics)
+@:access(openfl.display._internal.DrawCommandBuffer)
 @:access(openfl.display.Shader)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
@@ -949,12 +950,25 @@ class BitmapData implements IBitmapDrawable
 		_colorTransform.__copyFrom(source.__worldColorTransform);
 		_colorTransform.__invert();
 
-		if (!readable && Lib.current.stage.context3D != null)
+		// the software renderer cannot read a bitmap that is only on the GPU (not readable, as after
+		// disposeImage()): such a source is rendered on the GPU into a copy of this bitmap, whose pixels are
+		// then read back
+		var hardwareSource = readable && Lib.current.stage.context3D != null && __hasHardwareOnlyBitmapData(source);
+
+		if ((!readable || hardwareSource) && Lib.current.stage.context3D != null)
 		{
-			if (__textureContext == null)
+			var target = this;
+
+			if (hardwareSource)
+			{
+				target = clone();
+				target.disposeImage();
+			}
+
+			if (target.__textureContext == null)
 			{
 				// TODO: Some way to select current GL context for renderer?
-				__textureContext = Application.current.window.context;
+				target.__textureContext = Application.current.window.context;
 			}
 
 			if (colorTransform != null)
@@ -962,7 +976,7 @@ class BitmapData implements IBitmapDrawable
 				_colorTransform.__combine(colorTransform);
 			}
 
-			var renderer = new OpenGLRenderer(Lib.current.stage.context3D, this);
+			var renderer = new OpenGLRenderer(Lib.current.stage.context3D, target);
 			renderer.__allowSmoothing = smoothing;
 			renderer.__pixelRatio = #if openfl_disable_hdpi 1 #else Lib.current.stage.window.scale #end;
 			renderer.__overrideBlendMode = blendMode;
@@ -978,12 +992,18 @@ class BitmapData implements IBitmapDrawable
 				renderer.__pushMaskRect(clipRect, clipMatrix);
 			}
 
-			__drawGL(source, renderer);
+			target.__drawGL(source, renderer);
 
 			if (clipRect != null)
 			{
 				renderer.__popMaskRect();
 				Matrix.__pool.release(clipMatrix);
+			}
+
+			if (hardwareSource)
+			{
+				__readPixelsFrom(target, Lib.current.stage.context3D);
+				target.dispose();
 			}
 		}
 		else
@@ -1057,6 +1077,76 @@ class BitmapData implements IBitmapDrawable
 		{
 			sourceAsDisplayObject.visible = false;
 		}
+	}
+
+	@:noCompletion private static function __hasHardwareOnlyBitmapData(source:IBitmapDrawable):Bool
+	{
+		if (source == null) return false;
+
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (source, BitmapData))
+		{
+			return !(cast source : BitmapData).readable;
+		}
+
+		var displayObject:DisplayObject = cast source;
+
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (displayObject, Bitmap))
+		{
+			var bitmapData = (cast displayObject : Bitmap).bitmapData;
+			if (bitmapData != null && !bitmapData.readable) return true;
+		}
+
+		if (displayObject.__graphics != null && displayObject.__graphics.__commands != null)
+		{
+			for (object in displayObject.__graphics.__commands.o)
+			{
+				if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (object, BitmapData) && !(object : BitmapData).readable) return true;
+			}
+		}
+
+		if (displayObject.__children != null)
+		{
+			for (child in displayObject.__children)
+			{
+				if (__hasHardwareOnlyBitmapData(child)) return true;
+			}
+		}
+
+		return false;
+	}
+
+	@:noCompletion private function __readPixelsFrom(source:BitmapData, context:Context3D):Void
+	{
+		#if lime
+		var texture = source.getTexture(context);
+		var gl = context.gl;
+		var cacheRenderToTexture = context.__state.renderToTexture;
+		var cacheDepthStencil = context.__state.renderToTextureDepthStencil;
+		var cacheAntiAlias = context.__state.renderToTextureAntiAlias;
+		var cacheSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+
+		context.setRenderToTexture(texture);
+		context.__flushGLFramebuffer();
+
+		var data = new UInt8Array(width * height * 4);
+		gl.readPixels(0, 0, width, height, texture.__format, gl.UNSIGNED_BYTE, data);
+
+		var buffer = new ImageBuffer(data, width, height, 32, BGRA32);
+		buffer.premultiplied = true;
+		var pixels = new Image(buffer);
+		image.copyPixels(pixels, pixels.rect, new Vector2());
+		image.dirty = true;
+		image.version++;
+
+		if (cacheRenderToTexture != null)
+		{
+			context.setRenderToTexture(cacheRenderToTexture, cacheDepthStencil, cacheAntiAlias, cacheSurfaceSelector);
+		}
+		else
+		{
+			context.setRenderToBackBuffer();
+		}
+		#end
 	}
 
 	/**
