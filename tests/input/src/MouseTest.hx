@@ -23,7 +23,13 @@ class MouseTest extends Test
 
 	public function test_registerCursor()
 	{
-		#if (lime >= "8.4.0" && desktop)
+		#if flash
+		// Flash Player and AIR show registered cursors themselves
+		Assert.pass();
+		#elseif (lime >= "8.4.0")
+		#if html5
+		Assert.isTrue(Mouse.supportsNativeCursor);
+		#elseif desktop
 		Assert.isTrue(Mouse.supportsNativeCursor);
 
 		var cursor = new MouseCursorData();
@@ -48,6 +54,9 @@ class MouseTest extends Test
 		Mouse.cursor = "test";
 		Mouse.unregisterCursor("test");
 		Assert.equals(MouseCursor.AUTO, Mouse.cursor, "the cursor stayed on an unregistered cursor");
+		#else
+		Assert.isFalse(Mouse.supportsNativeCursor);
+		#end
 		#else
 		Assert.isFalse(Mouse.supportsNativeCursor);
 		#end

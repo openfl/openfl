@@ -65,7 +65,7 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		registered with `Mouse.registerCursor()`: true on native desktop
 		targets and HTML5.
 	**/
-	public static var supportsNativeCursor(default, null):Bool = #if (lime >= "8.4.0" && (desktop || html5)) true #else false #end;
+	public static var supportsNativeCursor(default, null):Bool = #if (lime >= "8.4.0") #if (desktop || html5) true #else false #end #else false #end;
 
 	@:noCompletion private static var __nativeCursors:Map<String, MouseCursorData> = new Map();
 	@:noCompletion private static var __shownNativeCursor:String;
