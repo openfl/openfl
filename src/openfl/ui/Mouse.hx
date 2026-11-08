@@ -61,9 +61,14 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	public static var supportsCursor(default, null):Bool = #if !mobile true; #else false; #end
 
 	/**
-		Indicates whether the current configuration supports native cursors.
+		Indicates whether the current configuration supports native cursors,
+		registered with `Mouse.registerCursor()`: true on native desktop
+		targets and HTML5.
 	**/
-	public static var supportsNativeCursor(default, null):Bool = #if !mobile true; #else false; #end
+	public static var supportsNativeCursor(default, null):Bool = #if (lime >= "8.4.0") #if (desktop || html5) true #else false #end #else false #end;
+
+	@:noCompletion private static var __nativeCursors:Map<String, MouseCursorData> = new Map();
+	@:noCompletion private static var __shownNativeCursor:String;
 
 	@:noCompletion private static var __cursor:MouseCursor = MouseCursor.AUTO;
 	@:noCompletion private static var __hidden:Bool;
@@ -104,17 +109,37 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		#end
 	}
 
-	#if false
 	/**
 		Registers a native cursor under the given name, with the given data.
+
+		Setting `cursor` to that name then shows it. Where
+		`supportsNativeCursor` is false, this does nothing, and setting
+		`cursor` to that name keeps the current cursor. An animated cursor
+		shows its first frame.
 
 		@param name   The name to use as a reference to the native cursor
 					  instance.
 		@param cursor The properties for the native cursor, such as icon
 					  bitmap, specified as a MouseCursorData instance.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10_2) public static function registerCursor (name:String, cursor:openfl.ui.MouseCursorData):Void;
-	#end
+	public static function registerCursor(name:String, cursor:MouseCursorData):Void
+	{
+		if (!supportsNativeCursor || name == null || cursor == null || cursor.data == null || cursor.data.length == 0) return;
+
+		__nativeCursors.set(name, cursor);
+
+		if (__shownNativeCursor == name)
+		{
+			__shownNativeCursor = null;
+		}
+
+		if (__cursor == name)
+		{
+			// shows the new data under the name in use
+			__cursor = null;
+			set_cursor(name);
+		}
+	}
 
 	/**
 		Displays the pointer. The pointer is visible by default.
@@ -133,14 +158,28 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		cursor = cacheCursor;
 	}
 
-	#if false
 	/**
-		Unregisters the native cursor with the given name.
+		Unregisters the native cursor with the given name. If it is the current
+		cursor, the cursor goes back to `MouseCursor.AUTO`.
 
 		@param name The name referring to the native cursor instance.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash11) public static function unregisterCursor (name:String):Void;
-	#end
+	public static function unregisterCursor(name:String):Void
+	{
+		if (name == null || !__nativeCursors.exists(name)) return;
+
+		__nativeCursors.remove(name);
+
+		if (__shownNativeCursor == name)
+		{
+			__shownNativeCursor = null;
+		}
+
+		if (__cursor == name)
+		{
+			cursor = AUTO;
+		}
+	}
 	// Get & Set Methods
 	@:noCompletion private static function get_cursor():MouseCursor
 	{
@@ -181,6 +220,13 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 			case MouseCursor.__WAIT_ARROW:
 				setCursor = WAIT_ARROW;
 			default:
+				#if (lime >= "8.4.0")
+				if (__nativeCursors.exists(value))
+				{
+					if (!__hidden) __showNativeCursor(value);
+					return __cursor = value;
+				}
+				#end
 		}
 
 		if (setCursor != null && !__hidden)
@@ -194,6 +240,37 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 
 		return __cursor = value;
 	}
+
+	#if (lime >= "8.4.0")
+	@:noCompletion private static function __showNativeCursor(name:String):Void
+	{
+		// the image is made into a platform cursor once, and shown again while it is the last one made
+		var made = (__shownNativeCursor == name);
+		var bitmapData = __nativeCursors.get(name).data[0];
+		var image = bitmapData != null ? bitmapData.image : null;
+
+		if (image == null && !made) return;
+
+		var hotSpot = __nativeCursors.get(name).hotSpot;
+		var hotSpotX = hotSpot != null ? Std.int(hotSpot.x) : 0;
+		var hotSpotY = hotSpot != null ? Std.int(hotSpot.y) : 0;
+		var shown = true;
+
+		for (window in Application.current.windows)
+		{
+			if (made)
+			{
+				window.cursor = CUSTOM;
+			}
+			else if (!window.setCustomCursor(image, hotSpotX, hotSpotY))
+			{
+				shown = false;
+			}
+		}
+
+		__shownNativeCursor = shown ? name : null;
+	}
+	#end
 }
 #else
 typedef Mouse = flash.ui.Mouse;
