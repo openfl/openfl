@@ -254,8 +254,21 @@ class CanvasGraphics
 					matrix.__transformPoint(point);
 
 					point2 = Point.__pool.get();
-					point2.setTo(819.2, 0);
-					matrix.__transformPoint(point2);
+					// As in Flash, the colour follows the first coordinate of the inverse matrix. Lines of one colour run
+					// along the matrix's y axis, so the gradient goes across them: along its x axis only when not skewed.
+					var determinant = matrix.a * matrix.d - matrix.b * matrix.c;
+					if (determinant != 0)
+					{
+						var gradientX = matrix.d / determinant;
+						var gradientY = -matrix.c / determinant;
+						var length = 1638.4 / (gradientX * gradientX + gradientY * gradientY);
+						point2.setTo(point.x + gradientX * length, point.y + gradientY * length);
+					}
+					else
+					{
+						point2.setTo(819.2, 0);
+						matrix.__transformPoint(point2);
+					}
 
 					var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
 					#if (openfl_legacy_scale9grid && !canvas)
