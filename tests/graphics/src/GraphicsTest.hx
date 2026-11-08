@@ -72,6 +72,28 @@ class GraphicsTest extends Test
 		#end
 	}
 
+	public function test_beginGradientFillSkewedMatrix()
+	{
+		// as in Flash, a linear gradient follows the first coordinate of the inverse of its matrix: this
+		// skewed matrix, from a SWF, gives a vertical gradient whatever the x
+		var shape = new Shape();
+		shape.graphics.beginGradientFill(GradientType.LINEAR, [0xFFFFFF, 0x000000], [1, 1], [0, 255],
+			new Matrix(0.0016326904296875, -0.00323486328125, 0.431838989257812, 0, -5246.2, 11.9));
+		shape.graphics.drawRect(50, 10, 280, 14);
+		shape.graphics.endFill();
+
+		var bitmapData = new BitmapData(400, 30, true, 0);
+		bitmapData.draw(shape);
+
+		// above y = 11.9, a grey that only depends on y
+		var grey = bitmapData.getPixel(60, 10) & 0xFF;
+		Assert.isTrue(grey > 0x10 && grey < 0xF0, "not a grey: " + StringTools.hex(bitmapData.getPixel32(60, 10)));
+		Assert.equals(StringTools.hex(bitmapData.getPixel32(60, 10)), StringTools.hex(bitmapData.getPixel32(320, 10)));
+		// below it, the first colour
+		Assert.equals(StringTools.hex(0xFFFFFFFF), StringTools.hex(bitmapData.getPixel32(60, 20)));
+		Assert.equals(StringTools.hex(0xFFFFFFFF), StringTools.hex(bitmapData.getPixel32(320, 20)));
+	}
+
 	public function test_clear()
 	{
 		// TODO: Confirm functionality
