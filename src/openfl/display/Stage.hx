@@ -246,6 +246,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		or the `Security.alowInsecureDomain()` method. For more
 		information, see the "Security" chapter in the _OpenFL
 		Developer's Guide_.
+
+		The default value is `StageAlign.TOP_LEFT`. With the
+		`openfl_flash_strict` define, it is an empty string, like in Flash
+		Player and AIR, which centers the stage.
 	**/
 	public var align:StageAlign;
 
@@ -680,6 +684,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		changes. Cropping might occur if the player window is smaller than the
 		content.
 
+		The default value is `StageScaleMode.NO_SCALE`. With the
+		`openfl_flash_strict` define, it is `StageScaleMode.SHOW_ALL`, like in
+		Flash Player and AIR.
 
 		@throws SecurityError Calling the `scaleMode` property of a
 							  Stage object throws an exception for any caller that
@@ -1120,11 +1127,19 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		this.stage = this;
 
+		#if openfl_flash_strict
+		align = "";
+		#else
 		align = StageAlign.TOP_LEFT;
+		#end
 		allowsFullScreen = true;
 		allowsFullScreenInteractive = true;
 		__quality = StageQuality.HIGH;
+		#if openfl_flash_strict
+		__scaleMode = StageScaleMode.SHOW_ALL;
+		#else
 		__scaleMode = StageScaleMode.NO_SCALE;
+		#end
 		showDefaultContextMenu = true;
 		softKeyboardRect = new Rectangle();
 		stageFocusRect = true;
@@ -3562,7 +3577,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var visibleY = 0.0;
 		switch (align)
 		{
+			#if openfljs
+			case null, "":
+			#else
 			case null:
+			#end
 				// it is undocumented, but it is possible to align the stage in
 				// Flash to the center both horizontally and vertically by
 				// setting stage.align to an invalid value, such as an empty
