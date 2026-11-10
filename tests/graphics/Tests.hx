@@ -17,6 +17,9 @@ class Tests
 		runner.addCase(new GraphicsSolidFillTest());
 		runner.addCase(new GraphicsStrokeTest());
 		runner.addCase(new GraphicsTest());
+		#if !flash
+		runner.addCase(new DrawCommandBufferResetTest());
+		#end
 		runner.addCase(new InterpolationMethodTest());
 		runner.addCase(new JointStyleTest());
 		runner.addCase(new LineScaleModeTest());

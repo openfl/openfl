@@ -243,6 +243,30 @@ class DrawCommandBuffer
 		copyOnWrite = true;
 	}
 
+	/**
+		Empties the buffer like `clear()`, but keeps the storage it owns, for
+		a buffer that is filled and emptied again and again. Storage shared
+		with another buffer is left to it.
+	**/
+	public function reset():Void
+	{
+		if (copyOnWrite)
+		{
+			clear();
+		}
+		else
+		{
+			types.resize(0);
+
+			b.resize(0);
+			i.resize(0);
+			f.resize(0);
+			o.resize(0);
+			ff.resize(0);
+			ii.resize(0);
+		}
+	}
+
 	public function copy():DrawCommandBuffer
 	{
 		var copy = new DrawCommandBuffer();

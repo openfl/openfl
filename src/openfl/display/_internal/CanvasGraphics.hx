@@ -862,8 +862,8 @@ class CanvasGraphics
 			context = graphics.__context;
 			context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 
-			fillCommands.clear();
-			strokeCommands.clear();
+			fillCommands.reset();
+			strokeCommands.reset();
 
 			hasFill = false;
 			hasStroke = false;
@@ -1054,8 +1054,8 @@ class CanvasGraphics
 
 			data.destroy();
 
-			fillCommands.clear();
-			strokeCommands.clear();
+			fillCommands.reset();
+			strokeCommands.reset();
 
 			graphics.__canvas = cacheCanvas;
 			graphics.__context = cacheContext;
@@ -2186,7 +2186,7 @@ class CanvasGraphics
 			}
 		}
 
-		commands.clear();
+		commands.reset();
 		// we may need to restore these positions if playCommands() gets called
 		// again for the same buffer.
 		commands.moveToInternal(positionX, positionY, startX, startY);
@@ -2299,8 +2299,8 @@ class CanvasGraphics
 				context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 			}
 
-			fillCommands.clear();
-			strokeCommands.clear();
+			fillCommands.reset();
+			strokeCommands.reset();
 
 			hasFill = false;
 			hasStroke = false;
@@ -2592,8 +2592,8 @@ class CanvasGraphics
 			}
 		}
 
-		fillCommands.clear();
-		strokeCommands.clear();
+		fillCommands.reset();
+		strokeCommands.reset();
 
 		graphics.__softwareDirty = false;
 		graphics.__dirty = false;

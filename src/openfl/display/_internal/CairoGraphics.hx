@@ -692,8 +692,8 @@ class CairoGraphics
 
 			cairo = graphics.__cairo;
 
-			fillCommands.clear();
-			strokeCommands.clear();
+			fillCommands.reset();
+			strokeCommands.reset();
 
 			hasFill = false;
 			hasStroke = false;
@@ -879,8 +879,8 @@ class CairoGraphics
 
 			data.destroy();
 
-			fillCommands.clear();
-			strokeCommands.clear();
+			fillCommands.reset();
+			strokeCommands.reset();
 
 			CairoGraphics.graphics = null;
 			return hitTest;
@@ -1998,7 +1998,7 @@ class CairoGraphics
 			}
 		}
 
-		commands.clear();
+		commands.reset();
 		// we may need to restore these positions if playCommands() gets called
 		// again for the same buffer.
 		commands.moveToInternal(positionX, positionY, startX, startY);
@@ -2123,8 +2123,8 @@ class CairoGraphics
 			cairo.paint();
 			cairo.setOperator(OVER);
 
-			fillCommands.clear();
-			strokeCommands.clear();
+			fillCommands.reset();
+			strokeCommands.reset();
 
 			hasFill = false;
 			hasStroke = false;
@@ -2397,8 +2397,8 @@ class CairoGraphics
 			graphics.__bitmap.image.version++;
 		}
 
-		fillCommands.clear();
-		strokeCommands.clear();
+		fillCommands.reset();
+		strokeCommands.reset();
 
 		graphics.__softwareDirty = false;
 		graphics.__dirty = false;
