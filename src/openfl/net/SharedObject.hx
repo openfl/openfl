@@ -291,6 +291,7 @@ class SharedObject extends EventDispatcher
 
 	@:noCompletion private var __localPath:String;
 	@:noCompletion private var __name:String;
+	@:noCompletion private var __delimiter:String;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -332,7 +333,7 @@ class SharedObject extends EventDispatcher
 
 			if (storage != null)
 			{
-				storage.removeItem(__localPath + ":" + __name);
+				storage.removeItem(__localPath + __delimiter + __name);
 			}
 			#else
 			var path = __getPath(__localPath, __name);
@@ -467,8 +468,8 @@ class SharedObject extends EventDispatcher
 
 			if (storage != null)
 			{
-				storage.removeItem(__localPath + ":" + __name);
-				storage.setItem(__localPath + ":" + __name, encodedData);
+				storage.removeItem(__localPath + __delimiter + __name);
+				storage.setItem(__localPath + __delimiter + __name, encodedData);
 			}
 			#else
 			var path = __getPath(__localPath, __name);
@@ -624,6 +625,11 @@ class SharedObject extends EventDispatcher
 
 						 The following diagram shows the use of the
 						 `secure` parameter:
+		@param forceDelimiter Sets the delimiter between `localPath` and `name`
+				to the specified String value. It replaces the delimiter used by default 
+				that is `:` for js+html5 target and `/` otherwise.
+				
+				This value bypasses the illegal values check in `name`
 		@return A reference to a shared object that is persistent locally and is
 				available only to the current client. If Flash Player can't create
 				or find the shared object (for example, if `localPath`
@@ -637,7 +643,7 @@ class SharedObject extends EventDispatcher
 					  Storage Settings panel of the Settings Manager, located at
 					  [http://www.adobe.com/support/documentation/en/flashplayer/help/settings_manager03.html](http://www.adobe.com/support/documentation/en/flashplayer/help/settings_manager03.html).
 	**/
-	public static function getLocal(name:String, localPath:String = null, secure:Bool = false /* note: unsupported**/):SharedObject
+	public static function getLocal(name:String, localPath:String = null, secure:Bool = false /* note: unsupported**/, forceDelimiter:String = null):SharedObject
 	{
 		var illegalValues = [" ", "~", "%", "&", "\\", ";", ":", "\"", "'", ",", "<", ">", "?", "#"];
 		var allowed = true;
@@ -676,7 +682,10 @@ class SharedObject extends EventDispatcher
 			#end
 		}
 
-		var id = localPath + "/" + name;
+		var delimiter:String = forceDelimiter;
+
+		if (forceDelimiter == null) delimiter = "/";
+		var id = localPath + delimiter + name;
 
 		if (!__sharedObjects.exists(id))
 		{
@@ -699,9 +708,11 @@ class SharedObject extends EventDispatcher
 					localPath = Browser.window.location.pathname;
 				}
 
+				if (forceDelimiter == null) delimiter = ":";
+
 				if (storage != null && encodedData == null)
 				{
-					encodedData = storage.getItem(localPath + ":" + name);
+					encodedData = storage.getItem(localPath + delimiter + name);
 				}
 				#else
 				if (localPath == null) localPath = "";
@@ -720,6 +731,7 @@ class SharedObject extends EventDispatcher
 			sharedObject.data = {};
 			sharedObject.__localPath = localPath;
 			sharedObject.__name = name;
+			sharedObject.__delimiter = delimiter;
 
 			if (encodedData != null && encodedData != "")
 			{
