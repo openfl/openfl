@@ -131,6 +131,9 @@ class DrawCommandBuffer
 				case MOVE_TO:
 					var c = data.readMoveTo();
 					moveTo(c.x, c.y);
+				case MOVE_TO_INTERNAL:
+					var c = data.readMoveToInternal();
+					moveToInternal(c.moveX, c.moveY, c.fillX, c.fillY);
 				case OVERRIDE_MATRIX:
 					var c = data.readOverrideMatrix();
 					overrideMatrix(c.matrix);
@@ -154,7 +157,24 @@ class DrawCommandBuffer
 
 		types.push(BEGIN_BITMAP_FILL);
 		o.push(bitmap);
-		o.push(matrix);
+		if (matrix != null)
+		{
+			o.push(matrix.a);
+			o.push(matrix.b);
+			o.push(matrix.c);
+			o.push(matrix.d);
+			o.push(matrix.tx);
+			o.push(matrix.ty);
+		}
+		else
+		{
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+		}
 		b.push(repeat);
 		b.push(smooth);
 	}
@@ -178,7 +198,24 @@ class DrawCommandBuffer
 		ii.push(colors);
 		ff.push(alphas);
 		ii.push(ratios);
-		o.push(matrix);
+		if (matrix != null)
+		{
+			o.push(matrix.a);
+			o.push(matrix.b);
+			o.push(matrix.c);
+			o.push(matrix.d);
+			o.push(matrix.tx);
+			o.push(matrix.ty);
+		}
+		else
+		{
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+		}
 		o.push(spreadMethod);
 		o.push(interpolationMethod);
 		f.push(focalPointRatio);
@@ -330,7 +367,24 @@ class DrawCommandBuffer
 
 		types.push(LINE_BITMAP_STYLE);
 		o.push(bitmap);
-		o.push(matrix);
+		if (matrix != null)
+		{
+			o.push(matrix.a);
+			o.push(matrix.b);
+			o.push(matrix.c);
+			o.push(matrix.d);
+			o.push(matrix.tx);
+			o.push(matrix.ty);
+		}
+		else
+		{
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+		}
 		b.push(repeat);
 		b.push(smooth);
 	}
@@ -345,7 +399,24 @@ class DrawCommandBuffer
 		ii.push(colors);
 		ff.push(alphas);
 		ii.push(ratios);
-		o.push(matrix);
+		if (matrix != null)
+		{
+			o.push(matrix.a);
+			o.push(matrix.b);
+			o.push(matrix.c);
+			o.push(matrix.d);
+			o.push(matrix.tx);
+			o.push(matrix.ty);
+		}
+		else
+		{
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+		}
 		o.push(spreadMethod);
 		o.push(interpolationMethod);
 		f.push(focalPointRatio);
@@ -385,6 +456,17 @@ class DrawCommandBuffer
 		f.push(y);
 	}
 
+	public function moveToInternal(moveX:Float, moveY:Float, fillX:Float, fillY:Float):Void
+	{
+		prepareWrite();
+
+		types.push(MOVE_TO_INTERNAL);
+		f.push(moveX);
+		f.push(moveY);
+		f.push(fillX);
+		f.push(fillY);
+	}
+
 	private function prepareWrite():Void
 	{
 		if (copyOnWrite)
@@ -414,7 +496,24 @@ class DrawCommandBuffer
 		prepareWrite();
 
 		types.push(OVERRIDE_MATRIX);
-		o.push(matrix);
+		if (matrix != null)
+		{
+			o.push(matrix.a);
+			o.push(matrix.b);
+			o.push(matrix.c);
+			o.push(matrix.d);
+			o.push(matrix.tx);
+			o.push(matrix.ty);
+		}
+		else
+		{
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+			o.push(null);
+		}
 	}
 
 	public function windingEvenOdd():Void

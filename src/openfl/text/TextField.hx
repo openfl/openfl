@@ -3381,7 +3381,7 @@ class TextField extends InteractiveObject
 
 		stage.removeEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
+		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp, true);
 
 		if (this.stage != stage) return;
 
@@ -3528,7 +3528,11 @@ class TextField extends InteractiveObject
 		stage.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		#end
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.addEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
+		// use capture phase so that other mouseUp listeners may call
+		// stopImmediatePropagation() without affecting this listener.
+		// prevents an issue where the selection continues to follow mouseMove
+		// events after mouseUp.
+		stage.addEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp, true);
 	}
 
 	@:noCompletion private function this_onMouseWheel(event:MouseEvent):Void

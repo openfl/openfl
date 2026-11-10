@@ -7,8 +7,32 @@ import utest.Test;
 
 class TextFormatTest extends Test
 {
-	public function test__new()
+	public function test_new_()
 	{
+		var format:TextFormat = new TextFormat();
+
+		Assert.isNull(format.font);
+		Assert.isNull(format.size);
+		Assert.isNull(format.color);
+		Assert.isNull(format.bold);
+		Assert.isNull(format.italic);
+		Assert.isNull(format.underline);
+		Assert.isNull(format.url);
+		Assert.isNull(format.target);
+		Assert.isNull(format.align);
+		Assert.isNull(format.leftMargin);
+		Assert.isNull(format.rightMargin);
+		Assert.isNull(format.indent);
+		Assert.isNull(format.leading);
+		Assert.isNull(format.blockIndent);
+		Assert.isNull(format.bullet);
+		Assert.isNull(format.kerning);
+		Assert.isNull(format.letterSpacing);
+		#if !flash
+		Assert.isNull(format.strikethrough);
+		#end
+		Assert.isNull(format.tabStops);
+
 		var font:String = 'Text Font';
 		var size:Int = 123;
 		var color:Int = 0xFF00FF;
@@ -38,193 +62,121 @@ class TextFormatTest extends Test
 		Assert.equals(rightMargin, format.rightMargin);
 		Assert.equals(indent, format.indent);
 		Assert.equals(leading, format.leading);
+		Assert.isNull(format.blockIndent);
+		Assert.isNull(format.bullet);
+		Assert.isNull(format.kerning);
+		Assert.isNull(format.letterSpacing);
+		#if !flash
+		Assert.isNull(format.strikethrough);
+		#end
+		Assert.isNull(format.tabStops);
 	}
 
 	public function test_align()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.align;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.align);
 	}
 
 	public function test_blockIndent()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.blockIndent;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.blockIndent);
 	}
 
 	public function test_bold()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.bold;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.bold);
 	}
 
 	public function test_bullet()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.bullet;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.bullet);
 	}
 
 	public function test_color()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.color;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.color);
 	}
 
 	public function test_font()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.font;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.font);
 	}
 
 	public function test_indent()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.indent;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.indent);
 	}
 
 	public function test_italic()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.italic;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.italic);
 	}
 
 	public function test_kerning()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.kerning;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.kerning);
 	}
 
 	public function test_leading()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.leading;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.leading);
 	}
 
 	public function test_leftMargin()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.leftMargin;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.leftMargin);
 	}
 
 	public function test_letterSpacing()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.letterSpacing;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.letterSpacing);
 	}
 
 	public function test_rightMargin()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.rightMargin;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.rightMargin);
 	}
 
 	public function test_size()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.size;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.size);
 	}
 
 	public function test_tabStops()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.tabStops;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.tabStops);
 	}
 
 	public function test_target()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.target;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.target);
 	}
 
 	public function test_underline()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.underline;
-
-		Assert.isNull(exists);
+		Assert.isNull(textFormat.underline);
 	}
 
 	public function test_url()
 	{
-		// TODO: Confirm functionality
-
 		var textFormat = new TextFormat();
-		var exists = textFormat.url;
-
-		Assert.isNull(exists);
-	}
-
-	public function test_new_()
-	{
-		// TODO: Confirm functionality
-
-		var textFormat = new TextFormat();
-		Assert.notNull(textFormat);
+		Assert.isNull(textFormat.url);
 	}
 }
