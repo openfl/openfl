@@ -98,6 +98,7 @@ import js.html.CanvasRenderingContext2D;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
 	#end
 	@:noCompletion private var __bitmap:BitmapData;
+	@:noCompletion private var __coverage:BitmapData;
 	@:noCompletion private var __bitmapScaleX:Float;
 	@:noCompletion private var __bitmapScaleY:Float;
 
