@@ -919,8 +919,8 @@ import js.html.CanvasRenderingContext2D;
 			}
 			else
 			{
-				tileTransform.tx = tileRect.x;
-				tileTransform.ty = tileRect.y;
+				tileTransform.tx = rects[ri];
+				tileTransform.ty = rects[ri + 1];
 			}
 
 			tileRect.__transform(tileRect, tileTransform);
@@ -1140,7 +1140,8 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds(minX, minY);
 		__inflateBounds(maxX, maxY);
 
-		__commands.drawTriangles(vertices, indices, uvtData, culling);
+		__commands.drawTriangles(vertices != null ? vertices.copy() : null, indices != null ? indices.copy() : null, uvtData != null ? uvtData.copy() : null,
+			culling);
 
 		__dirty = true;
 		__visible = true;
@@ -1861,7 +1862,7 @@ import js.html.CanvasRenderingContext2D;
 
 					var c = data.readLineGradientStyle();
 				// stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-				// stroke.fill = new GraphicsGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+				// stroke.fill = new GraphicsGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix.clone(), c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 				// graphicsData.push (stroke);
 
 				case LINE_BITMAP_STYLE:
@@ -1870,7 +1871,7 @@ import js.html.CanvasRenderingContext2D;
 					var c = data.readLineBitmapStyle();
 					path = null;
 				// stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-				// stroke.fill = new GraphicsBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
+				// stroke.fill = new GraphicsBitmapFill (c.bitmap, c.matrix.clone(), c.repeat, c.smooth);
 				// graphicsData.push (stroke);
 
 				case LINE_STYLE:
@@ -1885,7 +1886,7 @@ import js.html.CanvasRenderingContext2D;
 
 				case BEGIN_BITMAP_FILL:
 					var c = data.readBeginBitmapFill();
-					graphicsData.push(new GraphicsBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth));
+					graphicsData.push(new GraphicsBitmapFill(c.bitmap, c.matrix.clone(), c.repeat, c.smooth));
 
 				case BEGIN_FILL:
 					var c = data.readBeginFill();
@@ -1893,7 +1894,7 @@ import js.html.CanvasRenderingContext2D;
 
 				case BEGIN_GRADIENT_FILL:
 					var c = data.readBeginGradientFill();
-					graphicsData.push(new GraphicsGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+					graphicsData.push(new GraphicsGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix.clone(), c.spreadMethod, c.interpolationMethod,
 						c.focalPointRatio));
 
 				case BEGIN_SHADER_FILL:
@@ -1924,12 +1925,10 @@ import js.html.CanvasRenderingContext2D;
 
 		var scaleX = pixelRatio, scaleY = pixelRatio;
 
-		#if (openfl_legacy_scale9grid && lime_cairo && !cairo && !openfl_force_hw_graphics && !force_hw_graphics)
-		var calculateScale = __owner.__worldScale9Grid == null;
-		#elseif (openfl_legacy_scale9grid && lime_canvas && !canvas && !openfl_force_hw_graphics && !force_hw_graphics)
-		var calculateScale = __owner.__worldScale9Grid == null;
-		#else
+		#if (openfl_force_hw_graphics || force_hw_graphics)
 		var calculateScale = true;
+		#else
+		var calculateScale = __owner.__worldScale9Grid == null;
 		#end
 		if (calculateScale)
 		{
@@ -1972,6 +1971,15 @@ import js.html.CanvasRenderingContext2D;
 				}
 			}
 		}
+		#if (!openfl_legacy_scale9grid && !openfl_force_hw_graphics && !force_hw_graphics)
+		else // has scale9Grid
+		{
+			// same as __bitmapScaleX and __bitmapScaleY, but they may not have
+			// been updated by CairoGraphics and CanvasGraphics yet.
+			scaleX = Math.abs(__owner.scaleX) * pixelRatio;
+			scaleY = Math.abs(__owner.scaleY) * pixelRatio;
+		}
+		#end
 
 		#if openfl_disable_graphics_upscaling
 		if (__owner.__worldScale9Grid == null)

@@ -1,5 +1,7 @@
 package;
 
+import openfl.text.TextFormatAlign;
+import openfl.text.GridFitType;
 import openfl.events.Event;
 import openfl.errors.RangeError;
 import openfl.text.TextField;
@@ -149,12 +151,25 @@ class TextFieldTest extends Test
 
 	public function test_defaultTextFormat()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.defaultTextFormat;
-
-		Assert.notNull(exists);
+		Assert.notNull(textField.defaultTextFormat);
+		Assert.notNull(textField.defaultTextFormat.font);
+		Assert.notNull(textField.defaultTextFormat.size);
+		Assert.notNull(textField.defaultTextFormat.color);
+		Assert.isFalse(textField.defaultTextFormat.bold);
+		Assert.isFalse(textField.defaultTextFormat.italic);
+		Assert.isFalse(textField.defaultTextFormat.underline);
+		Assert.equals("", textField.defaultTextFormat.target);
+		Assert.equals("", textField.defaultTextFormat.url);
+		Assert.equals(TextFormatAlign.LEFT, textField.defaultTextFormat.align);
+		Assert.equals(0, textField.defaultTextFormat.leftMargin);
+		Assert.equals(0, textField.defaultTextFormat.rightMargin);
+		Assert.equals(0, textField.defaultTextFormat.indent);
+		Assert.equals(0, textField.defaultTextFormat.leading);
+		Assert.equals(0, textField.defaultTextFormat.blockIndent);
+		Assert.isFalse(textField.defaultTextFormat.bullet);
+		Assert.equals(0, textField.defaultTextFormat.letterSpacing);
+		Assert.isFalse(textField.defaultTextFormat.kerning);
 	}
 
 	@Ignored
@@ -179,28 +194,18 @@ class TextFieldTest extends Test
 
 	public function test_embedFonts()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.embedFonts;
-
-		Assert.isFalse(exists);
+		Assert.isFalse(textField.embedFonts);
 	}
 
 	public function test_gridFitType()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.gridFitType;
-
-		Assert.notNull(exists);
+		Assert.equals(GridFitType.PIXEL, textField.gridFitType);
 	}
 
 	public function test_htmlText()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
 
 		Assert.equals("", textField.htmlText);

@@ -157,7 +157,7 @@ class TextFormat
 		`null`, which means that 0 pixels of letter spacing is used.
 		You can use decimal values such as `1.75`.
 	**/
-	public var letterSpacing:Null<Float>;
+	public var letterSpacing(default, set):Null<Float>;
 
 	/**
 		The right margin of the paragraph, in pixels. The default value is
@@ -343,7 +343,7 @@ class TextFormat
 
 	@:noCompletion private function __toCacheKey():String
 	{
-		return __cacheKey = '$font$size$bold$italic';
+		return __cacheKey = '$font$size$bold$italic$letterSpacing';
 	}
 
 	@:noCompletion private function set_font(value:String):String
@@ -356,8 +356,29 @@ class TextFormat
 		return font;
 	}
 
+	@:noCompletion private function set_letterSpacing(value:Null<Float>):Null<Float>
+	{
+		if (letterSpacing != value)
+		{
+			letterSpacing = value;
+			__cacheKey = null;
+		}
+		return letterSpacing;
+	}
+
 	@:noCompletion private function set_size(value:Null<Int>):Null<Int>
 	{
+		#if commonjs
+		// Flash types the size property as Object, and it will call toString()
+		// on any value passed in that isn't an integer or null. Then, it
+		// converts the String to an integer.
+		// the Haxe compiler already enforces a more specific type, so this
+		// check should be needed in the npm version only.
+		if (value != null && untyped #if haxe4 js.Syntax.code #else __js__ #end ("typeof value !== 'number'"))
+		{
+			size = Std.parseInt(Std.string(value));
+		}
+		#end
 		if (size != value)
 		{
 			size = value;

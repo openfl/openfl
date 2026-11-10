@@ -420,6 +420,7 @@ class CanvasTextField
 				graphics.__bitmapScaleX = pixelRatio;
 				graphics.__bitmapScaleY = pixelRatio;
 				graphics.__visible = true;
+				graphics.__managed = true;
 				textField.__dirty = false;
 				graphics.__softwareDirty = false;
 				graphics.__dirty = false;
