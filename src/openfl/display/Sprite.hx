@@ -287,7 +287,7 @@ class Sprite extends DisplayObjectContainer
 	#end
 	@:noCompletion private function __bind(library:AssetLibrary, className:String):Void
 	{
-		if (__worldTransform == null) // super() has not been called
+		if (__worldColorTransform == null) // super() has not been called
 		{
 			__pendingBindLibrary = library;
 			__pendingBindClassName = className;

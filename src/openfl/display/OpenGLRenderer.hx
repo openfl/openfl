@@ -871,6 +871,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private function __renderDrawable(object:IBitmapDrawable):Void
 	{
 		if (object == null) return;
+		if (object.__drawableType != BITMAP_DATA) __ensureRenderTransform(cast object);
 
 		switch (object.__drawableType)
 		{
@@ -897,6 +898,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private function __renderDrawableMask(object:IBitmapDrawable):Void
 	{
 		if (object == null) return;
+		if (object.__drawableType != BITMAP_DATA) __ensureRenderTransform(cast object);
 
 		switch (object.__drawableType)
 		{
