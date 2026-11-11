@@ -1431,13 +1431,18 @@ import lime.math.Vector2;
 		{
 			for (i in 0...program.__samplerStates.length)
 			{
+				var programSamplerState = program.__samplerStates[i];
+				if (programSamplerState == null)
+				{
+					continue;
+				}
 				if (__state.samplerStates[i] == null)
 				{
-					__state.samplerStates[i] = program.__samplerStates[i].clone();
+					__state.samplerStates[i] = programSamplerState.clone();
 				}
 				else
 				{
-					__state.samplerStates[i].copyFrom(program.__samplerStates[i]);
+					__state.samplerStates[i].copyFrom(programSamplerState);
 				}
 			}
 		}
