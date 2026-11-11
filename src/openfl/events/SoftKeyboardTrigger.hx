@@ -3,15 +3,21 @@ package openfl.events;
 #if !flash
 #if !openfljs
 /**
-
+	The SoftKeyboardTrigger class provides enumerator values for the
+	`triggerType` property of the SoftKeyboardEvent class. These values indicate
+	what type of action triggered a SoftKeyboard activation event.
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract SoftKeyboardTrigger(Null<Int>)
 {
 	/**
+		Indicates that ActionScript invoked the event.
 	**/
 	public var CONTENT_TRIGGERED = 0;
 
 	/**
+		Indicates that user action invoked the event. Typical user actions that
+		can trigger this event include explicitly closing the keyboard, or
+		pressing the Back key.
 	**/
 	public var USER_TRIGGERED = 1;
 
