@@ -65,6 +65,10 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:DrawCommandBuffer;
 	@:noCompletion private var __dirty(default, set):Bool = true;
+	@:noCompletion private var __hitTestRects:Array<Float>;
+	@:noCompletion private var __hitTestRectsLength:Int = -1;
+	@:noCompletion private var __hitTestRectsX:Float;
+	@:noCompletion private var __hitTestRectsY:Float;
 	@:noCompletion private var __hardwareDirty:Bool;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __managed:Bool;
@@ -1701,6 +1705,9 @@ import js.html.CanvasRenderingContext2D;
 		{
 			if (shapeFlag)
 			{
+				var hit = __hitTestFilledRects(px, py);
+				if (hit >= 0) return hit == 1;
+
 				#if (js && html5)
 				return CanvasGraphics.hitTest(this, px, py);
 				#elseif (lime_cffi)
@@ -1712,6 +1719,134 @@ import js.html.CanvasRenderingContext2D;
 		}
 
 		return false;
+	}
+
+	/**
+		Hit tests graphics made of rectangles in solid fills, as a mask or a hit area often is, without
+		replaying their commands: 1 for a hit, 0 for a miss, -1 for graphics that are not made so.
+		The rectangles are kept until the commands change.
+	**/
+	@:noCompletion private function __hitTestFilledRects(x:Float, y:Float):Int
+	{
+		if (__owner.__scale9Grid != null) return -1;
+
+		if (__hitTestRectsLength != __commands.length || __hitTestRectsX != __bounds.x || __hitTestRectsY != __bounds.y)
+		{
+			__hitTestRects = __getFilledRects();
+			__hitTestRectsLength = __commands.length;
+		}
+
+		var rects = __hitTestRects;
+		if (rects == null) return -1;
+
+		x = __toHitTestGrid(x - __hitTestRectsX);
+		y = __toHitTestGrid(y - __hitTestRectsY);
+
+		var inside = false;
+		var i = 0;
+		var length = rects.length;
+		var left:Float, top:Float, right:Float, bottom:Float;
+
+		while (i < length)
+		{
+			left = rects[i];
+
+			if (left != left)
+			{
+				// The end of a fill
+				if (inside) return 1;
+			}
+			else
+			{
+				top = rects[i + 1];
+				right = rects[i + 2];
+				bottom = rects[i + 3];
+
+				if (x >= left && x <= right && y >= top && y <= bottom)
+				{
+					// A point on an edge is in the fill, even that of an empty rectangle, and elsewhere a rectangle over another makes a hole
+					if (x == left || x == right || y == top || y == bottom) return 1;
+					inside = !inside;
+				}
+			}
+
+			i += 4;
+		}
+
+		return inside ? 1 : 0;
+	}
+
+	// The rectangles of each fill, four values each, with NaN after a fill, or null if the graphics have anything else
+	@:noCompletion private function __getFilledRects():Array<Float>
+	{
+		var rects:Array<Float> = [];
+		var filling = false;
+		var simple = true;
+		var originX = __bounds.x;
+		var originY = __bounds.y;
+		var data = new DrawCommandReader(__commands);
+
+		__hitTestRectsX = originX;
+		__hitTestRectsY = originY;
+
+		for (type in __commands.types)
+		{
+			switch (type)
+			{
+				case BEGIN_FILL, END_FILL:
+					data.skip(type);
+
+					if (rects.length > 0 && rects[rects.length - 4] == rects[rects.length - 4])
+					{
+						rects.push(Math.NaN);
+						rects.push(0);
+						rects.push(0);
+						rects.push(0);
+					}
+
+					filling = (type == BEGIN_FILL);
+
+				case DRAW_RECT:
+					var c = data.readDrawRect();
+					var left = __toHitTestGrid(c.x - originX);
+					var top = __toHitTestGrid(c.y - originY);
+					var right = __toHitTestGrid(c.x + c.width - originX);
+					var bottom = __toHitTestGrid(c.y + c.height - originY);
+
+					if (left != left || top != top || right != right || bottom != bottom)
+					{
+						simple = false;
+					}
+					else if (filling)
+					{
+						rects.push(left < right ? left : right);
+						rects.push(top < bottom ? top : bottom);
+						rects.push(left < right ? right : left);
+						rects.push(top < bottom ? bottom : top);
+					}
+
+				case MOVE_TO, WINDING_EVEN_ODD:
+					data.skip(type);
+
+				default:
+					data.skip(type);
+					simple = false;
+			}
+
+			if (!simple) break;
+		}
+
+		data.destroy();
+
+		return simple ? rects : null;
+	}
+
+	// The grid of 1/256 that Cairo places its paths on, a value halfway between two steps going to the even one as it does there
+	@:noCompletion private static inline function __toHitTestGrid(value:Float):Float
+	{
+		value *= 256;
+		var rounded = Math.ffloor(value + 0.5);
+		return (rounded - value == 0.5 && rounded % 2 != 0) ? rounded - 1 : rounded;
 	}
 
 	@:noCompletion private function __findExtrema(p1:Float, p2:Float, p3:Float, p4:Float):{min:Float, max:Float}
@@ -2098,6 +2233,7 @@ import js.html.CanvasRenderingContext2D;
 		{
 			__softwareDirty = true;
 			__hardwareDirty = true;
+			__hitTestRectsLength = -1;
 		}
 
 		return __dirty = value;

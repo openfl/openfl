@@ -11,6 +11,7 @@ class Tests
 		runner.addCase(new GraphicsBitmapFillTest());
 		runner.addCase(new GraphicsEndFillTest());
 		runner.addCase(new GraphicsGradientFillTest());
+		runner.addCase(new GraphicsHitTestTest());
 		runner.addCase(new GraphicsPathCommandTest());
 		runner.addCase(new GraphicsPathTest());
 		runner.addCase(new GraphicsPathWindingTest());
