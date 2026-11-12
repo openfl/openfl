@@ -498,32 +498,33 @@ abstract Dictionary<K, V>(IMap<K, V>)
 {
 	@:noCompletion private var map:ObjectMap<{}, V>;
 	#if cpp
-	// Used instead of map by a dictionary with weak keys
+	// What a dictionary with weak keys holds its object keys in. Its other keys stay in map
 	@:noCompletion private var weakMap:WeakMap<{}, V>;
 	#end
 
 	public function new(weakKeys:Bool = false):Void
 	{
-		#if cpp
-		if (weakKeys)
-		{
-			weakMap = new WeakMap<{}, V>();
-			return;
-		}
-		#end
-
 		map = new ObjectMap<{}, V>();
+
+		#if cpp
+		if (weakKeys) weakMap = new WeakMap<{}, V>();
+		#end
 	}
+
+	#if cpp
+	// A function or a value becomes another object each time it is passed as a key, one that
+	// nothing else holds: held weakly, it would go at the next collection
+	@:noCompletion private static inline function __isHeldWeakly(key:Dynamic):Bool
+	{
+		return Reflect.isObject(key) && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (key, String);
+	}
+	#end
 
 	#if haxe4
 	public function clear():Void
 	{
 		#if cpp
-		if (weakMap != null)
-		{
-			weakMap.clear();
-			return;
-		}
+		if (weakMap != null) weakMap.clear();
 		#end
 
 		map.clear();
@@ -543,7 +544,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	public function exists(key:K):Bool
 	{
 		#if cpp
-		if (weakMap != null) return weakMap.exists(cast key);
+		if (weakMap != null && __isHeldWeakly(key)) return weakMap.exists(cast key);
 		#end
 
 		return map.exists(cast key);
@@ -553,7 +554,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	public function size():Int
 	{
 		#if cpp
-		if (weakMap != null) return weakMap.size();
+		if (weakMap != null) return map.size() + weakMap.size();
 		#end
 
 		return map.size();
@@ -563,7 +564,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	public function get(key:K):Null<V>
 	{
 		#if cpp
-		if (weakMap != null) return weakMap.get(cast key);
+		if (weakMap != null && __isHeldWeakly(key)) return weakMap.get(cast key);
 		#end
 
 		return map.get(cast key);
@@ -579,7 +580,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	public function keys():Iterator<K>
 	{
 		#if cpp
-		if (weakMap != null) return cast weakMap.keys();
+		if (weakMap != null) return cast new UtilsObjectMapIterator<{}>(map.keys(), weakMap.keys());
 		#end
 
 		return cast map.keys();
@@ -588,7 +589,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	public function iterator():Iterator<V>
 	{
 		#if cpp
-		if (weakMap != null) return cast weakMap.iterator();
+		if (weakMap != null) return new UtilsObjectMapIterator<V>(map.iterator(), weakMap.iterator());
 		#end
 
 		return cast map.iterator();
@@ -597,7 +598,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	public function remove(key:K):Bool
 	{
 		#if cpp
-		if (weakMap != null) return weakMap.remove(cast key);
+		if (weakMap != null && __isHeldWeakly(key)) return weakMap.remove(cast key);
 		#end
 
 		return map.remove(cast key);
@@ -606,7 +607,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	public function set(key:K, value:V):Void
 	{
 		#if cpp
-		if (weakMap != null)
+		if (weakMap != null && __isHeldWeakly(key))
 		{
 			weakMap.set(cast key, value);
 			return;
@@ -619,12 +620,44 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	public function toString():String
 	{
 		#if cpp
-		if (weakMap != null) return weakMap.toString();
+		if (weakMap != null)
+		{
+			var entries = [];
+			for (key in keys())
+				entries.push(Std.string(key) + " => " + Std.string(get(key)));
+			return "[" + entries.join(", ") + "]";
+		}
 		#end
 
 		return map.toString();
 	}
 }
+
+#if cpp
+// The keys or the values of the two maps of a dictionary with weak keys, one after the other
+@SuppressWarnings("checkstyle:FieldDocComment")
+@:dox(hide) private class UtilsObjectMapIterator<T>
+{
+	@:noCompletion private var first:Iterator<T>;
+	@:noCompletion private var second:Iterator<T>;
+
+	public function new(first:Iterator<T>, second:Iterator<T>)
+	{
+		this.first = first;
+		this.second = second;
+	}
+
+	public function hasNext():Bool
+	{
+		return first.hasNext() || second.hasNext();
+	}
+
+	public function next():T
+	{
+		return first.hasNext() ? first.next() : second.next();
+	}
+}
+#end
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
 abstract Dictionary<K, V>(Dynamic)
