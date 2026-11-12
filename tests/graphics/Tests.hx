@@ -20,6 +20,9 @@ class Tests
 		runner.addCase(new InterpolationMethodTest());
 		runner.addCase(new JointStyleTest());
 		runner.addCase(new LineScaleModeTest());
+		#if (!flash && lime_cairo)
+		runner.addCase(new SoftwareBitmapSurfaceTest());
+		#end
 		runner.addCase(new SpreadMethodTest());
 		runner.addCase(new TriangleCullingTest());
 		Report.create(runner);

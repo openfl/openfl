@@ -16,7 +16,8 @@ class CairoBitmapData
 	public static inline function renderDrawable(bitmapData:BitmapData, renderer:CairoRenderer):Void
 	{
 		#if lime_cairo
-		if (!bitmapData.readable) return;
+		// a bitmap that is not readable may still give a surface to draw it from
+		if (!bitmapData.readable && bitmapData.getSurface() == null) return;
 
 		var cairo = renderer.cairo;
 
