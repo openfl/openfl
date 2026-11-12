@@ -1355,7 +1355,7 @@ class CairoGraphics
 						cairo.moveTo(positionX - offsetX, positionY - offsetY);
 					}
 
-					if (c.bitmap.readable)
+					if (c.bitmap.readable || (!hitTesting && c.bitmap.getSurface() != null))
 					{
 						strokePattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						bitmapStroke = c.bitmap;
@@ -1385,7 +1385,9 @@ class CairoGraphics
 				case BEGIN_BITMAP_FILL:
 					var c = data.readBeginBitmapFill();
 
-					if (c.bitmap.readable)
+					// a bitmap that is not readable may still give a surface to draw it from,
+					// which a hit test has no use for
+					if (c.bitmap.readable || (!hitTesting && c.bitmap.getSurface() != null))
 					{
 						fillPattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						bitmapFill = c.bitmap;
