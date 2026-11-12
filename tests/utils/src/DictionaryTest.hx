@@ -122,4 +122,138 @@ class DictionaryTest extends Test
 			Assert.isTrue(StringTools.startsWith(str, "value"));
 		}
 	}
+
+	public function testWeakKeysOfAnyType():Void
+	{
+		var dict = new Dictionary<DictionaryTestAnyKey, String>(true);
+		var object = new DictionaryTestKey();
+		var other = new DictionaryTestKey();
+		dict[object] = "object";
+		dict[other] = "other";
+
+		Assert.equals("object", dict[object]);
+		Assert.equals("other", dict[other]);
+		Assert.isTrue(dict.exists(object));
+		Assert.isFalse(dict.exists(new DictionaryTestKey()));
+		Assert.equals(2, count(dict.iterator()));
+		Assert.equals(2, count(dict.each()));
+
+		dict[object] = "overwritten";
+		Assert.equals("overwritten", dict[object]);
+		Assert.equals(2, count(dict.iterator()));
+
+		Assert.isTrue(dict.remove(other));
+		Assert.isFalse(dict.remove(other));
+		Assert.isFalse(dict.exists(other));
+		Assert.equals(1, count(dict.iterator()));
+		Assert.equals("overwritten", dict.each().next());
+	}
+
+	#if cpp
+	public function testWeakKeysOfFunctionsAndValues():Void
+	{
+		var dict = new Dictionary<DictionaryTestAnyKey, String>(true);
+		var object = new DictionaryTestKey();
+		var listener = function():Void {};
+		var number:DictionaryTestAnyKey = 1.5;
+		dict[object] = "object";
+		dict[listener] = "function";
+		dict[number] = "number";
+		dict[true] = "boolean";
+		dict[5] = "integer";
+
+		Assert.equals("object", dict[object]);
+		Assert.equals("function", dict[listener]);
+		Assert.equals("number", dict[number]);
+		Assert.equals("boolean", dict[true]);
+		Assert.equals("integer", dict[5]);
+		Assert.equals(5, count(dict.iterator()));
+		Assert.equals(5, count(dict.each()));
+
+		dict[listener] = "overwritten";
+		Assert.equals("overwritten", dict[listener]);
+		Assert.equals(5, count(dict.iterator()));
+
+		Assert.isTrue(dict.remove(listener));
+		Assert.isFalse(dict.remove(listener));
+		Assert.isFalse(dict.exists(listener));
+		Assert.isTrue(dict.remove(object));
+		Assert.equals(3, count(dict.iterator()));
+	}
+
+	public function testWeakKeysAreCollected():Void
+	{
+		var weak = new Dictionary<DictionaryTestAnyKey, Int>(true);
+		var typed = new Dictionary<DictionaryTestKey, Int>(true);
+		var strong = new Dictionary<DictionaryTestAnyKey, Int>();
+		var kept = new DictionaryTestKey();
+		weak[kept] = -1;
+		typed[kept] = -1;
+		fill(weak, typed, strong);
+		// A second frame, over the stack slots where fill() left its last keys
+		fill(new Dictionary<DictionaryTestAnyKey, Int>(), new Dictionary<DictionaryTestKey, Int>(), new Dictionary<DictionaryTestAnyKey, Int>());
+
+		cpp.vm.Gc.run(true);
+
+		Assert.isTrue(count(weak.iterator()) < 100);
+		Assert.isTrue(count(typed.iterator()) < 100);
+		Assert.equals(200, count(strong.iterator()));
+		Assert.equals(-1, weak[kept]);
+		Assert.equals(-1, typed[kept]);
+	}
+
+	// A function or a value is another object each time it is passed as a key, one nothing else holds
+	public function testWeakKeysKeepFunctionsAndValues():Void
+	{
+		var weak = new Dictionary<DictionaryTestAnyKey, Int>(true);
+		fillWithFunctionsAndValues(weak);
+		fillWithFunctionsAndValues(new Dictionary<DictionaryTestAnyKey, Int>());
+
+		cpp.vm.Gc.run(true);
+
+		// 100 of each: method closures, anonymous functions, integers, floats and strings
+		Assert.equals(500, count(weak.iterator()));
+	}
+
+	@:noinline private function fillWithFunctionsAndValues(weak:Dictionary<DictionaryTestAnyKey, Int>):Void
+	{
+		for (i in 0...100)
+		{
+			weak[new DictionaryTestKey().method] = i;
+			weak[function():Int return i] = i;
+			weak[1000000 + i] = i;
+			weak[i + 0.5] = i;
+			weak["key" + i] = i;
+		}
+	}
+
+	@:noinline private function fill(weak:Dictionary<DictionaryTestAnyKey, Int>, typed:Dictionary<DictionaryTestKey, Int>,
+			strong:Dictionary<DictionaryTestAnyKey, Int>):Void
+	{
+		for (i in 0...200)
+		{
+			weak[new DictionaryTestKey()] = i;
+			typed[new DictionaryTestKey()] = i;
+			strong[new DictionaryTestKey()] = i;
+		}
+	}
+	#end
+
+	private function count<T>(iterator:Iterator<T>):Int
+	{
+		var count = 0;
+		for (item in iterator)
+			count++;
+		return count;
+	}
 }
+
+private class DictionaryTestKey
+{
+	public function new() {}
+
+	public function method():Void {}
+}
+
+// A key of any type, as an ActionScript Dictionary takes
+private abstract DictionaryTestAnyKey(Dynamic) from Dynamic {}

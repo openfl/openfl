@@ -7,6 +7,9 @@ import haxe.ds.IntMap;
 import haxe.ds.ObjectMap;
 import haxe.ds.EnumValueMap;
 import haxe.Constraints.IMap;
+#if cpp
+import haxe.ds.WeakMap;
+#end
 
 /**
 	The Dictionary class lets you create a dynamic collection of properties,
@@ -48,7 +51,8 @@ abstract Dictionary<K, V>(IMap<K, V>)
 						references on object keys. If the only reference to an
 						object is in the specified Dictionary object, the key
 						is eligible for garbage collection and is removed from
-						the table when the object is collected.
+						the table when the object is collected. The references
+						are weak on Flash and on C++, and strong elsewhere.
 	**/
 	public function new(weakKeys:Bool = false);
 
@@ -156,14 +160,17 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return new EnumValueMap<K, V>();
 	}
 
-	@:to private static function toObjectMap<K:{}, V>(t:IMap<K, V>, weakKeys:Bool):ObjectMap<K, V>
+	@:to private static function toObjectMap<K:{}, V>(t:IMap<K, V>, weakKeys:Bool):IMap<K, V>
 	{
+		#if cpp
+		if (weakKeys) return new WeakMap<K, V>();
+		#end
 		return new ObjectMap<K, V>();
 	}
 
 	@:to private static function toUtilsObjectMap<K:Object, V>(t:IMap<K, V>, weakKeys:Bool):UtilsObjectMap<K, V>
 	{
-		return new UtilsObjectMap<K, V>();
+		return new UtilsObjectMap<K, V>(weakKeys);
 	}
 
 	@:to private static function toClassMap<K:Class<Dynamic>, V>(t:IMap<K, V>, weakKeys:Bool):ClassMap<K, V>
@@ -490,15 +497,36 @@ abstract Dictionary<K, V>(IMap<K, V>)
 @:dox(hide) private class UtilsObjectMap<K:Object, V> implements IMap<K, V>
 {
 	@:noCompletion private var map:ObjectMap<{}, V>;
+	#if cpp
+	// What a dictionary with weak keys holds its object keys in. Its other keys stay in map
+	@:noCompletion private var weakMap:WeakMap<{}, V>;
+	#end
 
-	public function new():Void
+	public function new(weakKeys:Bool = false):Void
 	{
 		map = new ObjectMap<{}, V>();
+
+		#if cpp
+		if (weakKeys) weakMap = new WeakMap<{}, V>();
+		#end
 	}
+
+	#if cpp
+	// A function or a value becomes another object each time it is passed as a key, one that
+	// nothing else holds: held weakly, it would go at the next collection
+	@:noCompletion private static inline function __isHeldWeakly(key:Dynamic):Bool
+	{
+		return Reflect.isObject(key) && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (key, String);
+	}
+	#end
 
 	#if haxe4
 	public function clear():Void
 	{
+		#if cpp
+		if (weakMap != null) weakMap.clear();
+		#end
+
 		map.clear();
 	}
 	#end
@@ -506,7 +534,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	#if haxe4
 	public function copy():UtilsObjectMap<K, V>
 	{
-		var copied = new UtilsObjectMap<K, V>();
+		var copied = new UtilsObjectMap<K, V>(#if cpp weakMap != null #end);
 		for (key in keys())
 			copied.set(key, get(key));
 		return copied;
@@ -515,18 +543,30 @@ abstract Dictionary<K, V>(IMap<K, V>)
 
 	public function exists(key:K):Bool
 	{
+		#if cpp
+		if (weakMap != null && __isHeldWeakly(key)) return weakMap.exists(cast key);
+		#end
+
 		return map.exists(cast key);
 	}
 
 	#if (haxe5 && haxe != "5.0.0-preview.1")
 	public function size():Int
 	{
+		#if cpp
+		if (weakMap != null) return map.size() + weakMap.size();
+		#end
+
 		return map.size();
 	}
 	#end
 
 	public function get(key:K):Null<V>
 	{
+		#if cpp
+		if (weakMap != null && __isHeldWeakly(key)) return weakMap.get(cast key);
+		#end
+
 		return map.get(cast key);
 	}
 
@@ -539,29 +579,85 @@ abstract Dictionary<K, V>(IMap<K, V>)
 
 	public function keys():Iterator<K>
 	{
+		#if cpp
+		if (weakMap != null) return cast new UtilsObjectMapIterator<{}>(map.keys(), weakMap.keys());
+		#end
+
 		return cast map.keys();
 	}
 
 	public function iterator():Iterator<V>
 	{
+		#if cpp
+		if (weakMap != null) return new UtilsObjectMapIterator<V>(map.iterator(), weakMap.iterator());
+		#end
+
 		return cast map.iterator();
 	}
 
 	public function remove(key:K):Bool
 	{
+		#if cpp
+		if (weakMap != null && __isHeldWeakly(key)) return weakMap.remove(cast key);
+		#end
+
 		return map.remove(cast key);
 	}
 
 	public function set(key:K, value:V):Void
 	{
+		#if cpp
+		if (weakMap != null && __isHeldWeakly(key))
+		{
+			weakMap.set(cast key, value);
+			return;
+		}
+		#end
+
 		map.set(cast key, value);
 	}
 
 	public function toString():String
 	{
+		#if cpp
+		if (weakMap != null)
+		{
+			var entries = [];
+			for (key in keys())
+				entries.push(Std.string(key) + " => " + Std.string(get(key)));
+			return "[" + entries.join(", ") + "]";
+		}
+		#end
+
 		return map.toString();
 	}
 }
+
+#if cpp
+// The keys or the values of the two maps of a dictionary with weak keys, one after the other
+@SuppressWarnings("checkstyle:FieldDocComment")
+@:dox(hide) private class UtilsObjectMapIterator<T>
+{
+	@:noCompletion private var first:Iterator<T>;
+	@:noCompletion private var second:Iterator<T>;
+
+	public function new(first:Iterator<T>, second:Iterator<T>)
+	{
+		this.first = first;
+		this.second = second;
+	}
+
+	public function hasNext():Bool
+	{
+		return first.hasNext() || second.hasNext();
+	}
+
+	public function next():T
+	{
+		return first.hasNext() ? first.next() : second.next();
+	}
+}
+#end
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
 abstract Dictionary<K, V>(Dynamic)
