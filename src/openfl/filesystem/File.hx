@@ -95,6 +95,7 @@ import lime.system.BackgroundWorker;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(lime.system.System)
 class File extends FileReference
 {
 	/**
@@ -2079,8 +2080,12 @@ class File extends FileReference
 
 	@:noCompletion private function __winGetHiddenAttr():Bool
 	{
-		// TODO don't use the command line for this.... instead we should add support in Lime to use
-		// the win api.
+		#if (lime >= "8.4.0" && lime_cffi && !macro)
+		// -1 is no such file, 0x2 is FILE_ATTRIBUTE_HIDDEN
+		var attributes = System.__getWindowsFileAttributes(nativePath);
+		return attributes != -1 && (attributes & 0x2) != 0;
+		#else
+		// Lime before 8.4.0 cannot read the attributes, so attrib runs in a new process for each call
 		var process:Process = new Process('attrib "$nativePath"');
 		var r:String = process.stdout.readLine();
 
@@ -2090,6 +2095,7 @@ class File extends FileReference
 		var flag:Bool = s.indexOf(" H ") > -1;
 
 		return flag;
+		#end
 	}
 
 	@:noCompletion private function __updateFileStats(?path:String):Void

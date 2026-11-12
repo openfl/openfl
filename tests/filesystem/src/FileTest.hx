@@ -229,6 +229,34 @@ class FileTest extends Test
 		fileToDelete.deleteFileAsync();
 	}
 
+	public function test_isHidden()
+	{
+		var visibleFile = writableDirectory.resolvePath("visible.txt");
+		var writeStream = new FileStream();
+		writeStream.open(visibleFile, WRITE);
+		writeStream.writeUTFBytes("I am a visible file");
+		writeStream.close();
+
+		Assert.isFalse(visibleFile.isHidden);
+
+		#if (sys && !air)
+		#if windows
+		var hiddenFile = writableDirectory.resolvePath("hidden.txt");
+		#else
+		var hiddenFile = writableDirectory.resolvePath(".hidden.txt");
+		#end
+		writeStream = new FileStream();
+		writeStream.open(hiddenFile, WRITE);
+		writeStream.writeUTFBytes("I am a hidden file");
+		writeStream.close();
+		#if windows
+		Assert.equals(0, Sys.command("attrib", ["+h", hiddenFile.nativePath]));
+		#end
+
+		Assert.isTrue(hiddenFile.isHidden);
+		#end
+	}
+
 	public function test_getDirectoryListing()
 	{
 		Assert.isTrue(assetsDirectory.exists);
