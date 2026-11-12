@@ -65,6 +65,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
+@:access(openfl.filters.BlurFilter)
 @:final class DropShadowFilter extends BitmapFilter
 {
 	@:noCompletion private static var __hideShader = new HideShader();
@@ -283,6 +284,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		__needSecondBitmapData = true;
 		__preserveObject = true;
 		__renderDirty = true;
+		__softwareComposite = true;
 	}
 
 	public override function clone():BitmapFilter
@@ -292,22 +294,47 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
 	{
-		// TODO: Support knockout, inner
+		var width = bitmapData.width;
+		var height = bitmapData.height;
 
-		#if lime
-		var r = (__color >> 16) & 0xFF;
-		var g = (__color >> 8) & 0xFF;
-		var b = __color & 0xFF;
+		// blur the source alpha, then read it back shifted by the shadow offset
+		var mask = BitmapFilter.__alphaMask(sourceBitmapData, sourceRect, destPoint, width, height);
+		if (__inner)
+		{
+			for (i in 0...mask.length)
+				mask[i] = 1 - mask[i];
+		}
+		BitmapFilter.__blurMask(mask, width, height, __blurX * __renderScale, __blurY * __renderScale, __quality);
 
-		var point = new Point(destPoint.x + __offsetX, destPoint.y + __offsetY);
+		// shadow colour premultiplied by its alpha, as the shader's uColor
+		var colorR = (((__color >> 16) & 0xFF) / 255.0) * __alpha;
+		var colorG = (((__color >> 8) & 0xFF) / 255.0) * __alpha;
+		var colorB = ((__color & 0xFF) / 255.0) * __alpha;
 
-		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), point.__toLimeVector2(),
-			__blurX, __blurY, __quality, __strength);
-		finalImage.colorTransform(finalImage.rect, new ColorTransform(0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix());
+		var shadowOffsetX = __exactOffsetX() * __renderScale;
+		var shadowOffsetY = __exactOffsetY() * __renderScale;
 
-		if (finalImage == bitmapData.image) return bitmapData;
-		#end
-		return sourceBitmapData;
+		var fxR = new Array<Float>(), fxG = new Array<Float>(), fxB = new Array<Float>(), fxA = new Array<Float>();
+		for (y in 0...height)
+		{
+			for (x in 0...width)
+			{
+				// the shadow at this pixel is the blurred mask read from `offset` pixels back
+				var shadowCoverage = BitmapFilter.__maskAtFrac(mask, width, height, x - shadowOffsetX, y - shadowOffsetY) * __strength;
+
+				if (shadowCoverage > 1) shadowCoverage = 1;
+				else if (shadowCoverage < 0) shadowCoverage = 0;
+
+				fxR.push(colorR * shadowCoverage);
+				fxG.push(colorG * shadowCoverage);
+				fxB.push(colorB * shadowCoverage);
+				fxA.push(__alpha * shadowCoverage);
+			}
+		}
+
+		// hideObject drops the object just like knockout does
+		return BitmapFilter.__compositeEffect(bitmapData, sourceBitmapData, sourceRect, destPoint, fxR, fxG, fxB, fxA, __inner ? INNER : OUTER,
+			__knockout || __hideObject);
 	}
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
@@ -324,25 +351,12 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 		if (blurPass < numBlurPasses)
 		{
-			var shader = GlowFilter.__blurAlphaShader;
-			if (blurPass < __horizontalPasses)
-			{
-				var scale = Math.pow(0.5, blurPass >> 1) * 0.5;
-				shader.uRadius.value[0] = blurX * scale;
-				shader.uRadius.value[1] = 0;
-			}
-			else
-			{
-				var scale = Math.pow(0.5, (blurPass - __horizontalPasses) >> 1) * 0.5;
-				shader.uRadius.value[0] = 0;
-				shader.uRadius.value[1] = blurY * scale;
-			}
-			shader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
-			shader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
-			shader.uColor.value[2] = (color & 0xFF) / 255;
-			shader.uColor.value[3] = alpha;
-			shader.uStrength.value[0] = blurPass == (numBlurPasses - 1) ? __strength : 1.0;
-			return shader;
+			// strength and alpha are applied on the final blur pass only (see GlowFilter)
+			var lastPass = blurPass == (numBlurPasses - 1);
+			var strength = lastPass ? __strength : 1.0;
+			var passAlpha = lastPass ? __alpha : 1.0;
+			var horizontal = blurPass < __horizontalPasses;
+			return GlowFilter.__setupBlurAlphaShader(horizontal, (horizontal ? blurX : blurY) * __renderScale, color, passAlpha, strength);
 		}
 		if (__inner)
 		{
@@ -350,14 +364,14 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 			{
 				var shader = GlowFilter.__innerCombineKnockoutShader;
 				shader.sourceBitmap.input = sourceBitmapData;
-				shader.offset.value[0] = __offsetX;
-				shader.offset.value[1] = __offsetY;
+				shader.offset.value[0] = __exactOffsetX() * __renderScale;
+				shader.offset.value[1] = __exactOffsetY() * __renderScale;
 				return shader;
 			}
 			var shader = GlowFilter.__innerCombineShader;
 			shader.sourceBitmap.input = sourceBitmapData;
-			shader.offset.value[0] = __offsetX;
-			shader.offset.value[1] = __offsetY;
+			shader.offset.value[0] = __exactOffsetX() * __renderScale;
+			shader.offset.value[1] = __exactOffsetY() * __renderScale;
 			return shader;
 		}
 		else
@@ -366,22 +380,22 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 			{
 				var shader = GlowFilter.__combineKnockoutShader;
 				shader.sourceBitmap.input = sourceBitmapData;
-				shader.offset.value[0] = __offsetX;
-				shader.offset.value[1] = __offsetY;
+				shader.offset.value[0] = __exactOffsetX() * __renderScale;
+				shader.offset.value[1] = __exactOffsetY() * __renderScale;
 				return shader;
 			}
 			else if (__hideObject)
 			{
 				var shader = __hideShader;
 				shader.sourceBitmap.input = sourceBitmapData;
-				shader.offset.value[0] = __offsetX;
-				shader.offset.value[1] = __offsetY;
+				shader.offset.value[0] = __exactOffsetX() * __renderScale;
+				shader.offset.value[1] = __exactOffsetY() * __renderScale;
 				return shader;
 			}
 			var shader = GlowFilter.__combineShader;
 			shader.sourceBitmap.input = sourceBitmapData;
-			shader.offset.value[0] = __offsetX;
-			shader.offset.value[1] = __offsetY;
+			shader.offset.value[0] = __exactOffsetX() * __renderScale;
+			shader.offset.value[1] = __exactOffsetY() * __renderScale;
 			return shader;
 		}
 		#else
@@ -389,21 +403,41 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		#end
 	}
 
+	// The shadow is drawn at the exact (fractional) offset.
+	// only the filter rect uses the floored __offsetX / __offsetY.
+	@:noCompletion private inline function __exactOffsetX():Float return __distance * Math.cos(__angle * Math.PI / 180);
+	@:noCompletion private inline function __exactOffsetY():Float return __distance * Math.sin(__angle * Math.PI / 180);
+
 	@:noCompletion private function __updateSize():Void
 	{
-		__offsetX = Std.int(__distance * Math.cos(__angle * Math.PI / 180));
-		__offsetY = Std.int(__distance * Math.sin(__angle * Math.PI / 180));
-		__topExtension = Math.ceil((__offsetY < 0 ? -__offsetY : 0) + __blurY);
-		__bottomExtension = Math.ceil((__offsetY > 0 ? __offsetY : 0) + __blurY);
-		__leftExtension = Math.ceil((__offsetX < 0 ? -__offsetX : 0) + __blurX);
-		__rightExtension = Math.ceil((__offsetX > 0 ? __offsetX : 0) + __blurX);
+		__offsetX = BitmapFilter.__offsetFloor(__distance * Math.cos(__angle * Math.PI / 180));
+		__offsetY = BitmapFilter.__offsetFloor(__distance * Math.sin(__angle * Math.PI / 180));
+
+		var exX = BlurFilter.__effectExtension(__blurX, __quality);
+		var exY = BlurFilter.__effectExtension(__blurY, __quality);
+
+		var absX = Std.int(__offsetX < 0 ? -__offsetX : __offsetX);
+		var absY = Std.int(__offsetY < 0 ? -__offsetY : __offsetY);
+		if (__inner)
+		{
+			__leftExtension = __rightExtension = exX + absX;
+			__topExtension = __bottomExtension = exY + absY;
+		}
+		else
+		{
+			__leftExtension = exX + (__offsetX < 0 ? absX : 0);
+			__rightExtension = exX + (__offsetX > 0 ? absX : 0);
+			__topExtension = exY + (__offsetY < 0 ? absY : 0);
+			__bottomExtension = exY + (__offsetY > 0 ? absY : 0);
+		}
 		__calculateNumShaderPasses();
 	}
 
 	@:noCompletion private function __calculateNumShaderPasses():Void
 	{
-		__horizontalPasses = (__blurX <= 0) ? 0 : Math.round(__blurX * (__quality / 4)) + 1;
-		__verticalPasses = (__blurY <= 0) ? 0 : Math.round(__blurY * (__quality / 4)) + 1;
+		var q = (__quality > 0) ? __quality : 1;
+		__horizontalPasses = (__blurX <= 0) ? 0 : q;
+		__verticalPasses = (__blurY <= 0) ? 0 : q;
 		__numShaderPasses = __horizontalPasses + __verticalPasses + (__inner ? 2 : 1);
 	}
 
@@ -537,7 +571,12 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 	@:noCompletion private function set_quality(value:Int):Int
 	{
-		if (value != __quality) __renderDirty = true;
+		if (value != __quality)
+		{
+			__renderDirty = true;
+			__quality = value;
+			__updateSize(); //  quality affects the size
+		}
 		return __quality = value;
 	}
 
@@ -565,7 +604,9 @@ private class HideShader extends BitmapFilterShader
 		varying vec4 textureCoords;
 
 		void main(void) {
-			gl_FragColor = texture2D(openfl_Texture, textureCoords.zw);
+			vec2 glowUV = textureCoords.zw;
+			// the shifted read can leave the bitmap; there is nothing there
+			gl_FragColor = (glowUV.x < 0.0 || glowUV.x > 1.0 || glowUV.y < 0.0 || glowUV.y > 1.0) ? vec4(0.0) : texture2D(openfl_Texture, glowUV);
 		}
 	")
 	@:glVertexSource("attribute vec4 openfl_Position;
