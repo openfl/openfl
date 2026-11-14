@@ -7,6 +7,7 @@ import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.filters.GlowFilter;
 import openfl.geom.ColorTransform;
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
@@ -342,6 +343,26 @@ class BitmapDataTest extends Test
 
 		// TODO: Look into software renderer to find why alpha is off by one
 		Assert.isTrue(hex(bitmapData.getPixel32(50, 50)) == hex(0xFFFF0000) || hex(bitmapData.getPixel32(50, 50)) == hex(0xFEFF0000));
+	}
+
+	public function test_drawFilteredChildAtTheMatrixScale()
+	{
+		// as in Flash, a filtered object is cached at the scale it is drawn at, not cached and then stretched
+		var square = new Shape();
+		square.graphics.beginFill(0xFF0000);
+		square.graphics.drawRect(0, 0, 10, 10);
+		square.filters = [new GlowFilter(0x0000FF, 0, 2, 2)];
+		var container = new Sprite();
+		container.addChild(square);
+
+		var bitmapData = new BitmapData(64, 64, true, 0);
+		bitmapData.draw(container, new Matrix(4, 0, 0, 4, 8, 8), null, null, null, true);
+
+		Assert.equals(hex(0xFFFF0000), hex(bitmapData.getPixel32(46, 20)));
+		Assert.equals(hex(0xFFFF0000), hex(bitmapData.getPixel32(47, 20)));
+		Assert.equals(hex(0), hex(bitmapData.getPixel32(48, 20)));
+		Assert.equals(hex(0xFFFF0000), hex(bitmapData.getPixel32(20, 47)));
+		Assert.equals(hex(0), hex(bitmapData.getPixel32(20, 48)));
 	}
 
 	#if neko

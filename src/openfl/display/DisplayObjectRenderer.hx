@@ -35,6 +35,7 @@ import lime.graphics.RenderContextType;
 @:access(openfl.events.RenderEvent)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 @:access(openfl.geom.Transform)
 @:access(openfl.text.TextField)
@@ -48,6 +49,7 @@ class DisplayObjectRenderer extends EventDispatcher
 	@:noCompletion private var __cleared:Bool;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __context:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __overrideBlendMode:BlendMode;
+	@:noCompletion private var __cacheBitmapScaledMatrix:Matrix;
 	@:noCompletion private var __pixelRatio:Float;
 	@:noCompletion private var __roundPixels:Bool;
 	@:noCompletion private var __stage:Stage;
@@ -211,6 +213,35 @@ class DisplayObjectRenderer extends EventDispatcher
 		return null;
 	}
 
+	/**
+		The matrix a cache bitmap is made with. As in Flash, it is made at the scale it is shown at: the
+		renderer's own transform can scale what it draws, as the matrix given to `BitmapData.draw()` or a
+		stage scale mode do, beyond the pixel ratio that the cache bitmap already gets.
+	**/
+	@:noCompletion private function __getCacheBitmapMatrix(displayObject:DisplayObject):Matrix
+	{
+		var renderTransform = displayObject.__renderTransform;
+		if (__worldTransform == null) return renderTransform;
+
+		#if (openfl_disable_hdpi || openfl_disable_hdpi_cacheasbitmap)
+		var pixelRatio = 1.0;
+		#else
+		var pixelRatio = __pixelRatio > 0 ? __pixelRatio : 1.0;
+		#end
+
+		var a = __worldTransform.a / pixelRatio;
+		var b = __worldTransform.b / pixelRatio;
+		var c = __worldTransform.c / pixelRatio;
+		var d = __worldTransform.d / pixelRatio;
+
+		if (a == 1 && b == 0 && c == 0 && d == 1) return renderTransform;
+
+		if (__cacheBitmapScaledMatrix == null) __cacheBitmapScaledMatrix = new Matrix();
+		__cacheBitmapScaledMatrix.setTo(renderTransform.a * a + renderTransform.b * c, renderTransform.a * b + renderTransform.b * d,
+			renderTransform.c * a + renderTransform.d * c, renderTransform.c * b + renderTransform.d * d, 0, 0);
+		return __cacheBitmapScaledMatrix;
+	}
+
 	@:noCompletion private function __updateCacheBitmap(displayObject:DisplayObject, force:Bool):Bool
 	{
 		if (displayObject == null) return false;
@@ -326,7 +357,7 @@ class DisplayObjectRenderer extends EventDispatcher
 				displayObject.__cacheBitmapMatrix = new Matrix();
 			}
 
-			var bitmapMatrix = (displayObject.__cacheAsBitmapMatrix != null ? displayObject.__cacheAsBitmapMatrix : displayObject.__renderTransform);
+			var bitmapMatrix = (displayObject.__cacheAsBitmapMatrix != null ? displayObject.__cacheAsBitmapMatrix : __getCacheBitmapMatrix(displayObject));
 
 			if (!needRender
 				&& (bitmapMatrix.a != displayObject.__cacheBitmapMatrix.a
@@ -487,6 +518,19 @@ class DisplayObjectRenderer extends EventDispatcher
 					displayObject.__cacheBitmap.__renderTransform.scale(1 / pixelRatio, 1 / pixelRatio);
 					displayObject.__cacheBitmap.__renderTransform.tx = displayObject.__renderTransform.tx + offsetX;
 					displayObject.__cacheBitmap.__renderTransform.ty = displayObject.__renderTransform.ty + offsetY;
+				}
+				else if (bitmapMatrix == __cacheBitmapScaledMatrix)
+				{
+					// from the cache's pixels back through the matrix it was made with, then to the object's place
+					var inverse = Matrix.__pool.get();
+					inverse.copyFrom(displayObject.__cacheBitmapMatrix);
+					inverse.invert();
+					displayObject.__cacheBitmap.__renderTransform.identity();
+					displayObject.__cacheBitmap.__renderTransform.scale(1 / pixelRatio, 1 / pixelRatio);
+					displayObject.__cacheBitmap.__renderTransform.translate(offsetX, offsetY);
+					displayObject.__cacheBitmap.__renderTransform.concat(inverse);
+					displayObject.__cacheBitmap.__renderTransform.concat(displayObject.__renderTransform);
+					Matrix.__pool.release(inverse);
 				}
 				else
 				{
