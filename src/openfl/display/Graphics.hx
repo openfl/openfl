@@ -1699,6 +1699,16 @@ import js.html.CanvasRenderingContext2D;
 		{
 			if (shapeFlag)
 			{
+				if (__renderTransform == null)
+				{
+					__renderTransform = new Matrix();
+				}
+
+				if (__worldTransform == null)
+				{
+					__worldTransform = new Matrix();
+				}
+
 				#if (js && html5)
 				return CanvasGraphics.hitTest(this, px, py);
 				#elseif (lime_cffi)
