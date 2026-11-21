@@ -268,6 +268,7 @@ class CairoGraphics
 		}
 
 		var rgb:Int, alpha:Float, r:Float, g:Float, b:Float, ratio:Float;
+		var ended = false;
 
 		for (i in 0...colors.length)
 		{
@@ -280,6 +281,14 @@ class CairoGraphics
 			ratio = ratios[i] / 0xFF;
 			if (ratio < 0) ratio = 0;
 			else if (ratio > 1) ratio = 1;
+
+			// In Flash, a gradient ends with the first stop at ratio 255: the ones after it never show,
+			// while Cairo would pad with the last one
+			if (ratio == 1)
+			{
+				if (ended) continue;
+				ended = true;
+			}
 
 			pattern.addColorStopRGBA(ratio, r, g, b, alpha);
 		}

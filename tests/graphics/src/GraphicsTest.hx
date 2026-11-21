@@ -112,6 +112,24 @@ class GraphicsTest extends Test
 		Assert.isTrue((bitmapData.getPixel(100, 25) >> 16) > 0xF0, "the centre is red: " + StringTools.hex(bitmapData.getPixel(100, 25), 6));
 	}
 
+	public function test_beginGradientFillDuplicateEndRatios()
+	{
+		// as in Flash, a gradient ends with the first of its records at ratio 255: the ones after it
+		// never show, not even where the gradient pads past its end
+		var matrix = new Matrix();
+		matrix.createGradientBox(100, 10, 0, 50, 0);
+		var shape = new Shape();
+		shape.graphics.beginGradientFill(GradientType.LINEAR, [0xFF0000, 0x00FF00, 0x000000], [1, 1, 1], [0, 255, 255], matrix);
+		shape.graphics.drawRect(0, 0, 200, 10);
+		shape.graphics.endFill();
+
+		var bitmapData = new BitmapData(200, 10, false, 0xFFFFFF);
+		bitmapData.draw(shape);
+
+		Assert.equals(StringTools.hex(0xFF0000, 6), StringTools.hex(bitmapData.getPixel(5, 5), 6));
+		Assert.equals(StringTools.hex(0x00FF00, 6), StringTools.hex(bitmapData.getPixel(195, 5), 6));
+	}
+
 	public function test_clear()
 	{
 		// TODO: Confirm functionality
