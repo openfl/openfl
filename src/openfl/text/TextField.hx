@@ -2385,7 +2385,12 @@ class TextField extends InteractiveObject
 
 			__layoutDirty = false;
 
-			setSelection(__selectionIndex, __caretIndex);
+			// Only a focused field follows its caret: setting the text of another one keeps its
+			// scroll, as in Flash, where htmlText puts the caret at the end
+			if (stage != null && stage.focus == this)
+			{
+				setSelection(__selectionIndex, __caretIndex);
+			}
 		}
 	}
 
