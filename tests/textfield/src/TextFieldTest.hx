@@ -400,6 +400,28 @@ class TextFieldTest extends Test
 		textField.scrollV = 2;
 	}
 
+	public function test_setTextKeepsScrollV()
+	{
+		// Setting the text of a field that is not focused does not scroll it to the caret
+		var textField = new TextField();
+		textField.multiline = true;
+		textField.wordWrap = true;
+		textField.width = 100;
+		textField.height = 30;
+		textField.htmlText = "<p>one</p><p>two</p><p>three</p>";
+
+		Assert.equals(1, textField.scrollV);
+		Assert.isTrue(textField.maxScrollV > 1);
+
+		textField.text = "one\ntwo\nthree";
+
+		Assert.equals(1, textField.scrollV);
+
+		textField.appendText("\nfour");
+
+		Assert.equals(1, textField.scrollV);
+	}
+
 	public function test_setScrollVNegative()
 	{
 		var textField = new TextField();
