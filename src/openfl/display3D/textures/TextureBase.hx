@@ -47,7 +47,8 @@ class TextureBase extends EventDispatcher
 	@:noCompletion private var __glStencilRenderbuffer:GLRenderbuffer;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __internalFormat:Int;
-	// private var __memoryUsage:Int;
+	@:noCompletion private var __levelMemory:Array<Int>;
+	@:noCompletion private var __memoryUsage:Int = 0;
 	@:noCompletion private var __optimizeForRenderToTexture:Bool;
 	// private var __outputTextureMemoryUsage:Bool = false;
 	@:noCompletion private var __samplerState:SamplerState;
@@ -72,9 +73,6 @@ class TextureBase extends EventDispatcher
 
 		__internalFormat = __textureInternalFormat;
 		__format = __textureFormat;
-
-		// __memoryUsage = 0;
-		// __compressedMemoryUsage = 0;
 	}
 
 	/**
@@ -114,6 +112,13 @@ class TextureBase extends EventDispatcher
 			gl.deleteRenderbuffer(__glStencilRenderbuffer);
 			__glStencilRenderbuffer = null;
 		}
+
+		if (__memoryUsage != 0)
+		{
+			__context.__changeMemoryUsage(-__memoryUsage);
+			__memoryUsage = 0;
+		}
+		__levelMemory = null;
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
@@ -309,6 +314,22 @@ class TextureBase extends EventDispatcher
 			__compressedFormats[ATFGPUFormat.PVRTC] = pvrtcExtension.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
 			__compressedFormatsAlpha[ATFGPUFormat.PVRTC] = pvrtcExtension.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
 		}
+	}
+
+	/**
+		Records how many bytes a level of the texture holds now, for `Context3D.totalGPUMemory`.
+	**/
+	@:noCompletion private function __setLevelMemory(level:Int, bytes:Int, side:Int = 0):Void
+	{
+		if (__levelMemory == null) __levelMemory = [];
+
+		var index = side * 32 + level;
+		var previous = index < __levelMemory.length ? __levelMemory[index] : 0;
+		if (bytes == previous) return;
+
+		__levelMemory[index] = bytes;
+		__memoryUsage += bytes - previous;
+		__context.__changeMemoryUsage(bytes - previous);
 	}
 
 	@:noCompletion private function __setSamplerState(state:SamplerState):Bool

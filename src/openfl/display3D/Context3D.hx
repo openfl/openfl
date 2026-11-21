@@ -255,8 +255,6 @@ import lime.math.Vector2;
 	@:noCompletion private static var __glDepthStencil:Int = -1;
 	@:noCompletion private static var __glMaxTextureMaxAnisotropy:Int = -1;
 	@:noCompletion private static var __glMaxViewportDims:Int = -1;
-	@:noCompletion private static var __glMemoryCurrentAvailable:Int = -1;
-	@:noCompletion private static var __glMemoryTotalAvailable:Int = -1;
 	@:noCompletion private static var __glTextureMaxAnisotropy:Int = -1;
 
 	@:noCompletion private var gl:#if lime WebGLRenderContext #else Dynamic #end;
@@ -272,6 +270,7 @@ import lime.math.Vector2;
 	@:noCompletion private var __enableErrorChecking:Bool;
 	@:noCompletion private var __fragmentConstants:Float32Array;
 	@:noCompletion private var __frontBufferTexture:RectangleTexture;
+	@:noCompletion private var __memoryUsage:Float = 0;
 	@:noCompletion private var __positionScale:Float32Array; // TODO: Better approach?
 	@:noCompletion private var __present:Bool;
 	@:noCompletion private var __programs:Map<String, Program3D>;
@@ -377,15 +376,6 @@ import lime.math.Vector2;
 			#end
 		}
 
-		if (__glMemoryTotalAvailable == -1)
-		{
-			var extension = gl.getExtension("NVX_gpu_memory_info");
-			if (extension != null)
-			{
-				__glMemoryTotalAvailable = extension.GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX;
-				__glMemoryCurrentAvailable = extension.GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX;
-			}
-		}
 		#end
 
 		if (__driverInfo == null)
@@ -2021,6 +2011,11 @@ import lime.math.Vector2;
 		// }
 	}
 
+	@:noCompletion private function __changeMemoryUsage(delta:Int):Void
+	{
+		__memoryUsage += delta;
+	}
+
 	@:noCompletion private function __dispose():Void
 	{
 		driverInfo += " (Disposed)";
@@ -2751,18 +2746,8 @@ import lime.math.Vector2;
 
 	@:noCompletion private function get_totalGPUMemory():Int
 	{
-		if (__glMemoryCurrentAvailable != -1)
-		{
-			// TODO: Return amount used by this application only
-			var current = gl.getParameter(__glMemoryCurrentAvailable);
-			var total = gl.getParameter(__glMemoryTotalAvailable);
-
-			if (total > 0)
-			{
-				return (total - current) * 1024;
-			}
-		}
-		return 0;
+		// Bytes are counted in a Float, so that more than 2 GiB reads as the largest Int instead of wrapping
+		return __memoryUsage < 0x7FFFFFFF ? Std.int(__memoryUsage) : 0x7FFFFFFF;
 	}
 }
 #else

@@ -44,6 +44,9 @@ import openfl.Vector;
 		__id = gl.createBuffer();
 
 		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
+
+		__memoryUsage = __numIndices * 2;
+		__context.__changeMemoryUsage(__memoryUsage);
 	}
 
 	/**
@@ -54,6 +57,9 @@ import openfl.Vector;
 	{
 		var gl = __context.gl;
 		gl.deleteBuffer(__id);
+
+		__context.__changeMemoryUsage(-__memoryUsage);
+		__memoryUsage = 0;
 	}
 
 	/**
