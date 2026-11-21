@@ -94,6 +94,24 @@ class GraphicsTest extends Test
 		Assert.equals(StringTools.hex(0xFFFFFFFF), StringTools.hex(bitmapData.getPixel32(320, 20)));
 	}
 
+	public function test_beginGradientFillRadialEllipse()
+	{
+		// a radial gradient whose box is wider than tall is an ellipse, as in Flash: 35 pixels under its centre,
+		// past its 25 pixel vertical radius, is its last colour although it is within its horizontal radius
+		var matrix = new Matrix();
+		matrix.createGradientBox(200, 50, 0, 0, 0);
+		var shape = new Shape();
+		shape.graphics.beginGradientFill(GradientType.RADIAL, [0xFF0000, 0x0000FF], [1, 1], [0, 255], matrix);
+		shape.graphics.drawRect(0, 0, 200, 100);
+		shape.graphics.endFill();
+
+		var bitmapData = new BitmapData(200, 100, false, 0xFFFFFF);
+		bitmapData.draw(shape);
+
+		Assert.equals(StringTools.hex(0x0000FF, 6), StringTools.hex(bitmapData.getPixel(100, 60), 6));
+		Assert.isTrue((bitmapData.getPixel(100, 25) >> 16) > 0xF0, "the centre is red: " + StringTools.hex(bitmapData.getPixel(100, 25), 6));
+	}
+
 	public function test_clear()
 	{
 		// TODO: Confirm functionality
