@@ -100,26 +100,21 @@ class Error #if (haxe_ver >= "4.1.0") extends haxe.Exception #elseif (openfl_dyn
 	**/
 	public function getStackTrace():String
 	{
-		return CallStack.toString(CallStack.exceptionStack());
+		// as in Flash, the error itself first, then the stack, which a release build may not have
+		return toString() + CallStack.toString(CallStack.exceptionStack());
 	}
 
 	// @:noCompletion @:dox(hide) public static function throwError (type:Class<Dynamic>, index:UInt, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Dynamic;
 	/**
-		Returns the string "Error" by default or the value contained in the `Error.message`
-		property, if defined.
+		Returns the error's name, "Error" by default, followed by its message if it has one,
+		as in "Error: message".
 
-		@returns	The error message.
+		@returns	The error's name and message.
 	**/
 	public #if (haxe_ver >= "4.1.0") override #end function toString():String
 	{
-		if (message != null)
-		{
-			return message;
-		}
-		else
-		{
-			return DEFAULT_TO_STRING;
-		}
+		var text = name != null ? name : DEFAULT_TO_STRING;
+		return message != null && message != "" ? text + ": " + message : text;
 	}
 }
 #else
