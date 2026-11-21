@@ -54,4 +54,23 @@ class ErrorTest extends Test
 
 		Assert.notNull(exists);
 	}
+
+	public function test_toString()
+	{
+		// as in Flash: the name, then the message if there is one (Std.string calls toString)
+		Assert.equals("Error: boom", Std.string(new Error("boom")));
+		Assert.equals("Error: boom", Std.string(new Error("boom", 42)));
+		Assert.equals("Error", Std.string(new Error()));
+
+		var named = new Error("Required HUD bake failed");
+		named.name = "HudFatalError";
+		Assert.equals("HudFatalError: Required HUD bake failed", Std.string(named));
+	}
+
+	public function test_getStackTraceStartsWithError()
+	{
+		// as in Flash's debugger, the first line is the error itself: a build without a stack still tells what it was
+		var error = new Error("boom");
+		Assert.equals("Error: boom", error.getStackTrace().split("\n")[0]);
+	}
 }
