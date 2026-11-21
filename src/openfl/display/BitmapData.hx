@@ -1011,7 +1011,15 @@ class BitmapData implements IBitmapDrawable
 				var bounds = Rectangle.__pool.get();
 				var boundsMatrix = Matrix.__pool.get();
 
-				source.__getBounds(bounds, boundsMatrix);
+				if (source.__drawableType == BITMAP_DATA)
+				{
+					source.__getBounds(bounds, boundsMatrix);
+				}
+				else
+				{
+					// all that is drawn, a stroke past the bounds included
+					(cast source : DisplayObject).__getRenderBounds(bounds, boundsMatrix);
+				}
 
 				var width:Int = Math.ceil(bounds.width);
 				var height:Int = Math.ceil(bounds.height);

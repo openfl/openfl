@@ -5,6 +5,8 @@ import openfl.display.BitmapData;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.Shape;
+import openfl.display.LineScaleMode;
+import openfl.display.JointStyle;
 import openfl.display.Sprite;
 import openfl.geom.Matrix;
 import utest.Assert;
@@ -128,6 +130,29 @@ class GraphicsTest extends Test
 
 		Assert.equals(StringTools.hex(0xFF0000, 6), StringTools.hex(bitmapData.getPixel(5, 5), 6));
 		Assert.equals(StringTools.hex(0x00FF00, 6), StringTools.hex(bitmapData.getPixel(195, 5), 6));
+	}
+
+	public function test_getBoundsStroke()
+	{
+		// as in Flash: half the thickness rounded to a whole pixel, half to even, on each side and
+		// whatever the joints
+		var cases:Array<Array<Dynamic>> = [
+			[2.5, JointStyle.ROUND, 9, 102], [2.5, JointStyle.MITER, 9, 102], [4, JointStyle.ROUND, 8, 104], [1, JointStyle.ROUND, 9.5, 101],
+			[0.5, JointStyle.ROUND, 10, 100], [2.75, JointStyle.ROUND, 8.5, 103], [0, JointStyle.ROUND, 10, 100]
+		];
+		for (c in cases)
+		{
+			var shape = new Shape();
+			shape.graphics.lineStyle(c[0], 0, 1, false, LineScaleMode.NORMAL, null, c[1]);
+			shape.graphics.moveTo(10, 20);
+			shape.graphics.lineTo(110, 20);
+			shape.graphics.lineTo(110, 80);
+			shape.graphics.lineTo(10, 80);
+			shape.graphics.lineTo(10, 20);
+			var bounds = shape.getBounds(shape);
+			Assert.equals(c[2], bounds.x, "x for a thickness of " + c[0]);
+			Assert.equals(c[3], bounds.width, "width for a thickness of " + c[0]);
+		}
 	}
 
 	public function test_clear()
