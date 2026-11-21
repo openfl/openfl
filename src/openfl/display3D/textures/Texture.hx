@@ -48,6 +48,7 @@ import openfl.utils.ByteArray;
 		__context.__bindGLTexture2D(__textureID);
 		gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, null);
 		__context.__bindGLTexture2D(null);
+		__setLevelMemory(0, __width * __height * 4);
 
 		if (optimizeForRenderToTexture) __getGLFramebuffer(true, 0, 0);
 	}
@@ -183,6 +184,7 @@ import openfl.utils.ByteArray;
 			__context.__bindGLTexture2D(__textureID);
 			gl.texImage2D(__textureTarget, miplevel, __internalFormat, __format, gl.UNSIGNED_BYTE, image.buffer.src);
 			__context.__bindGLTexture2D(null);
+			__setLevelMemory(miplevel, width * height * 4);
 
 			return;
 		}
@@ -257,6 +259,7 @@ import openfl.utils.ByteArray;
 		__context.__bindGLTexture2D(__textureID);
 		gl.texImage2D(__textureTarget, miplevel, __internalFormat, width, height, 0, __format, gl.UNSIGNED_BYTE, data);
 		__context.__bindGLTexture2D(null);
+		__setLevelMemory(miplevel, width * height * 4);
 	}
 
 	@:noCompletion private override function __setSamplerState(state:SamplerState):Bool
@@ -324,6 +327,7 @@ import openfl.utils.ByteArray;
 
 				gl.compressedTexImage2D(__textureTarget, level, __internalFormat, width, height, 0,
 					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
+				__setLevelMemory(level, size);
 
 				var alphaTexture = new Texture(__context, __width, __height, Context3DTextureFormat.COMPRESSED, __optimizeForRenderToTexture,
 					__streamingLevels);
@@ -333,6 +337,7 @@ import openfl.utils.ByteArray;
 				__context.__bindGLTexture2D(alphaTexture.__textureID);
 				gl.compressedTexImage2D(alphaTexture.__textureTarget, level, alphaTexture.__internalFormat, width, height, 0,
 					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, size, size));
+				alphaTexture.__setLevelMemory(level, size);
 
 				__alphaTexture = alphaTexture;
 			}
@@ -340,6 +345,7 @@ import openfl.utils.ByteArray;
 			{
 				gl.compressedTexImage2D(__textureTarget, level, __internalFormat, width, height, 0,
 					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, blockLength));
+				__setLevelMemory(level, blockLength);
 			}
 		});
 
@@ -347,6 +353,7 @@ import openfl.utils.ByteArray;
 		{
 			var data = new UInt8Array(__width * __height * 4);
 			gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
+			__setLevelMemory(0, __width * __height * 4);
 		}
 		#end
 
