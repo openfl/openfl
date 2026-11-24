@@ -276,9 +276,50 @@ class Assets
 		return null;
 	}
 
+	/**
+		Gets an instance of an embedded sound that is decoded as it plays,
+		rather than all at once
+
+		```haxe
+		var music = Assets.getMusic("music.ogg");
+		```
+
+		With Lime 8.4 or later, any sound format is streamed on native targets.
+		With earlier versions of Lime, only Ogg Vorbis files are streamed, and
+		other formats are decoded all at once, as `getSound()` does.
+
+		@param	id		The ID or asset path for the sound
+		@param	useCache		(Optional) Whether a sound already in the cache can be
+		given instead. Streamed sounds are not added to the cache.
+		@return		A new Sound object
+	**/
 	public static function getMusic(id:String, useCache:Bool = true):Sound
 	{
-		#if (lime_vorbis && lime > "7.9.0")
+		#if (lime >= "8.4.0" && tools && !display)
+		if (useCache && cache.enabled && cache.hasSound(id))
+		{
+			var sound = cache.getSound(id);
+
+			if (isValidSound(sound))
+			{
+				return sound;
+			}
+		}
+
+		var buffer = LimeAssets.getAudioBufferStream(id, useCache);
+
+		if (buffer == null)
+		{
+			return null;
+		}
+
+		// Not cached: a cached stream would resume from where it stopped
+		#if flash
+		return buffer.src;
+		#else
+		return Sound.fromAudioBuffer(buffer);
+		#end
+		#elseif (lime_vorbis && lime > "7.9.0")
 		var path = getPath(id);
 		var vorbisFile = VorbisFile.fromFile(path);
 		if (vorbisFile != null)
@@ -288,11 +329,9 @@ class Assets
 		}
 		else
 		{
-			// TODO: Streaming sound
 			return getSound(id, useCache);
 		}
 		#else
-		// TODO: Streaming sound
 		return getSound(id, useCache);
 		#end
 	}
