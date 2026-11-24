@@ -21,6 +21,31 @@ import lime.system.System;
 
 class ByteArrayTest extends Test
 {
+	public function test_lengthGrowthFillsWithZeros():Void
+	{
+		var byteArray = new ByteArray();
+		byteArray.writeUnsignedInt(0xFFFFFFFF);
+		byteArray.writeUnsignedInt(0xFFFFFFFF);
+
+		byteArray.length = 2;
+		byteArray.length = 8;
+
+		Assert.equals(8, byteArray.length);
+		Assert.equals(0xFF, byteArray[1]);
+		for (i in 2...8)
+		{
+			Assert.equals(0, byteArray[i]);
+		}
+
+		byteArray.length = 0;
+		byteArray.length = 4;
+
+		for (i in 0...4)
+		{
+			Assert.equals(0, byteArray[i]);
+		}
+	}
+
 	// Is this right?
 	private static var uncompressedValues = [100, 100, 100, 100];
 	private static var compressedValues = [120, 156, 75, 73, 73, 73, 1, 0, 3, 236, 1, 145];

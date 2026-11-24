@@ -1101,7 +1101,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#else
 		if (value >= 0)
 		{
+			// As in Flash, growing fills with zeros: what is allocated past the length may hold old data.
+			var oldLength:Int = this.length;
 			this.__resize(value);
+			if (value > oldLength) this.fill(oldLength, value - oldLength, 0);
 			if (value < this.position) this.position = value;
 		}
 

@@ -65,6 +65,7 @@ import openfl.utils.ByteArray;
 			__context.__bindGLTexture2D(__textureID);
 			gl.texImage2D(__textureTarget, 0, __internalFormat, __format, gl.UNSIGNED_BYTE, image.buffer.src);
 			__context.__bindGLTexture2D(null);
+			__setLevelMemory(0, __width * __height * 4);
 			return;
 		}
 		#end
@@ -118,6 +119,7 @@ import openfl.utils.ByteArray;
 		__context.__bindGLTexture2D(__textureID);
 		gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
 		__context.__bindGLTexture2D(null);
+		__setLevelMemory(0, __width * __height * 4);
 	}
 
 	@:noCompletion private override function __setSamplerState(state:SamplerState):Bool

@@ -836,6 +836,7 @@ class DisplayObjectContainer extends InteractiveObject
 		else
 		{
 			super.__getBounds(rect, matrix);
+			if (__graphics != null) __graphics.__getRenderBounds(rect, matrix);
 		}
 
 		if (__children.length == 0) return;

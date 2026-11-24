@@ -1665,6 +1665,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (__scrollRect == null)
 		{
 			__getBounds(rect, matrix);
+			// what is drawn: a stroke reaches past the bounds Flash reports
+			if (__graphics != null) __graphics.__getRenderBounds(rect, matrix);
 		}
 		else
 		{
@@ -2197,6 +2199,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function get_loaderInfo():LoaderInfo
 	{
+		// the content a Loader loaded keeps its own, on the display list or not
+		if (__loaderInfo != null)
+		{
+			return __loaderInfo;
+		}
+
 		if (stage != null)
 		{
 			return Lib.current.__loaderInfo;

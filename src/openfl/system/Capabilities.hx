@@ -473,6 +473,16 @@ import sys.io.Process;
 		corresponding to the capability for which you are testing. For more
 		information, see the Capabilities class description.
 
+		OpenFL reports its own version after the platform, such as
+		`LNX 9,5,0,0`. Code that checks for a Flash Player or AIR runtime
+		version can be given one with the `openfl_capabilities_version` define,
+		in the same _majorVersion,minorVersion,buildNumber,internalBuildNumber_
+		format:
+
+		```xml
+		<haxedef name="openfl_capabilities_version" value="51,1,3,0" />
+		```
+
 		The server string is `V`.
 	**/
 	public static var version(get, never):String;
@@ -813,7 +823,14 @@ import sys.io.Process;
 		var value = "OFL";
 		#end
 
-		if (Compiler.getDefine("openfl") != null)
+		// openfl_capabilities_version reports a Flash or AIR runtime version (e.g. 51,1,3,0) instead of
+		// OpenFL's, for code that checks it, such as Starling (at least 19).
+		var runtimeVersion:String = Compiler.getDefine("openfl_capabilities_version");
+		if (runtimeVersion != null)
+		{
+			value += " " + runtimeVersion;
+		}
+		else if (Compiler.getDefine("openfl") != null)
 		{
 			value += " " + StringTools.replace(Compiler.getDefine("openfl"), ".", ",") + ",0";
 		}

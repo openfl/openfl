@@ -71,6 +71,9 @@ class VertexBuffer3D
 		__id = gl.createBuffer();
 		__stride = __vertexSize * 4;
 		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
+
+		__memoryUsage = __numVertices * __stride;
+		__context.__changeMemoryUsage(__memoryUsage);
 	}
 
 	/**
@@ -81,6 +84,9 @@ class VertexBuffer3D
 	{
 		var gl = __context.gl;
 		gl.deleteBuffer(__id);
+
+		__context.__changeMemoryUsage(-__memoryUsage);
+		__memoryUsage = 0;
 	}
 
 	/**

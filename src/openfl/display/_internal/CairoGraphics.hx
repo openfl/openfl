@@ -154,7 +154,8 @@ class CairoGraphics
 		var pattern:CairoPattern = null,
 			point:Point = null,
 			point2:Point = null,
-			releaseMatrix = false;
+			releaseMatrix = false,
+			inverse:Matrix = null;
 
 		if (matrix == null)
 		{
@@ -168,21 +169,17 @@ class CairoGraphics
 			case RADIAL:
 				focalPointRatio = focalPointRatio > 1.0 ? 1.0 : focalPointRatio < -1.0 ? -1.0 : focalPointRatio;
 
-				// focal center
+				// the centre of the gradient's circle and the ends of its two radii, where the shape is drawn
 				point = Point.__pool.get();
-				point.x = focalPointRatio * 819.2;
-				point.y = 0.0;
+				point.setTo(0.0, 0.0);
 				matrix.__transformPoint(point);
 
-				// center
 				point2 = Point.__pool.get();
-				point2.setTo(0.0, 0.0);
+				point2.setTo(819.2, 0.0);
 				matrix.__transformPoint(point2);
 
-				// end
 				var point3 = Point.__pool.get();
-				point3.x = 819.2;
-				point3.y = 0.0;
+				point3.setTo(0.0, 819.2);
 				matrix.__transformPoint(point3);
 
 				var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
@@ -195,37 +192,34 @@ class CairoGraphics
 				#end
 				if (hasScale9Grid)
 				{
-					point.x = bounds.x
-						+ toScale9Position(point.x - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-					point.y = bounds.y
-						+ toScale9Position(point.y - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-					point2.x = bounds.x
-						+ toScale9Position(point2.x - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-					point2.y = bounds.y
-						+ toScale9Position(point2.y - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-					point3.x = bounds.x
-						+ toScale9Position(point3.x - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-					point3.y = bounds.y
-						+ toScale9Position(point3.y - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+					for (p in [point, point2, point3])
+					{
+						p.x = bounds.x + toScale9Position(p.x - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+						p.y = bounds.y + toScale9Position(p.y - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
+					}
 				}
 
-				var dx = point3.x - point2.x;
-				var dy = point3.y - point2.y;
-
+				// As in Flash, the gradient is drawn in its own space, where it is a circle: the pattern's matrix takes a
+				// point of the shape back to that space, so a matrix scaled more on one axis gives an ellipse. With a
+				// scale9Grid, the matrix is the one that maps the centre and the two radii where they are drawn.
+				inverse = Matrix.__pool.get();
+				inverse.setTo((point2.x - point.x) / 819.2, (point2.y - point.y) / 819.2, (point3.x - point.x) / 819.2, (point3.y - point.y) / 819.2,
+					point.x, point.y);
 				Point.__pool.release(point3);
 
-				// cairo can't draw ellipical radial gradients; they must be
-				// circular. in other words, the same radius in both directions.
-				// we basically take the average and use that. not ideal, but
-				// probably as close as we can get to flash.
-				var radius = Math.sqrt(dx * dx + dy * dy);
-
-				point.x += graphics.__bounds.x;
-				point2.x += graphics.__bounds.x;
-				point.y += graphics.__bounds.y;
-				point2.y += graphics.__bounds.y;
-
-				pattern = CairoPattern.createRadial(point.x, point.y, 0.0, point2.x, point2.y, radius);
+				if (inverse.a * inverse.d - inverse.b * inverse.c != 0)
+				{
+					inverse.invert();
+					pattern = CairoPattern.createRadial(focalPointRatio * 819.2, 0.0, 0.0, 0.0, 0.0, 819.2);
+				}
+				else
+				{
+					// a degenerate matrix: a circle of no size, its colour the last one all around
+					Matrix.__pool.release(inverse);
+					inverse = null;
+					pattern = CairoPattern.createRadial(point.x + graphics.__bounds.x, point.y + graphics.__bounds.y, 0.0, point.x + graphics.__bounds.x,
+						point.y + graphics.__bounds.y, 0.0);
+				}
 
 			case LINEAR:
 				point = Point.__pool.get();
@@ -233,8 +227,21 @@ class CairoGraphics
 				matrix.__transformPoint(point);
 
 				point2 = Point.__pool.get();
-				point2.setTo(819.2, 0);
-				matrix.__transformPoint(point2);
+				// As in Flash, the colour follows the first coordinate of the inverse matrix. Lines of one colour run
+				// along the matrix's y axis, so the gradient goes across them: along its x axis only when not skewed.
+				var determinant = matrix.a * matrix.d - matrix.b * matrix.c;
+				if (determinant != 0)
+				{
+					var gradientX = matrix.d / determinant;
+					var gradientY = -matrix.c / determinant;
+					var length = 1638.4 / (gradientX * gradientX + gradientY * gradientY);
+					point2.setTo(point.x + gradientX * length, point.y + gradientY * length);
+				}
+				else
+				{
+					point2.setTo(819.2, 0);
+					matrix.__transformPoint(point2);
+				}
 
 				var scale9Grid:Rectangle = graphics.__owner.__scale9Grid;
 				#if (openfl_legacy_scale9grid && !cairo)
@@ -265,6 +272,7 @@ class CairoGraphics
 		}
 
 		var rgb:Int, alpha:Float, r:Float, g:Float, b:Float, ratio:Float;
+		var ended = false;
 
 		for (i in 0...colors.length)
 		{
@@ -278,6 +286,14 @@ class CairoGraphics
 			if (ratio < 0) ratio = 0;
 			else if (ratio > 1) ratio = 1;
 
+			// In Flash, a gradient ends with the first stop at ratio 255: the ones after it never show,
+			// while Cairo would pad with the last one
+			if (ratio == 1)
+			{
+				if (ended) continue;
+				ended = true;
+			}
+
 			pattern.addColorStopRGBA(ratio, r, g, b, alpha);
 		}
 
@@ -287,8 +303,21 @@ class CairoGraphics
 
 		var mat = pattern.matrix;
 
-		mat.tx = bounds.x;
-		mat.ty = bounds.y;
+		if (inverse != null)
+		{
+			mat.a = inverse.a;
+			mat.b = inverse.b;
+			mat.c = inverse.c;
+			mat.d = inverse.d;
+			mat.tx = inverse.tx;
+			mat.ty = inverse.ty;
+			Matrix.__pool.release(inverse);
+		}
+		else
+		{
+			mat.tx = bounds.x;
+			mat.ty = bounds.y;
+		}
 
 		pattern.matrix = mat;
 
@@ -1366,7 +1395,7 @@ class CairoGraphics
 						cairo.moveTo(positionX - offsetX, positionY - offsetY);
 					}
 
-					if (c.bitmap.readable)
+					if (c.bitmap.readable || (!hitTesting && c.bitmap.getSurface() != null))
 					{
 						strokePattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						bitmapStroke = c.bitmap;
@@ -1396,7 +1425,9 @@ class CairoGraphics
 				case BEGIN_BITMAP_FILL:
 					var c = data.readBeginBitmapFill();
 
-					if (c.bitmap.readable)
+					// a bitmap that is not readable may still give a surface to draw it from,
+					// which a hit test has no use for
+					if (c.bitmap.readable || (!hitTesting && c.bitmap.getSurface() != null))
 					{
 						fillPattern = createImagePattern(c.bitmap, c.repeat, c.smooth);
 						bitmapFill = c.bitmap;

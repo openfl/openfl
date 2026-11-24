@@ -65,8 +65,14 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:DrawCommandBuffer;
 	@:noCompletion private var __dirty(default, set):Bool = true;
+	@:noCompletion private var __hitTestRects:Array<Float>;
+	@:noCompletion private var __hitTestRectsLength:Int = -1;
+	@:noCompletion private var __hitTestRectsX:Float;
+	@:noCompletion private var __hitTestRectsY:Float;
 	@:noCompletion private var __hardwareDirty:Bool;
 	@:noCompletion private var __height:Int;
+	@:noCompletion private var __logicalBounds:Rectangle;
+	@:noCompletion private var __logicalStrokePadding:Float;
 	@:noCompletion private var __managed:Bool;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
@@ -107,6 +113,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands = new DrawCommandBuffer();
 		__strokePadding = 0;
+		__logicalStrokePadding = 0;
 		__positionX = 0;
 		__positionY = 0;
 		__usedShaderBuffers = new List<ShaderBuffer>();
@@ -417,6 +424,8 @@ import js.html.CanvasRenderingContext2D;
 		__usedShaderBuffers.clear();
 		__commands.clear();
 		__strokePadding = 0;
+		__logicalStrokePadding = 0;
+		__logicalBounds = null;
 
 		if (__bounds != null)
 		{
@@ -444,9 +453,11 @@ import js.html.CanvasRenderingContext2D;
 	public function copyFrom(sourceGraphics:Graphics):Void
 	{
 		__bounds = sourceGraphics.__bounds != null ? sourceGraphics.__bounds.clone() : null;
+		__logicalBounds = sourceGraphics.__logicalBounds != null ? sourceGraphics.__logicalBounds.clone() : null;
 		__commands = sourceGraphics.__commands.copy();
 		__dirty = true;
 		__strokePadding = sourceGraphics.__strokePadding;
+		__logicalStrokePadding = sourceGraphics.__logicalStrokePadding;
 		__positionX = sourceGraphics.__positionX;
 		__positionY = sourceGraphics.__positionY;
 		__transformDirty = true;
@@ -501,6 +512,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__inflateBounds(xs.min - __strokePadding, ys.min - __strokePadding);
 		__inflateBounds(xs.max + __strokePadding, ys.max + __strokePadding);
+		__inflateLogicalBounds(xs.min, ys.min, xs.max, ys.max);
 
 		__positionX = anchorX;
 		__positionY = anchorY;
@@ -548,6 +560,7 @@ import js.html.CanvasRenderingContext2D;
 	{
 		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
 		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
+		__inflateLogicalBounds(__positionX, __positionY, __positionX, __positionY);
 
 		var ix:Float;
 		var iy:Float;
@@ -574,12 +587,14 @@ import js.html.CanvasRenderingContext2D;
 
 		__inflateBounds(ix - __strokePadding, iy - __strokePadding);
 		__inflateBounds(ix + __strokePadding, iy + __strokePadding);
+		__inflateLogicalBounds(ix, iy, ix, iy);
 
 		__positionX = anchorX;
 		__positionY = anchorY;
 
 		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
 		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
+		__inflateLogicalBounds(__positionX, __positionY, __positionX, __positionY);
 
 		__commands.curveTo(controlX, controlY, anchorX, anchorY);
 
@@ -596,6 +611,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__inflateBounds(x - radius - __strokePadding, y - radius - __strokePadding);
 		__inflateBounds(x + radius + __strokePadding, y + radius + __strokePadding);
+		__inflateLogicalBounds(x - radius, y - radius, x + radius, y + radius);
 
 		__commands.drawCircle(x, y, radius);
 
@@ -626,6 +642,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__inflateBounds(x - __strokePadding, y - __strokePadding);
 		__inflateBounds(x + width + __strokePadding, y + height + __strokePadding);
+		__inflateLogicalBounds(x, y, x + width, y + height);
 
 		__commands.drawEllipse(x, y, width, height);
 
@@ -931,6 +948,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__inflateBounds(minX, minY);
 		__inflateBounds(maxX, maxY);
+		__inflateLogicalBounds(minX, minY, maxX, maxY, false);
 
 		__commands.drawQuads(rects, indices, transforms);
 
@@ -969,6 +987,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__inflateBounds(x - __strokePadding * xSign, y - __strokePadding * ySign);
 		__inflateBounds(x + width + __strokePadding * xSign, y + height + __strokePadding * ySign);
+		__inflateLogicalBounds(x, y, x + width, y + height);
 
 		__commands.drawRect(x, y, width, height);
 
@@ -1012,6 +1031,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__inflateBounds(x - __strokePadding * xSign, y - __strokePadding * ySign);
 		__inflateBounds(x + width + __strokePadding * xSign, y + height + __strokePadding * ySign);
+		__inflateLogicalBounds(x, y, x + width, y + height);
 
 		__commands.drawRoundRect(x, y, width, height, ellipseWidth, ellipseHeight);
 
@@ -1028,6 +1048,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__inflateBounds(x - __strokePadding, y - __strokePadding);
 		__inflateBounds(x + width + __strokePadding, y + height + __strokePadding);
+		__inflateLogicalBounds(x, y, x + width, y + height);
 
 		var xw = x + width;
 		var yh = y + height;
@@ -1137,6 +1158,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__inflateBounds(minX, minY);
 		__inflateBounds(maxX, maxY);
+		__inflateLogicalBounds(minX, minY, maxX, maxY, false);
 
 		__commands.drawTriangles(vertices != null ? vertices.copy() : null, indices != null ? indices.copy() : null, uvtData != null ? uvtData.copy() : null,
 			culling);
@@ -1497,6 +1519,11 @@ import js.html.CanvasRenderingContext2D;
 			{
 				if (thickness / 2 > __strokePadding) __strokePadding = Math.ceil(thickness / 2);
 			}
+
+			// Flash's bounds take half the thickness rounded to a whole pixel, half to even, whatever the joints
+			var rounded = Math.fround(thickness);
+			if (rounded - thickness == 0.5 && rounded % 2 != 0) rounded--;
+			if (rounded / 2 > __logicalStrokePadding) __logicalStrokePadding = rounded / 2;
 		}
 
 		__commands.lineStyle(thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
@@ -1533,12 +1560,14 @@ import js.html.CanvasRenderingContext2D;
 
 		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
 		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
+		__inflateLogicalBounds(__positionX, __positionY, __positionX, __positionY);
 
 		__positionX = x;
 		__positionY = y;
 
 		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
 		__inflateBounds(__positionX + __strokePadding * 2, __positionY + __strokePadding);
+		__inflateLogicalBounds(__positionX, __positionY, __positionX, __positionY);
 
 		__commands.lineTo(x, y);
 
@@ -1680,6 +1709,18 @@ import js.html.CanvasRenderingContext2D;
 
 	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void
 	{
+		// What Flash reports: __bounds also holds the padding a stroke needs to render whole
+		var logical = __logicalBounds != null ? __logicalBounds : __bounds;
+		if (logical == null) return;
+
+		var bounds = Rectangle.__pool.get();
+		logical.__transform(bounds, matrix);
+		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
+		Rectangle.__pool.release(bounds);
+	}
+
+	@:noCompletion private function __getRenderBounds(rect:Rectangle, matrix:Matrix):Void
+	{
 		if (__bounds == null) return;
 
 		var bounds = Rectangle.__pool.get();
@@ -1699,6 +1740,9 @@ import js.html.CanvasRenderingContext2D;
 		{
 			if (shapeFlag)
 			{
+				var hit = __hitTestFilledRects(px, py);
+				if (hit >= 0) return hit == 1;
+
 				if (__renderTransform == null)
 				{
 					__renderTransform = new Matrix();
@@ -1720,6 +1764,134 @@ import js.html.CanvasRenderingContext2D;
 		}
 
 		return false;
+	}
+
+	/**
+		Hit tests graphics made of rectangles in solid fills, as a mask or a hit area often is, without
+		replaying their commands: 1 for a hit, 0 for a miss, -1 for graphics that are not made so.
+		The rectangles are kept until the commands change.
+	**/
+	@:noCompletion private function __hitTestFilledRects(x:Float, y:Float):Int
+	{
+		if (__owner.__scale9Grid != null) return -1;
+
+		if (__hitTestRectsLength != __commands.length || __hitTestRectsX != __bounds.x || __hitTestRectsY != __bounds.y)
+		{
+			__hitTestRects = __getFilledRects();
+			__hitTestRectsLength = __commands.length;
+		}
+
+		var rects = __hitTestRects;
+		if (rects == null) return -1;
+
+		x = __toHitTestGrid(x - __hitTestRectsX);
+		y = __toHitTestGrid(y - __hitTestRectsY);
+
+		var inside = false;
+		var i = 0;
+		var length = rects.length;
+		var left:Float, top:Float, right:Float, bottom:Float;
+
+		while (i < length)
+		{
+			left = rects[i];
+
+			if (left != left)
+			{
+				// The end of a fill
+				if (inside) return 1;
+			}
+			else
+			{
+				top = rects[i + 1];
+				right = rects[i + 2];
+				bottom = rects[i + 3];
+
+				if (x >= left && x <= right && y >= top && y <= bottom)
+				{
+					// A point on an edge is in the fill, even that of an empty rectangle, and elsewhere a rectangle over another makes a hole
+					if (x == left || x == right || y == top || y == bottom) return 1;
+					inside = !inside;
+				}
+			}
+
+			i += 4;
+		}
+
+		return inside ? 1 : 0;
+	}
+
+	// The rectangles of each fill, four values each, with NaN after a fill, or null if the graphics have anything else
+	@:noCompletion private function __getFilledRects():Array<Float>
+	{
+		var rects:Array<Float> = [];
+		var filling = false;
+		var simple = true;
+		var originX = __bounds.x;
+		var originY = __bounds.y;
+		var data = new DrawCommandReader(__commands);
+
+		__hitTestRectsX = originX;
+		__hitTestRectsY = originY;
+
+		for (type in __commands.types)
+		{
+			switch (type)
+			{
+				case BEGIN_FILL, END_FILL:
+					data.skip(type);
+
+					if (rects.length > 0 && rects[rects.length - 4] == rects[rects.length - 4])
+					{
+						rects.push(Math.NaN);
+						rects.push(0);
+						rects.push(0);
+						rects.push(0);
+					}
+
+					filling = (type == BEGIN_FILL);
+
+				case DRAW_RECT:
+					var c = data.readDrawRect();
+					var left = __toHitTestGrid(c.x - originX);
+					var top = __toHitTestGrid(c.y - originY);
+					var right = __toHitTestGrid(c.x + c.width - originX);
+					var bottom = __toHitTestGrid(c.y + c.height - originY);
+
+					if (left != left || top != top || right != right || bottom != bottom)
+					{
+						simple = false;
+					}
+					else if (filling)
+					{
+						rects.push(left < right ? left : right);
+						rects.push(top < bottom ? top : bottom);
+						rects.push(left < right ? right : left);
+						rects.push(top < bottom ? bottom : top);
+					}
+
+				case MOVE_TO, WINDING_EVEN_ODD:
+					data.skip(type);
+
+				default:
+					data.skip(type);
+					simple = false;
+			}
+
+			if (!simple) break;
+		}
+
+		data.destroy();
+
+		return simple ? rects : null;
+	}
+
+	// The grid of 1/256 that Cairo places its paths on, a value halfway between two steps going to the even one as it does there
+	@:noCompletion private static inline function __toHitTestGrid(value:Float):Float
+	{
+		value *= 256;
+		var rounded = Math.ffloor(value + 0.5);
+		return (rounded - value == 0.5 && rounded % 2 != 0) ? rounded - 1 : rounded;
 	}
 
 	@:noCompletion private function __findExtrema(p1:Float, p2:Float, p3:Float, p4:Float):{min:Float, max:Float}
@@ -1771,6 +1943,44 @@ import js.html.CanvasRenderingContext2D;
 			}
 		}
 		return {min: min, max: max};
+	}
+
+	@:noCompletion private function __inflateLogicalBounds(minX:Float, minY:Float, maxX:Float, maxY:Float, stroked:Bool = true):Void
+	{
+		var padding = stroked ? __logicalStrokePadding : 0;
+		__inflateLogicalPoint((minX < maxX ? minX : maxX) - padding, (minY < maxY ? minY : maxY) - padding);
+		__inflateLogicalPoint((minX < maxX ? maxX : minX) + padding, (minY < maxY ? maxY : minY) + padding);
+	}
+
+	@:noCompletion private function __inflateLogicalPoint(x:Float, y:Float):Void
+	{
+		if (__logicalBounds == null)
+		{
+			__logicalBounds = new Rectangle(x, y, 0, 0);
+			return;
+		}
+
+		if (x < __logicalBounds.x)
+		{
+			__logicalBounds.width += __logicalBounds.x - x;
+			__logicalBounds.x = x;
+		}
+
+		if (y < __logicalBounds.y)
+		{
+			__logicalBounds.height += __logicalBounds.y - y;
+			__logicalBounds.y = y;
+		}
+
+		if (x > __logicalBounds.x + __logicalBounds.width)
+		{
+			__logicalBounds.width = x - __logicalBounds.x;
+		}
+
+		if (y > __logicalBounds.y + __logicalBounds.height)
+		{
+			__logicalBounds.height = y - __logicalBounds.y;
+		}
 	}
 
 	@:noCompletion private function __inflateBounds(x:Float, y:Float):Void
@@ -2116,6 +2326,7 @@ import js.html.CanvasRenderingContext2D;
 		{
 			__softwareDirty = true;
 			__hardwareDirty = true;
+			__hitTestRectsLength = -1;
 		}
 
 		return __dirty = value;

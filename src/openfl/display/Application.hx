@@ -125,18 +125,23 @@ class Application #if lime extends LimeApplication #end
 	@:noCompletion override public function exec():Int
 	{
 		#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
-		// wait for the first update to dispatch invoke event
-		// to ensure that the document class constructor has completed
+		// dispatch the invoke event on the first update that finds a listener:
+		// the document class is constructed when the preloader completes, which
+		// may be after the first update. AIR also keeps the event until a
+		// listener is registered
+		var invokeDispatched = false;
 		onUpdate.add(function(delta:Int):Void
 		{
-			if (NativeApplication.nativeApplication.hasEventListener(InvokeEvent.INVOKE))
+			if (invokeDispatched || !NativeApplication.nativeApplication.hasEventListener(InvokeEvent.INVOKE))
 			{
-				var args = Sys.args();
-				var cwd = new openfl.filesystem.File(Sys.getCwd());
-				var invokeEvent = new openfl.events.InvokeEvent(InvokeEvent.INVOKE, false, false, cwd, args);
-				NativeApplication.nativeApplication.dispatchEvent(invokeEvent);
+				return;
 			}
-		}, true);
+			invokeDispatched = true;
+			var args = Sys.args();
+			var cwd = new openfl.filesystem.File(Sys.getCwd());
+			var invokeEvent = new openfl.events.InvokeEvent(InvokeEvent.INVOKE, false, false, cwd, args);
+			NativeApplication.nativeApplication.dispatchEvent(invokeEvent);
+		});
 		#end
 
 		return super.exec();

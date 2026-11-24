@@ -161,6 +161,8 @@ jobs:
           haxelib install native-desktop --quiet
           haxelib install native-ipc --quiet
           haxelib install wsproto --quiet
+          haxelib install StageWebView --quiet
+          haxelib install crossbyte --quiet
 
       - name: Setup environment
         run: |

@@ -1,6 +1,7 @@
 package;
 
 import openfl.display3D.Context3D;
+import openfl.display3D.Context3DTextureFormat;
 import utest.Assert;
 import utest.Test;
 import Stage3DTest;
@@ -592,6 +593,36 @@ class Context3DTest extends Test
 			var exists = context3D.setVertexBufferAt;
 
 			Assert.notNull(exists);
+		}
+		#end
+	}
+
+	#if !integration
+	@Ignored
+	#end
+	public function test_totalGPUMemory()
+	{
+		// TODO: Isolate so integration is not needed
+
+		#if integration
+		var context3D = Stage3DTest.__getContext3D();
+
+		if (context3D != null)
+		{
+			var before = context3D.totalGPUMemory;
+
+			var texture = context3D.createTexture(64, 32, Context3DTextureFormat.BGRA, false);
+			var vertexBuffer = context3D.createVertexBuffer(10, 4);
+			var indexBuffer = context3D.createIndexBuffer(6);
+
+			// What this context created, not the memory the whole system uses
+			Assert.equals(before + 64 * 32 * 4 + 10 * 4 * 4 + 6 * 2, context3D.totalGPUMemory);
+
+			texture.dispose();
+			vertexBuffer.dispose();
+			indexBuffer.dispose();
+
+			Assert.equals(before, context3D.totalGPUMemory);
 		}
 		#end
 	}

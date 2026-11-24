@@ -5,6 +5,8 @@ import openfl.display.BitmapData;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.Shape;
+import openfl.display.LineScaleMode;
+import openfl.display.JointStyle;
 import openfl.display.Sprite;
 import openfl.geom.Matrix;
 import utest.Assert;
@@ -97,6 +99,87 @@ class GraphicsTest extends Test
 		Assert.notNull(exists);
 		#end
 		#end
+	}
+
+	public function test_beginGradientFillSkewedMatrix()
+	{
+		// as in Flash, a linear gradient follows the first coordinate of the inverse of its matrix: this
+		// skewed matrix, from a SWF, gives a vertical gradient whatever the x
+		var shape = new Shape();
+		shape.graphics.beginGradientFill(GradientType.LINEAR, [0xFFFFFF, 0x000000], [1, 1], [0, 255],
+			new Matrix(0.0016326904296875, -0.00323486328125, 0.431838989257812, 0, -5246.2, 11.9));
+		shape.graphics.drawRect(50, 10, 280, 14);
+		shape.graphics.endFill();
+
+		var bitmapData = new BitmapData(400, 30, true, 0);
+		bitmapData.draw(shape);
+
+		// above y = 11.9, a grey that only depends on y
+		var grey = bitmapData.getPixel(60, 10) & 0xFF;
+		Assert.isTrue(grey > 0x10 && grey < 0xF0, "not a grey: " + StringTools.hex(bitmapData.getPixel32(60, 10)));
+		Assert.equals(StringTools.hex(bitmapData.getPixel32(60, 10)), StringTools.hex(bitmapData.getPixel32(320, 10)));
+		// below it, the first colour
+		Assert.equals(StringTools.hex(0xFFFFFFFF), StringTools.hex(bitmapData.getPixel32(60, 20)));
+		Assert.equals(StringTools.hex(0xFFFFFFFF), StringTools.hex(bitmapData.getPixel32(320, 20)));
+	}
+
+	public function test_beginGradientFillRadialEllipse()
+	{
+		// a radial gradient whose box is wider than tall is an ellipse, as in Flash: 35 pixels under its centre,
+		// past its 25 pixel vertical radius, is its last colour although it is within its horizontal radius
+		var matrix = new Matrix();
+		matrix.createGradientBox(200, 50, 0, 0, 0);
+		var shape = new Shape();
+		shape.graphics.beginGradientFill(GradientType.RADIAL, [0xFF0000, 0x0000FF], [1, 1], [0, 255], matrix);
+		shape.graphics.drawRect(0, 0, 200, 100);
+		shape.graphics.endFill();
+
+		var bitmapData = new BitmapData(200, 100, false, 0xFFFFFF);
+		bitmapData.draw(shape);
+
+		Assert.equals(StringTools.hex(0x0000FF, 6), StringTools.hex(bitmapData.getPixel(100, 60), 6));
+		Assert.isTrue((bitmapData.getPixel(100, 25) >> 16) > 0xF0, "the centre is red: " + StringTools.hex(bitmapData.getPixel(100, 25), 6));
+	}
+
+	public function test_beginGradientFillDuplicateEndRatios()
+	{
+		// as in Flash, a gradient ends with the first of its records at ratio 255: the ones after it
+		// never show, not even where the gradient pads past its end
+		var matrix = new Matrix();
+		matrix.createGradientBox(100, 10, 0, 50, 0);
+		var shape = new Shape();
+		shape.graphics.beginGradientFill(GradientType.LINEAR, [0xFF0000, 0x00FF00, 0x000000], [1, 1, 1], [0, 255, 255], matrix);
+		shape.graphics.drawRect(0, 0, 200, 10);
+		shape.graphics.endFill();
+
+		var bitmapData = new BitmapData(200, 10, false, 0xFFFFFF);
+		bitmapData.draw(shape);
+
+		Assert.equals(StringTools.hex(0xFF0000, 6), StringTools.hex(bitmapData.getPixel(5, 5), 6));
+		Assert.equals(StringTools.hex(0x00FF00, 6), StringTools.hex(bitmapData.getPixel(195, 5), 6));
+	}
+
+	public function test_getBoundsStroke()
+	{
+		// as in Flash: half the thickness rounded to a whole pixel, half to even, on each side and
+		// whatever the joints
+		var cases:Array<Array<Dynamic>> = [
+			[2.5, JointStyle.ROUND, 9, 102], [2.5, JointStyle.MITER, 9, 102], [4, JointStyle.ROUND, 8, 104], [1, JointStyle.ROUND, 9.5, 101],
+			[0.5, JointStyle.ROUND, 10, 100], [2.75, JointStyle.ROUND, 8.5, 103], [0, JointStyle.ROUND, 10, 100]
+		];
+		for (c in cases)
+		{
+			var shape = new Shape();
+			shape.graphics.lineStyle(c[0], 0, 1, false, LineScaleMode.NORMAL, null, c[1]);
+			shape.graphics.moveTo(10, 20);
+			shape.graphics.lineTo(110, 20);
+			shape.graphics.lineTo(110, 80);
+			shape.graphics.lineTo(10, 80);
+			shape.graphics.lineTo(10, 20);
+			var bounds = shape.getBounds(shape);
+			Assert.equals(c[2], bounds.x, "x for a thickness of " + c[0]);
+			Assert.equals(c[3], bounds.width, "width for a thickness of " + c[0]);
+		}
 	}
 
 	public function test_clear()

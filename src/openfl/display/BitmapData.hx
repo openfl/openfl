@@ -923,17 +923,34 @@ class BitmapData implements IBitmapDrawable
 
 		var transform = Matrix.__pool.get();
 
-		transform.copyFrom(source.__renderTransform);
-		transform.invert();
+		// a clipping layer of the parent's timeline belongs to the parent, which is not drawn: in Flash
+		// it is not the source's mask, and is not applied (a mask set on the source is)
+		var clippingLayer:DisplayObject = null;
+
+		if (sourceAsDisplayObject != null)
+		{
+			if (sourceAsDisplayObject.__hasClippingLayer)
+			{
+				clippingLayer = sourceAsDisplayObject.__mask;
+				sourceAsDisplayObject.__mask = null;
+			}
+
+			// As in Flash, draw a display object in its own space: from an identity transform, its
+			// children relative to it, rather than through the inverse of its render transform. That
+			// product does not cancel exactly, and moved anti-aliased edges with the object's position.
+			// The identity keeps what is part of the content: a scrollRect, a text field's text offset.
+			__updateTransformsInOwnSpace(sourceAsDisplayObject);
+			transform.identity();
+		}
+		else
+		{
+			transform.copyFrom(source.__renderTransform);
+			transform.invert();
+		}
 
 		if (matrix != null)
 		{
 			transform.concat(matrix);
-		}
-
-		if (sourceAsDisplayObject != null && sourceAsDisplayObject.__scrollRect != null)
-		{
-			transform.translate(-sourceAsDisplayObject.__scrollRect.x, -sourceAsDisplayObject.__scrollRect.y);
 		}
 
 		var clipMatrix:Matrix = null;
@@ -994,7 +1011,15 @@ class BitmapData implements IBitmapDrawable
 				var bounds = Rectangle.__pool.get();
 				var boundsMatrix = Matrix.__pool.get();
 
-				source.__getBounds(bounds, boundsMatrix);
+				if (source.__drawableType == BITMAP_DATA)
+				{
+					source.__getBounds(bounds, boundsMatrix);
+				}
+				else
+				{
+					// all that is drawn, a stroke past the bounds included
+					(cast source : DisplayObject).__getRenderBounds(bounds, boundsMatrix);
+				}
 
 				var width:Int = Math.ceil(bounds.width);
 				var height:Int = Math.ceil(bounds.height);
@@ -1055,9 +1080,40 @@ class BitmapData implements IBitmapDrawable
 
 		Matrix.__pool.release(transform);
 
+		if (sourceAsDisplayObject != null)
+		{
+			// back to its clipping layer and the transforms of its place in the display list
+			if (clippingLayer != null)
+			{
+				sourceAsDisplayObject.__mask = clippingLayer;
+			}
+			sourceAsDisplayObject.__update(false, true);
+		}
+
 		if (sourceAsDisplayObject != null && !wasVisible)
 		{
 			sourceAsDisplayObject.visible = false;
+		}
+	}
+
+	@:noCompletion private static function __updateTransformsInOwnSpace(displayObject:DisplayObject):Void
+	{
+		var identity = Matrix.__pool.get();
+		identity.identity();
+		displayObject.__updateTransforms(identity);
+		Matrix.__pool.release(identity);
+
+		// its own scale does not apply either, so a source scaled to 0 is drawn
+		var renderParent = displayObject.__renderParent != null ? displayObject.__renderParent : displayObject.parent;
+		if (displayObject.__isMask && renderParent == null) renderParent = displayObject.__maskTarget;
+		displayObject.__renderable = (displayObject.__visible && !displayObject.__isMask && (renderParent == null || !renderParent.__isMask));
+
+		if (displayObject.__children != null)
+		{
+			for (child in displayObject.__children)
+			{
+				child.__update(false, true);
+			}
 		}
 	}
 
