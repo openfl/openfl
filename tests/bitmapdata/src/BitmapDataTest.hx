@@ -345,6 +345,37 @@ class BitmapDataTest extends Test
 		Assert.isTrue(hex(bitmapData.getPixel32(50, 50)) == hex(0xFFFF0000) || hex(bitmapData.getPixel32(50, 50)) == hex(0xFEFF0000));
 	}
 
+	#if flash
+	@Ignored
+	#end
+	public function test_drawFilteredTextFieldWithTextOffset()
+	{
+		#if !flash
+		// SWF text keeps the offset of its text bounds in __offsetX and __offsetY: a text field drawn through
+		// a cache bitmap, as with a filter, is drawn at the same place as without one
+		var container = new Sprite();
+		var textField = new openfl.text.TextField();
+		textField.background = true;
+		textField.backgroundColor = 0xFF0000;
+		textField.width = 10;
+		textField.height = 10;
+		@:privateAccess textField.__offsetX = 20;
+		@:privateAccess textField.__offsetY = 5;
+		container.addChild(textField);
+
+		var plain = new BitmapData(40, 20, true, 0);
+		plain.draw(container);
+		Assert.equals(hex(0xFFFF0000), hex(plain.getPixel32(25, 10)));
+		Assert.equals(hex(0), hex(plain.getPixel32(5, 10)));
+
+		textField.filters = [new GlowFilter(0, 0, 0, 0)];
+		var filtered = new BitmapData(40, 20, true, 0);
+		filtered.draw(container);
+		Assert.equals(hex(0xFFFF0000), hex(filtered.getPixel32(25, 10)));
+		Assert.equals(hex(0), hex(filtered.getPixel32(5, 10)));
+		#end
+	}
+
 	public function test_drawInOwnSpace()
 	{
 		// the pixels of a drawn display object do not depend on its place in the display list
