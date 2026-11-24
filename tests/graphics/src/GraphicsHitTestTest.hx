@@ -133,7 +133,12 @@ class GraphicsHitTestTest extends Test
 	private function hitTest(sprite:Sprite, x:Float, y:Float):Bool
 	{
 		#if flash
-		return sprite.hitTestPoint(x, y, true);
+		// Flash only tests the shape of a display object that is on the display list
+		var stage = openfl.Lib.current.stage;
+		stage.addChild(sprite);
+		var hit = sprite.hitTestPoint(x, y, true);
+		stage.removeChild(sprite);
+		return hit;
 		#else
 		return sprite.__hitTest(x, y, true, null, false, sprite);
 		#end
