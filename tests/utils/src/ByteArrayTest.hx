@@ -32,6 +32,10 @@ class ByteArrayTest extends Test
 
 		Assert.equals(8, byteArray.length);
 		Assert.equals(0xFF, byteArray[1]);
+
+		// The documentation says the bytes past the old length are zeros, but the AIR and Flash
+		// runtimes give back the bytes that were there before the length was reduced
+		#if !flash
 		for (i in 2...8)
 		{
 			Assert.equals(0, byteArray[i]);
@@ -44,6 +48,7 @@ class ByteArrayTest extends Test
 		{
 			Assert.equals(0, byteArray[i]);
 		}
+		#end
 	}
 
 	// Is this right?
