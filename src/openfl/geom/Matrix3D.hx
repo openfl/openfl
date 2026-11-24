@@ -1665,9 +1665,11 @@ class Matrix3D
 	**/
 	public function prependTranslation(x:Float, y:Float, z:Float):Void
 	{
-		var m = new Matrix3D();
-		m.position = new Vector3D(x, y, z);
-		this.prepend(m);
+		// prepending a translation only changes the last column
+		rawData[12] += rawData[0] * x + rawData[4] * y + rawData[8] * z;
+		rawData[13] += rawData[1] * x + rawData[5] * y + rawData[9] * z;
+		rawData[14] += rawData[2] * x + rawData[6] * y + rawData[10] * z;
+		rawData[15] += rawData[3] * x + rawData[7] * y + rawData[11] * z;
 	}
 
 	/**

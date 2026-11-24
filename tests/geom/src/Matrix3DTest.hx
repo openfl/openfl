@@ -722,6 +722,16 @@ class Matrix3DTest extends Test
 
 		// Test the translation matches to the translation values in Flash
 		assertMatrix3DnearEquals(expectedTranslatedMatrix3D, matrix3D);
+
+		// the same as prepending a matrix that only translates, for a matrix with perspective too
+		var perspective = new Matrix3D(Vector.ofArray([2.0, 0.5, -1, 0.25, -3, 4, 0.75, -0.5, 1.5, -2, 5, 1, 10, -20, 30, 2]));
+		var expected = perspective.clone();
+		var translationOnly = new Matrix3D();
+		translationOnly.position = new Vector3D(123, -456, 789);
+		expected.prepend(translationOnly);
+		perspective.prependTranslation(123, -456, 789);
+
+		assertMatrix3DnearEquals(expected, perspective);
 	}
 
 	public function test_recompose()
