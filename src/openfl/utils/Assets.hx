@@ -295,7 +295,7 @@ class Assets
 	**/
 	public static function getMusic(id:String, useCache:Bool = true):Sound
 	{
-		#if (lime >= "8.4.0" && tools && !display)
+		#if ((lime >= "8.4.0") && tools && !display)
 		if (useCache && cache.enabled && cache.hasSound(id))
 		{
 			var sound = cache.getSound(id);
