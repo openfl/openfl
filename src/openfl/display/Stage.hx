@@ -592,7 +592,20 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	public var fullScreenWidth(get, never):UInt;
 
-	// @:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
+	/**
+		Set to `true` to enable mouse locking. Enabling mouse locking turns off
+		the cursor and allows the mouse to be moved without limits. The mouse
+		position reported by `mouseX`, `mouseY` and the `stageX` and `stageY`
+		properties of mouse events stays the same while the mouse is locked.
+		Use the `movementX` and `movementY` properties of
+		`MouseEvent.MOUSE_MOVE` events to read the movement of the mouse.
+
+		In Flash Player, mouse locking is only allowed in
+		`StageDisplayState.FULL_SCREEN_INTERACTIVE` mode. OpenFL does not have
+		this restriction on native platforms. On HTML5, mouse locking is not
+		currently supported, and this property stays `false`.
+	**/
+	public var mouseLock(get, set):Bool;
 
 	/**
 		The current orientation of the stage. This property is set to one of
@@ -1028,6 +1041,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private var __mouseDownLeft:InteractiveObject;
 	@:noCompletion private var __mouseDownMiddle:InteractiveObject;
 	@:noCompletion private var __mouseDownRight:InteractiveObject;
+	@:noCompletion private var __mouseMovementX:Float;
+	@:noCompletion private var __mouseMovementY:Float;
 	@:noCompletion private var __mouseOutStack:Array<DisplayObject>;
 	@:noCompletion private var __mouseOverTarget:InteractiveObject;
 	@:noCompletion private var __mouseX:Float;
@@ -1128,6 +1143,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__currentTabOrderIndex = 0;
 		__deltaTime = 0;
 		__displayState = NORMAL;
+		__mouseMovementX = 0;
+		__mouseMovementY = 0;
 		__mouseX = 0;
 		__mouseY = 0;
 		__untransformedMouseX = 0;
@@ -1667,38 +1684,87 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __drag(mouse:Point):Void
 	{
-		var parent = __dragObject.parent;
+		__dragTo(__dragObject, mouse, __dragOffsetX, __dragOffsetY, __dragBounds);
+	}
+
+	@:noCompletion private function __dragTo(object:Sprite, point:Point, offsetX:Float, offsetY:Float, bounds:Rectangle):Void
+	{
+		var parent = object.parent;
 		if (parent != null)
 		{
-			parent.__getWorldTransform().__transformInversePoint(mouse);
+			parent.__getWorldTransform().__transformInversePoint(point);
 		}
 
-		var x = mouse.x + __dragOffsetX;
-		var y = mouse.y + __dragOffsetY;
+		var x = point.x + offsetX;
+		var y = point.y + offsetY;
 
-		if (__dragBounds != null)
+		if (bounds != null)
 		{
-			if (x < __dragBounds.x)
+			if (x < bounds.x)
 			{
-				x = __dragBounds.x;
+				x = bounds.x;
 			}
-			else if (x > __dragBounds.right)
+			else if (x > bounds.right)
 			{
-				x = __dragBounds.right;
+				x = bounds.right;
 			}
 
-			if (y < __dragBounds.y)
+			if (y < bounds.y)
 			{
-				y = __dragBounds.y;
+				y = bounds.y;
 			}
-			else if (y > __dragBounds.bottom)
+			else if (y > bounds.bottom)
 			{
-				y = __dragBounds.bottom;
+				y = bounds.bottom;
 			}
 		}
 
-		__dragObject.x = x;
-		__dragObject.y = y;
+		object.x = x;
+		object.y = y;
+	}
+
+	@:noCompletion private function __getDropTarget(object:Sprite, stageX:Float, stageY:Float, overTarget:InteractiveObject):DisplayObject
+	{
+		var dropTarget:DisplayObject = null;
+
+		if (object.contains(overTarget))
+		{
+			var cacheMouseEnabled = object.mouseEnabled;
+			var cacheMouseChildren = object.mouseChildren;
+
+			object.mouseEnabled = false;
+			object.mouseChildren = false;
+
+			var stack:Array<DisplayObject> = [];
+
+			if (__hitTest(stageX, stageY, true, stack, true, this))
+			{
+				dropTarget = stack[stack.length - 1];
+			}
+
+			object.mouseEnabled = cacheMouseEnabled;
+			object.mouseChildren = cacheMouseChildren;
+		}
+		else if (overTarget != this)
+		{
+			dropTarget = overTarget;
+		}
+
+		return dropTarget;
+	}
+
+	@:noCompletion private function __normalizeDragBounds(bounds:Rectangle):Rectangle
+	{
+		if (bounds == null) return null;
+
+		var result = new Rectangle();
+		var right = bounds.right;
+		var bottom = bounds.bottom;
+		result.x = right < bounds.x ? right : bounds.x;
+		result.y = bottom < bounds.y ? bottom : bounds.y;
+		result.width = Math.abs(bounds.width);
+		result.height = Math.abs(bounds.height);
+		return result;
 	}
 
 	@:noCompletion private override function __getInteractive(stack:Array<DisplayObject>):Bool
@@ -2288,18 +2354,37 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	{
 		if (this.window == null || this.window != window) return;
 
+		// Lime dispatches onMouseMoveRelative right after onMouseMove, so the
+		// move event stays pending until its movement has been added. With
+		// openfl_always_dispatch_mouse_events, __onLimeMouseMoveRelative
+		// dispatches it immediately. Some moves (such as touch emulation on
+		// HTML5) have no relative event, so flush those before the next one.
 		#if openfl_always_dispatch_mouse_events
-		__onMouse(MouseEvent.MOUSE_MOVE, Std.int(x * window.scale), Std.int(y * window.scale), 0);
-		#else
+		if (__pendingMouseEvent)
+		{
+			__dispatchPendingMouseEvent();
+		}
+		#end
 		__pendingMouseEvent = true;
 		__pendingMouseX = Std.int(x * window.scale);
 		__pendingMouseY = Std.int(y * window.scale);
-		#end
 	}
 
 	@:noCompletion private function __onLimeMouseMoveRelative(window:Window, x:Float, y:Float):Void
 	{
-		// if (this.window == null || this.window != window) return;
+		if (this.window == null || this.window != window) return;
+
+		var scaledX = x * window.scale;
+		var scaledY = y * window.scale;
+		__mouseMovementX += __displayMatrix.__transformInverseX(scaledX, scaledY) - __displayMatrix.__transformInverseX(0, 0);
+		__mouseMovementY += __displayMatrix.__transformInverseY(scaledX, scaledY) - __displayMatrix.__transformInverseY(0, 0);
+
+		#if openfl_always_dispatch_mouse_events
+		if (__pendingMouseEvent)
+		{
+			__dispatchPendingMouseEvent();
+		}
+		#end
 	}
 
 	@:noCompletion private function __onLimeMouseUp(window:Window, x:Float, y:Float, button:Int):Void
@@ -2604,7 +2689,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__primaryTouch = null;
 		}
 
-		__onTouch(TouchEvent.TOUCH_END, touch, isPrimaryTouchPoint);
+		__onTouch(TouchEvent.TOUCH_END, touch, isPrimaryTouchPoint, true);
 	}
 
 	@:noCompletion private function __onLimeTouchMove(touch:Touch):Void
@@ -3047,6 +3132,14 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			event = MouseEvent.__create(type, button, clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
 			#end
 
+			if (type == MouseEvent.MOUSE_MOVE)
+			{
+				event.movementX = __mouseMovementX;
+				event.movementY = __mouseMovementY;
+				__mouseMovementX = 0;
+				__mouseMovementY = 0;
+			}
+
 			__dispatchStack(event, stack);
 
 			if (event.__updateAfterEventFlag)
@@ -3340,33 +3433,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		if (__dragObject != null)
 		{
 			__drag(targetPoint);
-
-			var dropTarget:DisplayObject = null;
-
-			if (__dragObject.contains(__mouseOverTarget))
-			{
-				var cacheMouseEnabled = __dragObject.mouseEnabled;
-				var cacheMouseChildren = __dragObject.mouseChildren;
-
-				__dragObject.mouseEnabled = false;
-				__dragObject.mouseChildren = false;
-
-				var stack:Array<DisplayObject> = [];
-
-				if (__hitTest(__mouseX, __mouseY, true, stack, true, this))
-				{
-					dropTarget = stack[stack.length - 1];
-				}
-
-				__dragObject.mouseEnabled = cacheMouseEnabled;
-				__dragObject.mouseChildren = cacheMouseChildren;
-			}
-			else if (__mouseOverTarget != this)
-			{
-				dropTarget = __mouseOverTarget;
-			}
-
-			__dragObject.dropTarget = dropTarget;
+			__dragObject.dropTarget = __getDropTarget(__dragObject, __mouseX, __mouseY, __mouseOverTarget);
 		}
 
 		Point.__pool.release(targetPoint);
@@ -3413,11 +3480,16 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#end
 
 	#if lime
-	@:noCompletion private function __onTouch(type:String, touch:Touch, isPrimaryTouchPoint:Bool):Void
+	@:noCompletion private function __getTouchStagePoint(touch:Touch, point:Point):Void
+	{
+		point.setTo(Math.round(touch.x * window.width * window.scale), Math.round(touch.y * window.height * window.scale));
+		__displayMatrix.__transformInversePoint(point);
+	}
+
+	@:noCompletion private function __onTouch(type:String, touch:Touch, isPrimaryTouchPoint:Bool, isTouchPointCanceled:Bool = false):Void
 	{
 		var targetPoint = Point.__pool.get();
-		targetPoint.setTo(Math.round(touch.x * window.width * window.scale), Math.round(touch.y * window.height * window.scale));
-		__displayMatrix.__transformInversePoint(targetPoint);
+		__getTouchStagePoint(touch, targetPoint);
 
 		var touchX = targetPoint.x;
 		var touchY = targetPoint.y;
@@ -3461,7 +3533,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				touchData.touchDownTarget = target;
 
 			case TouchEvent.TOUCH_END:
-				if (touchData.touchDownTarget == target)
+				if (touchData.touchDownTarget == target && !isTouchPointCanceled)
 				{
 					touchType = TouchEvent.TOUCH_TAP;
 				}
@@ -3477,6 +3549,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		touchEvent.touchPointID = touchId;
 		touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 		touchEvent.pressure = touch.pressure;
+		touchEvent.isTouchPointCanceled = isTouchPointCanceled;
 
 		__dispatchStack(touchEvent, stack);
 
@@ -3491,6 +3564,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			touchEvent.touchPointID = touchId;
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.pressure = touch.pressure;
+			touchEvent.isTouchPointCanceled = isTouchPointCanceled;
 
 			__dispatchStack(touchEvent, stack);
 
@@ -3509,6 +3583,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			touchEvent.touchPointID = touchId;
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.pressure = touch.pressure;
+			touchEvent.isTouchPointCanceled = isTouchPointCanceled;
 
 			__dispatchTarget(touchOverTarget, touchEvent);
 
@@ -3534,6 +3609,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 				touchEvent.bubbles = false;
 				touchEvent.pressure = touch.pressure;
+				touchEvent.isTouchPointCanceled = isTouchPointCanceled;
 
 				__dispatchTarget(item, touchEvent);
 
@@ -3560,6 +3636,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 					touchEvent.bubbles = false;
 					touchEvent.pressure = touch.pressure;
+					touchEvent.isTouchPointCanceled = isTouchPointCanceled;
 
 					__dispatchTarget(item, touchEvent);
 
@@ -3585,6 +3662,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 				touchEvent.bubbles = true;
 				touchEvent.pressure = touch.pressure;
+				touchEvent.isTouchPointCanceled = isTouchPointCanceled;
 
 				__dispatchTarget(target, touchEvent);
 
@@ -3595,6 +3673,14 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 
 			touchData.touchOverTarget = target;
+		}
+
+		if (touchData.dragObject != null)
+		{
+			var dragObject = touchData.dragObject;
+			localPoint.setTo(touchX, touchY);
+			__dragTo(dragObject, localPoint, touchData.dragOffsetX, touchData.dragOffsetY, touchData.dragBounds);
+			dragObject.dropTarget = __getDropTarget(dragObject, touchX, touchY, target);
 		}
 
 		Point.__pool.release(targetPoint);
@@ -3811,22 +3897,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __startDrag(sprite:Sprite, lockCenter:Bool, bounds:Rectangle):Void
 	{
-		if (bounds == null)
-		{
-			__dragBounds = null;
-		}
-		else
-		{
-			__dragBounds = new Rectangle();
-
-			var right = bounds.right;
-			var bottom = bounds.bottom;
-			__dragBounds.x = right < bounds.x ? right : bounds.x;
-			__dragBounds.y = bottom < bounds.y ? bottom : bounds.y;
-			__dragBounds.width = Math.abs(bounds.width);
-			__dragBounds.height = Math.abs(bounds.height);
-		}
-
+		__dragBounds = __normalizeDragBounds(bounds);
 		__dragObject = sprite;
 
 		if (__dragObject != null)
@@ -3858,6 +3929,69 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	{
 		__dragBounds = null;
 		__dragObject = null;
+	}
+
+	@:noCompletion private function __startTouchDrag(sprite:Sprite, touchPointID:Int, lockCenter:Bool, bounds:Rectangle):Void
+	{
+		#if lime
+		var touchData = __touchData.get(touchPointID);
+		if (touchData == null || touchData.touch == null) return;
+
+		// A sprite follows one touch point at a time
+		__stopAllTouchDrags(sprite);
+
+		touchData.dragObject = sprite;
+		touchData.dragBounds = __normalizeDragBounds(bounds);
+
+		if (lockCenter)
+		{
+			touchData.dragOffsetX = 0;
+			touchData.dragOffsetY = 0;
+		}
+		else
+		{
+			var point = Point.__pool.get();
+			__getTouchStagePoint(touchData.touch, point);
+
+			var parent = sprite.parent;
+			if (parent != null)
+			{
+				parent.__getWorldTransform().__transformInversePoint(point);
+			}
+
+			touchData.dragOffsetX = sprite.x - point.x;
+			touchData.dragOffsetY = sprite.y - point.y;
+			Point.__pool.release(point);
+		}
+		#end
+	}
+
+	@:noCompletion private function __stopAllTouchDrags(sprite:Sprite):Void
+	{
+		for (touchData in __touchData)
+		{
+			if (touchData.dragObject == sprite)
+			{
+				__clearTouchDrag(touchData);
+			}
+		}
+	}
+
+	@:noCompletion private function __stopTouchDrag(sprite:Sprite, touchPointID:Int):Void
+	{
+		var touchData = __touchData.get(touchPointID);
+		if (touchData != null && touchData.dragObject == sprite)
+		{
+			__clearTouchDrag(touchData);
+		}
+	}
+
+	@:noCompletion private function __clearTouchDrag(touchData:TouchData):Void
+	{
+		touchData.dragObject = null;
+		touchData.dragBounds = null;
+		touchData.dragOffsetX = 0;
+		touchData.dragOffsetY = 0;
 	}
 
 	@:noCompletion private function __unregisterLimeModule(application:Application):Void
@@ -4198,6 +4332,28 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 		#end
 		return StageOrientation.UNKNOWN;
+	}
+
+	@:noCompletion private function get_mouseLock():Bool
+	{
+		#if lime
+		if (window != null)
+		{
+			return window.mouseLock;
+		}
+		#end
+		return false;
+	}
+
+	@:noCompletion private function set_mouseLock(value:Bool):Bool
+	{
+		#if lime
+		if (window != null)
+		{
+			window.mouseLock = value;
+		}
+		#end
+		return get_mouseLock();
 	}
 
 	@:noCompletion private function get_quality():StageQuality

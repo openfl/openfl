@@ -227,19 +227,16 @@ class Sprite extends DisplayObjectContainer
 		}
 	}
 
-	#if false
 	/**
 		Lets the user drag the specified sprite on a touch-enabled device. The
 		sprite remains draggable until explicitly stopped through a call to
-		the `Sprite.stopTouchDrag()` method, or until another sprite is made
-		draggable. Only one sprite is draggable at a time.
-		Three-dimensional display objects follow the pointer and
-		`Sprite.startTouchDrag()` moves the object within the
-		three-dimensional plane defined by the display object. Or, if the
-		display object is a two-dimensional object and the child of a
-		three-dimensional object, the two-dimensional object moves within the
-		three dimensional plane defined by the three-dimensional parent
-		object.
+		the `Sprite.stopTouchDrag()` method, or until the touch point ends.
+
+		In OpenFL, each touch point can drag one sprite, so several sprites
+		can be dragged at the same time with different touch points. Call this
+		method while the touch point is active, for example from a
+		`TouchEvent.TOUCH_BEGIN` listener. Calls for a touch point that is not
+		active are ignored.
 
 		@param touchPointID An integer to assign to the touch point.
 		@param lockCenter   Specifies whether the draggable sprite is locked
@@ -250,8 +247,13 @@ class Sprite extends DisplayObjectContainer
 							parent that specify a constraint rectangle for the
 							Sprite.
 	**/
-	// @:noCompletion @:dox(hide) public function startTouchDrag (touchPointID:Int, lockCenter:Bool = false, bounds:Rectangle = null):Void;
-	#end
+	public function startTouchDrag(touchPointID:Int, lockCenter:Bool = false, bounds:Rectangle = null):Void
+	{
+		if (stage != null)
+		{
+			stage.__startTouchDrag(this, touchPointID, lockCenter, bounds);
+		}
+	}
 
 	/**
 		Ends the `startDrag()` method. A sprite that was made draggable
@@ -270,26 +272,35 @@ class Sprite extends DisplayObjectContainer
 
 	@:noCompletion private override function __setStageReference(stage:Stage):Void
 	{
-		if (this.stage != stage && this.stage != null && this.stage.__dragObject == this)
+		if (this.stage != stage && this.stage != null)
 		{
-			stopDrag();
+			if (this.stage.__dragObject == this)
+			{
+				stopDrag();
+			}
+
+			this.stage.__stopAllTouchDrags(this);
 		}
 		super.__setStageReference(stage);
 	}
 
-	#if false
 	/**
 		Ends the `startTouchDrag()` method, for use with touch-enabled
 		devices. A sprite that was made draggable with the `startTouchDrag()`
 		method remains draggable until a `stopTouchDrag()` method is added, or
-		until another sprite becomes draggable. Only one sprite is draggable
-		at a time.
+		until the touch point ends.
 
 		@param touchPointID The integer assigned to the touch point in the
 							`startTouchDrag` method.
 	**/
-	// @:noCompletion @:dox(hide) public function stopTouchDrag (touchPointID:Int):Void;
-	#end
+	public function stopTouchDrag(touchPointID:Int):Void
+	{
+		if (stage != null)
+		{
+			stage.__stopTouchDrag(this, touchPointID);
+		}
+	}
+
 	@:noCompletion private function __bind(library:AssetLibrary, className:String):Void
 	{
 		if (__worldTransform == null) // super() has not been called

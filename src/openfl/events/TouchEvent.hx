@@ -4,6 +4,7 @@ package openfl.events;
 // import openfl.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
+import openfl.Lib;
 import openfl.utils.ByteArray;
 
 /**
@@ -324,6 +325,15 @@ class TouchEvent extends Event
 	**/
 	public var isPrimaryTouchPoint:Bool;
 
+	/**
+		Reports that this touch input sequence was canceled by the operating
+		system.
+
+		In OpenFL, a canceled touch dispatches `TouchEvent.TOUCH_END` with this
+		property set to `true`, and does not dispatch `TouchEvent.TOUCH_TAP`.
+	**/
+	public var isTouchPointCanceled:Bool;
+
 	#if false
 	/**
 		If `true`, the `relatedObject` property is set to `null` for reasons
@@ -410,6 +420,14 @@ class TouchEvent extends Event
 	**/
 	public var touchPointID:Int;
 
+	/**
+		Reports the time of the event in relative milliseconds.
+
+		In OpenFL, touch events dispatched by the stage use the same clock as
+		`openfl.Lib.getTimer()`.
+	**/
+	public var timestamp:Float;
+
 	@:noCompletion private var __updateAfterEventFlag:Bool;
 
 	// @:noCompletion private static var __pool:ObjectPool<TouchEvent> = new ObjectPool<TouchEvent>(function() return new TouchEvent(null),
@@ -471,6 +489,8 @@ class TouchEvent extends Event
 		this.shiftKey = shiftKey;
 		this.commandKey = commandKey;
 		this.controlKey = controlKey;
+		this.timestamp = timestamp;
+		this.isTouchPointCanceled = isTouchPointCanceled;
 
 		stageX = Math.NaN;
 		stageY = Math.NaN;
@@ -481,7 +501,7 @@ class TouchEvent extends Event
 	public override function clone():TouchEvent
 	{
 		var event = new TouchEvent(type, bubbles, cancelable, touchPointID, isPrimaryTouchPoint, localX, localY, sizeX, sizeY, pressure, relatedObject,
-			ctrlKey, altKey, shiftKey, commandKey, controlKey);
+			ctrlKey, altKey, shiftKey, commandKey, controlKey, timestamp, null, null, isTouchPointCanceled);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
@@ -523,6 +543,7 @@ class TouchEvent extends Event
 			local:Point, target:InteractiveObject):TouchEvent
 	{
 		var evt = new TouchEvent(type, true, false, 0, true, local.x, local.y, 1, 1, 1);
+		evt.timestamp = Lib.getTimer();
 		evt.stageX = stageX;
 		evt.stageY = stageY;
 		evt.target = target;
@@ -547,6 +568,8 @@ class TouchEvent extends Event
 		shiftKey = false;
 		commandKey = false;
 		controlKey = false;
+		timestamp = 0;
+		isTouchPointCanceled = false;
 
 		stageX = Math.NaN;
 		stageY = Math.NaN;
