@@ -31,17 +31,17 @@ import hl.Gc;
 #end
 @:final class System
 {
-	#if false
 	/**
-		The amount of memory (in bytes) that is allocated to
-		Adobe<sup>®</sup> Flash<sup>®</sup> Player or Adobe<sup>®</sup>
-		AIR<sup>®</sup> and that is not in use. This unused portion of
-		allocated memory (`System.totalMemory`) fluctuates as garbage
-		collection takes place. Use this property to monitor garbage
-		collection.
+		The amount of memory (in bytes) that is allocated to the application
+		and that is not in use. This unused portion of allocated memory
+		(`System.totalMemory`) fluctuates as garbage collection takes place.
+		Use this property to monitor garbage collection.
+
+		In OpenFL, this is the memory reserved by the Haxe garbage collector
+		that is not in use. On HTML5, this uses `performance.memory` where the
+		browser supports it, and is `0` otherwise. On HashLink, this is `0`.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var freeMemory (default, null):Float;
-	#end
+	public static var freeMemory(get, never):Float;
 	#if false
 	/**
 		The currently installed system IME. To register for imeComposition
@@ -49,18 +49,18 @@ import hl.Gc;
 	**/
 	// @:noCompletion @:dox(hide) public static var ime (default, null):openfl.system.IME;
 	#end
-	#if false
 	/**
-		The entire amount of memory (in bytes) used by an application. This is
-		the amount of resident private memory for the entire process.
-		AIR developers should use this property to determine the entire memory
-		consumption of an application.
+		The entire amount of memory (in bytes) used by an application. In
+		Adobe AIR, this is the amount of resident private memory for the
+		entire process.
 
-		For Flash Player, this includes the memory used by the container
-		application, such as the web browser.
+		In OpenFL, this is the total memory reserved by the Haxe garbage
+		collector (or the JavaScript heap on HTML5, where the browser supports
+		`performance.memory`). It does not include memory allocated outside the
+		garbage collector, such as native libraries and GPU resources, so it is
+		lower than the memory used by the whole process.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var privateMemory (default, null):Float;
-	#end
+	public static var privateMemory(get, never):Float;
 	// @:noCompletion @:dox(hide) @:require(flash11) public static var processCPUUsage (default, null):Float;
 
 	/**
@@ -151,6 +151,18 @@ import hl.Gc;
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(System, {
+			"freeMemory": {
+				get: function()
+				{
+					return System.get_freeMemory();
+				}
+			},
+			"privateMemory": {
+				get: function()
+				{
+					return System.get_privateMemory();
+				}
+			},
 			"totalMemory": {
 				get: function()
 				{
@@ -342,6 +354,37 @@ import hl.Gc;
 	}
 
 	// Getters & Setters
+	@:noCompletion private static function get_freeMemory():Float
+	{
+		#if neko
+		return Gc.stats().free;
+		#elseif cpp
+		var free = Gc.memInfo64(Gc.MEM_INFO_RESERVED) - Gc.memInfo64(Gc.MEM_INFO_USAGE);
+		return free > 0 ? free : 0;
+		#elseif (js && html5)
+		return
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("(window.performance && window.performance.memory) ? window.performance.memory.totalJSHeapSize - window.performance.memory.usedJSHeapSize : 0");
+		#else
+		return 0;
+		#end
+	}
+
+	@:noCompletion private static function get_privateMemory():Float
+	{
+		#if neko
+		return Gc.stats().heap;
+		#elseif cpp
+		return Gc.memInfo64(Gc.MEM_INFO_RESERVED);
+		#elseif (js && html5)
+		return
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("(window.performance && window.performance.memory) ? window.performance.memory.totalJSHeapSize : 0");
+		#elseif hl
+		return Gc.stats().currentMemory;
+		#else
+		return 0;
+		#end
+	}
+
 	@:noCompletion private static function get_totalMemory():Int
 	{
 		#if neko
