@@ -76,9 +76,18 @@ import openfl.utils._internal.NullUtils;
 	**/
 	public var STANDARD_EXTENDED = 5;
 
-	#if air
-	// public var ENHANCED = 6;
-	#end
+	/**
+		Use enhanced profile to target GPUs which support AGAL4. This profile
+		extends the standard extended profile.
+
+		In Adobe AIR, this profile is enabled on mobile platforms from AIR 26.0.
+
+		OpenFL does not support AGAL4. Requesting this profile creates the
+		same context as other profiles, and `Context3D.profile` reports the
+		profile in use.
+	**/
+	public var ENHANCED = 6;
+
 	@:from private static function fromString(value:String):Context3DProfile
 	{
 		return switch (value)
@@ -88,11 +97,8 @@ import openfl.utils._internal.NullUtils;
 			case "baselineExtended": BASELINE_EXTENDED;
 			case "standard": STANDARD;
 			case "standardConstrained": STANDARD_CONSTRAINED;
-			case "standardExtended":
-				STANDARD_EXTENDED;
-				#if air
-				// case "enhanced": ENHANCED;
-				#end
+			case "standardExtended": STANDARD_EXTENDED;
+			case "enhanced": ENHANCED;
 			default: null;
 		}
 	}
@@ -106,11 +112,8 @@ import openfl.utils._internal.NullUtils;
 			case Context3DProfile.BASELINE_EXTENDED: "baselineExtended";
 			case Context3DProfile.STANDARD: "standard";
 			case Context3DProfile.STANDARD_CONSTRAINED: "standardConstrained";
-			case Context3DProfile.STANDARD_EXTENDED:
-				"standardExtended";
-				#if air
-				// case Context3DProfile.ENHANCED: "enhanced";
-				#end
+			case Context3DProfile.STANDARD_EXTENDED: "standardExtended";
+			case Context3DProfile.ENHANCED: "enhanced";
 			default: null;
 		}
 	}
@@ -138,9 +141,7 @@ import openfl.utils._internal.NullUtils;
 	public var STANDARD = "standard";
 	public var STANDARD_CONSTRAINED = "standardConstrained";
 	public var STANDARD_EXTENDED = "standardExtended";
-	#if air
-	// public var ENHANCED = "enhanced";
-	#end
+	public var ENHANCED = "enhanced";
 }
 #end
 #else

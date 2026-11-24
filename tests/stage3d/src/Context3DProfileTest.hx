@@ -11,7 +11,7 @@ class Context3DProfileTest extends Test
 		switch (Context3DProfile.BASELINE)
 		{
 			case Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED, Context3DProfile.BASELINE_EXTENDED, Context3DProfile.STANDARD,
-				Context3DProfile.STANDARD_CONSTRAINED, Context3DProfile.STANDARD_EXTENDED #if air, Context3DProfile.ENHANCED #end:
+				Context3DProfile.STANDARD_CONSTRAINED, Context3DProfile.STANDARD_EXTENDED #if (!flash || air), Context3DProfile.ENHANCED #end:
 				Assert.isTrue(true);
 		}
 	}
