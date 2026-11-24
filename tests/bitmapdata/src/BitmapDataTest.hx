@@ -410,7 +410,10 @@ class BitmapDataTest extends Test
 		layer.graphics.endFill();
 		container.addChild(layer);
 		container.addChild(masked);
+		#if !flash
+		// clippingLayer is set by the swf library, and Flash has no such property
 		@:privateAccess masked.clippingLayer = layer;
+		#end
 
 		var bitmapData = new BitmapData(100, 100, true, 0);
 		bitmapData.draw(masked);
@@ -422,7 +425,10 @@ class BitmapDataTest extends Test
 		mask.graphics.drawRect(0, 0, 10, 10);
 		mask.graphics.endFill();
 		container.addChild(mask);
+		#if !flash
+		// clippingLayer is set by the swf library, and Flash has no such property
 		@:privateAccess masked.clippingLayer = null;
+		#end
 		masked.mask = mask;
 		var bitmapData = new BitmapData(100, 100, true, 0);
 		bitmapData.draw(masked);
