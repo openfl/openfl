@@ -419,21 +419,22 @@ class BitmapDataTest extends Test
 		bitmapData.draw(masked);
 		Assert.equals(hex(0xFF00FF00), hex(bitmapData.getPixel32(30, 30)));
 
+		// AIR draws nothing for a source masked by a sprite that is not on the stage, as here, and Flash
+		// has no clippingLayer, so this part runs on the other targets
+		#if !flash
 		// a mask set on the source itself still is
 		var mask = new Sprite();
 		mask.graphics.beginFill(0xFFFFFFFF);
 		mask.graphics.drawRect(0, 0, 10, 10);
 		mask.graphics.endFill();
 		container.addChild(mask);
-		#if !flash
-		// clippingLayer is set by the swf library, and Flash has no such property
 		@:privateAccess masked.clippingLayer = null;
-		#end
 		masked.mask = mask;
 		var bitmapData = new BitmapData(100, 100, true, 0);
 		bitmapData.draw(masked);
 		Assert.equals(hex(0xFF00FF00), hex(bitmapData.getPixel32(5, 5)));
 		Assert.equals(hex(0), hex(bitmapData.getPixel32(30, 30)));
+		#end
 
 		// nor does its own scale: a source scaled to 0, such as an empty progress bar, is drawn
 		var bar = new Sprite();
