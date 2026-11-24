@@ -2689,12 +2689,12 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__primaryTouch = null;
 		}
 
-		__onTouch(TouchEvent.TOUCH_END, touch, isPrimaryTouchPoint, true);
+		__onTouch(TouchEvent.TOUCH_END, touch, isPrimaryTouchPoint, true, #if (lime >= "8.4.0") Touch.onCancel.timestamp #else Lib.getTimer() #end);
 	}
 
 	@:noCompletion private function __onLimeTouchMove(touch:Touch):Void
 	{
-		__onTouch(TouchEvent.TOUCH_MOVE, touch, __primaryTouch == touch);
+		__onTouch(TouchEvent.TOUCH_MOVE, touch, __primaryTouch == touch, false, #if (lime >= "8.4.0") Touch.onMove.timestamp #else Lib.getTimer() #end);
 	}
 
 	@:noCompletion private function __onLimeTouchEnd(touch:Touch):Void
@@ -2705,7 +2705,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__primaryTouch = null;
 		}
 
-		__onTouch(TouchEvent.TOUCH_END, touch, isPrimaryTouchPoint);
+		__onTouch(TouchEvent.TOUCH_END, touch, isPrimaryTouchPoint, false, #if (lime >= "8.4.0") Touch.onEnd.timestamp #else Lib.getTimer() #end);
 	}
 
 	@:noCompletion private function __onLimeTouchStart(touch:Touch):Void
@@ -2715,7 +2715,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__primaryTouch = touch;
 		}
 
-		__onTouch(TouchEvent.TOUCH_BEGIN, touch, __primaryTouch == touch);
+		__onTouch(TouchEvent.TOUCH_BEGIN, touch, __primaryTouch == touch, false, #if (lime >= "8.4.0") Touch.onStart.timestamp #else Lib.getTimer() #end);
 	}
 
 	@:noCompletion private function __onLimeUpdate(deltaTime:Int):Void
@@ -3486,8 +3486,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__displayMatrix.__transformInversePoint(point);
 	}
 
-	@:noCompletion private function __onTouch(type:String, touch:Touch, isPrimaryTouchPoint:Bool, isTouchPointCanceled:Bool = false):Void
+	// With Lime 8.4 or later, timestamp is when the platform took the input, on the clock of Lib.getTimer()
+	@:noCompletion private function __onTouch(type:String, touch:Touch, isPrimaryTouchPoint:Bool, isTouchPointCanceled:Bool = false, timestamp:Float = -1):Void
 	{
+		if (timestamp < 0) timestamp = Lib.getTimer();
+
 		var targetPoint = Point.__pool.get();
 		__getTouchStagePoint(touch, targetPoint);
 
@@ -3550,6 +3553,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 		touchEvent.pressure = touch.pressure;
 		touchEvent.isTouchPointCanceled = isTouchPointCanceled;
+		touchEvent.timestamp = timestamp;
 
 		__dispatchStack(touchEvent, stack);
 
@@ -3565,6 +3569,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.pressure = touch.pressure;
 			touchEvent.isTouchPointCanceled = isTouchPointCanceled;
+			touchEvent.timestamp = timestamp;
 
 			__dispatchStack(touchEvent, stack);
 
@@ -3584,6 +3589,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.pressure = touch.pressure;
 			touchEvent.isTouchPointCanceled = isTouchPointCanceled;
+			touchEvent.timestamp = timestamp;
 
 			__dispatchTarget(touchOverTarget, touchEvent);
 
@@ -3610,6 +3616,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				touchEvent.bubbles = false;
 				touchEvent.pressure = touch.pressure;
 				touchEvent.isTouchPointCanceled = isTouchPointCanceled;
+				touchEvent.timestamp = timestamp;
 
 				__dispatchTarget(item, touchEvent);
 
@@ -3637,6 +3644,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					touchEvent.bubbles = false;
 					touchEvent.pressure = touch.pressure;
 					touchEvent.isTouchPointCanceled = isTouchPointCanceled;
+					touchEvent.timestamp = timestamp;
 
 					__dispatchTarget(item, touchEvent);
 
@@ -3663,6 +3671,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				touchEvent.bubbles = true;
 				touchEvent.pressure = touch.pressure;
 				touchEvent.isTouchPointCanceled = isTouchPointCanceled;
+				touchEvent.timestamp = timestamp;
 
 				__dispatchTarget(target, touchEvent);
 
