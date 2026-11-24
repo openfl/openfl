@@ -174,7 +174,6 @@ class Transform
 		__hasMatrix = true;
 	}
 
-	#if false
 	/**
 		Returns a Matrix3D object, which can transform the space of a
 		specified display object in relation to the current display object's
@@ -182,20 +181,48 @@ class Transform
 		three-dimensional display object relative to another three-dimensional
 		display object.
 
+		OpenFL display objects are two-dimensional, so the returned matrix
+		contains the two-dimensional transformation from this display object's
+		space to the space of `relativeTo`, with no z translation, scale or
+		rotation.
+
 		@param relativeTo The display object relative to which the
 						  transformation occurs. To get a Matrix3D object
 						  relative to the stage, set the parameter to the
-						  `root` or `stage` object. To get the world-relative
-						  matrix of the display object, set the parameter to a
-						  display object that has a perspective transformation
-						  applied to it.
-		@return A Matrix3D object that can be used to transform the space from
-				the `relativeTo` display object to the current display object
-				space.
+						  `root` or `stage` object.
+		@return A Matrix3D object that transforms points from the current
+				display object's space to the space of the `relativeTo`
+				display object, or `null` if `relativeTo` is `null`.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public function getRelativeMatrix3D (relativeTo:DisplayObject):Matrix3D;
-	// @:noCompletion @:dox(hide) @:require(flash10) public function getRelativeMatrix3DToOutput (relativeTo:DisplayObject, output:Matrix3D):Matrix3D;
-	#end
+	public function getRelativeMatrix3D(relativeTo:DisplayObject):Matrix3D
+	{
+		if (__displayObject == null || relativeTo == null) return null;
+
+		var matrix = __displayObject.__getWorldTransform().clone();
+		var inverse = relativeTo.__getWorldTransform().clone();
+		inverse.invert();
+		matrix.concat(inverse);
+
+		return new Matrix3D(new Vector<Float>([
+			matrix.a,
+			matrix.b,
+			0.0,
+			0.0,
+			matrix.c,
+			matrix.d,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0,
+			0.0,
+			matrix.tx,
+			matrix.ty,
+			0.0,
+			1.0
+		]));
+	}
+
 	// Get & Set Methods
 	@:noCompletion private function get_colorTransform():ColorTransform
 	{
