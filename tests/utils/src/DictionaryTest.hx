@@ -123,6 +123,8 @@ class DictionaryTest extends Test
 		}
 	}
 
+	// Haxe 3 has no Dictionary for keys of any type, with or without weak keys
+	#if (haxe_ver >= 4.0)
 	public function testWeakKeysOfAnyType():Void
 	{
 		var dict = new Dictionary<DictionaryTestAnyKey, String>(true);
@@ -148,6 +150,7 @@ class DictionaryTest extends Test
 		Assert.equals(1, count(dict.iterator()));
 		Assert.equals("overwritten", dict.each().next());
 	}
+	#end
 
 	#if cpp
 	public function testWeakKeysOfFunctionsAndValues():Void
