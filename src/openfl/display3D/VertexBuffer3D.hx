@@ -52,8 +52,9 @@ import openfl.Vector;
 class VertexBuffer3D
 {
 	@:noCompletion private var __context:Context3D;
+	@:noCompletion private var __glBufferSize:Int = -1;
 	@:noCompletion private var __id:GLBuffer;
-	@:noCompletion private var __memoryUsage:Int = -1;
+	@:noCompletion private var __memoryUsage:Int;
 	@:noCompletion private var __numVertices:Int;
 	@:noCompletion private var __stride:Int;
 	@:noCompletion private var __tempFloat32Array:Float32Array;
@@ -134,11 +135,12 @@ class VertexBuffer3D
 		var gl = __context.gl;
 
 		__context.__bindGLArrayBuffer(__id);
-		if (__memoryUsage == data.byteLength)
+		// The buffer has no data store until its first bufferData() call
+		if (__glBufferSize == data.byteLength)
 			gl.bufferSubData(gl.ARRAY_BUFFER, 0, data);
 		else
 			gl.bufferData(gl.ARRAY_BUFFER, data, __usage);
-		__memoryUsage = data.byteLength;
+		__glBufferSize = data.byteLength;
 	}
 
 	/**
