@@ -16,6 +16,25 @@ class GlowFilterTest extends Test
 		Assert.notNull(exists);
 	}
 
+	#if flash
+	@Ignored
+	#end
+	public function test_alphaAppliedOnTheLastBlurPass()
+	{
+		#if !flash
+		// applied on every pass, the alpha would be raised to the power of the number of passes
+		var glowFilter = new GlowFilter(0xFF0000, 0.5, 8, 8, 2, 2);
+		var passes:Int = @:privateAccess (glowFilter.__horizontalPasses + glowFilter.__verticalPasses);
+		Assert.isTrue(passes > 1);
+
+		for (pass in 0...passes)
+		{
+			var shader:Dynamic = @:privateAccess glowFilter.__initShader(null, pass, null);
+			Assert.equals(pass == passes - 1 ? 0.5 : 1.0, shader.uColor.value[3], "pass " + pass);
+		}
+		#end
+	}
+
 	public function test_blurX()
 	{
 		// TODO: Confirm functionality

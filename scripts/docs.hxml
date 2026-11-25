@@ -17,7 +17,7 @@
 -D openfl_doc_gen
 -D doc_gen
 -D nocffi
---macro include("openfl")
+--macro include("openfl", true, ["openfl.media.StageWebView"])
 -lib lime
 -lib openfl
 --no-output
@@ -32,7 +32,7 @@
 -D openfl_doc_gen
 -D doc_gen
 -D nocffi
---macro include("openfl")
+--macro include("openfl", true, ["openfl.media.StageWebView"])
 -lib lime
 -lib openfl
 --no-output
@@ -47,7 +47,7 @@
 -D openfl_doc_gen
 -D doc_gen
 -D nocffi
---macro include("openfl")
+--macro include("openfl", true, ["openfl.media.StageWebView"])
 -lib lime
 -lib openfl
 --no-output
@@ -62,7 +62,7 @@
 -D openfl_doc_gen
 -D doc_gen
 -D nocffi
---macro include("openfl")
+--macro include("openfl", true, ["openfl.media.StageWebView"])
 -lib lime
 -lib openfl
 --no-output
@@ -77,7 +77,7 @@
 -D openfl_doc_gen
 -D doc_gen
 -D nocffi
---macro include("openfl")
+--macro include("openfl", true, ["openfl.media.StageWebView"])
 -lib lime
 -lib openfl
 --no-output
@@ -91,7 +91,7 @@
 -D openfl_doc_gen
 -D doc_gen
 -D nocffi
---macro include("openfl")
+--macro include("openfl", true, ["openfl.media.StageWebView"])
 -lib lime
 -lib openfl
 --no-output
@@ -106,7 +106,7 @@
 -D openfl_doc_gen
 -D doc_gen
 -D nocffi
---macro include("openfl")
+--macro include("openfl", true, ["openfl.media.StageWebView"])
 -lib lime
 -lib openfl
 --no-output
@@ -120,7 +120,7 @@
 -D openfl_doc_gen
 -D doc_gen
 -D nocffi
---macro include("openfl")
+--macro include("openfl", true, ["openfl.media.StageWebView"])
 -lib lime
 -lib openfl
 --no-output
@@ -135,7 +135,7 @@
 -D openfl_doc_gen
 -D doc_gen
 -D nocffi
---macro include("openfl")
+--macro include("openfl", true, ["openfl.media.StageWebView"])
 -lib lime
 -lib openfl
 --no-output
@@ -148,7 +148,7 @@
 -D html5
 -D openfl_doc_gen
 -D doc_gen
---macro include("openfl")
+--macro include("openfl", true, ["openfl.media.StageWebView"])
 -lib lime
 -lib openfl
 --no-output

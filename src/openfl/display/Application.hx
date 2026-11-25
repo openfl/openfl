@@ -129,19 +129,20 @@ class Application #if lime extends LimeApplication #end
 		// the document class is constructed when the preloader completes, which
 		// may be after the first update. AIR also keeps the event until a
 		// listener is registered
-		var invokeDispatched = false;
-		onUpdate.add(function(delta:Int):Void
+		var dispatchInvoke:Int->Void = null;
+		dispatchInvoke = function(delta:Int):Void
 		{
-			if (invokeDispatched || !NativeApplication.nativeApplication.hasEventListener(InvokeEvent.INVOKE))
+			if (!NativeApplication.nativeApplication.hasEventListener(InvokeEvent.INVOKE))
 			{
 				return;
 			}
-			invokeDispatched = true;
+			onUpdate.remove(dispatchInvoke);
 			var args = Sys.args();
 			var cwd = new openfl.filesystem.File(Sys.getCwd());
 			var invokeEvent = new openfl.events.InvokeEvent(InvokeEvent.INVOKE, false, false, cwd, args);
 			NativeApplication.nativeApplication.dispatchEvent(invokeEvent);
-		});
+		};
+		onUpdate.add(dispatchInvoke);
 		#end
 
 		return super.exec();

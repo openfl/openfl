@@ -192,11 +192,9 @@ class CairoGraphics
 				#end
 				if (hasScale9Grid)
 				{
-					for (p in [point, point2, point3])
-					{
-						p.x = bounds.x + toScale9Position(p.x - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
-						p.y = bounds.y + toScale9Position(p.y - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
-					}
+					toScale9Point(point, scale9Grid);
+					toScale9Point(point2, scale9Grid);
+					toScale9Point(point3, scale9Grid);
 				}
 
 				// As in Flash, the gradient is drawn in its own space, where it is a circle: the pattern's matrix takes a
@@ -588,6 +586,12 @@ class CairoGraphics
 		cairo.newPath();
 		playCommands(strokeCommands, true);
 		cairo.closePath();
+	}
+
+	private static function toScale9Point(point:Point, scale9Grid:Rectangle):Void
+	{
+		point.x = bounds.x + toScale9Position(point.x - bounds.x, scale9Grid.x - bounds.x, scale9Grid.width, bounds.width, graphics.__owner.scaleX);
+		point.y = bounds.y + toScale9Position(point.y - bounds.y, scale9Grid.y - bounds.y, scale9Grid.height, bounds.height, graphics.__owner.scaleY);
 	}
 
 	private static function toScale9Position(pos:Float, scale9Start:Float, scale9Center:Float, unscaledSize:Float, scale:Float):Float

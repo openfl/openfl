@@ -345,6 +345,37 @@ class BitmapDataTest extends Test
 		Assert.isTrue(hex(bitmapData.getPixel32(50, 50)) == hex(0xFFFF0000) || hex(bitmapData.getPixel32(50, 50)) == hex(0xFEFF0000));
 	}
 
+	#if flash
+	@Ignored
+	#end
+	public function test_drawFilteredTextFieldWithTextOffset()
+	{
+		#if !flash
+		// SWF text keeps the offset of its text bounds in __offsetX and __offsetY: a text field drawn through
+		// a cache bitmap, as with a filter, is drawn at the same place as without one
+		var container = new Sprite();
+		var textField = new openfl.text.TextField();
+		textField.background = true;
+		textField.backgroundColor = 0xFF0000;
+		textField.width = 10;
+		textField.height = 10;
+		@:privateAccess textField.__offsetX = 20;
+		@:privateAccess textField.__offsetY = 5;
+		container.addChild(textField);
+
+		var plain = new BitmapData(40, 20, true, 0);
+		plain.draw(container);
+		Assert.equals(hex(0xFFFF0000), hex(plain.getPixel32(25, 10)));
+		Assert.equals(hex(0), hex(plain.getPixel32(5, 10)));
+
+		textField.filters = [new GlowFilter(0, 0, 0, 0)];
+		var filtered = new BitmapData(40, 20, true, 0);
+		filtered.draw(container);
+		Assert.equals(hex(0xFFFF0000), hex(filtered.getPixel32(25, 10)));
+		Assert.equals(hex(0), hex(filtered.getPixel32(5, 10)));
+		#end
+	}
+
 	public function test_drawInOwnSpace()
 	{
 		// the pixels of a drawn display object do not depend on its place in the display list
@@ -379,12 +410,18 @@ class BitmapDataTest extends Test
 		layer.graphics.endFill();
 		container.addChild(layer);
 		container.addChild(masked);
+		#if !flash
+		// clippingLayer is set by the swf library, and Flash has no such property
 		@:privateAccess masked.clippingLayer = layer;
+		#end
 
 		var bitmapData = new BitmapData(100, 100, true, 0);
 		bitmapData.draw(masked);
 		Assert.equals(hex(0xFF00FF00), hex(bitmapData.getPixel32(30, 30)));
 
+		// AIR draws nothing for a source masked by a sprite that is not on the stage, as here, and Flash
+		// has no clippingLayer, so this part runs on the other targets
+		#if !flash
 		// a mask set on the source itself still is
 		var mask = new Sprite();
 		mask.graphics.beginFill(0xFFFFFFFF);
@@ -397,6 +434,7 @@ class BitmapDataTest extends Test
 		bitmapData.draw(masked);
 		Assert.equals(hex(0xFF00FF00), hex(bitmapData.getPixel32(5, 5)));
 		Assert.equals(hex(0), hex(bitmapData.getPixel32(30, 30)));
+		#end
 
 		// nor does its own scale: a source scaled to 0, such as an empty progress bar, is drawn
 		var bar = new Sprite();
