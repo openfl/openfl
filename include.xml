@@ -101,6 +101,8 @@
 
 			<module name="openfl" if="html5 lime-modular">
 
+				<haxedef name="lime" />
+
 				<source path="src" package="openfl" exclude="openfl._internal.renderer.console.*|*.Context3DGraphics|*.SWFLibrary" />
 
 				<!-- @:expose on enums do not work in Haxe 3.4.2 -->
