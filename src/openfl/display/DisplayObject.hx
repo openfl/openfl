@@ -203,6 +203,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	#end
 
 	@:noCompletion private static var __broadcastEvents:Map<String, Array<DisplayObject>> = new Map();
+	@:noCompletion private static var __maskUpdateDepth:Int = 0;
 	@:noCompletion private static var __initStage:Stage;
 	@:noCompletion private static var __instanceCount:Int = 0;
 
@@ -1890,7 +1891,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		// }
 
-		__worldTransformInvalid = false;
+		// an update that does not come from the top (a mask's, BitmapData.draw()'s) may find the parent out of
+		// date, below an invisible container: these transforms are then to be computed again when asked for
+		__worldTransformInvalid = (parent != null && (parent.__transformDirty || parent.__worldTransformInvalid));
 
 		if (!transformOnly)
 		{
@@ -1992,7 +1995,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		if (updateChildren && mask != null)
 		{
+			// the update of an invisible container leaves its children out, except those of a mask, which are
+			// drawn whatever their visibility, and no parent updates a mask that is below such a container
+			var maskParent = mask.parent;
+			if (maskParent != null && (maskParent.__transformDirty || maskParent.__worldTransformInvalid))
+			{
+				maskParent.__getWorldTransform();
+			}
+
+			__maskUpdateDepth++;
 			mask.__update(transformOnly, true);
+			__maskUpdateDepth--;
 		}
 	}
 
