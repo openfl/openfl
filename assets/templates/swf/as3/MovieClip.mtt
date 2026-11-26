@@ -1,0 +1,15 @@
+package ::PACKAGE_NAME:: {
+	import openfl.utils.Assets;
+	::if BASE_CLASS_NAME::::else::import openfl.display.MovieClip;::end::
+
+	public class ::NATIVE_CLASS_NAME:: extends ::if BASE_CLASS_NAME::::BASE_CLASS_NAME::::else::MovieClip::end:: {
+
+		::foreach CLASS_PROPERTIES::public var ::name:::::type::;
+		::end::
+
+		public function ::NATIVE_CLASS_NAME:: () {
+			super ();
+			Assets.initBinding("::NATIVE_CLASS_NAME::", this);
+		}
+	}
+}
