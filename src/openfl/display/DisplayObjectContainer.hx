@@ -1,6 +1,7 @@
 package openfl.display;
 
 #if !flash
+import haxe.Timer;
 import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
 import openfl.errors.TypeError;
@@ -99,6 +100,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 	// @:noCompletion @:dox(hide) public var textSnapshot (default, never):openfl.text.TextSnapshot;
 	@:noCompletion private var __removedChildren:Vector<DisplayObject>;
+	@:noCompletion private var __removedChildrenCleanupAt:Vector<Float>;
 	@:noCompletion private var __tabChildren:Bool;
 
 	#if openfljs
@@ -129,6 +131,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 		__children = new Array<DisplayObject>();
 		__removedChildren = new Vector<DisplayObject>();
+		__removedChildrenCleanupAt = new Vector<Float>();
 	}
 
 	/**
@@ -486,6 +489,7 @@ class DisplayObjectContainer extends InteractiveObject
 			child.parent = null;
 			__children.remove(child);
 			__removedChildren.push(child);
+			__removedChildrenCleanupAt.push(Timer.stamp() + child.__removedChildCleanupDelay);
 			child.__setTransformDirty();
 		}
 
@@ -689,20 +693,43 @@ class DisplayObjectContainer extends InteractiveObject
 			child.__cleanup();
 		}
 
-		__cleanupRemovedChildren();
+		__cleanupRemovedChildren(true);
 	}
 
-	@:noCompletion private inline function __cleanupRemovedChildren():Void
+	@:noCompletion private inline function __cleanupRemovedChildren(force:Bool = false):Void
 	{
-		for (orphan in __removedChildren)
+		if (__removedChildren.length == 0) return;
+
+		var now = Timer.stamp();
+		var writeIndex = 0;
+
+		for (i in 0...__removedChildren.length)
 		{
-			if (orphan.stage == null)
+			var orphan = __removedChildren[i];
+
+			if (orphan == null)
+			{
+				continue;
+			}
+
+			if (force || (orphan.stage == null && orphan.parent == null && now >= __removedChildrenCleanupAt[i]))
 			{
 				orphan.__cleanup();
+				continue;
 			}
+
+			if (orphan.stage != null || orphan.parent != null)
+			{
+				continue;
+			}
+
+			__removedChildren[writeIndex] = orphan;
+			__removedChildrenCleanupAt[writeIndex] = __removedChildrenCleanupAt[i];
+			writeIndex++;
 		}
 
-		__removedChildren.length = 0;
+		__removedChildren.length = writeIndex;
+		__removedChildrenCleanupAt.length = writeIndex;
 	}
 
 	@:noCompletion private override function __dispatchChildren(event:Event):Void
