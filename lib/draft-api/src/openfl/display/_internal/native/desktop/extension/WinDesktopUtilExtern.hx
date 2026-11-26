@@ -1,4 +1,4 @@
-package _internal.native.desktop.extension;
+package openfl.display._internal.native.desktop.extension;
 
 /**
  * ...

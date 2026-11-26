@@ -1,4 +1,4 @@
-package _internal.native.window.extension;
+package openfl.display._internal.native.window.extension;
 
 import haxe.Constraints.Function;
 

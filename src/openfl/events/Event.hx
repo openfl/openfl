@@ -300,6 +300,21 @@ class Event
 	public static inline var DEACTIVATE:EventType<Event> = "deactivate";
 
 	/**
+		The `Event.DISPLAYING` constant defines the value of the `type`
+		property of a `displaying` event object.
+
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The NativeMenu object that is about to display. |
+	**/
+	public static inline var DISPLAYING:EventType<Event> = "displaying";
+
+	/**
 		The `Event.ENTER_FRAME` constant defines the value of the `type`
 		property of an `enterFrame` event object.
 		**Note:** This event has neither a "capture phase" nor a "bubble
