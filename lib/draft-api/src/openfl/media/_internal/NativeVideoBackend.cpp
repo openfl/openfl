@@ -20,6 +20,7 @@
 #pragma comment(lib, "mfreadwrite")
 #pragma comment(lib, "mfuuid")
 #pragma comment(lib, "Ole32.lib")
+#include "../../_internal/UndefWindowsMacros.h"
 
 #ifndef GL_CLAMP_TO_EDGE
 #define GL_CLAMP_TO_EDGE 0x812F
