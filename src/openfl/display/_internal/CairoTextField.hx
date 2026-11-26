@@ -111,7 +111,9 @@ class CairoTextField
 		var height = Math.round(graphics.__height * pixelRatio);
 
 		var renderable = (textEngine.border || textEngine.background || textEngine.text != null);
-		var needsUpscaling = false;
+		var needsGrow = false;
+		var grownWidth = width;
+		var grownHeight = height;
 
 		if (cairo != null)
 		{
@@ -120,10 +122,17 @@ class CairoTextField
 
 			if (graphics.__softwareDirty && (width > surface.width || height > surface.height))
 			{
-				needsUpscaling = true;
+				// High-water-mark surface strategy: take max(current, new) per axis
+				// so growth only ratchets up. Safe because Context3DShape composites
+				// only the painted `graphics.__width x graphics.__height` sub-region
+				// (see BitmapData.getVertexBuffer painted-region params, follow-up
+				// to openfl/openfl#2866). Avoids reallocation on every text reflow.
+				needsGrow = true;
+				grownWidth = (surface.width > width) ? surface.width : width;
+				grownHeight = (surface.height > height) ? surface.height : height;
 			}
 
-			if (!renderable || needsUpscaling || width <= 0 || height <= 0)
+			if (!renderable || needsGrow || width <= 0 || height <= 0)
 			{
 				graphics.__cairo = null;
 				graphics.__bitmap = null;
@@ -143,8 +152,8 @@ class CairoTextField
 
 		if (cairo == null)
 		{
-			var bitmapWidth = needsUpscaling ? Std.int(width * 1.25) : width;
-			var bitmapHeight = needsUpscaling ? Std.int(height * 1.25) : height;
+			var bitmapWidth = needsGrow ? grownWidth : width;
+			var bitmapHeight = needsGrow ? grownHeight : height;
 
 			if (Graphics.maxTextureWidth != null && bitmapWidth > Graphics.maxTextureWidth)
 			{
