@@ -1,7 +1,11 @@
 package;
 
+#if (lime && !flash)
+import lime.ui.Touch;
+#end
 import openfl.display.Sprite;
 import openfl.events.TouchEvent;
+import openfl.Lib;
 import utest.Assert;
 import utest.Test;
 
@@ -154,5 +158,49 @@ class TouchEventTest extends Test
 		var exists = touchEvent.updateAfterEvent;
 
 		Assert.notNull(exists);
+	}
+
+	#if (!lime || flash)
+	@Ignored
+	#end
+	public function test_timestamp()
+	{
+		#if (lime && !flash)
+		if (Lib.current == null || Lib.current.stage == null)
+		{
+			Assert.pass("Skipping timestamp test without a stage");
+			return;
+		}
+
+		var stage = Lib.current.stage;
+		var touch = new Touch(0.5, 0.5, 4242, 0.0, 0.0, 1.0, 0);
+		var timestamps:Array<Float> = [];
+		var listener = function(event:TouchEvent):Void
+		{
+			timestamps.push(event.timestamp);
+		};
+		stage.addEventListener(TouchEvent.TOUCH_BEGIN, listener);
+		stage.addEventListener(TouchEvent.TOUCH_END, listener);
+
+		#if (lime >= "8.4.0")
+		// the time the platform took the input, which Lime gives with each event
+		Touch.onStart.__dispatchWithTimestamp(1234, touch);
+		Touch.onEnd.__dispatchWithTimestamp(1300, touch);
+
+		Assert.equals(1234, timestamps[0]);
+		Assert.equals(1300, timestamps[1]);
+		#else
+		// older versions of Lime give no time, so it is the time of the dispatch
+		var before = Lib.getTimer();
+		Touch.onStart.dispatch(touch);
+		Touch.onEnd.dispatch(touch);
+
+		Assert.equals(2, timestamps.length);
+		Assert.isTrue(timestamps[0] >= before && timestamps[1] >= timestamps[0]);
+		#end
+
+		stage.removeEventListener(TouchEvent.TOUCH_BEGIN, listener);
+		stage.removeEventListener(TouchEvent.TOUCH_END, listener);
+		#end
 	}
 }

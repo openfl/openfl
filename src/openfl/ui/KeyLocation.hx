@@ -10,6 +10,12 @@ package openfl.ui;
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract KeyLocation(Int) from Int to Int from UInt to UInt
 {
 	/**
+		Indicates the key activation originated on a directional pad of an
+		input device.
+	**/
+	public var D_PAD = 4;
+
+	/**
 		Indicates the key activated is in the left key location (there is more
 		than one possible location for this key). Example: The left Shift key
 		on a PC 101 Key US keyboard.

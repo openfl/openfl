@@ -115,6 +115,15 @@ import sys.io.Process;
 	public static var cpuArchitecture(get, never):String;
 
 	/**
+		Specifies the type of CPU address size. Possible values are 32 and 64,
+		depending on the platform the application was built for.
+
+		On native targets, this is the address size of the built application.
+		On HTML5 and HashLink, OpenFL reports 64.
+	**/
+	public static var cpuAddressSize(get, never):Float;
+
+	/**
 		Specifies whether the system supports (`true`) or does not
 		support (`false`) communication with accessibility aids. The
 		server string is `ACC`.
@@ -267,6 +276,23 @@ import sys.io.Process;
 		The server string is `L`.
 	**/
 	public static var language(get, never):String;
+
+	/**
+		An array of strings that contain information about the user's preferred
+		user interface languages, as set through the operating system. The
+		strings contain language tags (and script and region information, where
+		applicable) defined by RFC4646 (http://www.ietf.org/rfc/rfc4646.txt)
+		and use dashes as a separator (for example, `"en-US"` or `"ja-JP"`).
+		Languages are listed in the array in the order of preference, as
+		determined by the operating system settings.
+
+		The array always contains at least one element.
+
+		With Lime 8.4 or later, OpenFL reports the full list of preferred
+		languages. With earlier versions of Lime, the array only contains the
+		current locale.
+	**/
+	public static var languages(get, never):Array<String>;
 
 	/**
 		Specifies whether read access to the user's hard disk has been
@@ -493,6 +519,12 @@ import sys.io.Process;
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(Capabilities, {
+			"cpuAddressSize": {
+				get: function()
+				{
+					return Capabilities.get_cpuAddressSize();
+				}
+			},
 			"cpuArchitecture": {
 				get: function()
 				{
@@ -503,6 +535,12 @@ import sys.io.Process;
 				get: function()
 				{
 					return Capabilities.get_language();
+				}
+			},
+			"languages": {
+				get: function()
+				{
+					return Capabilities.get_languages();
 				}
 			},
 			"manufacturer": {
@@ -595,6 +633,21 @@ import sys.io.Process;
 	}
 
 	// Getters & Setters
+	@:noCompletion private static function get_cpuAddressSize():Float
+	{
+		#if cpp
+		#if (HXCPP_M64 || HXCPP_ARM64)
+		return 64;
+		#else
+		return 32;
+		#end
+		#elseif neko
+		return 32;
+		#else
+		return 64;
+		#end
+	}
+
 	@:noCompletion private static inline function get_cpuArchitecture():String
 	{
 		// TODO: Check architecture
@@ -603,6 +656,51 @@ import sys.io.Process;
 		#else
 		return "x86";
 		#end
+	}
+
+	@:noCompletion private static function get_languages():Array<String>
+	{
+		var languages:Array<String> = [];
+
+		#if lime
+		#if (lime >= "8.4.0")
+		for (locale in Locale.preferredLocales)
+		{
+			__addLanguageTag(languages, locale);
+		}
+		#end
+
+		if (languages.length == 0)
+		{
+			__addLanguageTag(languages, Locale.currentLocale);
+		}
+		#end
+
+		if (languages.length == 0)
+		{
+			languages.push(get_language());
+		}
+
+		return languages;
+	}
+
+	@:noCompletion private static function __addLanguageTag(languages:Array<String>, locale:String):Void
+	{
+		if (locale == null) return;
+
+		// Remove encoding and modifier suffixes, such as "en_US.UTF-8@euro"
+		var tag = locale;
+		var index = tag.indexOf(".");
+		if (index > -1) tag = tag.substr(0, index);
+		index = tag.indexOf("@");
+		if (index > -1) tag = tag.substr(0, index);
+
+		tag = StringTools.replace(tag, "_", "-");
+
+		if (tag != "" && languages.indexOf(tag) == -1)
+		{
+			languages.push(tag);
+		}
 	}
 
 	@:noCompletion private static function get_language():String

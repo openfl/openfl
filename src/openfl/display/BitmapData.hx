@@ -11,6 +11,7 @@ import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.Error;
+import openfl.errors.TypeError;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -721,7 +722,37 @@ class BitmapData implements IBitmapDrawable
 		#end
 	}
 
-	// @:noCompletion @:dox(hide) @:require(flash11_4) public function copyPixelsToByteArray (rect:Rectangle, data:ByteArray):Void;
+	/**
+		Fills a byte array from a rectangular region of pixel data. Starting
+		from the `position` index of the ByteArray, the method writes an
+		unsigned integer (a 32-bit unmultiplied pixel value) for each pixel
+		into the byte array. If necessary, the byte array's size is increased
+		to the necessary number of bytes to hold all the pixel data.
+
+		The pixel values are written with `ByteArray.writeUnsignedInt()`, so
+		they follow the `endian` property of the byte array.
+
+		@param rect A rectangular area in the current BitmapData object.
+		@param data The destination ByteArray object.
+		@throws TypeError if the rect argument is null or the data argument is
+						  null
+	**/
+	public function copyPixelsToByteArray(rect:Rectangle, data:ByteArray):Void
+	{
+		if (rect == null || data == null)
+		{
+			throw new TypeError("Parameter rect and data must be non-null.");
+		}
+
+		var pixels = getPixels(rect);
+		if (pixels == null) return;
+
+		pixels.position = 0;
+		while (pixels.bytesAvailable >= 4)
+		{
+			data.writeUnsignedInt(pixels.readUnsignedInt());
+		}
+	}
 
 	/**
 		Frees memory that is used to store the BitmapData object.
@@ -2953,7 +2984,150 @@ class BitmapData implements IBitmapDrawable
 		noise.fill(this, baseX, baseY, 0);
 	}
 
-	// @:noCompletion @:dox(hide) public function pixelDissolve (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:Int = 0, numPixels:Int = 0, fillColor:UInt = 0):Int;
+	/**
+		Performs a pixel dissolve either from a source image to a destination
+		image or by using the same image. The return value of the function
+		must be passed in on subsequent calls to continue the pixel dissolve
+		until it is finished.
+
+		If the source image does not equal the destination image, pixels are
+		copied from the source to the destination. Pixels whose source value
+		equals the destination value are filled with `fillColor`. This
+		process allows dissolving from a blank image into a fully populated
+		image.
+
+		If the source and destination images are equal, pixels are filled with
+		the `fillColor` parameter. This process allows dissolving away from a
+		fully populated image. In this mode, the destination `point` parameter
+		is ignored.
+
+		Each pixel of the source rectangle is changed exactly once before the
+		dissolve repeats. The order of the pixels for a given seed is
+		deterministic and the same on every target, but it is not the same
+		order as Flash Player.
+
+		@param sourceBitmapData The input bitmap image to use. The source image
+								can be a different BitmapData object, or it can
+								refer to the current BitmapData object.
+		@param sourceRect       A rectangle that defines the area of the source
+								image to use as input.
+		@param destPoint        The point within the destination image (the
+								current BitmapData instance) that corresponds
+								to the upper-left corner of the source
+								rectangle.
+		@param randomSeed       The random seed to use to start the pixel
+								dissolve.
+		@param numPixels        The default is 1/30 of the source area (width x
+								height).
+		@param fillColor        An ARGB color value that you use to fill pixels
+								whose source value equals its destination value.
+		@return The new random seed value to use for subsequent calls.
+		@throws TypeError The sourceBitmapData is null.
+		@throws TypeError The numPixels value is negative.
+	**/
+	public function pixelDissolve(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:Int = 0, numPixels:Int = 0,
+			fillColor:UInt = 0):Int
+	{
+		if (sourceBitmapData == null) throw new TypeError("Parameter sourceBitmapData must be non-null.");
+		if (numPixels < 0) throw new TypeError("Parameter numPixels must be a non-negative number.");
+
+		#if lime
+		if (!readable || !sourceBitmapData.readable || sourceRect == null) return randomSeed;
+
+		var sameImage = (sourceBitmapData == this);
+
+		var sourceX = Std.int(sourceRect.x);
+		var sourceY = Std.int(sourceRect.y);
+		var destX = sameImage || destPoint == null ? sourceX : Std.int(destPoint.x);
+		var destY = sameImage || destPoint == null ? sourceY : Std.int(destPoint.y);
+		var areaWidth = Std.int(sourceRect.width);
+		var areaHeight = Std.int(sourceRect.height);
+
+		// Clip the area to both images
+		if (sourceX < 0)
+		{
+			destX -= sourceX;
+			areaWidth += sourceX;
+			sourceX = 0;
+		}
+		if (sourceY < 0)
+		{
+			destY -= sourceY;
+			areaHeight += sourceY;
+			sourceY = 0;
+		}
+		if (destX < 0)
+		{
+			sourceX -= destX;
+			areaWidth += destX;
+			destX = 0;
+		}
+		if (destY < 0)
+		{
+			sourceY -= destY;
+			areaHeight += destY;
+			destY = 0;
+		}
+		if (sourceX + areaWidth > sourceBitmapData.width) areaWidth = sourceBitmapData.width - sourceX;
+		if (sourceY + areaHeight > sourceBitmapData.height) areaHeight = sourceBitmapData.height - sourceY;
+		if (destX + areaWidth > width) areaWidth = width - destX;
+		if (destY + areaHeight > height) areaHeight = height - destY;
+
+		if (areaWidth <= 0 || areaHeight <= 0) return randomSeed;
+
+		var area = areaWidth * areaHeight;
+		if (numPixels == 0) numPixels = Std.int(Math.max(1, area / 30));
+		if (numPixels > area) numPixels = area;
+
+		// Walk a full-period linear congruential sequence over a power of two
+		// range, scrambled with a bijection, and skip values outside the area.
+		// Every pixel is visited once per period, and the state is the seed.
+		var bits = 2;
+		while ((1 << bits) < area)
+		{
+			bits++;
+		}
+		var mask = (1 << bits) - 1;
+		var shift = (bits + 1) >> 1;
+		var state = randomSeed & mask;
+		var fill:Int = fillColor;
+		var count = 0;
+
+		while (count < numPixels)
+		{
+			state = (state * 5 + 0x3B) & mask;
+
+			var index = state;
+			index ^= index >>> shift;
+			index = (index * 0x9E5) & mask;
+			index ^= index >>> shift;
+			index = (index * 0x5BD) & mask;
+			index ^= index >>> shift;
+
+			if (index >= area) continue;
+
+			var offsetX = index % areaWidth;
+			var offsetY = Std.int(index / areaWidth);
+
+			if (sameImage)
+			{
+				image.setPixel32(sourceX + offsetX, sourceY + offsetY, fill, ARGB32);
+			}
+			else
+			{
+				var sourceColor = sourceBitmapData.image.getPixel32(sourceX + offsetX, sourceY + offsetY, ARGB32);
+				var destColor = image.getPixel32(destX + offsetX, destY + offsetY, ARGB32);
+				image.setPixel32(destX + offsetX, destY + offsetY, sourceColor == destColor ? fill : sourceColor, ARGB32);
+			}
+
+			count++;
+		}
+
+		return state;
+		#else
+		return randomSeed;
+		#end
+	}
 
 	/**
 		Scrolls an image by a certain(_x_, _y_) pixel amount. Edge

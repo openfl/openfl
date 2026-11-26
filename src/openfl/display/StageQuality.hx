@@ -33,6 +33,40 @@ package openfl.display;
 	**/
 	public var MEDIUM = 3;
 
+	/**
+		Specifies very high rendering quality: graphics are anti-aliased using
+		an 8 x 8 pixel grid, and bitmaps are smoothed.
+
+		OpenFL renders this setting the same as `StageQuality.HIGH`.
+	**/
+	public var HIGH_8X8 = 4;
+
+	/**
+		Specifies very high rendering quality: graphics are anti-aliased in a
+		linear sRGB color space using an 8 x 8 pixel grid, and bitmaps are
+		smoothed.
+
+		OpenFL renders this setting the same as `StageQuality.HIGH`.
+	**/
+	public var HIGH_8X8_LINEAR = 5;
+
+	/**
+		Specifies very high rendering quality: graphics are anti-aliased using
+		a 16 x 16 pixel grid, and bitmaps are smoothed.
+
+		OpenFL renders this setting the same as `StageQuality.HIGH`.
+	**/
+	public var HIGH_16X16 = 6;
+
+	/**
+		Specifies very high rendering quality: graphics are anti-aliased in a
+		linear sRGB color space using a 16 x 16 pixel grid, and bitmaps are
+		smoothed.
+
+		OpenFL renders this setting the same as `StageQuality.HIGH`.
+	**/
+	public var HIGH_16X16_LINEAR = 7;
+
 	@:from private static function fromString(value:String):StageQuality
 	{
 		return switch (value)
@@ -41,6 +75,10 @@ package openfl.display;
 			case "high": HIGH;
 			case "low": LOW;
 			case "medium": MEDIUM;
+			case "8x8": HIGH_8X8;
+			case "8x8linear": HIGH_8X8_LINEAR;
+			case "16x16": HIGH_16X16;
+			case "16x16linear": HIGH_16X16_LINEAR;
 			default: null;
 		}
 	}
@@ -53,6 +91,10 @@ package openfl.display;
 			case StageQuality.HIGH: "high";
 			case StageQuality.LOW: "low";
 			case StageQuality.MEDIUM: "medium";
+			case StageQuality.HIGH_8X8: "8x8";
+			case StageQuality.HIGH_8X8_LINEAR: "8x8linear";
+			case StageQuality.HIGH_16X16: "16x16";
+			case StageQuality.HIGH_16X16_LINEAR: "16x16linear";
 			default: null;
 		}
 	}
@@ -64,6 +106,10 @@ package openfl.display;
 	public var HIGH = "high";
 	public var LOW = "low";
 	public var MEDIUM = "medium";
+	public var HIGH_8X8 = "8x8";
+	public var HIGH_8X8_LINEAR = "8x8linear";
+	public var HIGH_16X16 = "16x16";
+	public var HIGH_16X16_LINEAR = "16x16linear";
 }
 #end
 #else

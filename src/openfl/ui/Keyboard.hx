@@ -542,6 +542,1075 @@ import lime.ui.KeyCode;
 	public static inline var QUOTE:Int = 222;
 
 	/**
+		Constant associated with the key code value for the red function key
+		button on a remote control or similar input device (0x01000000).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var RED:Int = 0x01000000;
+
+	/**
+		Constant associated with the key code value for the green function key
+		button on a remote control or similar input device (0x01000001).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var GREEN:Int = 0x01000001;
+
+	/**
+		Constant associated with the key code value for the yellow function
+		key button on a remote control or similar input device (0x01000002).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var YELLOW:Int = 0x01000002;
+
+	/**
+		Constant associated with the key code value for the blue function key
+		button on a remote control or similar input device (0x01000003).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var BLUE:Int = 0x01000003;
+
+	/**
+		Constant associated with the key code value for the channel up button
+		on a remote control or similar input device (0x01000004).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var CHANNEL_UP:Int = 0x01000004;
+
+	/**
+		Constant associated with the key code value for the channel down
+		button on a remote control or similar input device (0x01000005).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var CHANNEL_DOWN:Int = 0x01000005;
+
+	/**
+		Constant associated with the key code value for the button for
+		recording or engaging record transport mode on a remote control or
+		similar input device (0x01000006).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var RECORD:Int = 0x01000006;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging play transport mode on a remote control or similar input
+		device (0x01000007).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var PLAY:Int = 0x01000007;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging pause transport mode on a remote control or similar input
+		device (0x01000008).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var PAUSE:Int = 0x01000008;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging stop transport mode on a remote control or similar input
+		device (0x01000009).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var STOP:Int = 0x01000009;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging fast-forward transport mode on a remote control or similar
+		input device (0x0100000A).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var FAST_FORWARD:Int = 0x0100000A;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging rewind transport mode on a remote control or similar input
+		device (0x0100000B).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var REWIND:Int = 0x0100000B;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging quick skip ahead on a remote control or similar input device
+		(0x0100000C).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var SKIP_FORWARD:Int = 0x0100000C;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging quick skip backward on a remote control or similar input
+		device (0x0100000D).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var SKIP_BACKWARD:Int = 0x0100000D;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging next track transport mode on a remote control or similar
+		input device (0x0100000E).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var NEXT:Int = 0x0100000E;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging previous track transport mode on a remote control or similar
+		input device (0x0100000F).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var PREVIOUS:Int = 0x0100000F;
+
+	/**
+		Constant associated with the key code value for the button for
+		returning to live on a remote control or similar input device
+		(0x01000010).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var LIVE:Int = 0x01000010;
+
+	/**
+		Constant associated with the key code value for the button for
+		watching the last channel or show watched on a remote control or
+		similar input device (0x01000011).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var LAST:Int = 0x01000011;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging the menu on a remote control or similar input device
+		(0x01000012).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var MENU:Int = 0x01000012;
+
+	/**
+		Constant associated with the key code value for the info button on a
+		remote control or similar input device (0x01000013).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var INFO:Int = 0x01000013;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging the program guide on a remote control or similar input device
+		(0x01000014).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var GUIDE:Int = 0x01000014;
+
+	/**
+		Constant associated with the key code value for the button for exiting
+		the current application mode on a remote control or similar input
+		device (0x01000015).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var EXIT:Int = 0x01000015;
+
+	/**
+		Constant associated with the key code value for the button for
+		returning to the previous page in the application on a remote control
+		or similar input device (0x01000016).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var BACK:Int = 0x01000016;
+
+	/**
+		Constant associated with the key code value for the button for
+		selecting the audio mode on a remote control or similar input device
+		(0x01000017).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var AUDIO:Int = 0x01000017;
+
+	/**
+		Constant associated with the key code value for the button for
+		toggling subtitles on a remote control or similar input device
+		(0x01000018).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var SUBTITLE:Int = 0x01000018;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging DVR application mode on a remote control or similar input
+		device (0x01000019).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var DVR:Int = 0x01000019;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging video on demand on a remote control or similar input device
+		(0x0100001A).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var VOD:Int = 0x0100001A;
+
+	/**
+		Constant associated with the key code value for the button for cycling
+		inputs on a remote control or similar input device (0x0100001B).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var INPUT:Int = 0x0100001B;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging the setup application or menu on a remote control or similar
+		input device (0x0100001C).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var SETUP:Int = 0x0100001C;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging the help application or context-sensitive help on a remote
+		control or similar input device (0x0100001D).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var HELP:Int = 0x0100001D;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging the "Master Shell" (for example, a vendor-specific button) on
+		a remote control or similar input device (0x0100001E).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var MASTER_SHELL:Int = 0x0100001E;
+
+	/**
+		Constant associated with the key code value for the button for
+		initiating a search on a remote control or similar input device
+		(0x0100001F).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var SEARCH:Int = 0x0100001F;
+
+	/**
+		Constant associated with the key code value for the button for
+		engaging play/pause on a remote control or similar input device
+		(0x01000020).
+
+		OpenFL does not currently report this key code from native input
+		events.
+	**/
+	public static inline var PLAY_PAUSE:Int = 0x01000020;
+
+	/**
+		The name of the F1 key (`"F1"`).
+	**/
+	public static inline var KEYNAME_F1:String = "F1";
+
+	/**
+		The name of the F2 key (`"F2"`).
+	**/
+	public static inline var KEYNAME_F2:String = "F2";
+
+	/**
+		The name of the F3 key (`"F3"`).
+	**/
+	public static inline var KEYNAME_F3:String = "F3";
+
+	/**
+		The name of the F4 key (`"F4"`).
+	**/
+	public static inline var KEYNAME_F4:String = "F4";
+
+	/**
+		The name of the F5 key (`"F5"`).
+	**/
+	public static inline var KEYNAME_F5:String = "F5";
+
+	/**
+		The name of the F6 key (`"F6"`).
+	**/
+	public static inline var KEYNAME_F6:String = "F6";
+
+	/**
+		The name of the F7 key (`"F7"`).
+	**/
+	public static inline var KEYNAME_F7:String = "F7";
+
+	/**
+		The name of the F8 key (`"F8"`).
+	**/
+	public static inline var KEYNAME_F8:String = "F8";
+
+	/**
+		The name of the F9 key (`"F9"`).
+	**/
+	public static inline var KEYNAME_F9:String = "F9";
+
+	/**
+		The name of the F10 key (`"F10"`).
+	**/
+	public static inline var KEYNAME_F10:String = "F10";
+
+	/**
+		The name of the F11 key (`"F11"`).
+	**/
+	public static inline var KEYNAME_F11:String = "F11";
+
+	/**
+		The name of the F12 key (`"F12"`).
+	**/
+	public static inline var KEYNAME_F12:String = "F12";
+
+	/**
+		The name of the F13 key (`"F13"`).
+	**/
+	public static inline var KEYNAME_F13:String = "F13";
+
+	/**
+		The name of the F14 key (`"F14"`).
+	**/
+	public static inline var KEYNAME_F14:String = "F14";
+
+	/**
+		The name of the F15 key (`"F15"`).
+	**/
+	public static inline var KEYNAME_F15:String = "F15";
+
+	/**
+		The name of the F16 key (`"F16"`).
+	**/
+	public static inline var KEYNAME_F16:String = "F16";
+
+	/**
+		The name of the F17 key (`"F17"`).
+	**/
+	public static inline var KEYNAME_F17:String = "F17";
+
+	/**
+		The name of the F18 key (`"F18"`).
+	**/
+	public static inline var KEYNAME_F18:String = "F18";
+
+	/**
+		The name of the F19 key (`"F19"`).
+	**/
+	public static inline var KEYNAME_F19:String = "F19";
+
+	/**
+		The name of the F20 key (`"F20"`).
+	**/
+	public static inline var KEYNAME_F20:String = "F20";
+
+	/**
+		The name of the F21 key (`"F21"`).
+	**/
+	public static inline var KEYNAME_F21:String = "F21";
+
+	/**
+		The name of the F22 key (`"F22"`).
+	**/
+	public static inline var KEYNAME_F22:String = "F22";
+
+	/**
+		The name of the F23 key (`"F23"`).
+	**/
+	public static inline var KEYNAME_F23:String = "F23";
+
+	/**
+		The name of the F24 key (`"F24"`).
+	**/
+	public static inline var KEYNAME_F24:String = "F24";
+
+	/**
+		The name of the F25 key (`"F25"`).
+	**/
+	public static inline var KEYNAME_F25:String = "F25";
+
+	/**
+		The name of the F26 key (`"F26"`).
+	**/
+	public static inline var KEYNAME_F26:String = "F26";
+
+	/**
+		The name of the F27 key (`"F27"`).
+	**/
+	public static inline var KEYNAME_F27:String = "F27";
+
+	/**
+		The name of the F28 key (`"F28"`).
+	**/
+	public static inline var KEYNAME_F28:String = "F28";
+
+	/**
+		The name of the F29 key (`"F29"`).
+	**/
+	public static inline var KEYNAME_F29:String = "F29";
+
+	/**
+		The name of the F30 key (`"F30"`).
+	**/
+	public static inline var KEYNAME_F30:String = "F30";
+
+	/**
+		The name of the F31 key (`"F31"`).
+	**/
+	public static inline var KEYNAME_F31:String = "F31";
+
+	/**
+		The name of the F32 key (`"F32"`).
+	**/
+	public static inline var KEYNAME_F32:String = "F32";
+
+	/**
+		The name of the F33 key (`"F33"`).
+	**/
+	public static inline var KEYNAME_F33:String = "F33";
+
+	/**
+		The name of the F34 key (`"F34"`).
+	**/
+	public static inline var KEYNAME_F34:String = "F34";
+
+	/**
+		The name of the F35 key (`"F35"`).
+	**/
+	public static inline var KEYNAME_F35:String = "F35";
+
+	/**
+		The name of the Begin key (`"Begin"`).
+	**/
+	public static inline var KEYNAME_BEGIN:String = "Begin";
+
+	/**
+		The name of the Break key (`"Break"`).
+	**/
+	public static inline var KEYNAME_BREAK:String = "Break";
+
+	/**
+		The name of the Clear Display key (`"ClrDsp"`).
+	**/
+	public static inline var KEYNAME_CLEARDISPLAY:String = "ClrDsp";
+
+	/**
+		The name of the Clear Line key (`"ClrLn"`).
+	**/
+	public static inline var KEYNAME_CLEARLINE:String = "ClrLn";
+
+	/**
+		The name of the Delete key (`"Delete"`).
+	**/
+	public static inline var KEYNAME_DELETE:String = "Delete";
+
+	/**
+		The name of the Delete Character key (`"DelChr"`).
+	**/
+	public static inline var KEYNAME_DELETECHAR:String = "DelChr";
+
+	/**
+		The name of the Delete Line key (`"DelLn"`).
+	**/
+	public static inline var KEYNAME_DELETELINE:String = "DelLn";
+
+	/**
+		The name of the Down Arrow key (`"Down"`).
+	**/
+	public static inline var KEYNAME_DOWNARROW:String = "Down";
+
+	/**
+		The name of the End key (`"End"`).
+	**/
+	public static inline var KEYNAME_END:String = "End";
+
+	/**
+		The name of the Execute key (`"Exec"`).
+	**/
+	public static inline var KEYNAME_EXECUTE:String = "Exec";
+
+	/**
+		The name of the Find key (`"Find"`).
+	**/
+	public static inline var KEYNAME_FIND:String = "Find";
+
+	/**
+		The name of the Help key (`"Help"`).
+	**/
+	public static inline var KEYNAME_HELP:String = "Help";
+
+	/**
+		The name of the Home key (`"Home"`).
+	**/
+	public static inline var KEYNAME_HOME:String = "Home";
+
+	/**
+		The name of the Insert key (`"Insert"`).
+	**/
+	public static inline var KEYNAME_INSERT:String = "Insert";
+
+	/**
+		The name of the Insert Character key (`"InsChr"`).
+	**/
+	public static inline var KEYNAME_INSERTCHAR:String = "InsChr";
+
+	/**
+		The name of the Insert Line key (`"InsLn"`).
+	**/
+	public static inline var KEYNAME_INSERTLINE:String = "InsLn";
+
+	/**
+		The name of the Left Arrow key (`"Left"`).
+	**/
+	public static inline var KEYNAME_LEFTARROW:String = "Left";
+
+	/**
+		The name of the Menu key (`"Menu"`).
+	**/
+	public static inline var KEYNAME_MENU:String = "Menu";
+
+	/**
+		The name of the Mode Switch key (`"ModeSw"`).
+	**/
+	public static inline var KEYNAME_MODESWITCH:String = "ModeSw";
+
+	/**
+		The name of the Next key (`"Next"`).
+	**/
+	public static inline var KEYNAME_NEXT:String = "Next";
+
+	/**
+		The name of the Page Down key (`"PgDn"`).
+	**/
+	public static inline var KEYNAME_PAGEDOWN:String = "PgDn";
+
+	/**
+		The name of the Page Up key (`"PgUp"`).
+	**/
+	public static inline var KEYNAME_PAGEUP:String = "PgUp";
+
+	/**
+		The name of the Pause key (`"Pause"`).
+	**/
+	public static inline var KEYNAME_PAUSE:String = "Pause";
+
+	/**
+		The name of the Play/Pause key (`"PlayPause"`).
+	**/
+	public static inline var KEYNAME_PLAYPAUSE:String = "PlayPause";
+
+	/**
+		The name of the Previous key (`"Prev"`).
+	**/
+	public static inline var KEYNAME_PREV:String = "Prev";
+
+	/**
+		The name of the Print key (`"Print"`).
+	**/
+	public static inline var KEYNAME_PRINT:String = "Print";
+
+	/**
+		The name of the Print Screen key (`"PrntScrn"`).
+	**/
+	public static inline var KEYNAME_PRINTSCREEN:String = "PrntScrn";
+
+	/**
+		The name of the Redo key (`"Redo"`).
+	**/
+	public static inline var KEYNAME_REDO:String = "Redo";
+
+	/**
+		The name of the Reset key (`"Reset"`).
+	**/
+	public static inline var KEYNAME_RESET:String = "Reset";
+
+	/**
+		The name of the Right Arrow key (`"Right"`).
+	**/
+	public static inline var KEYNAME_RIGHTARROW:String = "Right";
+
+	/**
+		The name of the Scroll Lock key (`"ScrlLck"`).
+	**/
+	public static inline var KEYNAME_SCROLLLOCK:String = "ScrlLck";
+
+	/**
+		The name of the Select key (`"Select"`).
+	**/
+	public static inline var KEYNAME_SELECT:String = "Select";
+
+	/**
+		The name of the Stop key (`"Stop"`).
+	**/
+	public static inline var KEYNAME_STOP:String = "Stop";
+
+	/**
+		The name of the System Request key (`"SysReq"`).
+	**/
+	public static inline var KEYNAME_SYSREQ:String = "SysReq";
+
+	/**
+		The name of the System key (`"Sys"`).
+	**/
+	public static inline var KEYNAME_SYSTEM:String = "Sys";
+
+	/**
+		The name of the Undo key (`"Undo"`).
+	**/
+	public static inline var KEYNAME_UNDO:String = "Undo";
+
+	/**
+		The name of the Up Arrow key (`"Up"`).
+	**/
+	public static inline var KEYNAME_UPARROW:String = "Up";
+
+	/**
+		The name of the User key (`"User"`).
+	**/
+	public static inline var KEYNAME_USER:String = "User";
+
+	/**
+		The Unicode value that macOS uses for the Up Arrow function key
+		(U+F700).
+	**/
+	public static var STRING_UPARROW(default, never):String = String.fromCharCode(0xF700);
+
+	/**
+		The Unicode value that macOS uses for the Down Arrow function key
+		(U+F701).
+	**/
+	public static var STRING_DOWNARROW(default, never):String = String.fromCharCode(0xF701);
+
+	/**
+		The Unicode value that macOS uses for the Left Arrow function key
+		(U+F702).
+	**/
+	public static var STRING_LEFTARROW(default, never):String = String.fromCharCode(0xF702);
+
+	/**
+		The Unicode value that macOS uses for the Right Arrow function key
+		(U+F703).
+	**/
+	public static var STRING_RIGHTARROW(default, never):String = String.fromCharCode(0xF703);
+
+	/**
+		The Unicode value that macOS uses for the F1 function key (U+F704).
+	**/
+	public static var STRING_F1(default, never):String = String.fromCharCode(0xF704);
+
+	/**
+		The Unicode value that macOS uses for the F2 function key (U+F705).
+	**/
+	public static var STRING_F2(default, never):String = String.fromCharCode(0xF705);
+
+	/**
+		The Unicode value that macOS uses for the F3 function key (U+F706).
+	**/
+	public static var STRING_F3(default, never):String = String.fromCharCode(0xF706);
+
+	/**
+		The Unicode value that macOS uses for the F4 function key (U+F707).
+	**/
+	public static var STRING_F4(default, never):String = String.fromCharCode(0xF707);
+
+	/**
+		The Unicode value that macOS uses for the F5 function key (U+F708).
+	**/
+	public static var STRING_F5(default, never):String = String.fromCharCode(0xF708);
+
+	/**
+		The Unicode value that macOS uses for the F6 function key (U+F709).
+	**/
+	public static var STRING_F6(default, never):String = String.fromCharCode(0xF709);
+
+	/**
+		The Unicode value that macOS uses for the F7 function key (U+F70A).
+	**/
+	public static var STRING_F7(default, never):String = String.fromCharCode(0xF70A);
+
+	/**
+		The Unicode value that macOS uses for the F8 function key (U+F70B).
+	**/
+	public static var STRING_F8(default, never):String = String.fromCharCode(0xF70B);
+
+	/**
+		The Unicode value that macOS uses for the F9 function key (U+F70C).
+	**/
+	public static var STRING_F9(default, never):String = String.fromCharCode(0xF70C);
+
+	/**
+		The Unicode value that macOS uses for the F10 function key (U+F70D).
+	**/
+	public static var STRING_F10(default, never):String = String.fromCharCode(0xF70D);
+
+	/**
+		The Unicode value that macOS uses for the F11 function key (U+F70E).
+	**/
+	public static var STRING_F11(default, never):String = String.fromCharCode(0xF70E);
+
+	/**
+		The Unicode value that macOS uses for the F12 function key (U+F70F).
+	**/
+	public static var STRING_F12(default, never):String = String.fromCharCode(0xF70F);
+
+	/**
+		The Unicode value that macOS uses for the F13 function key (U+F710).
+	**/
+	public static var STRING_F13(default, never):String = String.fromCharCode(0xF710);
+
+	/**
+		The Unicode value that macOS uses for the F14 function key (U+F711).
+	**/
+	public static var STRING_F14(default, never):String = String.fromCharCode(0xF711);
+
+	/**
+		The Unicode value that macOS uses for the F15 function key (U+F712).
+	**/
+	public static var STRING_F15(default, never):String = String.fromCharCode(0xF712);
+
+	/**
+		The Unicode value that macOS uses for the F16 function key (U+F713).
+	**/
+	public static var STRING_F16(default, never):String = String.fromCharCode(0xF713);
+
+	/**
+		The Unicode value that macOS uses for the F17 function key (U+F714).
+	**/
+	public static var STRING_F17(default, never):String = String.fromCharCode(0xF714);
+
+	/**
+		The Unicode value that macOS uses for the F18 function key (U+F715).
+	**/
+	public static var STRING_F18(default, never):String = String.fromCharCode(0xF715);
+
+	/**
+		The Unicode value that macOS uses for the F19 function key (U+F716).
+	**/
+	public static var STRING_F19(default, never):String = String.fromCharCode(0xF716);
+
+	/**
+		The Unicode value that macOS uses for the F20 function key (U+F717).
+	**/
+	public static var STRING_F20(default, never):String = String.fromCharCode(0xF717);
+
+	/**
+		The Unicode value that macOS uses for the F21 function key (U+F718).
+	**/
+	public static var STRING_F21(default, never):String = String.fromCharCode(0xF718);
+
+	/**
+		The Unicode value that macOS uses for the F22 function key (U+F719).
+	**/
+	public static var STRING_F22(default, never):String = String.fromCharCode(0xF719);
+
+	/**
+		The Unicode value that macOS uses for the F23 function key (U+F71A).
+	**/
+	public static var STRING_F23(default, never):String = String.fromCharCode(0xF71A);
+
+	/**
+		The Unicode value that macOS uses for the F24 function key (U+F71B).
+	**/
+	public static var STRING_F24(default, never):String = String.fromCharCode(0xF71B);
+
+	/**
+		The Unicode value that macOS uses for the F25 function key (U+F71C).
+	**/
+	public static var STRING_F25(default, never):String = String.fromCharCode(0xF71C);
+
+	/**
+		The Unicode value that macOS uses for the F26 function key (U+F71D).
+	**/
+	public static var STRING_F26(default, never):String = String.fromCharCode(0xF71D);
+
+	/**
+		The Unicode value that macOS uses for the F27 function key (U+F71E).
+	**/
+	public static var STRING_F27(default, never):String = String.fromCharCode(0xF71E);
+
+	/**
+		The Unicode value that macOS uses for the F28 function key (U+F71F).
+	**/
+	public static var STRING_F28(default, never):String = String.fromCharCode(0xF71F);
+
+	/**
+		The Unicode value that macOS uses for the F29 function key (U+F720).
+	**/
+	public static var STRING_F29(default, never):String = String.fromCharCode(0xF720);
+
+	/**
+		The Unicode value that macOS uses for the F30 function key (U+F721).
+	**/
+	public static var STRING_F30(default, never):String = String.fromCharCode(0xF721);
+
+	/**
+		The Unicode value that macOS uses for the F31 function key (U+F722).
+	**/
+	public static var STRING_F31(default, never):String = String.fromCharCode(0xF722);
+
+	/**
+		The Unicode value that macOS uses for the F32 function key (U+F723).
+	**/
+	public static var STRING_F32(default, never):String = String.fromCharCode(0xF723);
+
+	/**
+		The Unicode value that macOS uses for the F33 function key (U+F724).
+	**/
+	public static var STRING_F33(default, never):String = String.fromCharCode(0xF724);
+
+	/**
+		The Unicode value that macOS uses for the F34 function key (U+F725).
+	**/
+	public static var STRING_F34(default, never):String = String.fromCharCode(0xF725);
+
+	/**
+		The Unicode value that macOS uses for the F35 function key (U+F726).
+	**/
+	public static var STRING_F35(default, never):String = String.fromCharCode(0xF726);
+
+	/**
+		The Unicode value that macOS uses for the Insert function key
+		(U+F727).
+	**/
+	public static var STRING_INSERT(default, never):String = String.fromCharCode(0xF727);
+
+	/**
+		The Unicode value that macOS uses for the Delete function key
+		(U+F728).
+	**/
+	public static var STRING_DELETE(default, never):String = String.fromCharCode(0xF728);
+
+	/**
+		The Unicode value that macOS uses for the Home function key (U+F729).
+	**/
+	public static var STRING_HOME(default, never):String = String.fromCharCode(0xF729);
+
+	/**
+		The Unicode value that macOS uses for the Begin function key (U+F72A).
+	**/
+	public static var STRING_BEGIN(default, never):String = String.fromCharCode(0xF72A);
+
+	/**
+		The Unicode value that macOS uses for the End function key (U+F72B).
+	**/
+	public static var STRING_END(default, never):String = String.fromCharCode(0xF72B);
+
+	/**
+		The Unicode value that macOS uses for the Page Up function key
+		(U+F72C).
+	**/
+	public static var STRING_PAGEUP(default, never):String = String.fromCharCode(0xF72C);
+
+	/**
+		The Unicode value that macOS uses for the Page Down function key
+		(U+F72D).
+	**/
+	public static var STRING_PAGEDOWN(default, never):String = String.fromCharCode(0xF72D);
+
+	/**
+		The Unicode value that macOS uses for the Print Screen function key
+		(U+F72E).
+	**/
+	public static var STRING_PRINTSCREEN(default, never):String = String.fromCharCode(0xF72E);
+
+	/**
+		The Unicode value that macOS uses for the Scroll Lock function key
+		(U+F72F).
+	**/
+	public static var STRING_SCROLLLOCK(default, never):String = String.fromCharCode(0xF72F);
+
+	/**
+		The Unicode value that macOS uses for the Pause function key (U+F730).
+	**/
+	public static var STRING_PAUSE(default, never):String = String.fromCharCode(0xF730);
+
+	/**
+		The Unicode value that macOS uses for the System Request function key
+		(U+F731).
+	**/
+	public static var STRING_SYSREQ(default, never):String = String.fromCharCode(0xF731);
+
+	/**
+		The Unicode value that macOS uses for the Break function key (U+F732).
+	**/
+	public static var STRING_BREAK(default, never):String = String.fromCharCode(0xF732);
+
+	/**
+		The Unicode value that macOS uses for the Reset function key (U+F733).
+	**/
+	public static var STRING_RESET(default, never):String = String.fromCharCode(0xF733);
+
+	/**
+		The Unicode value that macOS uses for the Stop function key (U+F734).
+	**/
+	public static var STRING_STOP(default, never):String = String.fromCharCode(0xF734);
+
+	/**
+		The Unicode value that macOS uses for the Menu function key (U+F735).
+	**/
+	public static var STRING_MENU(default, never):String = String.fromCharCode(0xF735);
+
+	/**
+		The Unicode value that macOS uses for the User function key (U+F736).
+	**/
+	public static var STRING_USER(default, never):String = String.fromCharCode(0xF736);
+
+	/**
+		The Unicode value that macOS uses for the System function key
+		(U+F737).
+	**/
+	public static var STRING_SYSTEM(default, never):String = String.fromCharCode(0xF737);
+
+	/**
+		The Unicode value that macOS uses for the Print function key (U+F738).
+	**/
+	public static var STRING_PRINT(default, never):String = String.fromCharCode(0xF738);
+
+	/**
+		The Unicode value that macOS uses for the Clear Line function key
+		(U+F739).
+	**/
+	public static var STRING_CLEARLINE(default, never):String = String.fromCharCode(0xF739);
+
+	/**
+		The Unicode value that macOS uses for the Clear Display function key
+		(U+F73A).
+	**/
+	public static var STRING_CLEARDISPLAY(default, never):String = String.fromCharCode(0xF73A);
+
+	/**
+		The Unicode value that macOS uses for the Insert Line function key
+		(U+F73B).
+	**/
+	public static var STRING_INSERTLINE(default, never):String = String.fromCharCode(0xF73B);
+
+	/**
+		The Unicode value that macOS uses for the Delete Line function key
+		(U+F73C).
+	**/
+	public static var STRING_DELETELINE(default, never):String = String.fromCharCode(0xF73C);
+
+	/**
+		The Unicode value that macOS uses for the Insert Character function
+		key (U+F73D).
+	**/
+	public static var STRING_INSERTCHAR(default, never):String = String.fromCharCode(0xF73D);
+
+	/**
+		The Unicode value that macOS uses for the Delete Character function
+		key (U+F73E).
+	**/
+	public static var STRING_DELETECHAR(default, never):String = String.fromCharCode(0xF73E);
+
+	/**
+		The Unicode value that macOS uses for the Previous function key
+		(U+F73F).
+	**/
+	public static var STRING_PREV(default, never):String = String.fromCharCode(0xF73F);
+
+	/**
+		The Unicode value that macOS uses for the Next function key (U+F740).
+	**/
+	public static var STRING_NEXT(default, never):String = String.fromCharCode(0xF740);
+
+	/**
+		The Unicode value that macOS uses for the Select function key
+		(U+F741).
+	**/
+	public static var STRING_SELECT(default, never):String = String.fromCharCode(0xF741);
+
+	/**
+		The Unicode value that macOS uses for the Execute function key
+		(U+F742).
+	**/
+	public static var STRING_EXECUTE(default, never):String = String.fromCharCode(0xF742);
+
+	/**
+		The Unicode value that macOS uses for the Undo function key (U+F743).
+	**/
+	public static var STRING_UNDO(default, never):String = String.fromCharCode(0xF743);
+
+	/**
+		The Unicode value that macOS uses for the Redo function key (U+F744).
+	**/
+	public static var STRING_REDO(default, never):String = String.fromCharCode(0xF744);
+
+	/**
+		The Unicode value that macOS uses for the Find function key (U+F745).
+	**/
+	public static var STRING_FIND(default, never):String = String.fromCharCode(0xF745);
+
+	/**
+		The Unicode value that macOS uses for the Help function key (U+F746).
+	**/
+	public static var STRING_HELP(default, never):String = String.fromCharCode(0xF746);
+
+	/**
+		The Unicode value that macOS uses for the Mode Switch function key
+		(U+F747).
+	**/
+	public static var STRING_MODESWITCH(default, never):String = String.fromCharCode(0xF747);
+
+	/**
 		Specifies whether the Caps Lock key is activated (`true`) or
 		not (`false`).
 	**/
@@ -552,6 +1621,29 @@ import lime.ui.KeyCode;
 		(`false`).
 	**/
 	public static var numLock(default, null):Bool;
+
+	/**
+		Indicates whether the computer or device provides a virtual keyboard.
+		If the current environment provides a virtual keyboard, this value is
+		`true`.
+
+		In OpenFL, this is `true` on iOS and Android, and on HTML5 when the
+		browser reports touch support.
+	**/
+	public static var hasVirtualKeyboard(get, never):Bool;
+
+	/**
+		Indicates the type of physical keyboard provided by the computer or
+		device, if any.
+
+		Use the constants in the KeyboardType class to test the values reported
+		by this property.
+
+		In OpenFL, this is `KeyboardType.NONE` on iOS and Android, and
+		`KeyboardType.ALPHANUMERIC` everywhere else. A hardware keyboard
+		attached to a mobile device is not detected.
+	**/
+	public static var physicalKeyboardType(get, never):KeyboardType;
 
 	/**
 		Specifies whether the last key pressed is accessible by other SWF files.
@@ -567,6 +1659,28 @@ import lime.ui.KeyCode;
 	{
 		// default browser security restrictions are always enforced
 		return false;
+	}
+
+	// Get & Set Methods
+	@:noCompletion private static function get_hasVirtualKeyboard():Bool
+	{
+		#if mobile
+		return true;
+		#elseif (js && html5)
+		var navigator:Dynamic = js.Browser.navigator;
+		return navigator.maxTouchPoints != null && navigator.maxTouchPoints > 0;
+		#else
+		return false;
+		#end
+	}
+
+	@:noCompletion private static function get_physicalKeyboardType():KeyboardType
+	{
+		#if mobile
+		return KeyboardType.NONE;
+		#else
+		return KeyboardType.ALPHANUMERIC;
+		#end
 	}
 
 	#if lime

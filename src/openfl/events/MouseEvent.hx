@@ -538,8 +538,27 @@ class MouseEvent extends Event
 	**/
 	public var localY:Float;
 
-	// @:noCompletion @:dox(hide) @:require(flash11_2) public var movementX:Float;
-	// @:noCompletion @:dox(hide) @:require(flash11_2) public var movementY:Float;
+	/**
+		The change in mouse position in the horizontal direction since the
+		last mouse event, in stage coordinates.
+
+		This value is useful when `Stage.mouseLock` is `true`, because the
+		mouse position stays the same while the mouse is locked. In OpenFL,
+		this value is also reported when the mouse is not locked. It is set for
+		`MouseEvent.MOUSE_MOVE` events and is `0` for other event types.
+	**/
+	public var movementX:Float;
+
+	/**
+		The change in mouse position in the vertical direction since the last
+		mouse event, in stage coordinates.
+
+		This value is useful when `Stage.mouseLock` is `true`, because the
+		mouse position stays the same while the mouse is locked. In OpenFL,
+		this value is also reported when the mouse is not locked. It is set for
+		`MouseEvent.MOUSE_MOVE` events and is `0` for other event types.
+	**/
+	public var movementY:Float;
 
 	/**
 		A reference to a display list object that is related to the event. For
@@ -659,6 +678,8 @@ class MouseEvent extends Event
 		this.clickCount = clickCount;
 
 		isRelatedObjectInaccessible = false;
+		movementX = 0;
+		movementY = 0;
 		stageX = Math.NaN;
 		stageY = Math.NaN;
 
@@ -669,6 +690,8 @@ class MouseEvent extends Event
 	{
 		var event = new MouseEvent(type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey,
 			controlKey, clickCount);
+		event.movementX = movementX;
+		event.movementY = movementY;
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
@@ -734,6 +757,8 @@ class MouseEvent extends Event
 		clickCount = 0;
 
 		isRelatedObjectInaccessible = false;
+		movementX = 0;
+		movementY = 0;
 		stageX = Math.NaN;
 		stageY = Math.NaN;
 

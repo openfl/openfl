@@ -3,8 +3,7 @@ package flash.ui;
 #if flash
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract KeyLocation(Int) from Int to Int from UInt to UInt
 {
-	@:noCompletion @:dox(hide) public static inline var D_PAD = 4;
-
+	public var D_PAD = 4;
 	public var LEFT = 1;
 	public var NUM_PAD = 3;
 	public var RIGHT = 2;
