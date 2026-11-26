@@ -70,14 +70,12 @@ import openfl.utils._internal.NullUtils;
 	}
 
 	#if cs
-	@:noCompletion @:op(A == B) private static function equals(a:Context3DTextureFormat, b:Context3DTextureFormat):Bool
+	@:op(A == B) private static function equals(a:Context3DTextureFormat, b:Context3DTextureFormat):Bool
 	{
-		return NullUtils.valueEquals(a, b, Int);
+		return NullUtils.intEquals(cast a, cast b);
 	}
-	#end
 
-	#if cs
-	@:noCompletion @:op(A != B) private static function notEquals(a:Context3DTextureFormat, b:Context3DTextureFormat):Bool
+	@:op(A != B) private static inline function notEquals(a:Context3DTextureFormat, b:Context3DTextureFormat):Bool
 	{
 		return !equals(a, b);
 	}

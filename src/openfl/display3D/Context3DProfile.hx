@@ -116,14 +116,12 @@ import openfl.utils._internal.NullUtils;
 	}
 
 	#if cs
-	@:noCompletion @:op(A == B) private static function equals(a:Context3DProfile, b:Context3DProfile):Bool
+	@:op(A == B) private static function equals(a:Context3DProfile, b:Context3DProfile):Bool
 	{
-		return NullUtils.valueEquals(a, b, Int);
+		return NullUtils.intEquals(cast a, cast b);
 	}
-	#end
 
-	#if cs
-	@:noCompletion @:op(A != B) private static function notEquals(a:Context3DProfile, b:Context3DProfile):Bool
+	@:op(A != B) private static inline function notEquals(a:Context3DProfile, b:Context3DProfile):Bool
 	{
 		return !equals(a, b);
 	}
