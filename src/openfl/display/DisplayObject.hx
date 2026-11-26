@@ -1147,9 +1147,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		__worldAlpha = 1;
 		__worldBlendMode = NORMAL;
-		__worldTransform = new Matrix();
 		__worldColorTransform = new ColorTransform();
-		__renderTransform = new Matrix();
 		__worldVisible = true;
 
 		name = "instance" + (++__instanceCount);
@@ -1672,7 +1670,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __getWorldTransform():Matrix
 	{
-		var transformDirty = __transformDirty || __worldTransformInvalid;
+		var transformDirty = __transformDirty || __worldTransformInvalid || __worldTransform == null || __renderTransform == null;
 
 		if (transformDirty)
 		{
@@ -1685,12 +1683,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			}
 			else
 			{
-				while (current != stage)
+				// Include Stage: lazy transforms must be initialized before children combine against them.
+				while (current != null)
 				{
 					list.push(current);
-					current = current.parent;
 
-					if (current == null) break;
+					if (current == stage)
+					{
+						break;
+					}
+
+					current = current.parent;
 				}
 			}
 
@@ -1975,6 +1978,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		if (!overrided && parent != null)
 		{
+			if (parent.__worldTransform == null)
+			{
+				parent.__updateTransforms();
+			}
+
 			__calculateAbsoluteTransform(local, parent.__worldTransform, __worldTransform);
 		}
 		else
@@ -1984,6 +1992,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		if (!overrided && renderParent != null)
 		{
+			if (renderParent.__renderTransform == null)
+			{
+				renderParent.__updateTransforms();
+			}
+
 			__calculateAbsoluteTransform(local, renderParent.__renderTransform, __renderTransform);
 		}
 		else
