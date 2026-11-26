@@ -1,5 +1,7 @@
 package openfl.display;
 
+import lime.graphics.WebGL2RenderContext;
+import lime.utils.Int32Array;
 #if !flash
 import openfl.utils._internal.Float32Array;
 import openfl.display3D.Context3D;
@@ -93,6 +95,7 @@ import openfl.display3D.Context3D;
 #if (!js && !display)
 @:generic
 #end
+@:cppFileCode('#define LIME_GLES3_API')
 @:final class ShaderParameter<T> /*implements Dynamic*/
 {
 	/**
@@ -210,6 +213,15 @@ import openfl.display3D.Context3D;
 						gl.uniform3i(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0);
 					case BOOL4:
 						gl.uniform4i(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0, boolValue[3] ? 1 : 0);
+					case BOOLV:
+						gl.uniform1iv(index, new Int32Array([for (v in boolValue) v ? 1 : 0]));
+					case BOOL2V:
+						gl.uniform2iv(index, new Int32Array([for (v in boolValue) v ? 1 : 0]));
+					case BOOL3V:
+						gl.uniform3iv(index, new Int32Array([for (v in boolValue) v ? 1 : 0]));
+					case BOOL4V:
+						gl.uniform4iv(index, new Int32Array([for (v in boolValue) v ? 1 : 0]));
+
 					case FLOAT:
 						gl.uniform1f(index, floatValue[0]);
 					case FLOAT2:
@@ -218,6 +230,14 @@ import openfl.display3D.Context3D;
 						gl.uniform3f(index, floatValue[0], floatValue[1], floatValue[2]);
 					case FLOAT4:
 						gl.uniform4f(index, floatValue[0], floatValue[1], floatValue[2], floatValue[3]);
+					case FLOATV:
+						gl.uniform1fv(index, new Float32Array(floatValue));
+					case FLOAT2V:
+						gl.uniform2fv(index, new Float32Array(floatValue));
+					case FLOAT3V:
+						gl.uniform3fv(index, new Float32Array(floatValue));
+					case FLOAT4V:
+						gl.uniform4fv(index, new Float32Array(floatValue));
 
 					case MATRIX2X2:
 						for (i in 0...4)
@@ -225,6 +245,9 @@ import openfl.display3D.Context3D;
 							__uniformMatrix[i] = floatValue[i];
 						}
 						gl.uniformMatrix2fv(index, false, __uniformMatrix);
+
+					case MATRIX2X2V:
+						gl.uniformMatrix2fv(index, false, new Float32Array(floatValue));
 
 					// case MATRIX2X3:
 					// case MATRIX2X4:
@@ -237,6 +260,9 @@ import openfl.display3D.Context3D;
 						}
 						gl.uniformMatrix3fv(index, false, __uniformMatrix);
 
+					case MATRIX3X3V:
+						gl.uniformMatrix3fv(index, false, new Float32Array(floatValue));
+
 					// case MATRIX3X4:
 					// case MATRIX4X2:
 					// case MATRIX4X3:
@@ -248,6 +274,9 @@ import openfl.display3D.Context3D;
 						}
 						gl.uniformMatrix4fv(index, false, __uniformMatrix);
 
+					case MATRIX4X4V:
+						gl.uniformMatrix4fv(index, false, new Float32Array(floatValue));
+
 					case INT:
 						gl.uniform1i(index, intValue[0]);
 					case INT2:
@@ -256,6 +285,14 @@ import openfl.display3D.Context3D;
 						gl.uniform3i(index, intValue[0], intValue[1], intValue[2]);
 					case INT4:
 						gl.uniform4i(index, intValue[0], intValue[1], intValue[2], intValue[3]);
+					case INTV:
+						gl.uniform1iv(index, new Int32Array(intValue));
+					case INT2V:
+						gl.uniform2iv(index, new Int32Array(intValue));
+					case INT3V:
+						gl.uniform3iv(index, new Int32Array(intValue));
+					case INT4V:
+						gl.uniform4iv(index, new Int32Array(intValue));
 
 					default:
 				}
@@ -281,12 +318,33 @@ import openfl.display3D.Context3D;
 					case FLOAT4:
 						gl.uniform4f(index, 0, 0, 0, 0);
 
+					case INTV, BOOLV:
+						gl.uniform1iv(index, new Int32Array([for (i in 0...__length) 0]));
+					case INT2V, BOOL2V:
+						gl.uniform2iv(index, new Int32Array([for (i in 0...__length) 0]));
+					case INT3V, BOOL3V:
+						gl.uniform3iv(index, new Int32Array([for (i in 0...__length) 0]));
+					case INT4V, BOOL4V:
+						gl.uniform4iv(index, new Int32Array([for (i in 0...__length) 0]));
+
+					case FLOATV:
+						gl.uniform1fv(index, new Float32Array([for (i in 0...__length) 0]));
+					case FLOAT2V:
+						gl.uniform2fv(index, new Float32Array([for (i in 0...__length) 0]));
+					case FLOAT3V:
+						gl.uniform3fv(index, new Float32Array([for (i in 0...__length) 0]));
+					case FLOAT4V:
+						gl.uniform4fv(index, new Float32Array([for (i in 0...__length) 0]));
+
 					case MATRIX2X2:
 						for (i in 0...4)
 						{
 							__uniformMatrix[i] = 0;
 						}
 						gl.uniformMatrix2fv(index, false, __uniformMatrix);
+
+					case MATRIX2X2V:
+						gl.uniformMatrix2fv(index, false, new Float32Array([for (i in 0...__length) 0]));
 
 					// case MATRIX2X3:
 					// case MATRIX2X4:
@@ -299,6 +357,9 @@ import openfl.display3D.Context3D;
 						}
 						gl.uniformMatrix3fv(index, false, __uniformMatrix);
 
+					case MATRIX3X3V:
+						gl.uniformMatrix3fv(index, false, new Float32Array([for (i in 0...__length) 0]));
+
 					// case MATRIX3X4:
 					// case MATRIX4X2:
 					// case MATRIX4X3:
@@ -309,6 +370,9 @@ import openfl.display3D.Context3D;
 							__uniformMatrix[i] = 0;
 						}
 						gl.uniformMatrix4fv(index, false, __uniformMatrix);
+
+					case MATRIX4X4V:
+						gl.uniformMatrix4fv(index, false, new Float32Array([for (i in 0...__length) 0]));
 
 					default:
 				}
@@ -335,6 +399,14 @@ import openfl.display3D.Context3D;
 							gl.vertexAttrib3f(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0);
 						case BOOL4:
 							gl.vertexAttrib4f(index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0, boolValue[3] ? 1 : 0);
+						case BOOLV:
+							gl.vertexAttrib1fv(index, new Int32Array([for (v in boolValue) v ? 1 : 0]));
+						case BOOL2V:
+							gl.vertexAttrib2fv(index, new Int32Array([for (v in boolValue) v ? 1 : 0]));
+						case BOOL3V:
+							gl.vertexAttrib3fv(index, new Int32Array([for (v in boolValue) v ? 1 : 0]));
+						case BOOL4V:
+							gl.vertexAttrib4fv(index, new Int32Array([for (v in boolValue) v ? 1 : 0]));
 						case FLOAT:
 							gl.vertexAttrib1f(index, floatValue[0]);
 						case FLOAT2:
@@ -343,13 +415,20 @@ import openfl.display3D.Context3D;
 							gl.vertexAttrib3f(index, floatValue[0], floatValue[1], floatValue[2]);
 						case FLOAT4:
 							gl.vertexAttrib4f(index, floatValue[0], floatValue[1], floatValue[2], floatValue[3]);
+						case FLOATV:
+							gl.vertexAttrib1fv(index, floatValue);
+						case FLOAT2V, MATRIX2X2V:
+							gl.vertexAttrib2fv(index, floatValue);
+						case FLOAT3V, MATRIX3X3V:
+							gl.vertexAttrib3fv(index, floatValue);
+						case FLOAT4V, MATRIX4X4V:
+							gl.vertexAttrib4fv(index, floatValue);
 
 						case MATRIX2X2:
 							for (i in 0...2)
 							{
 								gl.vertexAttrib2f(index + i, floatValue[i * 2], floatValue[i * 2 + 1]);
 							}
-
 						case MATRIX3X3:
 							for (i in 0...3)
 							{
@@ -370,6 +449,16 @@ import openfl.display3D.Context3D;
 							gl.vertexAttrib3f(index, intValue[0], intValue[1], intValue[2]);
 						case INT4:
 							gl.vertexAttrib4f(index, intValue[0], intValue[1], intValue[2], intValue[3]);
+
+						case INTV:
+							gl.vertexAttrib1fv(index, intValue);
+						case INT2V:
+							gl.vertexAttrib2fv(index, intValue);
+						case INT3V:
+							gl.vertexAttrib3fv(index, intValue);
+						case INT4V:
+							gl.vertexAttrib4fv(index, intValue);
+
 						default:
 					}
 				}
@@ -385,6 +474,33 @@ import openfl.display3D.Context3D;
 							gl.vertexAttrib3f(index, 0, 0, 0);
 						case BOOL4, FLOAT4, INT4:
 							gl.vertexAttrib4f(index, 0, 0, 0, 0);
+
+						case BOOLV:
+							gl.vertexAttrib1fv(index, new Int32Array([for (i in 0...__length) 0]));
+						case BOOL2V:
+							gl.vertexAttrib2fv(index, new Int32Array([for (i in 0...__length) 0]));
+						case BOOL3V:
+							gl.vertexAttrib3fv(index, new Int32Array([for (i in 0...__length) 0]));
+						case BOOL4V:
+							gl.vertexAttrib4fv(index, new Int32Array([for (i in 0...__length) 0]));
+
+						case INTV:
+							gl.vertexAttrib1fv(index, new Int32Array([for (i in 0...__length) 0]));
+						case INT2V:
+							gl.vertexAttrib2fv(index, new Int32Array([for (i in 0...__length) 0]));
+						case INT3V:
+							gl.vertexAttrib3fv(index, new Int32Array([for (i in 0...__length) 0]));
+						case INT4V:
+							gl.vertexAttrib4fv(index, new Int32Array([for (i in 0...__length) 0]));
+
+						case FLOATV:
+							gl.vertexAttrib1fv(index, new Float32Array([for (i in 0...__length) 0]));
+						case FLOAT2V, MATRIX2X2V:
+							gl.vertexAttrib2fv(index, new Float32Array([for (i in 0...__length) 0]));
+						case FLOAT3V, MATRIX3X3V:
+							gl.vertexAttrib3fv(index, new Float32Array([for (i in 0...__length) 0]));
+						case FLOAT4V, MATRIX4X4V:
+							gl.vertexAttrib4fv(index, new Float32Array([for (i in 0...__length) 0]));
 
 						case MATRIX2X2:
 							for (i in 0...2)
@@ -450,6 +566,24 @@ import openfl.display3D.Context3D;
 					case FLOAT4:
 						gl.uniform4f(index, buffer[position], buffer[position + 1], buffer[position + 2], buffer[position + 3]);
 
+					case INTV, BOOLV:
+						gl.uniform1iv(index, buffer.subarray(position, position + __length));
+					case INT2V, BOOL2V:
+						gl.uniform2iv(index, buffer.subarray(position, position + __length));
+					case INT3V, BOOL3V:
+						gl.uniform3iv(index, buffer.subarray(position, position + __length));
+					case INT4V, BOOL4V:
+						gl.uniform4iv(index, buffer.subarray(position, position + __length));
+
+					case FLOATV:
+						gl.uniform1fv(index, buffer.subarray(position, position + __length));
+					case FLOAT2V:
+						gl.uniform2fv(index, buffer.subarray(position, position + __length));
+					case FLOAT3V:
+						gl.uniform3fv(index, buffer.subarray(position, position + __length));
+					case FLOAT4V:
+						gl.uniform4fv(index, buffer.subarray(position, position + __length));
+
 					case MATRIX2X2:
 						for (i in 0...4)
 						{
@@ -457,7 +591,16 @@ import openfl.display3D.Context3D;
 						}
 						gl.uniformMatrix2fv(index, false, __uniformMatrix);
 
+					case MATRIX2X2V:
+						gl.uniformMatrix2fv(index, false, buffer.subarray(position, position + __length));
+					// matrix AxB is not supported by lime
 					// case MATRIX2X3:
+					// 	for (i in 0...6)
+					// 	{
+					// 		__uniformMatrix[i] = buffer[position + i];
+					// 	}
+					// 	var _gl:WebGL2RenderContext = cast gl;
+					// 	_gl.uniformMatrix2x3fv(index, false, __uniformMatrix);
 					// case MATRIX2X4:
 					// case MATRIX3X2:
 
@@ -468,6 +611,8 @@ import openfl.display3D.Context3D;
 						}
 						gl.uniformMatrix3fv(index, false, __uniformMatrix);
 
+					case MATRIX3X3V:
+						gl.uniformMatrix3fv(index, false, buffer.subarray(position, position + __length));
 					// case MATRIX3X4:
 					// case MATRIX4X2:
 					// case MATRIX4X3:
@@ -479,6 +624,8 @@ import openfl.display3D.Context3D;
 						}
 						gl.uniformMatrix4fv(index, false, __uniformMatrix);
 
+					case MATRIX4X4V:
+						gl.uniformMatrix4fv(index, false, buffer.subarray(position, position + __length));
 					default:
 				}
 			}
@@ -505,18 +652,31 @@ import openfl.display3D.Context3D;
 						case BOOL4, FLOAT4, INT4:
 							gl.vertexAttrib4f(index, buffer[position], buffer[position + 1], buffer[position + 2], buffer[position + 3]);
 
+						case FLOATV, INTV, BOOLV:
+							gl.vertexAttrib1fv(index, buffer.subarray(position, position + __length));
+						case FLOAT2V, INT2V, BOOL2V:
+							gl.vertexAttrib2fv(index, buffer.subarray(position, position + __length));
+						case FLOAT3V, INT3V, BOOL3V:
+							gl.vertexAttrib3fv(index, buffer.subarray(position, position + __length));
+						case FLOAT4V, INT4V, BOOL4V:
+							gl.vertexAttrib4fv(index, buffer.subarray(position, position + __length));
+
 						case MATRIX2X2:
 							for (i in 0...2)
 							{
 								gl.vertexAttrib2f(index + i, buffer[position + i * 2], buffer[position + i * 2 + 1]);
 							}
 
+						case MATRIX2X2V:
+							gl.vertexAttrib2fv(index, buffer.subarray(position, position + __length));
 						case MATRIX3X3:
 							for (i in 0...3)
 							{
 								gl.vertexAttrib3f(index + i, buffer[position + i * 3], buffer[position + i * 3 + 1], buffer[position + i * 3 + 2]);
 							}
 
+						case MATRIX3X3V:
+							gl.vertexAttrib3fv(index, buffer.subarray(position, position + __length));
 						case MATRIX4X4:
 							for (i in 0...4)
 							{
@@ -524,6 +684,8 @@ import openfl.display3D.Context3D;
 									buffer[position + i * 4 + 3]);
 							}
 
+						case MATRIX4X4V:
+							gl.vertexAttrib4fv(index, buffer.subarray(position, position + __length));
 						default:
 					}
 				}
@@ -540,24 +702,39 @@ import openfl.display3D.Context3D;
 						case BOOL4, FLOAT4, INT4:
 							gl.vertexAttrib4f(index, 0, 0, 0, 0);
 
+						case FLOATV, INTV, BOOLV:
+							gl.vertexAttrib1fv(index, new Float32Array([for (i in 0...__length) 0]));
+						case FLOAT2V, INT2V, BOOL2V:
+							gl.vertexAttrib2fv(index, new Float32Array([for (i in 0...__length) 0]));
+						case FLOAT3V, INT3V, BOOL3V:
+							gl.vertexAttrib3fv(index, new Float32Array([for (i in 0...__length) 0]));
+						case FLOAT4V, INT4V, BOOL4V:
+							gl.vertexAttrib4fv(index, new Float32Array([for (i in 0...__length) 0]));
+
 						case MATRIX2X2:
 							for (i in 0...2)
 							{
 								gl.vertexAttrib2f(index + i, 0, 0);
 							}
 
+						case MATRIX2X2V:
+							gl.vertexAttrib2fv(index, new Float32Array([for (i in 0...__length) 0]));
 						case MATRIX3X3:
 							for (i in 0...3)
 							{
 								gl.vertexAttrib3f(index + i, 0, 0, 0);
 							}
 
+						case MATRIX3X3V:
+							gl.vertexAttrib3fv(index, new Float32Array([for (i in 0...__length) 0]));
 						case MATRIX4X4:
 							for (i in 0...4)
 							{
 								gl.vertexAttrib4f(index + i, 0, 0, 0, 0);
 							}
 
+						case MATRIX4X4V:
+							gl.vertexAttrib4fv(index, new Float32Array([for (i in 0...__length) 0]));
 						default:
 					}
 				}
