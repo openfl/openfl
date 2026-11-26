@@ -46,7 +46,7 @@ class AssetsMacro
 			var constructor = macro
 				{
 					#if html5
-					super(0, 0, transparent, fillRGBA);
+					super(width, height, transparent, fillRGBA);
 
 					if (preload != null)
 					{
