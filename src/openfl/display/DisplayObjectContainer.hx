@@ -1048,7 +1048,9 @@ class DisplayObjectContainer extends InteractiveObject
 	{
 		super.__update(transformOnly, updateChildren);
 
-		if (updateChildren)
+		// the children of an invisible container are not rendered, and what reads their transforms without a
+		// render (localToGlobal(), getBounds(), a hit test) has them computed through __getWorldTransform()
+		if (updateChildren && (__visible || __isMask || DisplayObject.__maskUpdateDepth > 0))
 		{
 			for (child in __children)
 			{

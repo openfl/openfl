@@ -14,8 +14,122 @@ import utest.Assert;
 import utest.Test;
 
 @:access(openfl.events.Event)
+@:access(openfl.display.DisplayObject)
 class DisplayObjectContainerTest extends Test
 {
+	// The update a render starts with leaves the children of an invisible container out
+	public function test_updateOfInvisibleContainer()
+	{
+		var root = new Sprite();
+		var hidden = new Sprite();
+		var child = new Sprite();
+		var leaf = new Sprite();
+		child.x = 10;
+		leaf.y = 5;
+		root.addChild(hidden);
+		hidden.addChild(child);
+		child.addChild(leaf);
+		root.__update(false, true);
+
+		Assert.equals(10, child.__worldTransform.tx);
+
+		hidden.visible = false;
+		root.x = 100;
+		root.__update(false, true);
+
+		Assert.isFalse(hidden.__renderable);
+		Assert.equals(100, hidden.__worldTransform.tx);
+		// left as they were, to be computed when asked for
+		Assert.equals(10, child.__worldTransform.tx);
+		Assert.isTrue(child.__worldTransformInvalid);
+		Assert.isTrue(leaf.__worldTransformInvalid);
+
+		var global = leaf.localToGlobal(new Point());
+		Assert.equals(110, global.x);
+		Assert.equals(5, global.y);
+
+		// moved again after its transforms were asked for
+		root.x = 200;
+		root.__update(false, true);
+		global = leaf.localToGlobal(new Point());
+		Assert.equals(210, global.x);
+
+		hidden.x = 1;
+		global = child.localToGlobal(new Point());
+		Assert.equals(211, global.x);
+
+		hidden.visible = true;
+		root.__update(false, true);
+
+		Assert.isTrue(leaf.__renderable);
+		Assert.equals(211, leaf.__worldTransform.tx);
+		Assert.equals(5, leaf.__worldTransform.ty);
+		Assert.isFalse(leaf.__worldTransformInvalid);
+	}
+
+	// A mask is drawn whatever its visibility and that of its children, wherever it is in the display list
+	public function test_updateOfMaskBelowInvisibleContainer()
+	{
+		var root = new Sprite();
+		var target = new Sprite();
+		var hidden = new Sprite();
+		var holder = new Sprite();
+		var mask = new Sprite();
+		var part = new Sprite();
+		var shape = new Sprite();
+		root.addChild(target);
+		root.addChild(hidden);
+		hidden.addChild(holder);
+		holder.addChild(mask);
+		mask.addChild(part);
+		part.addChild(shape);
+		target.mask = mask;
+		root.__update(false, true);
+
+		hidden.visible = false;
+		part.visible = false;
+		holder.x = 30;
+		shape.y = 7;
+		root.__update(false, true);
+
+		Assert.equals(30, mask.__worldTransform.tx);
+		Assert.equals(30, shape.__worldTransform.tx);
+		Assert.equals(7, shape.__worldTransform.ty);
+
+		root.x = 100;
+		root.__update(false, true);
+
+		Assert.equals(130, mask.__worldTransform.tx);
+		Assert.equals(130, shape.__worldTransform.tx);
+	}
+
+	// BitmapData.draw() updates its source alone, from a parent that may be out of date
+	public function test_updateOfDrawnSourceBelowInvisibleContainer()
+	{
+		var root = new Sprite();
+		var hidden = new Sprite();
+		var holder = new Sprite();
+		var source = new Sprite();
+		source.graphics.beginFill(0xFF0000);
+		source.graphics.drawRect(0, 0, 10, 10);
+		source.graphics.endFill();
+		source.x = 3;
+		root.addChild(hidden);
+		hidden.addChild(holder);
+		holder.addChild(source);
+		hidden.visible = false;
+		root.__update(false, true);
+
+		root.x = 50;
+		root.__update(false, true);
+
+		var bitmapData = new BitmapData(20, 20, true, 0);
+		bitmapData.draw(source);
+
+		Assert.equals(0xFFFF0000, bitmapData.getPixel32(5, 5));
+		Assert.equals(53, source.localToGlobal(new Point()).x);
+	}
+
 	public function test_addChild()
 	{
 		var sprite = new Sprite();
