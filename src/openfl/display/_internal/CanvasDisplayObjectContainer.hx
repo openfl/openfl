@@ -16,6 +16,7 @@ class CanvasDisplayObjectContainer
 
 		#if !neko
 		CanvasDisplayObject.renderDrawable(displayObjectContainer, renderer);
+		renderer.__touchGraphics(displayObjectContainer);
 
 		if (displayObjectContainer.__cacheBitmap != null && !displayObjectContainer.__isCacheBitmapRender) return;
 

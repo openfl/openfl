@@ -983,6 +983,7 @@ class BitmapData implements IBitmapDrawable
 			renderer.__allowSmoothing = smoothing;
 			renderer.__pixelRatio = #if openfl_disable_hdpi 1 #else Lib.current.stage.window.scale #end;
 			renderer.__overrideBlendMode = blendMode;
+			renderer.__transparent = transparent;
 
 			renderer.__worldTransform = transform;
 			renderer.__worldAlpha = 1 / source.__worldAlpha;
@@ -1048,10 +1049,13 @@ class BitmapData implements IBitmapDrawable
 			var renderer = new CanvasRenderer(image.buffer.__srcContext);
 			#else
 			var renderer = new CairoRenderer(new Cairo(getSurface()));
+			// the bitmap drawn into, for the composites that work on views of its bytes
+			renderer.__targetBitmap = this;
 			#end
 
 			renderer.__allowSmoothing = smoothing;
 			renderer.__overrideBlendMode = blendMode;
+			renderer.__transparent = transparent;
 
 			renderer.__worldTransform = transform;
 			renderer.__worldAlpha = 1 / source.__worldAlpha;

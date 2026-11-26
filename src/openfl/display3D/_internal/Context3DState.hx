@@ -67,6 +67,7 @@ class Context3DState
 	private var __enableGLStencilTest:Bool;
 	private var __frontFaceGLCCW:Bool;
 	private var __glBlendEquation:Int;
+	private var __glBlendEquationAlpha:Int;
 	private var __primaryGLFramebuffer:GLFramebuffer;
 	private var __rttDepthGLRenderbuffer:GLRenderbuffer;
 	private var __rttGLFramebuffer:GLFramebuffer;
@@ -102,6 +103,7 @@ class Context3DState
 
 		#if lime
 		__glBlendEquation = GL.FUNC_ADD;
+		__glBlendEquationAlpha = GL.FUNC_ADD;
 		#end
 	}
 }
