@@ -74,6 +74,12 @@ class Window #if lime extends LimeWindow #end
 		#end
 		#else
 		stage = Lib.current.stage;
+
+		#if (flash && openfl_flash_strict)
+		// Lime sets TOP_LEFT and NO_SCALE on Flash, restore the runtime defaults
+		stage.align = "";
+		stage.scaleMode = StageScaleMode.SHOW_ALL;
+		#end
 		#end
 	}
 
